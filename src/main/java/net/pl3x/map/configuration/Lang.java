@@ -38,6 +38,9 @@ public class Lang {
     public static String LOG_INTERNAL_WEB_STOPPED = "&aInternal webserver stopped";
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "Internal webserver is not running";
 
+    public static String LOG_JARLOADER_DOWNLOADING = "&eDownloading dependency jar from &7{url}";
+    public static String LOG_JARLOADER_PROGRESS = "     &3progress&7: &e{percent}% &7(&3{current}&e/&3{total}&7)";
+
     private static void init() {
         UNKNOWN_SUBCOMMAND = getString("unknown-subcommand", UNKNOWN_SUBCOMMAND);
 
@@ -65,6 +68,9 @@ public class Lang {
         LOG_INTERNAL_WEB_START_ERROR = getString("log.internal-web-start-error", LOG_INTERNAL_WEB_START_ERROR);
         LOG_INTERNAL_WEB_STOPPED = getString("log.internal-web-stopped", LOG_INTERNAL_WEB_STOPPED);
         LOG_INTERNAL_WEB_STOP_ERROR = getString("log.internal-web-not-running", LOG_INTERNAL_WEB_STOP_ERROR);
+
+        LOG_JARLOADER_DOWNLOADING = getString("log.dependency-downloading", LOG_JARLOADER_DOWNLOADING);
+        LOG_JARLOADER_PROGRESS = getString("log.dependency-progress", LOG_JARLOADER_PROGRESS);
     }
 
     public static void reload() {

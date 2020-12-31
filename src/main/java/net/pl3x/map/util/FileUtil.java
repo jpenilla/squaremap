@@ -26,13 +26,30 @@ public class FileUtil {
         return files;
     }
 
+    public static File getPluginFolder() {
+        return Pl3xMap.getInstance().getDataFolder();
+    }
+
+    public static File getLibsFolder() {
+        return new File(getPluginFolder(), "libs");
+    }
+
     public static File getWebFolder() {
-        return new File(Pl3xMap.getInstance().getDataFolder(), Config.WEB_DIR);
+        return new File(getPluginFolder(), Config.WEB_DIR);
     }
 
     public static void extractWebFolder() {
         if (!new File(getWebFolder(), "index.html").exists()) {
             Pl3xMap.getInstance().saveResource("web/index.html", true);
+        }
+        if (!new File(getWebFolder(), "data.js").exists()) {
+            Pl3xMap.getInstance().saveResource("web/data.js", true);
+        }
+        if (!new File(getWebFolder(), "map.js").exists()) {
+            Pl3xMap.getInstance().saveResource("web/map.js", true);
+        }
+        if (!new File(getWebFolder(), "style.css").exists()) {
+            Pl3xMap.getInstance().saveResource("web/style.css", true);
         }
     }
 

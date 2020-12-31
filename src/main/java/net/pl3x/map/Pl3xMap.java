@@ -4,6 +4,7 @@ import net.pl3x.map.command.CmdPl3xMap;
 import net.pl3x.map.configuration.Config;
 import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.util.FileUtil;
+import net.pl3x.map.util.Undertow;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -21,7 +22,11 @@ public final class Pl3xMap extends JavaPlugin {
 
         FileUtil.extractWebFolder();
 
-        Httpd.startServer();
+        if (Config.HTTPD_ENABLED) {
+            if (Undertow.setup()) {
+                Undertow.startServer();
+            }
+        }
 
         PluginCommand cmd = getCommand("pl3xmap");
         if (cmd != null) {
@@ -31,7 +36,9 @@ public final class Pl3xMap extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Httpd.stopServer();
+        if (Config.HTTPD_ENABLED) {
+            Undertow.stopServer();
+        }
     }
 
     public static Pl3xMap getInstance() {
