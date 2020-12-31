@@ -1,0 +1,14 @@
+name: "${project.artifactId}"
+main: "${project.groupId}.${project.artifactId}"
+version: "${project.version}"
+author: "BillyGalbreath"
+description: "Lightweight world map viewer"
+api-version: "1.16"
+
+commands:
+  pl3xmap:
+    description: Control the plugin
+    permission: command.pl3xmap
+    usage: /<command> (fullrender)
+    aliases:
+      - map
