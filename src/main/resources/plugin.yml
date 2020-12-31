@@ -2,7 +2,7 @@ name: "${project.artifactId}"
 main: "${project.groupId}.${project.artifactId}"
 version: "${project.version}"
 author: "BillyGalbreath"
-description: "Lightweight world map viewer"
+description: "Minimalistic and lightweight world map viewer for Paper servers"
 api-version: "1.16"
 
 commands:
