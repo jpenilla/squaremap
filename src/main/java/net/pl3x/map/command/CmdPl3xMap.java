@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.RenderManager;
+import net.pl3x.map.configuration.Lang;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -43,21 +43,25 @@ public class CmdPl3xMap implements TabExecutor {
                 }
 
                 if (RenderManager.isRendering(world)) {
-                    sender.sendMessage(ChatColor.RED + "A render is already in progress on " + world.getName());
+                    Lang.send(sender, Lang.RENDER_IN_PROGRESS
+                            .replace("{world}", world.getName()));
                     return true;
                 }
 
-                sender.sendMessage(ChatColor.GREEN + "Full render started on " + world.getName());
+                Lang.send(sender, Lang.FULL_RENDER_STARTED
+                        .replace("{world}", world.getName()));
                 RenderManager.fullRender(world);
                 return true;
             }
 
-            sender.sendMessage(ChatColor.RED + "Unknown subcommand");
+            Lang.send(sender, Lang.UNKNOWN_SUBCOMMAND);
             return false;
         }
 
         PluginDescriptionFile desc = Pl3xMap.getInstance().getDescription();
-        sender.sendMessage(ChatColor.GREEN + desc.getName() + " v" + desc.getVersion());
+        Lang.send(sender, Lang.VERSION
+                .replace("{name}", desc.getName())
+                .replace("{version}", desc.getVersion()));
         return true;
     }
 
@@ -66,13 +70,13 @@ public class CmdPl3xMap implements TabExecutor {
         if (args.length > 1) {
             world = Bukkit.getWorld(args[1]);
             if (world == null) {
-                sender.sendMessage(ChatColor.RED + "World not found");
+                Lang.send(sender, Lang.WORLD_NOT_FOUND);
                 return null;
             }
         } else if (sender instanceof Player) {
             world = ((Player) sender).getWorld();
         } else {
-            sender.sendMessage(ChatColor.RED + "Must specify a world");
+            Lang.send(sender, Lang.WORLD_NOT_SPECIFIED);
             return null;
         }
         return world;

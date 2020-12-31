@@ -5,7 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import net.minecraft.server.v1_16_R3.MathHelper;
-import net.pl3x.map.Pl3xMap;
+import net.pl3x.map.Logger;
+import net.pl3x.map.configuration.Lang;
 
 public class Image {
     private static final int SIZE = 512;
@@ -22,7 +23,8 @@ public class Image {
             try {
                 File dir = new File(directory, Integer.toString(3 - zoom));
                 if (!dir.exists() && !dir.mkdirs()) {
-                    Pl3xMap.log().severe("Could not create directory! " + dir.getAbsolutePath());
+                    Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
+                            .replace("{path}", dir.getAbsolutePath()));
                     continue;
                 }
 
@@ -49,7 +51,9 @@ public class Image {
 
                 ImageIO.write(image, "png", file);
             } catch (IOException e) {
-                Pl3xMap.log().severe("Could not save map for region " + region.getX() + "," + region.getZ());
+                Logger.severe(Lang.LOG_COULD_NOT_SAVE_REGION
+                        .replace("{x}", Integer.toString(region.getX()))
+                        .replace("{z}", Integer.toString(region.getZ())));
                 e.printStackTrace();
             }
         }

@@ -45,4 +45,9 @@ public class Region {
         result = prime * result + z;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Region{x=" + x + ",z=" + z + "}";
+    }
 }

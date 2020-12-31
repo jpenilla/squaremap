@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pl3xMap Test</title>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+      #mapid {
+        width: 100%;
+        height: 100vh;
+        background: black;
+      }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+  </head>
+  <body>
+    <div id="mapid"></div>
+    <script>
+      var map = L.map('mapid',{
+        attributionControl: false,
+        crs: L.CRS.Simple,
+        center: [0, 0],
+        zoom: 3,
+        minZoom: 0,
+        maxZoom: 3,
+        noWrap: true
+      });
+      L.tileLayer('tiles/world/{z}/{x}_{y}.png', {
+        tileSize: 512
+      }).addTo(map);
+    </script>
+  </body>
+</html>

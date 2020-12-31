@@ -3,6 +3,7 @@ package net.pl3x.map;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.task.FullRender;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -23,7 +24,8 @@ public class RenderManager {
 
     public static void fullRender(World world) {
         if (isRendering(world)) {
-            throw new RuntimeException("Render already running on " + world.getName());
+            throw new RuntimeException(Lang.RENDER_IN_PROGRESS
+                    .replace("{world}", world.getName()));
         }
         FullRender render = new FullRender(world);
         renders.put(world.getUID(), render);

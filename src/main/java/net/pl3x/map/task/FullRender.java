@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import net.pl3x.map.Pl3xMap;
+import net.pl3x.map.Logger;
 import net.pl3x.map.RenderManager;
+import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.data.Image;
 import net.pl3x.map.data.Region;
 import net.pl3x.map.util.Colors;
@@ -20,16 +21,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class FullRender extends BukkitRunnable {
     private final World world;
     private final File directory;
-    private final DecimalFormat df = new DecimalFormat("00.00%");
+    private final DecimalFormat df = new DecimalFormat("##0.00%");
     private int maxRadius = 0;
 
     private int total, current;
 
     public FullRender(World world) {
         this.world = world;
-        this.directory = new File(new File(Pl3xMap.getInstance().getDataFolder(), "tiles"), world.getName());
-        if (!directory.exists() && directory.mkdirs()) {
-            Pl3xMap.log().severe("Could not create tiles directory!");
+        this.directory = new File(new File(FileUtil.getWebFolder(), "tiles"), world.getName());
+        if (!directory.exists() && !directory.mkdirs()) {
+            Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
+                    .replace("{path}", directory.getAbsolutePath()));
         }
     }
 
@@ -41,20 +43,23 @@ public class FullRender extends BukkitRunnable {
 
     @Override
     public void run() {
-        Pl3xMap.log().info("§3Started map render for §e" + world.getName());
+        Logger.info(Lang.LOG_STARTED_FULLRENDER
+                .replace("{world}", world.getName()));
 
         try {
             FileUtils.deleteDirectory(directory);
         } catch (IOException e) {
-            Pl3xMap.log().severe("Unable to write to " + directory.getAbsolutePath());
+            Logger.severe(Lang.LOG_UNABLE_TO_WRITE_TO_FILE
+                    .replace("{path}", directory.getAbsolutePath()));
             e.printStackTrace();
             return;
         }
 
-        Pl3xMap.log().info("§eScanning region files...");
+        Logger.info(Lang.LOG_SCANNING_REGION_FILES);
         List<Region> regions = getRegions();
         total = regions.size();
-        Pl3xMap.log().info("§aFound §7" + total + " §aregion files");
+        Logger.debug(Lang.LOG_FOUND_TOTAL_REGION_FILES
+                .replace("{total}", Integer.toString(total)));
 
         SpiralIterator spiral = new SpiralIterator(0, 0, maxRadius + 1);
         while (spiral.hasNext()) {
@@ -64,7 +69,8 @@ public class FullRender extends BukkitRunnable {
             }
         }
 
-        Pl3xMap.log().info("§3Finished rendering map for §e" + world.getName());
+        Logger.info(Lang.LOG_FINISHED_RENDERING
+                .replace("{world}", world.getName()));
         cancel();
     }
 
@@ -87,7 +93,10 @@ public class FullRender extends BukkitRunnable {
     }
 
     private void mapRegion(Region region) {
-        Pl3xMap.log().info("§3" + progress() + " §eScanning region " + region.getX() + "," + region.getZ());
+        Logger.info(Lang.LOG_SCANNING_REGION_PROGRESS
+                .replace("{progress}", progress())
+                .replace("{x}", Integer.toString(region.getX()))
+                .replace("{z}", Integer.toString(region.getZ())));
         Image image = new Image();
         int rendered = 0;
         for (int x = 0; x < 32; x++) {
@@ -101,10 +110,15 @@ public class FullRender extends BukkitRunnable {
         }
         current++;
         if (rendered > 0) {
-            Pl3xMap.log().info("       §aSaving " + rendered + " chunks for region " + region.getX() + "," + region.getZ());
+            Logger.debug(Lang.LOG_SAVING_CHUNKS_FOR_REGION
+                    .replace("{total}", Integer.toString(rendered))
+                    .replace("{x}", Integer.toString(region.getX()))
+                    .replace("{z}", Integer.toString(region.getZ())));
             image.save(region, directory);
         } else {
-            Pl3xMap.log().info("       §cRegion is empty. Skipping. " + region.getX() + "," + region.getZ());
+            Logger.debug(Lang.LOG_SKIPPING_EMPTY_REGION
+                    .replace("{x}", Integer.toString(region.getX()))
+                    .replace("{z}", Integer.toString(region.getZ())));
         }
     }
 
@@ -121,6 +135,6 @@ public class FullRender extends BukkitRunnable {
     }
 
     private String progress() {
-        return df.format((double) current / total);
+        return String.format("%1$7s", df.format((double) current / total));
     }
 }

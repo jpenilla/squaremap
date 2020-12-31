@@ -1,6 +1,8 @@
 package net.pl3x.map.util;
 
 import java.io.File;
+import net.pl3x.map.Pl3xMap;
+import net.pl3x.map.configuration.Config;
 import org.bukkit.World;
 
 public class FileUtil {
@@ -22,5 +24,15 @@ public class FileUtil {
             files = new File[0];
         }
         return files;
+    }
+
+    public static File getWebFolder() {
+        return new File(Pl3xMap.getInstance().getDataFolder(), Config.WEB_DIR);
+    }
+
+    public static void extractWebFolder() {
+        if (!new File(getWebFolder(), "index.html").exists()) {
+            Pl3xMap.getInstance().saveResource("web/index.html", true);
+        }
     }
 }
