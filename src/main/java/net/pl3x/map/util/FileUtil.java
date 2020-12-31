@@ -35,4 +35,14 @@ public class FileUtil {
             Pl3xMap.getInstance().saveResource("web/index.html", true);
         }
     }
+
+    public static boolean deleteDirectory(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                deleteDirectory(file);
+            }
+        }
+        return dir.delete();
+    }
 }

@@ -1,7 +1,6 @@
 package net.pl3x.map.task;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +14,11 @@ import net.pl3x.map.util.FileUtil;
 import net.pl3x.map.util.SpiralIterator;
 import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class FullRender extends BukkitRunnable {
     private final World world;
-    private final File directory;
+    private final File worldTileDir;
     private final DecimalFormat df = new DecimalFormat("##0.00%");
     private int maxRadius = 0;
 
@@ -28,10 +26,10 @@ public class FullRender extends BukkitRunnable {
 
     public FullRender(World world) {
         this.world = world;
-        this.directory = new File(new File(FileUtil.getWebFolder(), "tiles"), world.getName());
-        if (!directory.exists() && !directory.mkdirs()) {
+        this.worldTileDir = new File(new File(FileUtil.getWebFolder(), "tiles"), world.getName());
+        if (!worldTileDir.exists() && !worldTileDir.mkdirs()) {
             Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                    .replace("{path}", directory.getAbsolutePath()));
+                    .replace("{path}", worldTileDir.getAbsolutePath()));
         }
     }
 
@@ -46,12 +44,9 @@ public class FullRender extends BukkitRunnable {
         Logger.info(Lang.LOG_STARTED_FULLRENDER
                 .replace("{world}", world.getName()));
 
-        try {
-            FileUtils.deleteDirectory(directory);
-        } catch (IOException e) {
+        if (!FileUtil.deleteDirectory(worldTileDir)) {
             Logger.severe(Lang.LOG_UNABLE_TO_WRITE_TO_FILE
-                    .replace("{path}", directory.getAbsolutePath()));
-            e.printStackTrace();
+                    .replace("{path}", worldTileDir.getAbsolutePath()));
             return;
         }
 
@@ -114,7 +109,7 @@ public class FullRender extends BukkitRunnable {
                     .replace("{total}", Integer.toString(rendered))
                     .replace("{x}", Integer.toString(region.getX()))
                     .replace("{z}", Integer.toString(region.getZ())));
-            image.save(region, directory);
+            image.save(region, worldTileDir);
         } else {
             Logger.debug(Lang.LOG_SKIPPING_EMPTY_REGION
                     .replace("{x}", Integer.toString(region.getX()))

@@ -9,6 +9,7 @@ import net.pl3x.map.Logger;
 import net.pl3x.map.configuration.Lang;
 
 public class Image {
+    private static final int MAX_ZOOM = 3;
     private static final int SIZE = 512;
     private final int[][] pixels = new int[SIZE][SIZE];
 
@@ -17,11 +18,11 @@ public class Image {
     }
 
     public void save(Region region, File directory) {
-        for (int zoom = 0; zoom <= 3; zoom++) {
+        for (int zoom = 0; zoom <= MAX_ZOOM; zoom++) {
             int step = (int) Math.pow(2, zoom);
             int size = SIZE / step;
             try {
-                File dir = new File(directory, Integer.toString(3 - zoom));
+                File dir = new File(directory, Integer.toString(MAX_ZOOM - zoom));
                 if (!dir.exists() && !dir.mkdirs()) {
                     Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
                             .replace("{path}", dir.getAbsolutePath()));

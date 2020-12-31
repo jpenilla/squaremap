@@ -39,7 +39,7 @@ public class Lang {
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "Internal webserver is not running";
 
     private static void init() {
-        UNKNOWN_SUBCOMMAND = getString("unknown-subcommand", colorize(UNKNOWN_SUBCOMMAND));
+        UNKNOWN_SUBCOMMAND = getString("unknown-subcommand", UNKNOWN_SUBCOMMAND);
 
         WORLD_NOT_SPECIFIED = getString("world-not-specified", WORLD_NOT_SPECIFIED);
         WORLD_NOT_FOUND = getString("world-not-found", WORLD_NOT_FOUND);
@@ -94,7 +94,7 @@ public class Lang {
 
     private static String getString(String path, String def) {
         config.addDefault(path, def);
-        return config.getString(path, config.getString(path));
+        return colorize(config.getString(path, config.getString(path)));
     }
 
     public static void send(CommandSender recipient, String message) {

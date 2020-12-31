@@ -12,3 +12,8 @@ commands:
     usage: /<command> (fullrender)
     aliases:
       - map
+
+permissions:
+  command.pl3xmap:
+    description: Control the plugin
+    default: op
