@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_16_R3.block.data.CraftBlockData;
 
 public class Colors {
-    public static int[] COLOR = new int[MaterialMapColor.a.length * 2];
+    public static final int[] COLOR = new int[MaterialMapColor.a.length * 2];
 
     static {
         for (int i = 0; i < MaterialMapColor.a.length; i++) {

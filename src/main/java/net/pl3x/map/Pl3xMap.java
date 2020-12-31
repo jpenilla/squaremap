@@ -1,7 +1,5 @@
 package net.pl3x.map;
 
-import fi.iki.elonen.NanoHTTPD;
-import java.io.IOException;
 import net.pl3x.map.command.CmdPl3xMap;
 import net.pl3x.map.configuration.Config;
 import net.pl3x.map.configuration.Lang;
