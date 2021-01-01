@@ -2,6 +2,7 @@ package net.pl3x.map.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import net.pl3x.map.Logger;
 import net.pl3x.map.Pl3xMap;
@@ -22,6 +23,21 @@ public class Config {
         DEBUG_MODE = getBoolean("debug-mode", DEBUG_MODE);
 
         WEB_DIR = getString("web-directory", WEB_DIR);
+        File base = Pl3xMap.getInstance().getDataFolder();
+        File test = new File(base, WEB_DIR);
+        try {
+            Path basePath = Path.of(base.getCanonicalPath()).normalize();
+            Path testPath = Path.of(test.getCanonicalPath()).normalize();
+            if (!testPath.startsWith(basePath)) {
+                WEB_DIR = "web";
+                Logger.severe("Directory traversal attack detected!");
+                Logger.severe("Falling back to default \"web\" directory");
+            }
+        } catch (IOException e) {
+            WEB_DIR = "web";
+            Logger.severe("Configured web directory not found!");
+            Logger.severe("Falling back to default \"web\" directory");
+        }
 
         HTTPD_ENABLED = getBoolean("internal-webserver.enabled", HTTPD_ENABLED);
         HTTPD_PORT = getInt("internal-webserver.port", HTTPD_PORT);
