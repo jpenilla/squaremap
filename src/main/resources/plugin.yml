@@ -4,6 +4,8 @@ version: "${project.version}"
 author: "BillyGalbreath"
 description: "Minimalistic and lightweight world map viewer for Paper servers"
 api-version: "1.16"
+softdepend:
+  - Pl3xMapServer
 
 commands:
   pl3xmap:

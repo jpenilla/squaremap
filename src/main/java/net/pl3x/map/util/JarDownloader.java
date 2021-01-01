@@ -4,62 +4,39 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import net.pl3x.map.Logger;
-import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.configuration.Lang;
 
-public class JarLoader {
-    private static final Method ADD_URL_METHOD;
-
-    static {
+public class JarDownloader {
+    public boolean downloadJar(String url, File destination) {
         try {
-            ADD_URL_METHOD = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            ADD_URL_METHOD.setAccessible(true);
-        } catch (NoSuchMethodException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    private final URLClassLoader classLoader;
-
-    public JarLoader() {
-        classLoader = ((URLClassLoader) Pl3xMap.getInstance().getClass().getClassLoader());
-    }
-
-    public boolean loadJar(String url, File file) {
-        try {
-            if (!file.getParentFile().exists()) {
-                if (!file.getParentFile().mkdirs()) {
+            if (!destination.getParentFile().exists()) {
+                if (!destination.getParentFile().mkdirs()) {
                     Logger.warn(Lang.LOG_COULD_NOT_CREATE_DIR
-                            .replace("{path}", file.getParentFile().getAbsolutePath()));
+                            .replace("{path}", destination.getParentFile().getAbsolutePath()));
                 }
             }
 
-            if (file.exists() && file.isDirectory()) {
-                Files.delete(file.toPath());
+            if (destination.exists() && destination.isDirectory()) {
+                Files.delete(destination.toPath());
             }
 
-            if (!file.exists()) {
+            if (!destination.exists()) {
                 Logger.info(Lang.LOG_JARLOADER_DOWNLOADING
                         .replace("{url}", url));
-                downloadJar(url, file);
+                download(url, destination);
             }
-
-            ADD_URL_METHOD.invoke(classLoader, file.toPath().toUri().toURL());
             return true;
-        } catch (IOException | IllegalAccessException | InvocationTargetException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    private void downloadJar(String url, File file) throws IOException {
+    private void download(String url, File file) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setInstanceFollowRedirects(true);
 

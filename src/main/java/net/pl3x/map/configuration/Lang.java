@@ -38,7 +38,7 @@ public class Lang {
     public static String LOG_INTERNAL_WEB_STOPPED = "&aInternal webserver stopped";
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "Internal webserver is not running";
 
-    public static String LOG_JARLOADER_DOWNLOADING = "&eDownloading dependency jar from &7{url}";
+    public static String LOG_JARLOADER_DOWNLOADING = "&eDownloading integrated server jar from &7{url}";
     public static String LOG_JARLOADER_PROGRESS = "     &3progress&7: &e{percent}% &7(&3{current}&e/&3{total}&7)";
 
     private static void init() {
