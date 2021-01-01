@@ -33,7 +33,7 @@ public class Lang {
     public static String LOG_SKIPPING_EMPTY_REGION = "        §cRegion is empty. Skipping. {x},{z}";
 
     public static String LOG_INTERNAL_WEB_DISABLED = "Internal webserver is disabled in config.yml";
-    public static String LOG_INTERNAL_WEB_STARTED = "&aInternal webserver running on port {port}";
+    public static String LOG_INTERNAL_WEB_STARTED = "&aInternal webserver running on {bind}:{port}";
     public static String LOG_INTERNAL_WEB_START_ERROR = "Internal webserver could not start";
     public static String LOG_INTERNAL_WEB_STOPPED = "&aInternal webserver stopped";
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "Internal webserver is not running";

@@ -16,6 +16,7 @@ public class Config {
     public static String WEB_DIR = "web";
 
     public static boolean HTTPD_ENABLED = true;
+    public static String HTTPD_BIND = "0.0.0.0";
     public static int HTTPD_PORT = 8080;
 
     private static void init() {
@@ -40,6 +41,7 @@ public class Config {
         }
 
         HTTPD_ENABLED = getBoolean("internal-webserver.enabled", HTTPD_ENABLED);
+        HTTPD_BIND = getString("internal-webserver.bind", HTTPD_BIND);
         HTTPD_PORT = getInt("internal-webserver.port", HTTPD_PORT);
     }
 

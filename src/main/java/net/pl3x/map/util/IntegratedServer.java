@@ -26,8 +26,9 @@ public class IntegratedServer {
 
     public static void startServer() {
         if (Config.HTTPD_ENABLED) {
-            if (net.pl3x.map.Pl3xMapServer.startServer("localhost", Config.HTTPD_PORT, FileUtil.getWebFolder())) {
+            if (net.pl3x.map.Pl3xMapServer.startServer(Config.HTTPD_BIND, Config.HTTPD_PORT, FileUtil.getWebFolder())) {
                 Logger.info(Lang.LOG_INTERNAL_WEB_STARTED
+                        .replace("{bind}", Config.HTTPD_BIND)
                         .replace("{port}", Integer.toString(Config.HTTPD_PORT)));
             } else {
                 Logger.severe(Lang.LOG_INTERNAL_WEB_START_ERROR);
