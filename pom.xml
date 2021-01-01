@@ -39,7 +39,7 @@
     <distributionManagement>
         <repository>
             <id>pl3x-repo</id>
-            <url>http://repo.pl3x.net/</url>
+            <url>http://repo.pl3x.net/snapshots/</url>
         </repository>
     </distributionManagement>
     <build>
