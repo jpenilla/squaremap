@@ -35,6 +35,10 @@ public class FileUtil {
     }
 
     public static File getWebFolder() {
+        File dir = new File(Config.WEB_DIR);
+        if (dir.isAbsolute()) {
+            return dir;
+        }
         return new File(getPluginFolder(), Config.WEB_DIR);
     }
 
