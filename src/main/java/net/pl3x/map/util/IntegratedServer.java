@@ -7,16 +7,34 @@ import net.pl3x.map.configuration.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.InvalidPluginException;
+import org.bukkit.plugin.Plugin;
 
 public class IntegratedServer {
+    private static final String VERSION = "1.0";
+    private static final String NAME = "Pl3xMapServer";
+    private static final String FILENAME = NAME + "-" + VERSION + ".jar";
+    private static final String URL = "https://repo.pl3x.net/net/pl3x/map/" + NAME + "/" + VERSION + "/" + FILENAME;
+
     public static boolean setup() {
-        if (Bukkit.getPluginManager().isPluginEnabled("Pl3xMapServer")) {
+        if (Bukkit.getPluginManager().isPluginEnabled(NAME)) {
             return true;
         }
-        File file = new File(FileUtil.getLibsFolder(), "Pl3xMapServer-1.0.jar");
-        if (new JarDownloader().downloadJar("https://repo.pl3x.net/snapshots/net/pl3x/map/Pl3xMapServer/1.0/Pl3xMapServer-1.0.jar", file)) {
+        File libsDir = FileUtil.mkdirs(new File(FileUtil.getPluginFolder(), "libs"));
+        if (libsDir == null) {
+            return false;
+        }
+        File file = new File(libsDir, FILENAME);
+        if (new JarDownloader().downloadJar(URL, file)) {
+            if (Bukkit.getPluginManager().isPluginEnabled(NAME)) {
+                return true;
+            }
             try {
-                return Bukkit.getPluginManager().loadPlugin(file) != null;
+                Plugin plugin = Bukkit.getPluginManager().loadPlugin(file);
+                if (plugin == null) {
+                    return false;
+                }
+                Bukkit.getPluginManager().enablePlugin(plugin);
+                return true;
             } catch (InvalidPluginException | InvalidDescriptionException e) {
                 e.printStackTrace();
             }

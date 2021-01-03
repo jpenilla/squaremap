@@ -9,17 +9,11 @@ import java.net.URL;
 import java.nio.file.Files;
 import net.pl3x.map.Logger;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.task.Progress;
 
 public class JarDownloader {
     public boolean downloadJar(String url, File destination) {
         try {
-            if (!destination.getParentFile().exists()) {
-                if (!destination.getParentFile().mkdirs()) {
-                    Logger.warn(Lang.LOG_COULD_NOT_CREATE_DIR
-                            .replace("{path}", destination.getParentFile().getAbsolutePath()));
-                }
-            }
-
             if (destination.exists() && destination.isDirectory()) {
                 Files.delete(destination.toPath());
             }
@@ -66,46 +60,11 @@ public class JarDownloader {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-                progress.current += bytesRead;
+                progress.add(bytesRead);
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
             }
         }
 
         progress.interrupt();
-    }
-
-    private static class Progress extends Thread {
-        private final long total;
-        private long current;
-
-        private Progress(long total) {
-            this.total = total;
-        }
-
-        @Override
-        public void run() {
-            try {
-                //noinspection InfiniteLoopStatement
-                while (true) {
-                    logProgress();
-                    //noinspection BusyWait
-                    sleep(1000);
-                }
-            } catch (InterruptedException ignore) {
-            }
-        }
-
-        @Override
-        public void interrupt() {
-            logProgress();
-            super.interrupt();
-        }
-
-        private void logProgress() {
-            Logger.info(Lang.LOG_JARLOADER_PROGRESS
-                    .replace("{percent}", Integer.toString((int) ((((double) current) / ((double) total)) * 100D)))
-                    .replace("{current}", Long.toString(current))
-                    .replace("{total}", Long.toString(total)));
-        }
     }
 }

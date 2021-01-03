@@ -19,7 +19,9 @@ public class Lang {
     public static String RENDER_IN_PROGRESS = "&cA render is already in progress on {world}";
     public static String FULL_RENDER_STARTED = "&aFull render started on {world}";
 
-    public static String VERSION = "&a{name} v{version}";
+    public static String PLUGIN_RELOADED = "&a{name} v{version} reloaded";
+
+    public static String PLUGIN_VERSION = "&a{name} v{version}";
 
     public static String LOG_COULD_NOT_CREATE_DIR = "Could not create directory! {path}";
     public static String LOG_COULD_NOT_SAVE_REGION = "Could not save map for region {x},{z}";
@@ -39,7 +41,7 @@ public class Lang {
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "Internal webserver is not running";
 
     public static String LOG_JARLOADER_DOWNLOADING = "&eDownloading integrated server jar from &7{url}";
-    public static String LOG_JARLOADER_PROGRESS = "     &3progress&7: &e{percent}% &7(&3{current}&e/&3{total}&7)";
+    public static String LOG_JARLOADER_PROGRESS = "&3{progress} &7(&3{current}&e/&3{total}&7)";
 
     private static void init() {
         UNKNOWN_SUBCOMMAND = getString("unknown-subcommand", UNKNOWN_SUBCOMMAND);
@@ -50,7 +52,8 @@ public class Lang {
         RENDER_IN_PROGRESS = getString("render-in-progress", RENDER_IN_PROGRESS);
         FULL_RENDER_STARTED = getString("full-render-started", FULL_RENDER_STARTED);
 
-        VERSION = getString("version", VERSION);
+        PLUGIN_RELOADED = getString("plugin-reloaded", PLUGIN_RELOADED);
+        PLUGIN_VERSION = getString("plugin-version", PLUGIN_VERSION);
 
         LOG_COULD_NOT_CREATE_DIR = getString("log.could-not-create-directory", LOG_COULD_NOT_CREATE_DIR);
         LOG_COULD_NOT_SAVE_REGION = getString("log.could-not-save-region", LOG_COULD_NOT_SAVE_REGION);

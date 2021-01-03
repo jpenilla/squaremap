@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.RenderManager;
+import net.pl3x.map.configuration.Config;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.util.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -20,7 +22,7 @@ public class CmdPl3xMap implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
             String arg = args[0].toLowerCase(Locale.ROOT);
-            return Stream.of("fullrender")
+            return Stream.of("fullrender", "reload")
                     .filter(cmd -> cmd.startsWith(arg))
                     .collect(Collectors.toList());
         } else if (args.length == 2) {
@@ -54,12 +56,28 @@ public class CmdPl3xMap implements TabExecutor {
                 return true;
             }
 
+            if (args[0].equalsIgnoreCase("reload")) {
+                Pl3xMap.getInstance().stop();
+
+                Config.reload();
+                Lang.reload();
+                FileUtil.reload();
+
+                Pl3xMap.getInstance().start();
+
+                PluginDescriptionFile desc = Pl3xMap.getInstance().getDescription();
+                Lang.send(sender, Lang.PLUGIN_RELOADED
+                        .replace("{name}", desc.getName())
+                        .replace("{version}", desc.getVersion()));
+                return true;
+            }
+
             Lang.send(sender, Lang.UNKNOWN_SUBCOMMAND);
             return false;
         }
 
         PluginDescriptionFile desc = Pl3xMap.getInstance().getDescription();
-        Lang.send(sender, Lang.VERSION
+        Lang.send(sender, Lang.PLUGIN_VERSION
                 .replace("{name}", desc.getName())
                 .replace("{version}", desc.getVersion()));
         return true;

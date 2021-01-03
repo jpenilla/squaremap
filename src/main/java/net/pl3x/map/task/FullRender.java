@@ -26,11 +26,7 @@ public class FullRender extends BukkitRunnable {
 
     public FullRender(World world) {
         this.world = world;
-        this.worldTileDir = new File(new File(FileUtil.getWebFolder(), "tiles"), world.getName());
-        if (!worldTileDir.exists() && !worldTileDir.mkdirs()) {
-            Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                    .replace("{path}", worldTileDir.getAbsolutePath()));
-        }
+        this.worldTileDir = FileUtil.getWorldFolder(world);
     }
 
     @Override

@@ -19,22 +19,22 @@ public class Image {
 
     public void save(Region region, File directory) {
         for (int zoom = 0; zoom <= MAX_ZOOM; zoom++) {
+            File dir = new File(directory, Integer.toString(MAX_ZOOM - zoom));
+            if (!dir.exists() && !dir.mkdirs()) {
+                Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
+                        .replace("{path}", dir.getAbsolutePath()));
+                continue;
+            }
+
             int step = (int) Math.pow(2, zoom);
             int size = SIZE / step;
+            int scaledX = MathHelper.floor((double) region.getX() / step);
+            int scaledZ = MathHelper.floor((double) region.getZ() / step);
+
+            String fileName = scaledX + "_" + scaledZ + ".png";
+            File file = new File(dir, fileName);
+
             try {
-                File dir = new File(directory, Integer.toString(MAX_ZOOM - zoom));
-                if (!dir.exists() && !dir.mkdirs()) {
-                    Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                            .replace("{path}", dir.getAbsolutePath()));
-                    continue;
-                }
-
-                int scaledX = MathHelper.floor((double) region.getX() / step);
-                int scaledZ = MathHelper.floor((double) region.getZ() / step);
-
-                String fileName = scaledX + "_" + scaledZ + ".png";
-                File file = new File(dir, fileName);
-
                 BufferedImage image;
                 if (file.exists()) {
                     image = ImageIO.read(file);
