@@ -29,8 +29,7 @@ public class SpiralIterator implements Iterator<Region> {
     @Override
     public Region next() {
         final Region region = new Region(x, z);
-        if (legX > radius && legZ > radius) {
-            hasNext = false;
+        if (!hasNext) {
             return region;
         }
         if (leg == 0) {
@@ -55,6 +54,9 @@ public class SpiralIterator implements Iterator<Region> {
                 leg = 0;
                 legZ += step;
             }
+        }
+        if (legX > radius && legZ > radius) {
+            hasNext = false;
         }
         return region;
     }

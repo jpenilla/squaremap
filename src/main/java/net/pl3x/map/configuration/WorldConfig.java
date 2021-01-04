@@ -57,10 +57,12 @@ public class WorldConfig {
     }
 
     public boolean MAP_ENABLED = true;
+    public boolean MAP_BIOMES = true;
 
     @SuppressWarnings("unused")
     private void worldSettings() {
-        MAP_ENABLED = getBoolean("map-enabled", MAP_ENABLED);
+        MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
+        MAP_BIOMES = getBoolean("map.biomes", MAP_BIOMES);
     }
 
     public boolean PLAYER_TRACKER_ENABLED = true;

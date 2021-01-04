@@ -4,10 +4,15 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
+import net.minecraft.server.v1_16_R3.BiomeBase;
+import net.minecraft.server.v1_16_R3.BiomeStorage;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.ChunkProviderServer;
@@ -15,11 +20,14 @@ import net.minecraft.server.v1_16_R3.EnumDirection;
 import net.minecraft.server.v1_16_R3.Fluid;
 import net.minecraft.server.v1_16_R3.HeightMap;
 import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.MaterialMapColor;
+import net.minecraft.server.v1_16_R3.MathHelper;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.Logger;
 import net.pl3x.map.RenderManager;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.data.Image;
 import net.pl3x.map.data.Region;
 import net.pl3x.map.util.FileUtil;
@@ -34,6 +42,7 @@ public class FullRender extends BukkitRunnable {
 
     private final World world;
     private final WorldServer nmsWorld;
+    private final WorldConfig worldConfig;
     private final File worldTileDir;
     private final DecimalFormat df = new DecimalFormat("##0.00%");
     private final BlockPosition.MutableBlockPosition pos1 = new BlockPosition.MutableBlockPosition();
@@ -46,6 +55,7 @@ public class FullRender extends BukkitRunnable {
     public FullRender(World world) {
         this.world = world;
         this.nmsWorld = ((CraftWorld) world).getHandle();
+        this.worldConfig = WorldConfig.get(world);
         this.worldTileDir = FileUtil.getWorldFolder(world);
     }
 
@@ -116,7 +126,7 @@ public class FullRender extends BukkitRunnable {
         int startX = region.getBlockX();
         int startZ = region.getBlockZ();
         for (int blockX = startX; blockX < startX + Image.SIZE; blockX += 16) {
-            double[] lastY = new double[16];
+            int[] lastY = new int[16];
             for (int blockZ = startZ; blockZ < startZ + Image.SIZE; blockZ += 16) {
                 net.minecraft.server.v1_16_R3.Chunk chunk;
                 if (blockZ == startZ) {
@@ -155,11 +165,12 @@ public class FullRender extends BukkitRunnable {
         }
     }
 
-    private int scanBlock(net.minecraft.server.v1_16_R3.Chunk chunk, int imgX, int imgZ, double[] lastY) {
+    private int scanBlock(net.minecraft.server.v1_16_R3.Chunk chunk, int imgX, int imgZ, int[] lastY) {
         int fluidCountY = 0;
-        double curY = 0.0D;
+        int curY = 0;
         int odd = (imgX + imgZ & 1);
         multiset.clear();
+        int biomeColor = -1;
         if (nmsWorld.getDimensionManager().hasCeiling()) {
             // TODO figure out how to actually map the nether instead of this crap
             int l3 = (chunk.getPos().getBlockX() + imgX) + (chunk.getPos().getBlockZ() + imgZ) * 231871;
@@ -169,7 +180,7 @@ public class FullRender extends BukkitRunnable {
             } else {
                 multiset.add(getColor(Blocks.STONE.getBlockData()), 100);
             }
-            curY = 100.0D;
+            curY = 100;
         } else {
             for (int stepX = 0; stepX < 1; ++stepX) {
                 for (int stepZ = 0; stepZ < 1; ++stepZ) {
@@ -196,17 +207,38 @@ public class FullRender extends BukkitRunnable {
                         state = Blocks.BEDROCK.getBlockData();
                     }
                     curY += yDiffFromSurface;
+
+                    if (worldConfig.MAP_BIOMES) {
+                        Material mat = state.getMaterial();
+                        BiomeStorage biomeStorage = chunk.getBiomeIndex();
+                        if (biomeStorage != null) {
+                            BiomeBase biome = biomeStorage.getBiome(pos1.getX(), curY, pos1.getZ());
+                            float temp = MathHelper.a(biome.k(), 0.0F, 1.0F);
+                            float humidity = MathHelper.a(biome.getHumidity(), 0.0F, 1.0F);
+                            if (mat == Material.GRASS) {
+                                biomeColor = BiomeColors.getGrassColor(temp, humidity);
+                            } else if (mat == Material.LEAVES || mat == Material.PLANT || mat == Material.REPLACEABLE_PLANT) {
+                                biomeColor = BiomeColors.getFoliageColor(temp, humidity);
+                            }
+                        }
+                    }
+
                     multiset.add(getColor(state));
                 }
             }
         }
 
-        //noinspection UnstableApiUsage
-        MaterialMapColor color = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), BLACK);
-        double diffY = (curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
+        double diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
         byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
         lastY[imgX] = curY;
 
+        if (biomeColor != -1) {
+            // return early if we have a special biome color
+            return shade(biomeColor, colorOffset);
+        }
+
+        //noinspection UnstableApiUsage
+        MaterialMapColor color = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), BLACK);
         if (color == null) {
             color = BLACK;
         } else if (color == BLUE) {
@@ -214,7 +246,7 @@ public class FullRender extends BukkitRunnable {
             colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
         }
 
-        return getRenderColor(color.rgb, colorOffset);
+        return shade(color.rgb, colorOffset);
     }
 
     private MaterialMapColor getColor(IBlockData state) {
@@ -226,7 +258,7 @@ public class FullRender extends BukkitRunnable {
         return !fluid.isEmpty() && !state.d(world, pos, EnumDirection.UP) ? fluid.getBlockData() : state;
     }
 
-    private int getRenderColor(int color, int shade) {
+    private int shade(int color, int shade) {
         float ratio = 220F / 255F;
         if (shade == 2) ratio = 1.0F;
         if (shade == 0) ratio = 180F / 255F;
@@ -247,5 +279,49 @@ public class FullRender extends BukkitRunnable {
 
     private String progress() {
         return String.format("%1$7s", df.format((double) current / total));
+    }
+
+    public static class BiomeColors {
+        private static int[] grass = new int[256 * 256];
+        private static int[] foliage = new int[256 * 256];
+
+        public static int getGrassColor(double temperature, double humidity) {
+            int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
+            int i = (int) ((1.0 - temperature) * 255.0);
+            int k = j << 8 | i;
+            if (k > grass.length) {
+                return 0;
+            }
+            return grass[k];
+        }
+
+        public static int getFoliageColor(double temperature, double humidity) {
+            int i = (int) ((1.0 - temperature) * 255.0);
+            int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
+            return foliage[(j << 8 | i)];
+        }
+
+        private static int[] init(BufferedImage image) {
+            int[] map = new int[256 * 256];
+            for (int x = 0; x < 256; ++x) {
+                for (int y = 0; y < 256; ++y) {
+                    int color = image.getRGB(x, y);
+                    int r = color >> 16 & 0xFF;
+                    int g = color >> 8 & 0xFF;
+                    int b = color & 0xFF;
+                    map[x + y * 256] = (0xFF << 24) | (r << 16) | (g << 8) | b;
+                }
+            }
+            return map;
+        }
+
+        static {
+            try {
+                grass = init(ImageIO.read(new File(new File(FileUtil.getWebFolder(), "images"), "grass.png")));
+                foliage = init(ImageIO.read(new File(new File(FileUtil.getWebFolder(), "images"), "foliage.png")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
