@@ -25,6 +25,14 @@ public class Region {
         return z << 5;
     }
 
+    public int getBlockX() {
+        return x << 9;
+    }
+
+    public int getBlockZ() {
+        return z << 9;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

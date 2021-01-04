@@ -9,8 +9,8 @@ import net.pl3x.map.Logger;
 import net.pl3x.map.configuration.Lang;
 
 public class Image {
-    private static final int MAX_ZOOM = 3;
-    private static final int SIZE = 512;
+    public static final int MAX_ZOOM = 3;
+    public static final int SIZE = 512;
     private final int[][] pixels = new int[SIZE][SIZE];
 
     public void setPixel(int x, int z, int color) {

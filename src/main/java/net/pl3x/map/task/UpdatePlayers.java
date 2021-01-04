@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.util.FileUtil;
 import org.bukkit.Bukkit;
@@ -44,11 +43,7 @@ public class UpdatePlayers extends BukkitRunnable {
             Map<String, Object> map = new HashMap<>();
             map.put("players", players);
 
-            Bukkit.getScheduler().runTaskAsynchronously(Pl3xMap.getInstance(), () ->
-                    FileUtil.writeStringToFile(gson.toJson(map),
-                            new File(FileUtil.getWorldFolder(world),
-                                    "players.json"))
-            );
+            FileUtil.writeStringToFile(gson.toJson(map), new File(FileUtil.getWorldFolder(world), "players.json"));
         });
     }
 }

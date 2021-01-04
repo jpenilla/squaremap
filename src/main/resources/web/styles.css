@@ -2,13 +2,14 @@ body {
   margin: 0;
   padding: 0;
 }
-#pl3xmap {
+#map {
   width: 100%;
   height: 100vh;
   background: black;
 }
 img.leaflet-tile {
   image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges
 }
 div.leaflet-nameplate-pane div {
   background: rgba(0,0,0,0.5);
@@ -32,4 +33,16 @@ div.leaflet-marker-pane img {
 div.leaflet-control-layers.coordinates {
   padding: 5px 10px;
   text-align: center;
+}
+#sidebar {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 200px;
+  height: 100vh;
+  z-index: 10000;
+  border-left: 1px solid #000000;
+  background-color: rgba(0,0,0,0.6);
+  color: #ffffff;
+  display: hidden; /* not ready */
 }

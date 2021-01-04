@@ -1,10 +1,10 @@
 package net.pl3x.map.util;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -13,11 +13,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ForkJoinPool;
 import net.pl3x.map.Logger;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.configuration.Config;
@@ -145,23 +147,56 @@ public class FileUtil {
         });
     }
 
-    public static boolean deleteDirectory(File dir) {
+    public static boolean deleteSubDirs(File dir) {
+        boolean result = true;
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
-                deleteDirectory(file);
+                if (file.isDirectory()) {
+                    result = deleteDir(file);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static boolean deleteDir(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                deleteDir(file);
             }
         }
         return dir.delete();
     }
 
     public static void writeStringToFile(String str, File file) {
+        ForkJoinPool.commonPool().execute(() -> {
+            try {
+                replaceFile(file.toPath(), str);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private static void replaceFile(Path path, String str) throws IOException {
+        final Path tmp = path.resolveSibling("." + path.getFileName().toString() + ".tmp");
+
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.write(str);
-            writer.close();
+            Files.write(tmp, str.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                Files.deleteIfExists(tmp);
+            } catch (IOException ignored) {
+            }
+            throw e;
+        }
+
+        try {
+            Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException e) {
+            Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 }

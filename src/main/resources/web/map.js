@@ -1,33 +1,31 @@
 var world = "world";
-var settings = null;
-var layerControls = {};
+var curZoom = 0;
+var maxZoom = 0;
 
-// Array Remove - By John Resig (MIT Licensed)
-Array.prototype.remove = function() {
-    var what, a = arguments, L = a.length, ax;
-    while (L && this.length) {
-        what = a[--L];
-        while ((ax = this.indexOf(what)) !== -1) {
-            this.splice(ax, 1);
-        }
-    }
-    return this;
-};
-
-// data - TODO phase this out, replace with json settings
-var data = {
-    title: "Pl3xMap",
-    tileSize: 512,
-    centerX: 0,
-    centerZ: 0,
+var settings = {
     defZoom: 3,
     minZoom: 0,
     maxZoom: 3,
-    extraZoomIn: 2,
-    extraZoomOut: 0, /* does not work! */
-    spawnX: 0,
-    spawnZ: 0,
-}
+    extraZoomIn: 2
+};
+
+var map = L.map('map', {
+    crs: L.CRS.Simple,
+    center: [0, 0],
+    attributionControl: false,
+    noWrap: true
+})
+.addEventListener('zoomEnd', (event) => {
+    //
+});
+
+var layerControls = {};
+
+
+// init
+// TODO start with getJson of global settings file
+init();
+centerFromURL();
 
 
 // icons
@@ -47,137 +45,167 @@ var Icons = {
 };
 
 // setup the map
-var map = L.map('pl3xmap', {
-  attributionControl: false,
-  crs: L.CRS.Simple,
-  center: [data.centerX, data.centerZ],
-  zoom: data.defZoom,
-  minZoom: (data.minZoom - data.extraZoomOut),
-  maxZoom: (data.maxZoom + data.extraZoomIn),
-  noWrap: true
-});
+function init() {
+    map
+        .setView([0, 0], settings.defZoom)
+        .setMinZoom(settings.minZoom) // extra zoom out doesn't work :(
+        .setMaxZoom(settings.maxZoom + settings.extraZoomIn)
+    ;
 
-// setup the map tiles layer
-L.tileLayer('tiles/world/{z}/{x}_{y}.png', {
-  tileSize: data.tileSize,
-  minNativeZoom: data.minZoom,
-  maxNativeZoom: data.maxZoom
-}).addTo(map);
+    // setup the map tiles layer
+    L.tileLayer("tiles/" + world + "/{z}/{x}_{y}.png", {
+        tileSize: 512,
+        minNativeZoom: settings.minZoom,
+        maxNativeZoom: settings.maxZoom
+    }).addTo(map);
 
+    tick(0);
+}
+
+
+function unproject(x, z) {
+    return map.unproject([x, z], settings.maxZoom);
+}
 
 
 // spawn point
-var spawnLayer = new L.LayerGroup();
-
-var spawn = L.marker(map.unproject([data.spawnX, data.spawnZ], data.maxZoom), {
-    icon: Icons.spawn
-})
-.bindPopup("Spawn")
-.addTo(spawnLayer);
-
-spawnLayer.addTo(map);
-layerControls.Spawn = spawn;
-
-function updateSpawn(point) {
-    spawn.setLatLng(map.unproject([point.x, point.z], data.maxZoom));
+var spawn = {
+    layer: new L.LayerGroup(),
+    spawn: L.marker([0, 0], {icon: Icons.spawn}),
+    init: function() {
+        this.spawn
+            .bindPopup("Spawn")
+            .addTo(this.layer);
+        layerControls.Spawn = this.layer.addTo(map);
+    },
+    update: function(point) {
+        this.spawn.setLatLng(unproject(point.x, point.z));
+    }
 }
 
 // player tracker
-var playersLayer = new L.LayerGroup();
-playersLayer.addTo(map);
-layerControls.Players = playersLayer;
-
-var playerMarkers = new Map();
-
-map.createPane("nameplate").style.zIndex = 1000;
-
-function addPlayer(player) {
-    var marker = L.marker(map.unproject([player.x, player.z], data.maxZoom), {
-        icon: Icons.player,
-        rotationAngle: (180 + player.yaw)
-    }).addTo(playersLayer);
-    if (settings.player_tracker.nameplates.enabled) {
-        var tooltip = L.tooltip({
-            permanent: true,
-            direction: "right",
-            offset: [10,0],
-            pane: "nameplate"
-        });
-        if (settings.player_tracker.nameplates.show_heads) {
-            tooltip.setContent("<img src='https://crafatar.com/avatars/" + player.uuid + "?size=16&default=MHF_Steve&overlay' /><span>" + player.name + "</span>");
-        } else {
-            tooltip.setContent("<span>" + player.name + "</span>");
+var players = {
+    layer: new L.LayerGroup(),
+    markers: new Map(),
+    init: function() {
+        layerControls.Player = this.layer.addTo(map);
+        map.createPane("nameplate").style.zIndex = 1000;
+    },
+    addPlayer: function(player) {
+        var marker = L.marker(unproject(player.x, player.z), {
+            icon: Icons.player,
+            rotationAngle: (180 + player.yaw)
+        }).addTo(this.layer);
+        if (settings.world.player_tracker.nameplates.enabled) {
+            var tooltip = L.tooltip({
+                permanent: true,
+                direction: "right",
+                offset: [10,0],
+                pane: "nameplate"
+            });
+            if (settings.world.player_tracker.nameplates.show_heads) {
+                tooltip.setContent("<img src='https://crafatar.com/avatars/" + player.uuid + "?size=16&default=MHF_Steve&overlay' /><span>" + player.name + "</span>");
+            } else {
+                tooltip.setContent("<span>" + player.name + "</span>");
+            }
+            marker.bindTooltip(tooltip);
         }
-        marker.bindTooltip(tooltip);
-    }
-    playerMarkers.set(player.uuid, marker);
-}
-
-function removePlayer(uuid) {
-    var marker = playerMarkers.get(uuid);
-    if (marker != null) {
-        map.removeLayer(marker);
-        playerMarkers.delete(uuid);
-    }
-}
-
-function updatePlayer(marker, player) {
-    marker.setLatLng(map.unproject([player.x, player.z], data.maxZoom));
-    marker.setRotationAngle(180 + player.yaw);
-}
-
-function updatePlayers(players) {
-    var toRemove = Array.from(playerMarkers.keys());
-    for (var i = 0; i < players.length; i++) {
-        var player = players[i];
-        var marker = playerMarkers.get(player.uuid);
+        this.markers.set(player.uuid, marker);
+    },
+    removePlayer: function(uuid) {
+        var marker = this.markers.get(uuid);
         if (marker != null) {
-            toRemove.remove(player.uuid);
-            updatePlayer(marker, player);
-        } else {
-            toRemove.remove(player.uuid);
-            addPlayer(player);
+            map.removeLayer(marker);
+            this.markers.delete(uuid);
         }
-    }
-    for (var i = 0; i < toRemove.length; i++) {
-        removePlayer(toRemove[i]);
+    },
+    updatePlayer: function(marker, player) {
+        marker.setLatLng(unproject(player.x, player.z));
+        marker.setRotationAngle(180 + player.yaw);
+    },
+    updateAll: function(players) {
+        var toRemove = Array.from(this.markers.keys());
+        for (var i = 0; i < players.length; i++) {
+            var player = players[i];
+            var marker = this.markers.get(player.uuid);
+            if (marker != null) {
+                toRemove.remove(player.uuid);
+                this.updatePlayer(marker, player);
+            } else {
+                toRemove.remove(player.uuid);
+                this.addPlayer(player);
+            }
+        }
+        for (var i = 0; i < toRemove.length; i++) {
+            this.removePlayer(toRemove[i]);
+        }
     }
 }
 
 
 // ui stuff
-L.control.layers({}, layerControls, {
-    position: 'topleft'
-}).addTo(map);
-
 function addUICoordinates() {
     let Coords = L.Control.extend({
         _container: null,
         options: {
-            position: 'topleft'
+            position: 'bottomleft'
         },
-
         onAdd: function (map) {
             var coords = L.DomUtil.create('div', 'leaflet-control-layers coordinates');
             this._coords = coords;
-            this.updateHTML("---", "---");
+            this.updateHTML(null);
             return coords;
         },
-
-        updateHTML: function(lat, lng) {
-            var coords = lat + ", " + lng;
-            this._coords.innerHTML = "Coordinates<br />" + coords;
+        updateHTML: function(point) {
+            var x = point == null ? "---" : Math.round(point.x);
+            var z = point == null ? "---" : Math.round(point.y);
+            this._coords.innerHTML = "Coordinates<br />" + x + ", " + z;
         }
     });
     var coords = new Coords();
     map.addControl(coords);
 
     map.addEventListener('mousemove', (event) => {
-        coord = map.project(event.latlng, data.maxZoom);
-        coords.updateHTML(coord.x, coord.y);
+        coords.updateHTML(map.project(event.latlng, settings.maxZoom));
     });
 }
 
+function addPlayerList() {
+    var sidebar = document.createElement("div");
+    sidebar.id = "sidebar";
+
+    var newContent = document.createTextNode("Hi there and greetings!");
+
+    sidebar.appendChild(newContent);
+
+    document.getElementById("map").appendChild(sidebar);
+
+}
+
+
+function centerFromURL() {
+    var w = getUrlParam("world");
+    if (w == null) w = world;
+    var y = getUrlParam("zoom");
+    if (y == null) y = settings.defZoom;
+    var x = getUrlParam("x");
+    if (x == null) x = 0;
+    var z = getUrlParam("z");
+    if (z == null) z = 0;
+    map.setView(unproject(x, z), y);
+}
+
+function getUrlParam(query) {
+    var url = window.location.search.substring(1);
+    var vars = url.split('&');
+    for (var i = 0; i < vars.length; i++) {
+        var param = vars[i].split('=');
+        if (param[0] === query) {
+            var value = param[1] === undefined ? '' : decodeURIComponent(param[1]);
+            return value === '' ? null : value;
+        }
+    }
+}
 
 function getJSON(url, fn) {
     fetch(url)
@@ -191,21 +219,38 @@ function getJSON(url, fn) {
 function tick(count) {
     if (count % 5 == 0) {
         getJSON("tiles/" + world + "/settings.json", function(json) {
-            settings = json.settings;
+            settings.world = json.settings;
             if (count == 0) {
-                document.title = settings.ui.title;
-                if (settings.ui.coordinates) {
+                // TODO move all this to global json init
+                document.title = settings.world.ui.title;
+                spawn.init();
+                players.init();
+                L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
+                if (settings.world.ui.coordinates) {
                     addUICoordinates();
                 }
+                addPlayerList();
             }
-            updateSpawn(json.spawn);
+            spawn.update(json.spawn);
         });
     }
     getJSON("tiles/" + world + "/players.json", function(json) {
-        updatePlayers(json.players);
+        players.updateAll(json.players);
     });
     setTimeout(function() {
         tick(++count);
     }, 1000);
 }
-tick(0);
+
+
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+};

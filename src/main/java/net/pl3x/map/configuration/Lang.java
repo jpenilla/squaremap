@@ -30,7 +30,8 @@ public class Lang {
     public static String LOG_SCANNING_REGION_FILES = "§eScanning region files...";
     public static String LOG_FOUND_TOTAL_REGION_FILES = "§aFound §7{total} §aregion files";
     public static String LOG_FINISHED_RENDERING = "§3Finished rendering map for §e{world}";
-    public static String LOG_SCANNING_REGION_PROGRESS = "§3{progress} §eScanning region {x},{z}";
+    public static String LOG_SCANNING_REGIONS_PROGRESS = "§3{progress} §eScanning region {x},{z}";
+    public static String LOG_SCANNING_REGIONS_FINISHED = "§3100.00% §eScanning regions finished";
     public static String LOG_SAVING_CHUNKS_FOR_REGION = "        §aSaving {total} chunks for region {x},{z}";
     public static String LOG_SKIPPING_EMPTY_REGION = "        §cRegion is empty. Skipping. {x},{z}";
 
@@ -62,7 +63,8 @@ public class Lang {
         LOG_SCANNING_REGION_FILES = getString("log.scanning-region-files", LOG_SCANNING_REGION_FILES);
         LOG_FOUND_TOTAL_REGION_FILES = getString("log.found-total-region-files", LOG_FOUND_TOTAL_REGION_FILES);
         LOG_FINISHED_RENDERING = getString("log.finished-rendering", LOG_FINISHED_RENDERING);
-        LOG_SCANNING_REGION_PROGRESS = getString("log.scanning-region-progress", LOG_SCANNING_REGION_PROGRESS);
+        LOG_SCANNING_REGIONS_PROGRESS = getString("log.scanning-region-progress", LOG_SCANNING_REGIONS_PROGRESS);
+        LOG_SCANNING_REGIONS_FINISHED = getString("log.scanning-region-finished", LOG_SCANNING_REGIONS_FINISHED);
         LOG_SAVING_CHUNKS_FOR_REGION = getString("log.saving-chunks-for-region", LOG_SAVING_CHUNKS_FOR_REGION);
         LOG_SKIPPING_EMPTY_REGION = getString("log.skipping-empty-region", LOG_SKIPPING_EMPTY_REGION);
 
