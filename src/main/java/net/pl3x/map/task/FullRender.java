@@ -4,15 +4,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
 import net.minecraft.server.v1_16_R3.BiomeBase;
-import net.minecraft.server.v1_16_R3.BiomeStorage;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.ChunkProviderServer;
@@ -22,7 +18,6 @@ import net.minecraft.server.v1_16_R3.HeightMap;
 import net.minecraft.server.v1_16_R3.IBlockData;
 import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.MaterialMapColor;
-import net.minecraft.server.v1_16_R3.MathHelper;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.Logger;
 import net.pl3x.map.RenderManager;
@@ -30,6 +25,7 @@ import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.data.Image;
 import net.pl3x.map.data.Region;
+import net.pl3x.map.util.Colors;
 import net.pl3x.map.util.FileUtil;
 import net.pl3x.map.util.SpiralIterator;
 import org.bukkit.World;
@@ -37,8 +33,8 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class FullRender extends BukkitRunnable {
-    private static final MaterialMapColor BLACK = MaterialMapColor.b;
-    private static final MaterialMapColor BLUE = MaterialMapColor.n;
+    public static final MaterialMapColor BLACK = MaterialMapColor.b;
+    public static final MaterialMapColor BLUE = MaterialMapColor.n;
 
     private final World world;
     private final WorldServer nmsWorld;
@@ -48,20 +44,24 @@ public class FullRender extends BukkitRunnable {
     private final BlockPosition.MutableBlockPosition pos1 = new BlockPosition.MutableBlockPosition();
     private final BlockPosition.MutableBlockPosition pos2 = new BlockPosition.MutableBlockPosition();
     private final Multiset<MaterialMapColor> multiset = LinkedHashMultiset.create();
+    private final Colors colors;
 
     private int maxRadius = 0;
     private int total, current;
+    private boolean cancelled = false;
 
     public FullRender(World world) {
         this.world = world;
         this.nmsWorld = ((CraftWorld) world).getHandle();
         this.worldConfig = WorldConfig.get(world);
         this.worldTileDir = FileUtil.getWorldFolder(world);
+        this.colors = new Colors(nmsWorld);
     }
 
     @Override
     public void cancel() {
         RenderManager.finish(world);
+        cancelled = true;
         super.cancel();
     }
 
@@ -85,6 +85,7 @@ public class FullRender extends BukkitRunnable {
 
         SpiralIterator spiral = new SpiralIterator(0, 0, maxRadius + 1);
         while (spiral.hasNext()) {
+            if (cancelled) return;
             Region region = spiral.next();
             if (regions.contains(region)) {
                 mapRegion(region);
@@ -95,6 +96,7 @@ public class FullRender extends BukkitRunnable {
 
         Logger.info(Lang.LOG_FINISHED_RENDERING
                 .replace("{world}", world.getName()));
+
         cancel();
     }
 
@@ -102,6 +104,7 @@ public class FullRender extends BukkitRunnable {
         List<Region> regions = new ArrayList<>();
         File[] files = FileUtil.getRegionFiles(world);
         for (File file : files) {
+            if (cancelled) return new ArrayList<>();
             if (file.length() == 0) continue;
             try {
                 String[] split = file.getName().split("\\.");
@@ -136,6 +139,7 @@ public class FullRender extends BukkitRunnable {
                     chunk = getChunkAt(nmsWorld, blockX >> 4, (blockZ >> 4) - 1);
                     if (chunk != null && !chunk.isEmpty()) {
                         for (int x = 0; x < 16; x++) {
+                            if (cancelled) return;
                             scanBlock(chunk, x, 15, lastY);
                         }
                     }
@@ -144,6 +148,7 @@ public class FullRender extends BukkitRunnable {
                 if (chunk != null && !chunk.isEmpty()) {
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
+                            if (cancelled) return;
                             image.setPixel(blockX + x, blockZ + z, scanBlock(chunk, x, z, lastY));
                         }
                     }
@@ -169,11 +174,13 @@ public class FullRender extends BukkitRunnable {
         int fluidCountY = 0;
         int curY = 0;
         int odd = (imgX + imgZ & 1);
+        int blockX = chunk.getPos().getBlockX() + imgX;
+        int blockZ = chunk.getPos().getBlockZ() + imgZ;
         multiset.clear();
         int biomeColor = -1;
         if (nmsWorld.getDimensionManager().hasCeiling()) {
             // TODO figure out how to actually map the nether instead of this crap
-            int l3 = (chunk.getPos().getBlockX() + imgX) + (chunk.getPos().getBlockZ() + imgZ) * 231871;
+            int l3 = blockX + blockZ * 231871;
             l3 = l3 * l3 * 31287121 + l3 * 11;
             if ((l3 >> 20 & 1) == 0) {
                 multiset.add(getColor(Blocks.DIRT.getBlockData()), 10);
@@ -189,7 +196,7 @@ public class FullRender extends BukkitRunnable {
                     if (yDiffFromSurface > 1) {
                         do {
                             --yDiffFromSurface;
-                            pos1.setValues(chunk.getPos().getBlockX() + imgX + stepX, yDiffFromSurface, chunk.getPos().getBlockZ() + imgZ + stepX);
+                            pos1.setValues(blockX + stepX, yDiffFromSurface, blockZ + stepX);
                             state = chunk.getType(pos1);
                         } while (getColor(state) == BLACK && yDiffFromSurface > 0);
                         if (yDiffFromSurface > 0 && !state.getFluid().isEmpty()) {
@@ -208,21 +215,6 @@ public class FullRender extends BukkitRunnable {
                     }
                     curY += yDiffFromSurface;
 
-                    if (worldConfig.MAP_BIOMES) {
-                        Material mat = state.getMaterial();
-                        BiomeStorage biomeStorage = chunk.getBiomeIndex();
-                        if (biomeStorage != null) {
-                            BiomeBase biome = biomeStorage.getBiome(pos1.getX(), curY, pos1.getZ());
-                            float temp = MathHelper.a(biome.k(), 0.0F, 1.0F);
-                            float humidity = MathHelper.a(biome.getHumidity(), 0.0F, 1.0F);
-                            if (mat == Material.GRASS) {
-                                biomeColor = BiomeColors.getGrassColor(temp, humidity);
-                            } else if (mat == Material.LEAVES || mat == Material.PLANT || mat == Material.REPLACEABLE_PLANT) {
-                                biomeColor = BiomeColors.getFoliageColor(temp, humidity);
-                            }
-                        }
-                    }
-
                     multiset.add(getColor(state));
                 }
             }
@@ -232,9 +224,28 @@ public class FullRender extends BukkitRunnable {
         byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
         lastY[imgX] = curY;
 
+        if (worldConfig.MAP_BIOMES) {
+            pos1.setValues(blockX, curY, blockX);
+
+            //BiomeBase biome = chunk.getBiomeIndex().getBiome(pos1.getX(), pos1.getY(), pos1.getZ());
+            BiomeBase biome = nmsWorld.getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(pos1.getX() >> 2, pos1.getY() >> 2, pos1.getZ() >> 2);
+            //BiomeBase biome = nmsWorld.getBiome(pos1.getX() >> 2, pos1.getY() >> 2, pos1.getZ() >> 2);
+
+            Material mat = chunk.getType(pos1).getMaterial();
+            if (mat == Material.GRASS) {
+                biomeColor = colors.getGrassColor(biome, pos1);
+            } else if (mat == Material.LEAVES || mat == Material.PLANT || mat == Material.REPLACEABLE_PLANT) {
+                biomeColor = colors.getFoliageColor(biome, pos1);
+            } else if (worldConfig.MAP_WATER_BIOMES && mat == Material.WATER) {
+                biomeColor = colors.getWaterColor(biome, pos1);
+                diffY = (double) fluidCountY * 0.1D + (double) odd * 0.2D;
+                colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
+            }
+        }
+
         if (biomeColor != -1) {
             // return early if we have a special biome color
-            return shade(biomeColor, colorOffset);
+            return Colors.shade(biomeColor, colorOffset);
         }
 
         //noinspection UnstableApiUsage
@@ -246,7 +257,7 @@ public class FullRender extends BukkitRunnable {
             colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
         }
 
-        return shade(color.rgb, colorOffset);
+        return Colors.shade(color.rgb, colorOffset);
     }
 
     private MaterialMapColor getColor(IBlockData state) {
@@ -256,16 +267,6 @@ public class FullRender extends BukkitRunnable {
     private IBlockData getFluidStateIfVisible(net.minecraft.server.v1_16_R3.World world, IBlockData state, BlockPosition pos) {
         Fluid fluid = state.getFluid();
         return !fluid.isEmpty() && !state.d(world, pos, EnumDirection.UP) ? fluid.getBlockData() : state;
-    }
-
-    private int shade(int color, int shade) {
-        float ratio = 220F / 255F;
-        if (shade == 2) ratio = 1.0F;
-        if (shade == 0) ratio = 180F / 255F;
-        int r = (int) ((color >> 16 & 0xFF) * (ratio));
-        int g = (int) ((color >> 8 & 0xFF) * (ratio));
-        int b = (int) ((color & 0xFF) * (ratio));
-        return (0xFF << 24) | (r << 16) | (g << 8) | b;
     }
 
     private net.minecraft.server.v1_16_R3.Chunk getChunkAt(net.minecraft.server.v1_16_R3.World world, int x, int z) {
@@ -279,49 +280,5 @@ public class FullRender extends BukkitRunnable {
 
     private String progress() {
         return String.format("%1$7s", df.format((double) current / total));
-    }
-
-    public static class BiomeColors {
-        private static int[] grass = new int[256 * 256];
-        private static int[] foliage = new int[256 * 256];
-
-        public static int getGrassColor(double temperature, double humidity) {
-            int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
-            int i = (int) ((1.0 - temperature) * 255.0);
-            int k = j << 8 | i;
-            if (k > grass.length) {
-                return 0;
-            }
-            return grass[k];
-        }
-
-        public static int getFoliageColor(double temperature, double humidity) {
-            int i = (int) ((1.0 - temperature) * 255.0);
-            int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
-            return foliage[(j << 8 | i)];
-        }
-
-        private static int[] init(BufferedImage image) {
-            int[] map = new int[256 * 256];
-            for (int x = 0; x < 256; ++x) {
-                for (int y = 0; y < 256; ++y) {
-                    int color = image.getRGB(x, y);
-                    int r = color >> 16 & 0xFF;
-                    int g = color >> 8 & 0xFF;
-                    int b = color & 0xFF;
-                    map[x + y * 256] = (0xFF << 24) | (r << 16) | (g << 8) | b;
-                }
-            }
-            return map;
-        }
-
-        static {
-            try {
-                grass = init(ImageIO.read(new File(new File(FileUtil.getWebFolder(), "images"), "grass.png")));
-                foliage = init(ImageIO.read(new File(new File(FileUtil.getWebFolder(), "images"), "foliage.png")));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

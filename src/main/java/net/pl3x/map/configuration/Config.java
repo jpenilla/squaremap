@@ -10,6 +10,7 @@ import net.pl3x.map.util.FileUtil;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+@SuppressWarnings("unused")
 public class Config {
     private static File CONFIG_FILE;
     static YamlConfiguration CONFIG;
@@ -83,7 +84,6 @@ public class Config {
     public static String LANGUAGE_FILE = "lang-en.yml";
     public static boolean DEBUG_MODE = false;
 
-    @SuppressWarnings("unused")
     private static void baseSettings() {
         LANGUAGE_FILE = getString("settings.language-file", LANGUAGE_FILE);
         DEBUG_MODE = getBoolean("settings.debug-mode", DEBUG_MODE);
@@ -92,7 +92,6 @@ public class Config {
     public static String WEB_DIR = "web";
     public static boolean UPDATE_WEB_DIR = true;
 
-    @SuppressWarnings("unused")
     private static void webDirSettings() {
         WEB_DIR = getString("settings.web-directory.path", WEB_DIR);
         UPDATE_WEB_DIR = getBoolean("settings.web-directory.auto-update", UPDATE_WEB_DIR);
@@ -102,7 +101,6 @@ public class Config {
     public static String HTTPD_BIND = "0.0.0.0";
     public static int HTTPD_PORT = 8080;
 
-    @SuppressWarnings("unused")
     private static void internalWebServerSettings() {
         HTTPD_ENABLED = getBoolean("settings.internal-webserver.enabled", HTTPD_ENABLED);
         HTTPD_BIND = getString("settings.internal-webserver.bind", HTTPD_BIND);

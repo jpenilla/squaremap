@@ -5,7 +5,7 @@ import net.pl3x.map.data.Region;
 
 public class SpiralIterator implements Iterator<Region> {
     private final int radius, step;
-    private int x, z, legX, legZ, leg = 0;
+    private int x, z, legX, legZ, leg = 2;
     private boolean hasNext = true;
 
     public SpiralIterator(int x, int z, int radius) {

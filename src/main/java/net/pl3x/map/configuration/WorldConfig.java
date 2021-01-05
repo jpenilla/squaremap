@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+@SuppressWarnings("unused")
 public class WorldConfig {
     private static final Map<UUID, WorldConfig> configs = new HashMap<>();
 
@@ -58,11 +59,12 @@ public class WorldConfig {
 
     public boolean MAP_ENABLED = true;
     public boolean MAP_BIOMES = true;
+    public boolean MAP_WATER_BIOMES = true;
 
-    @SuppressWarnings("unused")
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
         MAP_BIOMES = getBoolean("map.biomes", MAP_BIOMES);
+        MAP_WATER_BIOMES = getBoolean("map.water-biomes", MAP_WATER_BIOMES);
     }
 
     public boolean PLAYER_TRACKER_ENABLED = true;
@@ -72,7 +74,6 @@ public class WorldConfig {
     public boolean PLAYER_TRACKER_HIDE_INVISIBLE = true;
     public boolean PLAYER_TRACKER_HIDE_SPECTATORS = true;
 
-    @SuppressWarnings("unused")
     private void playerTrackerSettings() {
         PLAYER_TRACKER_ENABLED = getBoolean("player-tracker.enabled", PLAYER_TRACKER_ENABLED);
         PLAYER_TRACKER_SHOW_TOGGLE = getBoolean("player-tracker.show-toggle", PLAYER_TRACKER_SHOW_TOGGLE);
@@ -85,7 +86,6 @@ public class WorldConfig {
     public String UI_TITLE = "Pl3xMap";
     public boolean UI_COORDINATES = true;
 
-    @SuppressWarnings("unused")
     private void uiSettings() {
         UI_TITLE = getString("ui.title", UI_TITLE);
         UI_COORDINATES = getBoolean("ui.coordinates", UI_COORDINATES);
