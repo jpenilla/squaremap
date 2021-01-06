@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
@@ -40,14 +41,16 @@ public abstract class AbstractRender extends BukkitRunnable {
     private final WorldServer nmsWorld;
     private final WorldConfig worldConfig;
     protected final Path worldTilesDir;
-    private final DecimalFormat df = new DecimalFormat("##0.00%");
+    private final DecimalFormat dfPercent = new DecimalFormat("0.00%");
+    private final DecimalFormat dfRate = new DecimalFormat("0.0");
     private final BlockPosition.MutableBlockPosition pos1 = new BlockPosition.MutableBlockPosition();
     private final BlockPosition.MutableBlockPosition pos2 = new BlockPosition.MutableBlockPosition();
     private final BiomeColors biomeColors;
 
     protected int maxRadius = 0;
-    protected int total;
-    private int current;
+    protected int totalRegions, curRegions;
+    private int curChunks, lastChunks, totalChunks;
+    private long lastTime;
     protected boolean cancelled = false;
 
     public AbstractRender(World world) {
@@ -63,6 +66,11 @@ public abstract class AbstractRender extends BukkitRunnable {
         RenderManager.finish(world);
         cancelled = true;
         super.cancel();
+    }
+
+    @Override
+    public void run() {
+        this.lastTime = System.currentTimeMillis();
     }
 
     protected List<Region> getRegions() {
@@ -81,14 +89,12 @@ public abstract class AbstractRender extends BukkitRunnable {
             } catch (NumberFormatException ignore) {
             }
         }
+        totalRegions = regions.size();
+        totalChunks = totalRegions * 32 * 32;
         return regions;
     }
 
     protected void mapRegion(Region region) {
-        Logger.info(Lang.LOG_SCANNING_REGIONS_PROGRESS
-                .replace("{progress}", progress())
-                .replace("{x}", Integer.toString(region.getX()))
-                .replace("{z}", Integer.toString(region.getZ())));
         Image image = new Image();
         int scanned = 0;
         int startX = region.getBlockX();
@@ -117,11 +123,13 @@ public abstract class AbstractRender extends BukkitRunnable {
                             image.setPixel(blockX + x, blockZ + z, scanBlock(chunk, x, z, lastY));
                         }
                     }
+                    scanned++;
                 }
-                scanned++;
+                curChunks++;
             }
         }
-        current++;
+        curRegions++;
+        printProgress(region);
         if (scanned > 0) {
             Logger.debug(Lang.LOG_SAVING_CHUNKS_FOR_REGION
                     .replace("{total}", Integer.toString(scanned))
@@ -260,7 +268,35 @@ public abstract class AbstractRender extends BukkitRunnable {
         return (Chunk) future.join().left().orElse(null);
     }
 
-    protected String progress() {
-        return String.format("%1$7s", df.format((double) current / total));
+    protected void printProgress(Region region) {
+        long curTime = System.currentTimeMillis();
+        long timeDiff = curTime - lastTime;
+        this.lastTime = curTime;
+
+        double chunks = curChunks - lastChunks;
+        this.lastChunks = curChunks;
+
+        double rate = chunks / TimeUnit.MILLISECONDS.toSeconds(timeDiff);
+
+        double chunksLeft = totalChunks - curChunks;
+        int timeLeft = (int) (chunksLeft / rate);
+
+        double percent = (double) curRegions / (double) totalRegions;
+
+        int hrs = (int) TimeUnit.SECONDS.toHours(timeLeft) % 24;
+        int min = (int) TimeUnit.SECONDS.toMinutes(timeLeft) % 60;
+        int sec = (int) TimeUnit.SECONDS.toSeconds(timeLeft) % 60;
+
+        String rateStr = dfRate.format(rate);
+        String percentStr = dfPercent.format(percent);
+        String etaStr = String.format("%02d:%02d:%02d", hrs, min, sec);
+
+        Logger.info(region == null ? Lang.LOG_SCANNING_REGIONS_FINISHED : Lang.LOG_SCANNING_REGIONS_PROGRESS
+                .replace("{chunks}", Integer.toString(curChunks))
+                .replace("{percent}", percentStr)
+                .replace("{eta}", etaStr)
+                .replace("{rate}", rateStr)
+                .replace("{x}", Integer.toString(region.getX()))
+                .replace("{z}", Integer.toString(region.getZ())));
     }
 }

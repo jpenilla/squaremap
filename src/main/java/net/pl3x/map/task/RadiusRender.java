@@ -9,6 +9,7 @@ public class RadiusRender extends AbstractRender {
 
     @Override
     public void run() {
+        super.run();
         //
     }
 }

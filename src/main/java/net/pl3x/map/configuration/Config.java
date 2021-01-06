@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import net.pl3x.map.Logger;
-import net.pl3x.map.util.FileUtil;
+import net.pl3x.map.Pl3xMap;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -17,7 +17,7 @@ public class Config {
     static int VERSION;
 
     public static void reload() {
-        CONFIG_FILE = FileUtil.PLUGIN_DIR.resolve("config.yml").toFile();
+        CONFIG_FILE = new File(Pl3xMap.getInstance().getDataFolder(), "config.yml");
         CONFIG = new YamlConfiguration();
         try {
             CONFIG.load(CONFIG_FILE);

@@ -16,6 +16,7 @@ public class FullRender extends AbstractRender {
 
     @Override
     public void run() {
+        super.run();
         Logger.info(Lang.LOG_STARTED_FULLRENDER
                 .replace("{world}", world.getName()));
 
@@ -30,9 +31,8 @@ public class FullRender extends AbstractRender {
 
         Logger.info(Lang.LOG_SCANNING_REGION_FILES);
         List<Region> regions = getRegions();
-        total = regions.size();
         Logger.debug(Lang.LOG_FOUND_TOTAL_REGION_FILES
-                .replace("{total}", Integer.toString(total)));
+                .replace("{total}", Integer.toString(totalRegions)));
 
         SpiralIterator spiral = new SpiralIterator(0, 0, maxRadius + 1);
         while (spiral.hasNext()) {
@@ -42,8 +42,6 @@ public class FullRender extends AbstractRender {
                 mapRegion(region);
             }
         }
-        Logger.info(Lang.LOG_SCANNING_REGIONS_FINISHED
-                .replace("{progress}", progress()));
 
         Logger.info(Lang.LOG_FINISHED_RENDERING
                 .replace("{world}", world.getName()));

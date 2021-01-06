@@ -26,14 +26,14 @@ public class Lang {
     public static String LOG_COULD_NOT_CREATE_DIR = "Could not create directory! {path}";
     public static String LOG_COULD_NOT_SAVE_REGION = "Could not save map for region {x},{z}";
     public static String LOG_UNABLE_TO_WRITE_TO_FILE = "Unable to write to {path}";
-    public static String LOG_STARTED_FULLRENDER = "§3Started full map render for §e{world}";
-    public static String LOG_SCANNING_REGION_FILES = "§eScanning region files...";
-    public static String LOG_FOUND_TOTAL_REGION_FILES = "§aFound §7{total} §aregion files";
-    public static String LOG_FINISHED_RENDERING = "§3Finished rendering map for §e{world}";
-    public static String LOG_SCANNING_REGIONS_PROGRESS = "§3{progress} §eScanning region {x},{z}";
-    public static String LOG_SCANNING_REGIONS_FINISHED = "§3100.00% §eScanning regions finished";
-    public static String LOG_SAVING_CHUNKS_FOR_REGION = "        §aSaving {total} chunks for region {x},{z}";
-    public static String LOG_SKIPPING_EMPTY_REGION = "        §cRegion is empty. Skipping. {x},{z}";
+    public static String LOG_STARTED_FULLRENDER = "&3Started full map render for &e{world}";
+    public static String LOG_SCANNING_REGION_FILES = "&eScanning region files...";
+    public static String LOG_FOUND_TOTAL_REGION_FILES = "&aFound &7{total} &aregion files";
+    public static String LOG_FINISHED_RENDERING = "&3Finished rendering map for &e{world}";
+    public static String LOG_SCANNING_REGIONS_PROGRESS = "&eProcessed&3: &7{chunks} chunks &e(&3{percent}&e)&7, &eETA&3: &7{eta}&7, &eRate&3: &7{rate} cps, &eRegion&3: &7{x}&3, &7{z}";
+    public static String LOG_SCANNING_REGIONS_FINISHED = "&eProcessed&3: &7{chunks} chunks &e(&3{percent}&e)&7";
+    public static String LOG_SAVING_CHUNKS_FOR_REGION = "        &aSaving {total} chunks for region {x},{z}";
+    public static String LOG_SKIPPING_EMPTY_REGION = "        &cRegion is empty. Skipping. {x},{z}";
 
     public static String LOG_INTERNAL_WEB_DISABLED = "Internal webserver is disabled in config.yml";
     public static String LOG_INTERNAL_WEB_STARTED = "&aInternal webserver running on {bind}:{port}";
