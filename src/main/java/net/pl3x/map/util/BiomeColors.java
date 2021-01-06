@@ -3,27 +3,60 @@ package net.pl3x.map.util;
 import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.BiomeFog;
 import net.minecraft.server.v1_16_R3.BlockPosition;
+import net.minecraft.server.v1_16_R3.IRegistry;
+import net.minecraft.server.v1_16_R3.IRegistryWritable;
+import net.minecraft.server.v1_16_R3.MathHelper;
+import net.minecraft.server.v1_16_R3.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 public final class BiomeColors {
-    private BiomeColors() {
+    private final Map<BiomeBase, Integer> grassColors = new HashMap<>();
+    private final Map<BiomeBase, Integer> foliageColors = new HashMap<>();
+
+    public BiomeColors(World world) {
+        IRegistryWritable<BiomeBase> biomeRegistry = world.r().b(IRegistry.ay);
+
+        BufferedImage imgGrass, imgFoliage;
+        try {
+            File imagesDir = FileUtil.WEB_DIR.resolve("images").toFile();
+            imgGrass = ImageIO.read(new File(imagesDir, "grass.png"));
+            imgFoliage = ImageIO.read(new File(imagesDir, "foliage.png"));
+
+            int[] mapGrass = init(imgGrass);
+            int[] mapFoliage = init(imgFoliage);
+
+            for (BiomeBase biome : biomeRegistry) {
+                float temperature = MathHelper.a(biome.k(), 0.0F, 1.0F);
+                float humidity = MathHelper.a(biome.getHumidity(), 0.0F, 1.0F);
+                grassColors.put(biome, getGrassColor(mapGrass, temperature, humidity));
+                foliageColors.put(biome, getFoliageColor(mapFoliage, temperature, humidity));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static int grass(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
+    public int grass(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
         return modifiedGrassColor(
                 biome,
                 blockPosition,
-                BiomeEffectsReflection.grassColor(biome).orElse(Colors.grassMapColor().rgb),
+                BiomeEffectsReflection.grassColor(biome).orElse(this.grassColors.get(biome)),
                 1.0f
         );
     }
 
-    public static int foliage(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
-        return BiomeEffectsReflection.foliageColor(biome).orElse(Colors.leavesMapColor().rgb);
+    public int foliage(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
+        return BiomeEffectsReflection.foliageColor(biome).orElse(this.foliageColors.get(biome));
     }
 
     public static int water(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
@@ -66,6 +99,36 @@ public final class BiomeColors {
         int b = (int) ((b1 * iRatio) + (b2 * ratio));
 
         return (0xFF << 24 | r << 16 | g << 8 | b);
+    }
+
+    private int[] init(BufferedImage image) {
+        int[] map = new int[256 * 256];
+        for (int x = 0; x < 256; ++x) {
+            for (int y = 0; y < 256; ++y) {
+                int color = image.getRGB(x, y);
+                int r = color >> 16 & 0xFF;
+                int g = color >> 8 & 0xFF;
+                int b = color & 0xFF;
+                map[x + y * 256] = (0xFF << 24) | (r << 16) | (g << 8) | b;
+            }
+        }
+        return map;
+    }
+
+    private int getGrassColor(int[] map, double temperature, double humidity) {
+        int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
+        int i = (int) ((1.0 - temperature) * 255.0);
+        int k = j << 8 | i;
+        if (k > map.length) {
+            return 0;
+        }
+        return map[k];
+    }
+
+    private int getFoliageColor(int[] map, double temperature, double humidity) {
+        int i = (int) ((1.0 - temperature) * 255.0);
+        int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
+        return map[(j << 8 | i)];
     }
 
     // Utils for reflecting into BiomeFog/BiomeEffects

@@ -46,6 +46,7 @@ public class FullRender extends BukkitRunnable {
     private final DecimalFormat df = new DecimalFormat("##0.00%");
     private final BlockPosition.MutableBlockPosition pos1 = new BlockPosition.MutableBlockPosition();
     private final BlockPosition.MutableBlockPosition pos2 = new BlockPosition.MutableBlockPosition();
+    private final BiomeColors biomeColors;
 
     private int maxRadius = 0;
     private int total, current;
@@ -56,6 +57,7 @@ public class FullRender extends BukkitRunnable {
         this.nmsWorld = ((CraftWorld) world).getHandle();
         this.worldConfig = WorldConfig.get(world);
         this.worldTilesDir = FileUtil.getWorldFolder(world);
+        this.biomeColors = new BiomeColors(this.nmsWorld);
     }
 
     @Override
@@ -240,26 +242,26 @@ public class FullRender extends BukkitRunnable {
 
         if (worldConfig.MAP_BIOMES) {
             //BiomeBase biome = chunk.getBiomeIndex().getBiome((pos1.getX() >> 2) + 2, pos1.getY(), (pos1.getZ() >> 2) + 2); // by subchunk
-            BiomeBase biome = chunk.getBiomeIndex().getBiome(pos1.getX(), pos1.getY(), pos1.getZ()); // weird borders
+            //BiomeBase biome = chunk.getBiomeIndex().getBiome(pos1.getX(), pos1.getY(), pos1.getZ()); // weird borders
+            BiomeBase biome = nmsWorld.getBiome(pos1);
 
             final IBlockData data = chunk.getType(pos1);
             final Material mat = data.getMaterial();
             final Block block = data.getBlock();
 
             if (mat == Material.GRASS) {
-                color = BiomeColors.grass(biome, pos1);
+                color = this.biomeColors.grass(biome, pos1);
             } else if (mat == Material.REPLACEABLE_PLANT || mat == Material.PLANT) {
-                color = Colors.shade(BiomeColors.grass(biome, pos1), 1); // todo: properly render tall grass/plant color (vanilla maps render them the same color as leaves, but in game they are actually the same color as grass blocks)
+                color = Colors.shade(this.biomeColors.grass(biome, pos1), 1); // todo: properly render tall grass/plant color (vanilla maps render them the same color as leaves, but in game they are actually the same color as grass blocks)
             } else if (mat == Material.LEAVES || block == Blocks.VINE) {
                 if (block != Blocks.BIRCH_LEAVES && block != Blocks.SPRUCE_LEAVES) {
-                    color = BiomeColors.foliage(biome, pos1);
+                    color = this.biomeColors.foliage(biome, pos1);
                 }
             } else if (worldConfig.MAP_WATER_BIOMES &&
                     (mat == Material.WATER || mat == Material.WATER_PLANT || mat == Material.REPLACEABLE_WATER_PLANT)) {
                 color = BiomeColors.water(biome, pos1);
             }
         }
-
 
         double diffY;
         byte colorOffset;
