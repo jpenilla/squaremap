@@ -9,6 +9,9 @@ import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.IRegistryWritable;
 import net.minecraft.server.v1_16_R3.MathHelper;
 import net.minecraft.server.v1_16_R3.World;
+import net.minecraft.server.v1_16_R3.WorldServer;
+import net.pl3x.map.configuration.WorldConfig;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.imageio.ImageIO;
@@ -25,12 +28,14 @@ import java.util.function.BiFunction;
 
 public final class BiomeColors {
     private final World world;
+    private final WorldConfig worldConfig;
     private final Cache<Long, BiomeBase> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
     private final Map<BiomeBase, Integer> grassColors = new HashMap<>();
     private final Map<BiomeBase, Integer> foliageColors = new HashMap<>();
 
     public BiomeColors(World world) {
         this.world = world;
+        this.worldConfig = WorldConfig.get(world.getWorld());
         IRegistryWritable<BiomeBase> biomeRegistry = world.r().b(IRegistry.ay);
 
         BufferedImage imgGrass, imgFoliage;
@@ -83,7 +88,7 @@ public final class BiomeColors {
     }
 
     private int sampleNeighbors(final @NonNull BlockPosition position, final @NonNull BiFunction<BiomeBase, BlockPosition, Integer> colorSampler) {
-        final int radius = 4;
+        final int radius = worldConfig.MAP_BLEND_BIOMES;
         int r = 0;
         int g = 0;
         int b = 0;

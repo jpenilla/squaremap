@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.Blocks;
@@ -201,26 +202,29 @@ public abstract class AbstractRender extends BukkitRunnable {
         }
 
         if (worldConfig.MAP_BIOMES) {
-            //BiomeBase biome = nmsWorld.getBiome(pos1);
+            BiomeBase biome = null;
+            if (worldConfig.MAP_BLEND_BIOMES == 0) {
+                biome = nmsWorld.getBiome(pos1);
+            }
 
             final IBlockData data = chunk.getType(pos1);
             final Material mat = data.getMaterial();
             final Block block = data.getBlock();
 
             if (mat == Material.GRASS) {
-                color = this.biomeColors.smoothGrass(pos1);
+                color = worldConfig.MAP_BLEND_BIOMES > 0 ? this.biomeColors.smoothGrass(pos1) : this.biomeColors.grass(biome, pos1);
             } else if (mat == Material.REPLACEABLE_PLANT || mat == Material.PLANT) {
                 // todo: properly render tall grass/plant color (vanilla maps render them the same color as leaves, but in game they are actually the same color as grass blocks)
-                color = Colors.shade(this.biomeColors.smoothGrass(pos1), 1);
+                color = Colors.shade(worldConfig.MAP_BLEND_BIOMES > 0 ? this.biomeColors.smoothGrass(pos1) : this.biomeColors.grass(biome, pos1), 1);
                 //color = Colors.shade(this.biomeColors.grass(biome, pos1), 1);
             } else if (mat == Material.LEAVES || block == Blocks.VINE) {
                 if (block != Blocks.BIRCH_LEAVES && block != Blocks.SPRUCE_LEAVES) {
-                    color = this.biomeColors.smoothFoliage(pos1);
+                    color = worldConfig.MAP_BLEND_BIOMES > 0 ? this.biomeColors.smoothFoliage(pos1) : this.biomeColors.foliage(biome, pos1);
                     //color = this.biomeColors.foliage(biome, pos1);
                 }
             } else if (worldConfig.MAP_WATER_BIOMES &&
                     (mat == Material.WATER || mat == Material.WATER_PLANT || mat == Material.REPLACEABLE_WATER_PLANT)) {
-                color = this.biomeColors.smoothWater(pos1);
+                color = worldConfig.MAP_BLEND_BIOMES > 0 ? this.biomeColors.smoothWater(pos1) : this.biomeColors.water(biome, pos1);
                 //color = this.biomeColors.water(biome, pos1);
             }
         }

@@ -3,6 +3,7 @@ package net.pl3x.map.configuration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.server.v1_16_R3.MathHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -59,11 +60,13 @@ public class WorldConfig {
 
     public boolean MAP_ENABLED = true;
     public boolean MAP_BIOMES = true;
+    public int MAP_BLEND_BIOMES = 4;
     public boolean MAP_WATER_BIOMES = true;
 
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
         MAP_BIOMES = getBoolean("map.biomes", MAP_BIOMES);
+        MAP_BLEND_BIOMES = MathHelper.clamp(getInt("map.blend-biomes", MAP_BLEND_BIOMES), 0, 15);
         MAP_WATER_BIOMES = getBoolean("map.water-biomes", MAP_WATER_BIOMES);
     }
 
