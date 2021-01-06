@@ -238,24 +238,19 @@ public class FullRender extends BukkitRunnable {
             color = getMapColor(state).rgb;
         }
 
-        double diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
-        byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
-        lastY[imgX] = curY;
-
         if (worldConfig.MAP_BIOMES) {
-            BiomeBase biome = chunk.getBiomeIndex().getBiome(pos1.getX(), pos1.getY(), pos1.getZ()); //working
-            //BiomeBase biome = nmsWorld.getChunkProvider().getChunkGenerator().getWorldChunkManager().getBiome(pos1.getX() >> 2, pos1.getY() >> 2, pos1.getZ() >> 2); // custom biome colors broken
-            //BiomeBase biome = nmsWorld.getBiome(pos1); // custom biome colors broken, slow
-            //BiomeBase biome = nmsWorld.getBiome(pos1.getX() >> 2, pos1.getY() >> 2, pos1.getZ() >> 2); // custom biome colors broken, slow
+            //BiomeBase biome = chunk.getBiomeIndex().getBiome((pos1.getX() >> 2) + 2, pos1.getY(), (pos1.getZ() >> 2) + 2); // by subchunk
+            BiomeBase biome = chunk.getBiomeIndex().getBiome(pos1.getX(), pos1.getY(), pos1.getZ()); // weird borders
 
             final IBlockData data = chunk.getType(pos1);
             final Material mat = data.getMaterial();
-            final MaterialMapColor mapColor = getMapColor(data);
+            final Block block = data.getBlock();
 
-            if (Colors.grassMapColor() == mapColor) {
+            if (mat == Material.GRASS) {
                 color = BiomeColors.grass(biome, pos1);
-            } else if (Colors.foliageMapColor() == mapColor) {
-                final Block block = data.getBlock();
+            } else if (mat == Material.REPLACEABLE_PLANT || mat == Material.PLANT) {
+                color = Colors.shade(BiomeColors.grass(biome, pos1), 1); // todo: properly render tall grass/plant color (vanilla maps render them the same color as leaves, but in game they are actually the same color as grass blocks)
+            } else if (mat == Material.LEAVES || block == Blocks.VINE) {
                 if (block != Blocks.BIRCH_LEAVES && block != Blocks.SPRUCE_LEAVES) {
                     color = BiomeColors.foliage(biome, pos1);
                 }
@@ -265,9 +260,16 @@ public class FullRender extends BukkitRunnable {
             }
         }
 
+
+        double diffY;
+        byte colorOffset;
         if (!blockState.getFluid().isEmpty()) {
             diffY = (double) fluidCountY * 0.1D + (double) odd * 0.2D;
             colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
+        } else {
+            diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
+            colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
+            lastY[imgX] = curY;
         }
 
         return Colors.shade(color, colorOffset);

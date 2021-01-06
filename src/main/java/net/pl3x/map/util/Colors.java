@@ -26,12 +26,8 @@ public final class Colors {
         return Material.GRASS.h();
     }
 
-    public static @NonNull MaterialMapColor foliageMapColor() {
+    public static @NonNull MaterialMapColor leavesMapColor() {
         return Material.LEAVES.h();
-    }
-
-    public static @NonNull MaterialMapColor blueMapColor() {
-        return Material.WATER.h();
     }
 
     public static @NonNull MaterialMapColor blackMapColor() {

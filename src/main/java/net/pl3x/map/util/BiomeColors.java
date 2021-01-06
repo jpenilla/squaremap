@@ -23,7 +23,7 @@ public final class BiomeColors {
     }
 
     public static int foliage(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
-        return BiomeEffectsReflection.foliageColor(biome).orElse(Colors.foliageMapColor().rgb);
+        return BiomeEffectsReflection.foliageColor(biome).orElse(Colors.leavesMapColor().rgb);
     }
 
     public static int water(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
