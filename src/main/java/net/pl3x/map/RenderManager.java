@@ -5,24 +5,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.task.AbstractRender;
 import net.pl3x.map.task.FullRender;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class RenderManager {
-    private static final Map<UUID, BukkitRunnable> renders = new HashMap<>();
+    private static final Map<UUID, AbstractRender> renders = new HashMap<>();
 
     public static void stop() {
-        Collection<BukkitRunnable> list = renders.values();
-        for (BukkitRunnable render : list) {
+        Collection<AbstractRender> list = renders.values();
+        for (AbstractRender render : list) {
             System.out.println("cancelled runnable");
             render.cancel();
         }
     }
 
     public static void finish(World world) {
-        BukkitRunnable render = renders.remove(world.getUID());
+        AbstractRender render = renders.remove(world.getUID());
         if (render != null && !render.isCancelled()) {
             render.cancel();
         }
@@ -37,7 +37,7 @@ public class RenderManager {
             throw new RuntimeException(Lang.RENDER_IN_PROGRESS
                     .replace("{world}", world.getName()));
         }
-        FullRender render = new FullRender(world);
+        AbstractRender render = new FullRender(world);
         renders.put(world.getUID(), render);
         render.runTaskAsynchronously(Pl3xMap.getInstance());
     }

@@ -127,13 +127,13 @@ public class FileUtil {
         Files.walkFileTree(jarPath, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Files.createDirectories(destination.resolve(jarPath.relativize(dir).toString()));
+                Files.createDirectories(destination.resolve(jarPath.relativize(dir)));
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Path target = destination.resolve(jarPath.relativize(file).toString());
+                Path target = destination.resolve(jarPath.relativize(file));
                 if (Config.UPDATE_WEB_DIR) {
                     Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
                 } else {
