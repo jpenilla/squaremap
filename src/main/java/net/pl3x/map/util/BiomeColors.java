@@ -1,5 +1,7 @@
 package net.pl3x.map.util;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.BiomeFog;
 import net.minecraft.server.v1_16_R3.BlockPosition;
@@ -18,12 +20,17 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 public final class BiomeColors {
+    private final World world;
+    private final Cache<Long, BiomeBase> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
     private final Map<BiomeBase, Integer> grassColors = new HashMap<>();
     private final Map<BiomeBase, Integer> foliageColors = new HashMap<>();
 
     public BiomeColors(World world) {
+        this.world = world;
         IRegistryWritable<BiomeBase> biomeRegistry = world.r().b(IRegistry.ay);
 
         BufferedImage imgGrass, imgFoliage;
@@ -46,6 +53,18 @@ public final class BiomeColors {
         }
     }
 
+    public int smoothGrass(final @NonNull BlockPosition blockPosition) {
+        return this.sampleNeighbors(blockPosition, this::grass);
+    }
+
+    public int smoothFoliage(final @NonNull BlockPosition blockPosition) {
+        return this.sampleNeighbors(blockPosition, this::foliage);
+    }
+
+    public int smoothWater(final @NonNull BlockPosition blockPosition) {
+        return this.sampleNeighbors(blockPosition, this::water);
+    }
+
     public int grass(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
         return modifiedGrassColor(
                 biome,
@@ -59,8 +78,42 @@ public final class BiomeColors {
         return BiomeEffectsReflection.foliageColor(biome).orElse(this.foliageColors.get(biome));
     }
 
-    public static int water(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
+    public int water(final @NonNull BiomeBase biome, final @NonNull BlockPosition blockPosition) {
         return BiomeEffectsReflection.waterColor(biome);
+    }
+
+    private int sampleNeighbors(final @NonNull BlockPosition position, final @NonNull BiFunction<BiomeBase, BlockPosition, Integer> colorSampler) {
+        final int radius = 4;
+        int r = 0;
+        int g = 0;
+        int b = 0;
+        int count = 0;
+        for (int x = position.getX() - radius; x < position.getX() + radius; x++) {
+            for (int z = position.getZ() - radius; z < position.getZ() + radius; z++) {
+                long pos = (long) x << 32 | z & 0xffffffffL;
+                int rgb;
+                BlockPosition blockPosition1 = new BlockPosition(x, position.getY(), z);
+                BiomeBase cached = this.blockPosBiomeCache.getIfPresent(pos);
+                if (cached != null) {
+                    rgb = colorSampler.apply(cached, blockPosition1);
+                } else {
+                    BiomeBase biome = this.world.getBiome(blockPosition1);
+                    this.blockPosBiomeCache.put(pos, biome);
+                    rgb = colorSampler.apply(biome, blockPosition1);
+                }
+                int red = (rgb >> 16) & 0xFF;
+                int green = (rgb >> 8) & 0xFF;
+                int blue = rgb & 0xFF;
+                r += red;
+                g += green;
+                b += blue;
+                count++;
+            }
+        }
+        int rgb = r / count;
+        rgb = (rgb << 8) + g / count;
+        rgb = (rgb << 8) + b / count;
+        return rgb;
     }
 
     private static int modifiedGrassColor(final @NonNull BiomeBase biome, final @NonNull BlockPosition pos, final int color, final float shade) {
