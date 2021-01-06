@@ -219,21 +219,18 @@ public abstract class AbstractRender extends BukkitRunnable {
             final Material mat = data.getMaterial();
             final Block block = data.getBlock();
 
-            if (mat == Material.GRASS) {
+            if (block == Blocks.GRASS_BLOCK) {
                 color = worldConfig.MAP_BLEND_BIOMES > 0 ? this.biomeColors.smoothGrass(pos1) : this.biomeColors.grass(biome, pos1);
-            } else if (mat == Material.REPLACEABLE_PLANT || mat == Material.PLANT) {
+            } else if (mat == Material.REPLACEABLE_PLANT || mat == Material.PLANT && this.getMapColor(data) == Colors.plantsMapColor()) { // only change color of green plants
                 // todo: properly render tall grass/plant color (vanilla maps render them the same color as leaves, but in game they are actually the same color as grass blocks)
                 color = Colors.shade(worldConfig.MAP_BLEND_BIOMES > 0 ? this.biomeColors.smoothGrass(pos1) : this.biomeColors.grass(biome, pos1), 1);
-                //color = Colors.shade(this.biomeColors.grass(biome, pos1), 1);
             } else if (mat == Material.LEAVES || block == Blocks.VINE) {
                 if (block != Blocks.BIRCH_LEAVES && block != Blocks.SPRUCE_LEAVES) {
                     color = worldConfig.MAP_BLEND_BIOMES > 0 ? this.biomeColors.smoothFoliage(pos1) : this.biomeColors.foliage(biome, pos1);
-                    //color = this.biomeColors.foliage(biome, pos1);
                 }
             } else if (worldConfig.MAP_WATER_BIOMES &&
                     (mat == Material.WATER || mat == Material.WATER_PLANT || mat == Material.REPLACEABLE_WATER_PLANT)) {
                 color = worldConfig.MAP_BLEND_BIOMES > 0 ? this.biomeColors.smoothWater(pos1) : this.biomeColors.water(biome, pos1);
-                //color = this.biomeColors.water(biome, pos1);
             }
         }
 

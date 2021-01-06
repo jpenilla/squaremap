@@ -30,6 +30,10 @@ public final class Colors {
         return Material.LEAVES.h();
     }
 
+    public static @NonNull MaterialMapColor plantsMapColor() {
+        return Material.PLANT.h();
+    }
+
     public static @NonNull MaterialMapColor blackMapColor() {
         return MaterialMapColor.b;
     }
