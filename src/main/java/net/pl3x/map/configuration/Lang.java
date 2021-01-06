@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import net.pl3x.map.Logger;
-import net.pl3x.map.Pl3xMap;
+import net.pl3x.map.util.FileUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -79,8 +79,7 @@ public class Lang {
     }
 
     public static void reload() {
-        Pl3xMap plugin = Pl3xMap.getInstance();
-        File configFile = new File(plugin.getDataFolder(), Config.LANGUAGE_FILE);
+        File configFile = FileUtil.PLUGIN_DIR.resolve(Config.LANGUAGE_FILE).toFile();
         config = new YamlConfiguration();
         try {
             config.load(configFile);
@@ -89,7 +88,6 @@ public class Lang {
             Logger.log().log(Level.SEVERE, "Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
             throw new RuntimeException(ex);
         }
-        config.options().header("This is the main language file for " + plugin.getName());
         config.options().copyDefaults(true);
 
         Lang.init();

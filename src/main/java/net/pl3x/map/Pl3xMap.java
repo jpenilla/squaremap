@@ -44,8 +44,10 @@ public final class Pl3xMap extends JavaPlugin {
     public void start() {
         FileUtil.extractWebFolder();
 
-        new UpdatePlayers().runTaskTimer(this, 20, 20);
-        new UpdateWorldData().runTaskTimer(this, 0, 20 * 5);
+        this.updatePlayers = new UpdatePlayers();
+        this.updatePlayers.runTaskTimer(this, 20, 20);
+        this.updateWorldData = new UpdateWorldData();
+        this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
         if (Config.HTTPD_ENABLED) {
             if (IntegratedServer.setup()) {
@@ -58,6 +60,17 @@ public final class Pl3xMap extends JavaPlugin {
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.stopServer();
         }
+
+        if (this.updatePlayers != null && !this.updatePlayers.isCancelled()) {
+            this.updatePlayers.cancel();
+            this.updatePlayers = null;
+        }
+        if (this.updateWorldData != null && !this.updateWorldData.isCancelled()) {
+            this.updateWorldData.cancel();
+            this.updateWorldData = null;
+        }
+
+        RenderManager.stop();
 
         getServer().getScheduler().cancelTasks(this);
     }

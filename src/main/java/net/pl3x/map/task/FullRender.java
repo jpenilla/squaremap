@@ -1,15 +1,26 @@
 package net.pl3x.map.task;
 
+import com.mojang.datafixers.util.Either;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.Blocks;
+import net.minecraft.server.v1_16_R3.Chunk;
 import net.minecraft.server.v1_16_R3.ChunkProviderServer;
 import net.minecraft.server.v1_16_R3.EnumDirection;
 import net.minecraft.server.v1_16_R3.Fluid;
 import net.minecraft.server.v1_16_R3.HeightMap;
 import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.server.v1_16_R3.IChunkAccess;
 import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.MaterialMapColor;
+import net.minecraft.server.v1_16_R3.PlayerChunk;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.Logger;
 import net.pl3x.map.RenderManager;
@@ -25,16 +36,11 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 public class FullRender extends BukkitRunnable {
     private final World world;
     private final WorldServer nmsWorld;
     private final WorldConfig worldConfig;
-    private final File worldTileDir;
+    private final Path worldTilesDir;
     private final DecimalFormat df = new DecimalFormat("##0.00%");
     private final BlockPosition.MutableBlockPosition pos1 = new BlockPosition.MutableBlockPosition();
     private final BlockPosition.MutableBlockPosition pos2 = new BlockPosition.MutableBlockPosition();
@@ -47,7 +53,7 @@ public class FullRender extends BukkitRunnable {
         this.world = world;
         this.nmsWorld = ((CraftWorld) world).getHandle();
         this.worldConfig = WorldConfig.get(world);
-        this.worldTileDir = FileUtil.getWorldFolder(world);
+        this.worldTilesDir = FileUtil.getWorldFolder(world);
     }
 
     @Override
@@ -62,9 +68,11 @@ public class FullRender extends BukkitRunnable {
         Logger.info(Lang.LOG_STARTED_FULLRENDER
                 .replace("{world}", world.getName()));
 
-        if (!FileUtil.deleteSubDirs(worldTileDir)) {
+        try {
+            FileUtil.deleteSubdirectories(worldTilesDir);
+        } catch (IOException e) {
             Logger.severe(Lang.LOG_UNABLE_TO_WRITE_TO_FILE
-                    .replace("{path}", worldTileDir.getAbsolutePath()));
+                    .replace("{path}", worldTilesDir.toAbsolutePath().toString()));
             cancel();
             return;
         }
@@ -154,7 +162,7 @@ public class FullRender extends BukkitRunnable {
                     .replace("{total}", Integer.toString(scanned))
                     .replace("{x}", Integer.toString(region.getX()))
                     .replace("{z}", Integer.toString(region.getZ())));
-            image.save(region, worldTileDir);
+            image.save(region, worldTilesDir);
         } else {
             Logger.debug(Lang.LOG_SKIPPING_EMPTY_REGION
                     .replace("{x}", Integer.toString(region.getX()))
@@ -262,7 +270,11 @@ public class FullRender extends BukkitRunnable {
         if (ifLoaded != null) {
             return ifLoaded;
         }
-        return (net.minecraft.server.v1_16_R3.Chunk) provider.getChunkAtAsynchronously(x, z, false, true).join().left().orElse(null);
+        CompletableFuture<Either<IChunkAccess, PlayerChunk.Failure>> future = provider.getChunkAtAsynchronously(x, z, false, true);
+        while (!future.isDone()) {
+            if (cancelled) return null;
+        }
+        return (Chunk) future.join().left().orElse(null);
     }
 
     private String progress() {

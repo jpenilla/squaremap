@@ -1,5 +1,6 @@
 package net.pl3x.map;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -11,6 +12,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class RenderManager {
     private static final Map<UUID, BukkitRunnable> renders = new HashMap<>();
+
+    public static void stop() {
+        Collection<BukkitRunnable> list = renders.values();
+        for (BukkitRunnable render : list) {
+            System.out.println("cancelled runnable");
+            render.cancel();
+        }
+    }
 
     public static void finish(World world) {
         BukkitRunnable render = renders.remove(world.getUID());

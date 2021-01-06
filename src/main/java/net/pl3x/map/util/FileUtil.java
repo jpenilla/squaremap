@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystem;
@@ -16,10 +17,12 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Stream;
 import net.pl3x.map.Logger;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.configuration.Config;
@@ -27,85 +30,82 @@ import net.pl3x.map.configuration.Lang;
 import org.bukkit.World;
 
 public class FileUtil {
-    private static File webDir;
-    private static File tilesDir;
-    private static final Map<UUID, File> worldDirs = new HashMap<>();
-    private static final Map<UUID, File> regionDirs = new HashMap<>();
+    public static Path PLUGIN_DIR = Pl3xMap.getInstance().getDataFolder().toPath();
+    public static Path WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
+    public static Path TILES_DIR = WEB_DIR.resolve("tiles");
+    public static final Map<UUID, Path> WORLD_DIRS = new HashMap<>();
+    public static final Map<UUID, Path> REGION_DIRS = new HashMap<>();
+
     private static FileSystem fileSystem;
 
     public static void reload() {
-        webDir = null;
-        tilesDir = null;
-        worldDirs.clear();
-        regionDirs.clear();
+        PLUGIN_DIR = Pl3xMap.getInstance().getDataFolder().toPath();
+        WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
+        TILES_DIR = WEB_DIR.resolve("tiles");
+
+        WORLD_DIRS.clear();
+        REGION_DIRS.clear();
     }
 
-    public static File getRegionFolder(World world) {
-        File dir = regionDirs.get(world.getUID());
+    public static Path getRegionFolder(World world) {
+        Path dir = REGION_DIRS.get(world.getUID());
         if (dir == null) {
             switch (world.getEnvironment()) {
                 case NETHER:
-                    dir = new File(new File(world.getWorldFolder(), "DIM-1"), "region");
+                    dir = Path.of(world.getWorldFolder().getAbsolutePath(), "DIM-1", "region");
                     break;
                 case THE_END:
-                    dir = new File(new File(world.getWorldFolder(), "DIM1"), "region");
+                    dir = Path.of(world.getWorldFolder().getAbsolutePath(), "DIM1", "region");
                     break;
                 case NORMAL:
                 default:
-                    dir = new File(world.getWorldFolder(), "region");
+                    dir = Path.of(world.getWorldFolder().getAbsolutePath(), "region");
             }
+            REGION_DIRS.put(world.getUID(), dir);
         }
         return dir;
     }
 
     public static File[] getRegionFiles(World world) {
-        File[] files = FileUtil.getRegionFolder(world).listFiles((dir, name) -> name.endsWith(".mca"));
+        File[] files = getRegionFolder(world).toFile().listFiles((dir, name) -> name.endsWith(".mca"));
         if (files == null) {
             files = new File[0];
         }
         return files;
     }
 
-    public static File getPluginFolder() {
-        return Pl3xMap.getInstance().getDataFolder();
-    }
-
-    public static File getWebFolder() {
-        if (webDir == null) {
-            File dir = new File(Config.WEB_DIR);
-            if (dir.isAbsolute()) {
-                webDir = dir;
-            } else {
-                webDir = mkdirs(new File(getPluginFolder(), Config.WEB_DIR));
-            }
+    public static void deleteSubdirectories(Path dir) throws IOException {
+        try (Stream<Path> files = Files.list(dir)) {
+            files.forEach(path -> {
+                try {
+                    deleteDirectory(path);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
-        return webDir;
     }
 
-    public static File getTilesFolder() {
-        if (tilesDir == null) {
-            tilesDir = mkdirs(new File(FileUtil.getWebFolder(), "tiles"));
+    public static void deleteDirectory(Path dir) throws IOException {
+        try (Stream<Path> walk = Files.walk(dir)) {
+            //noinspection ResultOfMethodCallIgnored
+            walk.sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
         }
-        return tilesDir;
     }
 
-    public static File getWorldFolder(World world) {
-        File dir = worldDirs.get(world.getUID());
+    public static Path getWorldFolder(World world) {
+        Path dir = WORLD_DIRS.get(world.getUID());
         if (dir == null) {
-            dir = mkdirs(new File(getTilesFolder(), world.getName()));
-            if (dir != null) {
-                worldDirs.put(world.getUID(), dir);
-            }
-        }
-        return dir;
-    }
-
-    public static File mkdirs(File dir) {
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
+            dir = TILES_DIR.resolve(world.getName());
+            try {
+                Files.createDirectories(dir);
+                WORLD_DIRS.put(world.getUID(), dir);
+            } catch (IOException e) {
                 Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                        .replace("{path}", dir.getAbsolutePath()));
-                return null;
+                        .replace("{path}", dir.toAbsolutePath().toString()));
+                e.printStackTrace();
             }
         }
         return dir;
@@ -113,7 +113,7 @@ public class FileUtil {
 
     public static void extractWebFolder() {
         try {
-            copyFromJar("web", getWebFolder().toPath());
+            copyFromJar("web", WEB_DIR);
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
         }
@@ -147,33 +147,10 @@ public class FileUtil {
         });
     }
 
-    public static boolean deleteSubDirs(File dir) {
-        boolean result = true;
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    result = deleteDir(file);
-                }
-            }
-        }
-        return result;
-    }
-
-    public static boolean deleteDir(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                deleteDir(file);
-            }
-        }
-        return dir.delete();
-    }
-
-    public static void writeStringToFile(String str, File file) {
+    public static void write(String str, Path file) {
         ForkJoinPool.commonPool().execute(() -> {
             try {
-                replaceFile(file.toPath(), str);
+                replaceFile(file, str);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -195,8 +172,11 @@ public class FileUtil {
 
         try {
             Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (AtomicMoveNotSupportedException e) {
-            Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AccessDeniedException | AtomicMoveNotSupportedException e) {
+            try {
+                Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AccessDeniedException ignore) {
+            }
         }
     }
 }

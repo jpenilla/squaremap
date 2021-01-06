@@ -17,7 +17,7 @@ public class Config {
     static int VERSION;
 
     public static void reload() {
-        CONFIG_FILE = new File(FileUtil.getPluginFolder(), "config.yml");
+        CONFIG_FILE = FileUtil.PLUGIN_DIR.resolve("config.yml").toFile();
         CONFIG = new YamlConfiguration();
         try {
             CONFIG.load(CONFIG_FILE);

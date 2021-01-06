@@ -1,7 +1,6 @@
 package net.pl3x.map.task;
 
 import com.google.gson.Gson;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import net.pl3x.map.configuration.WorldConfig;
@@ -48,7 +47,7 @@ public class UpdateWorldData extends BukkitRunnable {
             map.put("spawn", spawn);
             map.put("settings", settings);
 
-            FileUtil.writeStringToFile(gson.toJson(map), new File(FileUtil.getWorldFolder(world), "settings.json"));
+            FileUtil.write(gson.toJson(map), FileUtil.getWorldFolder(world).resolve("settings.json"));
         });
     }
 }

@@ -36,23 +36,23 @@ public class SpiralIterator implements Iterator<Region> {
             x += step;
             if (x >= legX) {
                 leg++;
+                legX += step;
             }
         } else if (leg == 1) {
             z += step;
             if (z >= legZ) {
                 leg++;
+                legZ += step;
             }
         } else if (leg == 2) {
             x -= step;
             if (-x >= legX) {
                 leg++;
-                legX += step;
             }
         } else if (leg == 3) {
             z -= step;
             if (-z >= legZ) {
                 leg = 0;
-                legZ += step;
             }
         }
         if (legX > radius && legZ > radius) {

@@ -3,6 +3,8 @@ package net.pl3x.map.data;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import net.minecraft.server.v1_16_R3.MathHelper;
 import net.pl3x.map.Logger;
@@ -17,12 +19,14 @@ public class Image {
         this.pixels[x & (SIZE - 1)][z & (SIZE - 1)] = color;
     }
 
-    public void save(Region region, File directory) {
+    public void save(Region region, Path directory) {
         for (int zoom = 0; zoom <= MAX_ZOOM; zoom++) {
-            File dir = new File(directory, Integer.toString(MAX_ZOOM - zoom));
-            if (!dir.exists() && !dir.mkdirs()) {
+            Path dir = Path.of(directory.toString(), Integer.toString(MAX_ZOOM - zoom));
+            try {
+                Files.createDirectories(dir);
+            } catch (IOException e) {
                 Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                        .replace("{path}", dir.getAbsolutePath()));
+                        .replace("{path}", dir.toAbsolutePath().toString()));
                 continue;
             }
 
@@ -32,7 +36,7 @@ public class Image {
             int scaledZ = MathHelper.floor((double) region.getZ() / step);
 
             String fileName = scaledX + "_" + scaledZ + ".png";
-            File file = new File(dir, fileName);
+            File file = new File(dir.toString(), fileName);
 
             try {
                 BufferedImage image;

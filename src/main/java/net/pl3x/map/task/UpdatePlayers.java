@@ -1,7 +1,6 @@
 package net.pl3x.map.task;
 
 import com.google.gson.Gson;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +42,7 @@ public class UpdatePlayers extends BukkitRunnable {
             Map<String, Object> map = new HashMap<>();
             map.put("players", players);
 
-            FileUtil.writeStringToFile(gson.toJson(map), new File(FileUtil.getWorldFolder(world), "players.json"));
+            FileUtil.write(gson.toJson(map), FileUtil.getWorldFolder(world).resolve("players.json"));
         });
     }
 }

@@ -1,6 +1,9 @@
 package net.pl3x.map.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import net.pl3x.map.Logger;
 import net.pl3x.map.configuration.Config;
 import net.pl3x.map.configuration.Lang;
@@ -19,11 +22,15 @@ public class IntegratedServer {
         if (Bukkit.getPluginManager().isPluginEnabled(NAME)) {
             return true;
         }
-        File libsDir = FileUtil.mkdirs(new File(FileUtil.getPluginFolder(), "libs"));
-        if (libsDir == null) {
+        Path libsDir = FileUtil.PLUGIN_DIR.resolve("libs");
+        try {
+            Files.createDirectories(libsDir);
+        } catch (IOException e) {
+            Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
+                    .replace("{path}", libsDir.toAbsolutePath().toString()));
             return false;
         }
-        File file = new File(libsDir, FILENAME);
+        File file = new File(libsDir.toString(), FILENAME);
         if (new JarDownloader().downloadJar(URL, file)) {
             if (Bukkit.getPluginManager().isPluginEnabled(NAME)) {
                 return true;
@@ -44,7 +51,7 @@ public class IntegratedServer {
 
     public static void startServer() {
         if (Config.HTTPD_ENABLED) {
-            if (net.pl3x.map.Pl3xMapServer.startServer(Config.HTTPD_BIND, Config.HTTPD_PORT, FileUtil.getWebFolder())) {
+            if (net.pl3x.map.Pl3xMapServer.startServer(Config.HTTPD_BIND, Config.HTTPD_PORT, FileUtil.WEB_DIR.toFile())) {
                 Logger.info(Lang.LOG_INTERNAL_WEB_STARTED
                         .replace("{bind}", Config.HTTPD_BIND)
                         .replace("{port}", Integer.toString(Config.HTTPD_PORT)));
