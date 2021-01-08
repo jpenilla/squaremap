@@ -1,13 +1,12 @@
 package net.pl3x.map;
 
-import net.pl3x.map.command.CmdPl3xMap;
+import net.pl3x.map.command.CommandManager;
 import net.pl3x.map.configuration.Config;
 import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.task.UpdatePlayers;
 import net.pl3x.map.task.UpdateWorldData;
 import net.pl3x.map.util.FileUtil;
 import net.pl3x.map.util.IntegratedServer;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Pl3xMap extends JavaPlugin {
@@ -26,9 +25,10 @@ public final class Pl3xMap extends JavaPlugin {
 
         start();
 
-        PluginCommand cmd = getCommand("pl3xmap");
-        if (cmd != null) {
-            cmd.setExecutor(new CmdPl3xMap());
+        try {
+            new CommandManager(this);
+        } catch (Exception e) {
+            getLogger().warning("Failed to initialize command manager");
         }
     }
 

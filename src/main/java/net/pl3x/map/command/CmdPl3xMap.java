@@ -1,126 +1,89 @@
 package net.pl3x.map.command;
 
+import cloud.commandframework.annotations.Argument;
+import cloud.commandframework.annotations.CommandDescription;
+import cloud.commandframework.annotations.CommandMethod;
+import cloud.commandframework.annotations.CommandPermission;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.RenderManager;
 import net.pl3x.map.configuration.Config;
 import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.util.FileUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+public class CmdPl3xMap {
+    private final Pl3xMap plugin;
 
-public class CmdPl3xMap implements TabExecutor {
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 1) {
-            String arg = args[0].toLowerCase(Locale.ROOT);
-            return Stream.of("fullrender", "radiusrender", "cancelrender", "reload")
-                    .filter(cmd -> cmd.startsWith(arg))
-                    .collect(Collectors.toList());
-        } else if (args.length == 2) {
-            String arg = args[1].toLowerCase(Locale.ROOT);
-            return Bukkit.getWorlds().stream()
-                    .map(World::getName)
-                    .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(arg))
-                    .collect(Collectors.toList());
-        }
-        return null;
+    public CmdPl3xMap(Pl3xMap plugin) {
+        this.plugin = plugin;
     }
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("fullrender")) {
-                World world = getWorld(sender, args);
-                if (world == null) {
-                    return true;
-                }
-
-                if (RenderManager.isRendering(world)) {
-                    Lang.send(sender, Lang.RENDER_IN_PROGRESS
-                            .replace("{world}", world.getName()));
-                    return true;
-                }
-
-                Lang.send(sender, Lang.FULL_RENDER_STARTED
-                        .replace("{world}", world.getName()));
-                RenderManager.fullRender(world);
-                return true;
-            }
-
-            if (args[0].equalsIgnoreCase("radiusrender")) {
-                Lang.send(sender, "Not implemented yet");
-                return true;
-            }
-
-            if (args[0].equalsIgnoreCase("cancelrender")) {
-                World world = getWorld(sender, args);
-                if (world == null) {
-                    return true;
-                }
-
-                if (!RenderManager.isRendering(world)) {
-                    Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS
-                            .replace("{world}", world.getName()));
-                    return true;
-                }
-
-                Lang.send(sender, Lang.CANCELLED_RENDER
-                        .replace("{world}", world.getName()));
-                RenderManager.cancelRender(world);
-                return true;
-            }
-
-            if (args[0].equalsIgnoreCase("reload")) {
-                Pl3xMap.getInstance().stop();
-
-                Config.reload();
-                Lang.reload();
-                FileUtil.reload();
-
-                Pl3xMap.getInstance().start();
-
-                PluginDescriptionFile desc = Pl3xMap.getInstance().getDescription();
-                Lang.send(sender, Lang.PLUGIN_RELOADED
-                        .replace("{name}", desc.getName())
-                        .replace("{version}", desc.getVersion()));
-                return true;
-            }
-
-            Lang.send(sender, Lang.UNKNOWN_SUBCOMMAND);
-            return false;
+    @CommandDescription("Starts a full render")
+    @CommandPermission("command.pl3xmap")
+    @CommandMethod("pl3xmap|map fullrender <world>")
+    private void onFullRender(
+            CommandSender sender,
+            @Argument("world") World world
+    ) {
+        if (RenderManager.isRendering(world)) {
+            Lang.send(sender, Lang.RENDER_IN_PROGRESS
+                    .replace("{world}", world.getName()));
+            return;
         }
 
-        PluginDescriptionFile desc = Pl3xMap.getInstance().getDescription();
-        Lang.send(sender, Lang.PLUGIN_VERSION
+        Lang.send(sender, Lang.FULL_RENDER_STARTED
+                .replace("{world}", world.getName()));
+        RenderManager.fullRender(world);
+    }
+
+    @CommandDescription("Starts a radius render")
+    @CommandPermission("command.pl3xmap")
+    @CommandMethod("pl3xmap|map radiusrender <world> <radius> <x> <z>")
+    private void onRadiusRender(
+            CommandSender sender,
+            @Argument("world") World world,
+            @Argument("radius") int radius,
+            @Argument("x") int x,
+            @Argument("z") int z
+    ) {
+        Lang.send(sender, "Not implemented yet");
+    }
+
+    @CommandDescription("Cancels a render")
+    @CommandPermission("command.pl3xmap")
+    @CommandMethod("pl3xmap|map cancelrender <world>")
+    private void onCancelRender(
+            CommandSender sender,
+            @Argument("world") World world
+    ) {
+        if (!RenderManager.isRendering(world)) {
+            Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS
+                    .replace("{world}", world.getName()));
+            return;
+        }
+
+        Lang.send(sender, Lang.CANCELLED_RENDER
+                .replace("{world}", world.getName()));
+        RenderManager.cancelRender(world);
+    }
+
+    @CommandDescription("Reloads the plugin")
+    @CommandPermission("command.pl3xmap")
+    @CommandMethod("pl3xmap|map reload")
+    private void onReload(CommandSender sender) {
+        plugin.stop();
+
+        Config.reload();
+        Lang.reload();
+        FileUtil.reload();
+
+        plugin.start();
+
+        PluginDescriptionFile desc = plugin.getDescription();
+        Lang.send(sender, Lang.PLUGIN_RELOADED
                 .replace("{name}", desc.getName())
                 .replace("{version}", desc.getVersion()));
-        return true;
-    }
-
-    private World getWorld(CommandSender sender, String[] args) {
-        World world;
-        if (args.length > 1) {
-            world = Bukkit.getWorld(args[1]);
-            if (world == null) {
-                Lang.send(sender, Lang.WORLD_NOT_FOUND);
-                return null;
-            }
-        } else if (sender instanceof Player) {
-            world = ((Player) sender).getWorld();
-        } else {
-            Lang.send(sender, Lang.WORLD_NOT_SPECIFIED);
-            return null;
-        }
-        return world;
     }
 }
