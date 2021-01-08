@@ -328,18 +328,18 @@ public abstract class AbstractRender extends BukkitRunnable {
         double chunks = curChunks - lastChunks;
         lastChunks = curChunks;
 
-        double rate = chunks / TimeUnit.MILLISECONDS.toSeconds(timeDiff);
+        double cpms = chunks / timeDiff;
 
         double chunksLeft = totalChunks - curChunks;
-        int timeLeft = (int) (chunksLeft / rate);
+        long timeLeft = (long) (chunksLeft / cpms);
+
+        int hrs = (int) TimeUnit.MILLISECONDS.toHours(timeLeft) % 24;
+        int min = (int) TimeUnit.MILLISECONDS.toMinutes(timeLeft) % 60;
+        int sec = (int) TimeUnit.MILLISECONDS.toSeconds(timeLeft) % 60;
 
         double percent = (double) curRegions / (double) totalRegions;
 
-        int hrs = (int) TimeUnit.SECONDS.toHours(timeLeft) % 24;
-        int min = (int) TimeUnit.SECONDS.toMinutes(timeLeft) % 60;
-        int sec = (int) TimeUnit.SECONDS.toSeconds(timeLeft) % 60;
-
-        String rateStr = dfRate.format(rate);
+        String rateStr = dfRate.format(cpms * 1000);
         String percentStr = dfPercent.format(percent);
         String etaStr = String.format("%02d:%02d:%02d", hrs, min, sec);
 
