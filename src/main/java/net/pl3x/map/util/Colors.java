@@ -55,6 +55,10 @@ public final class Colors {
         return Material.PLANT.h();
     }
 
+    public static @NonNull MaterialMapColor waterMapColor() {
+        return Material.WATER.h();
+    }
+
     public static @NonNull MaterialMapColor blackMapColor() {
         return MaterialMapColor.b;
     }

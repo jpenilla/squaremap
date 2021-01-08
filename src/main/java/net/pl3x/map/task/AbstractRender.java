@@ -8,10 +8,11 @@ import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.Chunk;
 import net.minecraft.server.v1_16_R3.ChunkProviderServer;
 import net.minecraft.server.v1_16_R3.EnumDirection;
+import net.minecraft.server.v1_16_R3.FluidType;
+import net.minecraft.server.v1_16_R3.FluidTypes;
 import net.minecraft.server.v1_16_R3.HeightMap;
 import net.minecraft.server.v1_16_R3.IBlockData;
 import net.minecraft.server.v1_16_R3.IChunkAccess;
-import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.PlayerChunk;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.Logger;
@@ -23,11 +24,13 @@ import net.pl3x.map.data.Region;
 import net.pl3x.map.util.BiomeColors;
 import net.pl3x.map.util.Colors;
 import net.pl3x.map.util.FileUtil;
+import net.pl3x.map.util.Pair;
 import net.pl3x.map.util.SpecialColorRegistry;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -153,65 +156,41 @@ public abstract class AbstractRender extends BukkitRunnable {
     }
 
     private int scanBlock(net.minecraft.server.v1_16_R3.Chunk chunk, int imgX, int imgZ, int[] lastY) {
-        int fluidCountY = 0;
         int curY = 0;
         int blockX = chunk.getPos().getBlockX() + imgX;
         int blockZ = chunk.getPos().getBlockZ() + imgZ;
 
-        int color;
         IBlockData state;
-        IBlockData fluidState = null;
 
         if (nmsWorld.getDimensionManager().hasCeiling()) {
-            int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ);
+            final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ);
             pos1.setValues(blockX, yDiff, blockZ);
 
             do {
                 pos1.c(EnumDirection.DOWN);
-            } while (!chunk.getType(pos1).isAir());
+                state = chunk.getType(pos1);
+            } while (!state.isAir());
             do {
                 pos1.c(EnumDirection.DOWN);
-            } while (chunk.getType(pos1).isAir() && pos1.getY() > 0);
-
-            state = chunk.getType(pos1);
-
-            if (pos1.getY() > 0 && !state.getFluid().isEmpty()) {
-                int yBelowSurface = pos1.getY() - 1;
-                pos2.setValues(pos1);
-                do {
-                    pos2.setY(yBelowSurface--);
-                    fluidState = chunk.getType(pos2);
-                    ++fluidCountY;
-                } while (yBelowSurface > 0 && fluidCountY <= 10 && !fluidState.getFluid().isEmpty());
-            }
-            curY += pos1.getY();
-
-            color = Colors.getMapColor(state).rgb;
+                state = chunk.getType(pos1);
+            } while ((state.isAir() || invisibleBlocks.contains(state.getBlock())) && pos1.getY() > 0);
         } else {
-            int yDiffFromSurface = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
-            if (yDiffFromSurface > 1) {
-                do {
-                    --yDiffFromSurface;
-                    pos1.setValues(blockX, yDiffFromSurface, blockZ);
-                    state = chunk.getType(pos1);
-                } while ((Colors.getMapColor(state) == Colors.blackMapColor() || invisibleBlocks.contains(state.getBlock())) && yDiffFromSurface > 0);
+            final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
+            pos1.setValues(blockX, yDiff, blockZ);
 
-                if (yDiffFromSurface > 0 && !state.getFluid().isEmpty()) {
-                    int yBelowSurface = yDiffFromSurface - 1;
-                    pos2.setValues(pos1);
-                    do {
-                        pos2.setY(yBelowSurface--);
-                        fluidState = chunk.getType(pos2);
-                        ++fluidCountY;
-                    } while (yBelowSurface > 0 && fluidCountY <= 10 && !fluidState.getFluid().isEmpty());
-                }
+            if (yDiff > 1) {
+                do {
+                    pos1.c(EnumDirection.DOWN);
+                    state = chunk.getType(pos1);
+                } while ((state.isAir() || invisibleBlocks.contains(state.getBlock())) && pos1.getY() > 0);
             } else {
                 state = Blocks.BEDROCK.getBlockData();
             }
-            curY += yDiffFromSurface;
-
-            color = Colors.getMapColor(state).rgb;
         }
+
+        curY += pos1.getY();
+
+        int color = Colors.getMapColor(state).rgb;
 
         if (this.biomeColors != null) {
             color = this.biomeColors.modifyColorFromBiome(color, chunk, this.pos1);
@@ -225,8 +204,12 @@ public abstract class AbstractRender extends BukkitRunnable {
         double diffY;
         byte colorOffset;
         int odd = (imgX + imgZ & 1);
-        if (!state.getFluid().isEmpty() && fluidState != null) {
-            return getFluidColor(fluidCountY, color, state, fluidState, odd);
+
+        final Pair<Integer, IBlockData> fluidPair = this.findDepthIfFluid(pos1.getY(), state, chunk);
+        if (fluidPair != null) {
+            final int fluidDepth = fluidPair.left();
+            final IBlockData fluidState = fluidPair.right();
+            return getFluidColor(fluidDepth, color, state, fluidState, odd);
         }
 
         diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
@@ -235,9 +218,27 @@ public abstract class AbstractRender extends BukkitRunnable {
         return Colors.shade(color, colorOffset);
     }
 
+    private @Nullable Pair<Integer, IBlockData> findDepthIfFluid(final int surfaceY, final @NonNull IBlockData state, final @NonNull Chunk chunk) {
+        if (surfaceY > 0 && !state.getFluid().isEmpty()) {
+            IBlockData fluidState;
+            int fluidDepth = 0;
+
+            int yBelowSurface = surfaceY - 1;
+            pos2.setValues(pos1);
+            do {
+                pos2.setY(yBelowSurface--);
+                fluidState = chunk.getType(pos2);
+                ++fluidDepth;
+            } while (yBelowSurface > 0 && fluidDepth <= 10 && !fluidState.getFluid().isEmpty());
+
+            return Pair.of(fluidDepth, fluidState);
+        }
+        return null;
+    }
+
     private int getFluidColor(final int fluidCountY, int color, final @NonNull IBlockData state, final @NonNull IBlockData fluidState, final int odd) {
-        final Material material = state.getMaterial();
-        if (material == Material.WATER) {
+        final FluidType fluid = state.getFluid().getType();
+        if (fluid == FluidTypes.WATER || fluid == FluidTypes.FLOWING_WATER) {
             if (this.worldConfig.MAP_WATER_CHECKERBOARD) {
                 color = applyDepthCheckerboard(fluidCountY, color, odd);
             }
@@ -245,7 +246,7 @@ public abstract class AbstractRender extends BukkitRunnable {
                 color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
                 color = Colors.mix(color, Colors.getMapColor(fluidState).rgb, 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
             }
-        } else if (material == Material.LAVA) {
+        } else if (fluid == FluidTypes.LAVA || fluid == FluidTypes.FLOWING_LAVA) {
             if (this.worldConfig.MAP_LAVA_CHECKERBOARD) {
                 color = applyDepthCheckerboard(fluidCountY, color, odd);
             }
