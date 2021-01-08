@@ -59,15 +59,29 @@ public class WorldConfig {
     }
 
     public boolean MAP_ENABLED = true;
+
     public boolean MAP_BIOMES = true;
-    public int MAP_BLEND_BIOMES = 4;
+    public int MAP_BIOMES_BLEND = 4;
+
     public boolean MAP_WATER_BIOMES = true;
+    public int MAP_WATER_BIOMES_BLEND = 4;
+    public boolean MAP_WATER_CLEAR = true;
+    public boolean MAP_WATER_CHECKERBOARD = false;
 
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
-        MAP_BIOMES = getBoolean("map.biomes", MAP_BIOMES);
-        MAP_BLEND_BIOMES = MathHelper.clamp(getInt("map.blend-biomes", MAP_BLEND_BIOMES), 0, 15);
-        MAP_WATER_BIOMES = getBoolean("map.water-biomes", MAP_WATER_BIOMES);
+    }
+
+    private void biomeSettings() {
+        MAP_BIOMES = getBoolean("map.biomes.enabled", MAP_BIOMES);
+        MAP_BIOMES_BLEND = MathHelper.clamp(getInt("map.biomes.blend-biomes", MAP_BIOMES_BLEND), 0, 15);
+    }
+
+    private void waterSettings() {
+        MAP_WATER_BIOMES = getBoolean("map.water.biomes.enabled", MAP_WATER_BIOMES);
+        MAP_WATER_BIOMES_BLEND = MathHelper.clamp(getInt("map.water.biomes.blend-biomes", MAP_WATER_BIOMES_BLEND), 0, 15);
+        MAP_WATER_CLEAR = getBoolean("map.water.clear-depth", MAP_WATER_CLEAR);
+        MAP_WATER_CHECKERBOARD = getBoolean("map.water.checkerboard", MAP_WATER_CHECKERBOARD);
     }
 
     public boolean PLAYER_TRACKER_ENABLED = true;

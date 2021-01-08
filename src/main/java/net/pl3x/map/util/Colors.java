@@ -22,6 +22,26 @@ public final class Colors {
         return (0xFF << 24) | (r << 16) | (g << 8) | b;
     }
 
+    public static int mix(int c1, int c2, float ratio) {
+        if (ratio >= 1F) return c2;
+        else if (ratio <= 0F) return c1;
+        float iRatio = 1.0F - ratio;
+
+        int r1 = ((c1 & 0xFF0000) >> 16);
+        int g1 = ((c1 & 0xFF00) >> 8);
+        int b1 = (c1 & 0xFF);
+
+        int r2 = ((c2 & 0xFF0000) >> 16);
+        int g2 = ((c2 & 0xFF00) >> 8);
+        int b2 = (c2 & 0xFF);
+
+        int r = (int) ((r1 * iRatio) + (r2 * ratio));
+        int g = (int) ((g1 * iRatio) + (g2 * ratio));
+        int b = (int) ((b1 * iRatio) + (b2 * ratio));
+
+        return (0xFF << 24 | r << 16 | g << 8 | b);
+    }
+
     public static @NonNull MaterialMapColor grassMapColor() {
         return Material.GRASS.h();
     }
