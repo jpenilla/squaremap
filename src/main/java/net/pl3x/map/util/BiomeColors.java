@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 public final class BiomeColors {
     private final Cache<Long, BiomeBase> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
@@ -106,32 +107,36 @@ public final class BiomeColors {
 
     private int grass(final @NonNull BlockPosition pos) {
         if (this.worldConfig.MAP_BIOMES_BLEND > 0) {
-            return smooth(pos, this.worldConfig.MAP_BIOMES_BLEND, this.grassColors);
+            return this.sampleNeighbors(pos, this.worldConfig.MAP_BIOMES_BLEND, this::grassColorSampler);
         }
         return this.grassColors.get(this.getBiomeWithCaching(pos));
     }
 
+    private int grassColorSampler(final @NonNull BiomeBase biome, final @NonNull BlockPosition pos) {
+        return modifiedGrassColor(biome, pos, this.grassColors.get(biome));
+    }
+
     private int foliage(final @NonNull BlockPosition pos) {
         if (this.worldConfig.MAP_BIOMES_BLEND > 0) {
-            return smooth(pos, this.worldConfig.MAP_BIOMES_BLEND, this.foliageColors);
+            return this.sampleNeighbors(pos, this.worldConfig.MAP_BIOMES_BLEND, (biome, b) -> this.foliageColors.get(biome));
         }
         return this.foliageColors.get(this.getBiomeWithCaching(pos));
     }
 
     private int water(final @NonNull BlockPosition pos) {
         if (this.worldConfig.MAP_WATER_BIOMES_BLEND > 0) {
-            return smooth(pos, this.worldConfig.MAP_WATER_BIOMES_BLEND, this.waterColors);
+            return this.sampleNeighbors(pos, this.worldConfig.MAP_WATER_BIOMES_BLEND, (biome, b) -> this.waterColors.get(biome));
         }
         return this.waterColors.get(this.getBiomeWithCaching(pos));
     }
 
-    private int smooth(final @NonNull BlockPosition pos, final int radius, final @NonNull Map<BiomeBase, Integer> colorMap) {
+    private int sampleNeighbors(final @NonNull BlockPosition pos, final int radius, final @NonNull BiFunction<BiomeBase, BlockPosition, Integer> colorSampler) {
         int rgb, r = 0, g = 0, b = 0, count = 0;
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
                 sharedBlockPos.setValues(x, pos.getY(), z);
                 final BiomeBase biome = this.getBiomeWithCaching(sharedBlockPos);
-                rgb = colorMap.get(biome);
+                rgb = colorSampler.apply(biome, this.sharedBlockPos);
                 r += (rgb >> 16) & 0xFF;
                 g += (rgb >> 8) & 0xFF;
                 b += rgb & 0xFF;
@@ -209,18 +214,14 @@ public final class BiomeColors {
 
         if (grassColorBlocks.contains(block)) {
 
-            int modColor = this.grass(pos);
-            color = modifiedGrassColor(this.getBiomeWithCaching(pos), pos, modColor);
+            color = this.grass(pos);
 
         } else if (foliageColorBlocks.contains(block)) {
 
-            if (block == Blocks.DARK_OAK_LEAVES) {
-                // Dark oak leaves need to be darker than oak, but in the case a custom biome foliage color is used, they should not get darkened
-                final int finalColor = color;
-                color = BiomeEffectsReflection.foliageColor(this.getBiomeWithCaching(pos)).orElseGet(() -> {
-                    int modColor = Colors.mix(finalColor, foliage(pos), 0.75F);
-                    return (modColor & 0xFEFEFE) + 2634762 >> 1;
-                });
+            // Dark oak leaves need to be darker than oak, but in the case a custom biome foliage color is used, they should not get darkened
+            if (block == Blocks.DARK_OAK_LEAVES && BiomeEffectsReflection.foliageColor(this.getBiomeWithCaching(pos)).isEmpty()) {
+                int modColor = Colors.mix(color, foliage(pos), 0.75F);
+                color = (modColor & 0xFEFEFE) + 2634762 >> 1;
             } else {
                 color = Colors.mix(color, foliage(pos), 0.75F);
             }
