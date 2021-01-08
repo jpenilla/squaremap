@@ -7,7 +7,6 @@ import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.BiomeFog;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
-import net.minecraft.server.v1_16_R3.BlockStem;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.Chunk;
 import net.minecraft.server.v1_16_R3.IBlockData;
@@ -32,6 +31,35 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
 public final class BiomeColors {
+    private static final Set<Block> grassColorBlocks = ImmutableSet.of(
+            Blocks.GRASS_BLOCK,
+            Blocks.GRASS,
+            Blocks.TALL_GRASS,
+            Blocks.FERN,
+            Blocks.LARGE_FERN,
+            Blocks.POTTED_FERN,
+            Blocks.SUGAR_CANE
+    );
+
+    private static final Set<Block> foliageColorBlocks = ImmutableSet.of(
+            Blocks.VINE,
+            Blocks.OAK_LEAVES,
+            Blocks.JUNGLE_LEAVES,
+            Blocks.ACACIA_LEAVES,
+            Blocks.DARK_OAK_LEAVES
+    );
+
+    private static final Set<Block> waterColorBlocks = ImmutableSet.of(
+            Blocks.WATER,
+            Blocks.BUBBLE_COLUMN,
+            Blocks.CAULDRON
+    );
+
+    private static final Set<Material> waterColorMaterials = ImmutableSet.of(
+            Material.WATER_PLANT,
+            Material.REPLACEABLE_WATER_PLANT
+    );
+
     private final Cache<Long, BiomeBase> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
 
     private final World world;
@@ -43,7 +71,7 @@ public final class BiomeColors {
 
     private final BlockPosition.MutableBlockPosition sharedBlockPos = new BlockPosition.MutableBlockPosition();
 
-    private BiomeColors(World world) {
+    private BiomeColors(final @NonNull World world) {
         this.world = world;
         this.worldConfig = WorldConfig.get(world.getWorld());
 
@@ -66,13 +94,46 @@ public final class BiomeColors {
                         .orElse(getDefaultFoliageColor(mapFoliage, temperature, humidity)));
                 waterColors.put(biome, BiomeEffectsReflection.waterColor(biome));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (final IOException e) {
+            throw new IllegalStateException("Failed to load biome information", e);
         }
     }
 
     public static @NonNull BiomeColors forWorld(final @NonNull World world) {
         return new BiomeColors(world);
+    }
+
+    public int modifyColorFromBiome(int color, final @NonNull Chunk chunk, final @NonNull BlockPosition pos) {
+        final IBlockData data = chunk.getType(pos);
+        final Material mat = data.getMaterial();
+        final Block block = data.getBlock();
+
+        if (grassColorBlocks.contains(block)) {
+
+            color = this.grass(pos);
+
+        } else if (foliageColorBlocks.contains(block)) {
+
+            final Optional<Integer> foliageColor = BiomeEffectsReflection.foliageColor(this.getBiomeWithCaching(pos));
+            if (foliageColor.isPresent()) {
+                color = foliage(pos); // custom color
+            } else if (block == Blocks.DARK_OAK_LEAVES) {
+                //int modColor = Colors.mix(color, foliage(pos), 0.75F);
+                int modColor = color;
+                color = (modColor & 0xFEFEFE) + 2634762 >> 1; // dark oak leaves (no custom color)
+            } else {
+                //color = Colors.mix(color, foliage(pos), 0.75F);
+                color = foliage(pos); // any other foliage (no custom color)
+            }
+
+        } else if (waterColorBlocks.contains(block) || waterColorMaterials.contains(mat)) {
+
+            int modColor = water(pos);
+            color = Colors.mix(color, modColor, 0.8F);
+
+        }
+
+        return color;
     }
 
     private int[] init(BufferedImage image) {
@@ -176,82 +237,6 @@ public final class BiomeColors {
             default:
                 throw new IllegalArgumentException("Unknown or invalid grass color modifier: " + modifier.getName());
         }
-    }
-
-    private static final Set<Block> grassColorBlocks = ImmutableSet.of(
-            Blocks.GRASS_BLOCK,
-            Blocks.GRASS,
-            Blocks.TALL_GRASS,
-            Blocks.FERN,
-            Blocks.LARGE_FERN,
-            Blocks.POTTED_FERN,
-            Blocks.SUGAR_CANE
-    );
-
-    private static final Set<Block> foliageColorBlocks = ImmutableSet.of(
-            Blocks.VINE,
-            Blocks.OAK_LEAVES,
-            Blocks.JUNGLE_LEAVES,
-            Blocks.ACACIA_LEAVES,
-            Blocks.DARK_OAK_LEAVES
-    );
-
-    private static final Set<Block> waterColorBlocks = ImmutableSet.of(
-            Blocks.WATER,
-            Blocks.BUBBLE_COLUMN,
-            Blocks.CAULDRON
-    );
-
-    private static final Set<Material> waterColorMaterials = ImmutableSet.of(
-            Material.WATER_PLANT,
-            Material.REPLACEABLE_WATER_PLANT
-    );
-
-    public int modifyColorFromBiome(int color, final @NonNull Chunk chunk, final @NonNull BlockPosition pos) {
-        final IBlockData data = chunk.getType(pos);
-        final Material mat = data.getMaterial();
-        final Block block = data.getBlock();
-
-        if (grassColorBlocks.contains(block)) {
-
-            color = this.grass(pos);
-
-        } else if (foliageColorBlocks.contains(block)) {
-
-            // Dark oak leaves need to be darker than oak, but in the case a custom biome foliage color is used, they should not get darkened
-            if (block == Blocks.DARK_OAK_LEAVES && BiomeEffectsReflection.foliageColor(this.getBiomeWithCaching(pos)).isEmpty()) {
-                int modColor = Colors.mix(color, foliage(pos), 0.75F);
-                color = (modColor & 0xFEFEFE) + 2634762 >> 1;
-            } else {
-                color = Colors.mix(color, foliage(pos), 0.75F);
-            }
-
-        } else if (waterColorBlocks.contains(block) || waterColorMaterials.contains(mat)) {
-
-            int modColor = water(pos);
-            color = Colors.mix(color, modColor, 0.8F);
-
-        } else if (block == Blocks.SPRUCE_LEAVES) {
-
-            color = Colors.mix(color, 0x619961, 0.5F);
-
-        } else if (block == Blocks.BIRCH_LEAVES) {
-
-            color = Colors.mix(color, 8431445, 0.5F);
-
-        } else if (block == Blocks.LILY_PAD) {
-            color = 2129968;
-        } else if (block == Blocks.ATTACHED_MELON_STEM || block == Blocks.ATTACHED_PUMPKIN_STEM) {
-            color = 14731036;
-        } else if (block == Blocks.MELON_STEM || block == Blocks.PUMPKIN_STEM) {
-            int j = data.get(BlockStem.AGE);
-            int k = j * 32;
-            int l = 255 - j * 8;
-            int m = j * 4;
-            color = k << 16 | l << 8 | m;
-        }
-
-        return color;
     }
 
     // Utils for reflecting into BiomeFog/BiomeEffects

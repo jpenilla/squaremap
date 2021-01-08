@@ -1,5 +1,6 @@
 package net.pl3x.map.util;
 
+import net.minecraft.server.v1_16_R3.IBlockData;
 import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.MaterialMapColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -56,5 +57,9 @@ public final class Colors {
 
     public static @NonNull MaterialMapColor blackMapColor() {
         return MaterialMapColor.b;
+    }
+
+    public static @NonNull MaterialMapColor getMapColor(final @NonNull IBlockData state) {
+        return state.d(null, null);
     }
 }

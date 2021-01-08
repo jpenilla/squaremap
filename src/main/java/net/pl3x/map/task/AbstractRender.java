@@ -12,7 +12,6 @@ import net.minecraft.server.v1_16_R3.HeightMap;
 import net.minecraft.server.v1_16_R3.IBlockData;
 import net.minecraft.server.v1_16_R3.IChunkAccess;
 import net.minecraft.server.v1_16_R3.Material;
-import net.minecraft.server.v1_16_R3.MaterialMapColor;
 import net.minecraft.server.v1_16_R3.PlayerChunk;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.Logger;
@@ -24,6 +23,7 @@ import net.pl3x.map.data.Region;
 import net.pl3x.map.util.BiomeColors;
 import net.pl3x.map.util.Colors;
 import net.pl3x.map.util.FileUtil;
+import net.pl3x.map.util.SpecialColorRegistry;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -186,7 +186,7 @@ public abstract class AbstractRender extends BukkitRunnable {
             }
             curY += pos1.getY();
 
-            color = getMapColor(state).rgb;
+            color = Colors.getMapColor(state).rgb;
         } else {
             int yDiffFromSurface = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
             if (yDiffFromSurface > 1) {
@@ -194,7 +194,7 @@ public abstract class AbstractRender extends BukkitRunnable {
                     --yDiffFromSurface;
                     pos1.setValues(blockX, yDiffFromSurface, blockZ);
                     state = chunk.getType(pos1);
-                } while ((getMapColor(state) == Colors.blackMapColor() || invisibleBlocks.contains(state.getBlock())) && yDiffFromSurface > 0);
+                } while ((Colors.getMapColor(state) == Colors.blackMapColor() || invisibleBlocks.contains(state.getBlock())) && yDiffFromSurface > 0);
 
                 if (yDiffFromSurface > 0 && !state.getFluid().isEmpty()) {
                     int yBelowSurface = yDiffFromSurface - 1;
@@ -210,11 +210,16 @@ public abstract class AbstractRender extends BukkitRunnable {
             }
             curY += yDiffFromSurface;
 
-            color = getMapColor(state).rgb;
+            color = Colors.getMapColor(state).rgb;
         }
 
         if (this.biomeColors != null) {
             color = this.biomeColors.modifyColorFromBiome(color, chunk, this.pos1);
+        }
+
+        int specialCase = SpecialColorRegistry.getColor(state);
+        if (specialCase != -1) {
+            color = specialCase;
         }
 
         double diffY;
@@ -238,7 +243,7 @@ public abstract class AbstractRender extends BukkitRunnable {
             }
             if (this.worldConfig.MAP_WATER_CLEAR) {
                 color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
-                color = Colors.mix(color, getMapColor(fluidState).rgb, 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
+                color = Colors.mix(color, Colors.getMapColor(fluidState).rgb, 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
             }
         } else if (material == Material.LAVA) {
             if (this.worldConfig.MAP_LAVA_CHECKERBOARD) {
@@ -255,10 +260,6 @@ public abstract class AbstractRender extends BukkitRunnable {
         colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
         color = Colors.shade(color, colorOffset);
         return color;
-    }
-
-    private @NonNull MaterialMapColor getMapColor(IBlockData state) {
-        return state.d(null, null);
     }
 
     private net.minecraft.server.v1_16_R3.Chunk getChunkAt(net.minecraft.server.v1_16_R3.World world, int x, int z) {
