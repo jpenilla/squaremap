@@ -109,7 +109,7 @@ public final class BiomeColors {
         if (this.worldConfig.MAP_BIOMES_BLEND > 0) {
             return this.sampleNeighbors(pos, this.worldConfig.MAP_BIOMES_BLEND, this::grassColorSampler);
         }
-        return this.grassColors.get(this.getBiomeWithCaching(pos));
+        return this.grassColorSampler(this.getBiomeWithCaching(pos), pos);
     }
 
     private int grassColorSampler(final @NonNull BiomeBase biome, final @NonNull BlockPosition pos) {
