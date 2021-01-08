@@ -1,11 +1,12 @@
 package net.pl3x.map.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import net.minecraft.server.v1_16_R3.MathHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class WorldConfig {
@@ -68,6 +69,8 @@ public class WorldConfig {
     public boolean MAP_WATER_CLEAR = true;
     public boolean MAP_WATER_CHECKERBOARD = false;
 
+    public boolean MAP_LAVA_CHECKERBOARD = true;
+
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
     }
@@ -82,6 +85,10 @@ public class WorldConfig {
         MAP_WATER_BIOMES_BLEND = MathHelper.clamp(getInt("map.water.biomes.blend-biomes", MAP_WATER_BIOMES_BLEND), 0, 15);
         MAP_WATER_CLEAR = getBoolean("map.water.clear-depth", MAP_WATER_CLEAR);
         MAP_WATER_CHECKERBOARD = getBoolean("map.water.checkerboard", MAP_WATER_CHECKERBOARD);
+    }
+
+    private void lavaSettings() {
+        MAP_LAVA_CHECKERBOARD = getBoolean("map.lava.checkerboard", MAP_LAVA_CHECKERBOARD);
     }
 
     public boolean PLAYER_TRACKER_ENABLED = true;

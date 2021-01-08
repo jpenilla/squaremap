@@ -1,17 +1,9 @@
 package net.pl3x.map.task;
 
+import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Either;
-import java.io.File;
-import java.nio.file.Path;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
-import net.minecraft.server.v1_16_R3.BlockStem;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.Chunk;
 import net.minecraft.server.v1_16_R3.ChunkProviderServer;
@@ -37,7 +29,23 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 public abstract class AbstractRender extends BukkitRunnable {
+    private static final Set<Block> invisibleBlocks = ImmutableSet.of(
+            Blocks.TALL_GRASS,
+            Blocks.FERN,
+            Blocks.GRASS,
+            Blocks.LARGE_FERN
+    );
+
     protected final World world;
     private final WorldServer nmsWorld;
     private final WorldConfig worldConfig;
@@ -59,7 +67,7 @@ public abstract class AbstractRender extends BukkitRunnable {
         this.nmsWorld = ((CraftWorld) world).getHandle();
         this.worldConfig = WorldConfig.get(world);
         this.worldTilesDir = FileUtil.getWorldFolder(world);
-        this.biomeColors = new BiomeColors(nmsWorld);
+        this.biomeColors = this.worldConfig.MAP_BIOMES ? BiomeColors.forWorld(nmsWorld) : null; // We don't need to bother with initing this if we don't map biomes
     }
 
     @Override
@@ -174,7 +182,7 @@ public abstract class AbstractRender extends BukkitRunnable {
                     pos2.setY(yBelowSurface--);
                     fluidState = chunk.getType(pos2);
                     ++fluidCountY;
-                } while (yBelowSurface > 0 && !fluidState.getFluid().isEmpty());
+                } while (yBelowSurface > 0 && fluidCountY <= 10 && !fluidState.getFluid().isEmpty());
             }
             curY += pos1.getY();
 
@@ -186,7 +194,7 @@ public abstract class AbstractRender extends BukkitRunnable {
                     --yDiffFromSurface;
                     pos1.setValues(blockX, yDiffFromSurface, blockZ);
                     state = chunk.getType(pos1);
-                } while (getMapColor(state) == Colors.blackMapColor() && yDiffFromSurface > 0);
+                } while ((getMapColor(state) == Colors.blackMapColor() || invisibleBlocks.contains(state.getBlock())) && yDiffFromSurface > 0);
 
                 if (yDiffFromSurface > 0 && !state.getFluid().isEmpty()) {
                     int yBelowSurface = yDiffFromSurface - 1;
@@ -205,76 +213,48 @@ public abstract class AbstractRender extends BukkitRunnable {
             color = getMapColor(state).rgb;
         }
 
-        if (worldConfig.MAP_BIOMES) {
-            BiomeBase biome = null;
-            if (worldConfig.MAP_WATER_BIOMES_BLEND == 0) {
-                // get biome from world to bypass cache (faster)
-                biome = nmsWorld.getBiome(pos1);
-            }
-
-            boolean smooth = worldConfig.MAP_WATER_BIOMES_BLEND > 0;
-            if (biome != null || smooth) {
-                final IBlockData data = chunk.getType(pos1);
-                final Material mat = data.getMaterial();
-                final Block block = data.getBlock();
-
-                if (block == Blocks.GRASS_BLOCK || block == Blocks.GRASS || block == Blocks.TALL_GRASS || block == Blocks.FERN || block == Blocks.LARGE_FERN || block == Blocks.POTTED_FERN || block == Blocks.SUGAR_CANE) {
-                    int modColor = biomeColors.grass(biome, pos1, smooth);
-                    if (biome == null) {
-                        biome = biomeColors.getBiome(pos1);
-                    }
-                    color = BiomeColors.modifiedGrassColor(biome, pos1, modColor);
-                } else if (block == Blocks.VINE || block == Blocks.OAK_LEAVES || block == Blocks.JUNGLE_LEAVES || block == Blocks.ACACIA_LEAVES) {
-                    color = Colors.mix(color, biomeColors.foliage(biome, pos1, smooth), 0.75F);
-                    //int modified = BiomeColors.modifiedGrassColor(biome != null ? biome : nmsWorld.getBiome(pos1), pos1, modColor);
-                } else if (block == Blocks.DARK_OAK_LEAVES) {
-                    int modColor = Colors.mix(color, biomeColors.foliage(biome, pos1, smooth), 0.75F);
-                    color = (modColor & 0xFEFEFE) + 2634762 >> 1;
-                } else if (block == Blocks.SPRUCE_LEAVES) {
-                    color = Colors.mix(color, 0x619961, 0.5F);
-                } else if (block == Blocks.BIRCH_LEAVES) {
-                    color = Colors.mix(color, 8431445, 0.5F);
-                } else if (block == Blocks.WATER || block == Blocks.BUBBLE_COLUMN || block == Blocks.CAULDRON || mat == Material.WATER_PLANT || mat == Material.REPLACEABLE_WATER_PLANT) {
-                    int modColor = biomeColors.water(biome, pos1, smooth);
-                    color = Colors.mix(color, modColor, 0.8F);
-                } else if (block == Blocks.LILY_PAD) {
-                    color = 2129968;
-                } else if (block == Blocks.ATTACHED_MELON_STEM || block == Blocks.ATTACHED_PUMPKIN_STEM) {
-                    color = 14731036;
-                } else if (block == Blocks.MELON_STEM || block == Blocks.PUMPKIN_STEM) {
-                    int j = data.get(BlockStem.AGE);
-                    int k = j * 32;
-                    int l = 255 - j * 8;
-                    int m = j * 4;
-                    color = k << 16 | l << 8 | m;
-                }
-            }
+        if (this.biomeColors != null) {
+            color = this.biomeColors.modifyColorFromBiome(color, chunk, this.pos1);
         }
 
         double diffY;
         byte colorOffset;
         int odd = (imgX + imgZ & 1);
         if (!state.getFluid().isEmpty() && fluidState != null) {
-            if (worldConfig.MAP_WATER_CHECKERBOARD) {
-                diffY = (double) fluidCountY * 0.1D + (double) odd * 0.2D;
-                colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
-                color = Colors.shade(color, colorOffset);
-            }
-
-            if (worldConfig.MAP_WATER_CLEAR) {
-                color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F));
-                if (!fluidState.getFluid().isEmpty()) {
-                    return color;
-                }
-            }
-
-            return Colors.mix(color, getMapColor(fluidState).rgb, 0.25F / (fluidCountY / 2F));
+            return getFluidColor(fluidCountY, color, state, fluidState, odd);
         }
 
         diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
         colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
         lastY[imgX] = curY;
         return Colors.shade(color, colorOffset);
+    }
+
+    private int getFluidColor(final int fluidCountY, int color, final @NonNull IBlockData state, final @NonNull IBlockData fluidState, final int odd) {
+        final Material material = state.getMaterial();
+        if (material == Material.WATER) {
+            if (this.worldConfig.MAP_WATER_CHECKERBOARD) {
+                color = applyDepthCheckerboard(fluidCountY, color, odd);
+            }
+            if (this.worldConfig.MAP_WATER_CLEAR) {
+                color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
+                color = Colors.mix(color, getMapColor(fluidState).rgb, 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
+            }
+        } else if (material == Material.LAVA) {
+            if (this.worldConfig.MAP_LAVA_CHECKERBOARD) {
+                color = applyDepthCheckerboard(fluidCountY, color, odd);
+            }
+        }
+        return color;
+    }
+
+    private int applyDepthCheckerboard(final double fluidCountY, int color, final double odd) {
+        double diffY;
+        byte colorOffset;
+        diffY = fluidCountY * 0.1D + odd * 0.2D;
+        colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
+        color = Colors.shade(color, colorOffset);
+        return color;
     }
 
     private @NonNull MaterialMapColor getMapColor(IBlockData state) {
