@@ -1,5 +1,11 @@
 package net.pl3x.map.util;
 
+import net.pl3x.map.Logger;
+import net.pl3x.map.Pl3xMap;
+import net.pl3x.map.configuration.Config;
+import net.pl3x.map.configuration.Lang;
+import org.bukkit.World;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -23,11 +29,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
-import net.pl3x.map.Logger;
-import net.pl3x.map.Pl3xMap;
-import net.pl3x.map.configuration.Config;
-import net.pl3x.map.configuration.Lang;
-import org.bukkit.World;
 
 public class FileUtil {
     public static Path PLUGIN_DIR = Pl3xMap.getInstance().getDataFolder().toPath();

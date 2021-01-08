@@ -3,6 +3,7 @@ package net.pl3x.map.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
+
 import net.pl3x.map.Logger;
 import net.pl3x.map.util.FileUtil;
 import org.bukkit.ChatColor;
@@ -17,7 +18,9 @@ public class Lang {
     public static String WORLD_NOT_FOUND = "&cWorld not found";
 
     public static String RENDER_IN_PROGRESS = "&cA render is already in progress on {world}";
+    public static String RENDER_NOT_IN_PROGRESS = "&cNo renders running for {world}";
     public static String FULL_RENDER_STARTED = "&aFull render started on {world}";
+    public static String CANCELLED_RENDER = "&aRender cancelled for {world}";
 
     public static String PLUGIN_RELOADED = "&a{name} v{version} reloaded";
 
@@ -27,11 +30,12 @@ public class Lang {
     public static String LOG_COULD_NOT_SAVE_REGION = "Could not save map for region {x},{z}";
     public static String LOG_UNABLE_TO_WRITE_TO_FILE = "Unable to write to {path}";
     public static String LOG_STARTED_FULLRENDER = "&3Started full map render for &e{world}";
+    public static String LOG_STARTED_RADIUSRENDER = "&3Started radius map render for &e{world}";
     public static String LOG_SCANNING_REGION_FILES = "&eScanning region files...";
     public static String LOG_FOUND_TOTAL_REGION_FILES = "&aFound &7{total} &aregion files";
     public static String LOG_FINISHED_RENDERING = "&3Finished rendering map for &e{world}";
-    public static String LOG_SCANNING_REGIONS_PROGRESS = "&eProcessed&3: &7{chunks} chunks &e(&3{percent}&e)&7, &eETA&3: &7{eta}&7, &eRate&3: &7{rate} cps, &eRegion&3: &7{x}&3, &7{z}";
-    public static String LOG_SCANNING_REGIONS_FINISHED = "&eProcessed&3: &7{chunks} chunks &e(&3{percent}&e)&7";
+    public static String LOG_SCANNING_REGIONS_PROGRESS = "&eWorld&3: &7{world} &eProcessed&3: &7{chunks} chunks &e(&3{percent}&e)&7, &eETA&3: &7{eta}&7, &eRate&3: &7{rate} cps, &eRegion&3: &7{x}&3, &7{z}";
+    public static String LOG_SCANNING_REGIONS_FINISHED = "&eWorld&3: &7{world} &eProcessed&3: &7{chunks} chunks &e(&3{percent}&e)&7";
     public static String LOG_SAVING_CHUNKS_FOR_REGION = "        &aSaving {total} chunks for region {x},{z}";
     public static String LOG_SKIPPING_EMPTY_REGION = "        &cRegion is empty. Skipping. {x},{z}";
 
@@ -51,7 +55,9 @@ public class Lang {
         WORLD_NOT_FOUND = getString("world-not-found", WORLD_NOT_FOUND);
 
         RENDER_IN_PROGRESS = getString("render-in-progress", RENDER_IN_PROGRESS);
+        RENDER_NOT_IN_PROGRESS = getString("render-not-in-progress", RENDER_NOT_IN_PROGRESS);
         FULL_RENDER_STARTED = getString("full-render-started", FULL_RENDER_STARTED);
+        CANCELLED_RENDER = getString("cancelled-render", CANCELLED_RENDER);
 
         PLUGIN_RELOADED = getString("plugin-reloaded", PLUGIN_RELOADED);
         PLUGIN_VERSION = getString("plugin-version", PLUGIN_VERSION);

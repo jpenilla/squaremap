@@ -24,8 +24,11 @@ import net.pl3x.map.data.Region;
 import net.pl3x.map.util.BiomeColors;
 import net.pl3x.map.util.Colors;
 import net.pl3x.map.util.FileUtil;
+import net.pl3x.map.util.Numbers;
 import net.pl3x.map.util.Pair;
 import net.pl3x.map.util.SpecialColorRegistry;
+import net.pl3x.map.util.SpiralIterator;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -53,6 +56,10 @@ public abstract class AbstractRender extends BukkitRunnable {
     private final WorldServer nmsWorld;
     private final WorldConfig worldConfig;
     protected final Path worldTilesDir;
+    private final int centerX;
+    private final int centerZ;
+    private final int radius;
+
     private final DecimalFormat dfPercent = new DecimalFormat("0.00%");
     private final DecimalFormat dfRate = new DecimalFormat("0.0");
     private final BlockPosition.MutableBlockPosition pos1 = new BlockPosition.MutableBlockPosition();
@@ -65,11 +72,14 @@ public abstract class AbstractRender extends BukkitRunnable {
     private long lastTime;
     protected boolean cancelled = false;
 
-    public AbstractRender(World world) {
+    public AbstractRender(World world, Location center, int radius) {
         this.world = world;
         this.nmsWorld = ((CraftWorld) world).getHandle();
         this.worldConfig = WorldConfig.get(world);
         this.worldTilesDir = FileUtil.getWorldFolder(world);
+        this.centerX = Numbers.blockToRegion(center.getBlockX());
+        this.centerZ = Numbers.blockToRegion(center.getBlockZ());
+        this.radius = Numbers.blockToRegion(radius);
         this.biomeColors = this.worldConfig.MAP_BIOMES ? BiomeColors.forWorld(nmsWorld) : null; // We don't need to bother with initing this if we don't map biomes
     }
 
@@ -83,9 +93,35 @@ public abstract class AbstractRender extends BukkitRunnable {
     @Override
     public void run() {
         lastTime = System.currentTimeMillis();
+
+        Logger.info(Lang.LOG_SCANNING_REGION_FILES);
+        List<Region> regions = getRegions();
+
+        maxRadius = Math.min(maxRadius, radius);
+
+        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES
+                .replace("{total}", Integer.toString(totalRegions)));
+
+        SpiralIterator spiral = new SpiralIterator(centerX, centerZ, maxRadius);
+        while (spiral.hasNext()) {
+            if (cancelled) return;
+            Region region = spiral.next();
+            if (regions.contains(region)) {
+                mapRegion(region);
+            }
+        }
+
+        Logger.info(Lang.LOG_FINISHED_RENDERING
+                .replace("{world}", world.getName()));
+
+        cancel();
     }
 
     protected List<Region> getRegions() {
+        int minX = centerX - radius;
+        int maxX = centerX + radius;
+        int minZ = centerZ - radius;
+        int maxZ = centerZ + radius;
         List<Region> regions = new ArrayList<>();
         File[] files = FileUtil.getRegionFiles(world);
         for (File file : files) {
@@ -95,9 +131,11 @@ public abstract class AbstractRender extends BukkitRunnable {
                 String[] split = file.getName().split("\\.");
                 int x = Integer.parseInt(split[1]);
                 int z = Integer.parseInt(split[2]);
-                Region region = new Region(x, z);
-                maxRadius = Math.max(Math.max(maxRadius, Math.abs(x)), Math.abs(z));
-                regions.add(region);
+                if (x >= minX && x <= maxX && z >= minZ && z <= maxZ) {
+                    Region region = new Region(x, z);
+                    maxRadius = Math.max(Math.max(maxRadius, Math.abs(x)), Math.abs(z));
+                    regions.add(region);
+                }
             } catch (NumberFormatException ignore) {
             }
         }
@@ -114,12 +152,14 @@ public abstract class AbstractRender extends BukkitRunnable {
         for (int blockX = startX; blockX < startX + Image.SIZE; blockX += 16) {
             int[] lastY = new int[16];
             for (int blockZ = startZ; blockZ < startZ + Image.SIZE; blockZ += 16) {
+                int chunkX = Numbers.blockToChunk(blockX);
+                int chunkZ = Numbers.blockToChunk(blockZ);
                 net.minecraft.server.v1_16_R3.Chunk chunk;
                 if (blockZ == startZ) {
                     // this is the top line of the image, we need to
                     // scan the bottom line of the region to the north
                     // in order to get the correct lastY for shading
-                    chunk = getChunkAt(nmsWorld, blockX >> 4, (blockZ >> 4) - 1);
+                    chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
                     if (chunk != null && !chunk.isEmpty()) {
                         for (int x = 0; x < 16; x++) {
                             if (cancelled) return;
@@ -127,7 +167,7 @@ public abstract class AbstractRender extends BukkitRunnable {
                         }
                     }
                 }
-                chunk = getChunkAt(nmsWorld, blockX >> 4, blockZ >> 4);
+                chunk = getChunkAt(nmsWorld, chunkX, chunkZ);
                 if (chunk != null && !chunk.isEmpty()) {
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
@@ -241,6 +281,8 @@ public abstract class AbstractRender extends BukkitRunnable {
         if (fluid == FluidTypes.WATER || fluid == FluidTypes.FLOWING_WATER) {
             if (this.worldConfig.MAP_WATER_CHECKERBOARD) {
                 color = applyDepthCheckerboard(fluidCountY, color, odd);
+            } else {
+                color = (0xFF << 24) | (color & 0x00FFFFFF); // alpha seems to be missing from fluids :/
             }
             if (this.worldConfig.MAP_WATER_CLEAR) {
                 color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
@@ -249,6 +291,8 @@ public abstract class AbstractRender extends BukkitRunnable {
         } else if (fluid == FluidTypes.LAVA || fluid == FluidTypes.FLOWING_LAVA) {
             if (this.worldConfig.MAP_LAVA_CHECKERBOARD) {
                 color = applyDepthCheckerboard(fluidCountY, color, odd);
+            } else {
+                color = (0xFF << 24) | (color & 0x00FFFFFF); // alpha seems to be missing from fluids :/
             }
         }
         return color;
@@ -300,6 +344,7 @@ public abstract class AbstractRender extends BukkitRunnable {
         String etaStr = String.format("%02d:%02d:%02d", hrs, min, sec);
 
         Logger.info(region == null ? Lang.LOG_SCANNING_REGIONS_FINISHED : Lang.LOG_SCANNING_REGIONS_PROGRESS
+                .replace("{world}", world.getName())
                 .replace("{chunks}", Integer.toString(curChunks))
                 .replace("{percent}", percentStr)
                 .replace("{eta}", etaStr)

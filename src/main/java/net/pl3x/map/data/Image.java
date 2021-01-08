@@ -1,14 +1,15 @@
 package net.pl3x.map.data;
 
+import net.minecraft.server.v1_16_R3.MathHelper;
+import net.pl3x.map.Logger;
+import net.pl3x.map.configuration.Lang;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import javax.imageio.ImageIO;
-import net.minecraft.server.v1_16_R3.MathHelper;
-import net.pl3x.map.Logger;
-import net.pl3x.map.configuration.Lang;
 
 public class Image {
     public static final int MAX_ZOOM = 3;

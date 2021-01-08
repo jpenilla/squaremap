@@ -11,11 +11,12 @@ import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.Chunk;
 import net.minecraft.server.v1_16_R3.IBlockData;
 import net.minecraft.server.v1_16_R3.IRegistry;
-import net.minecraft.server.v1_16_R3.IRegistryWritable;
 import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.MathHelper;
 import net.minecraft.server.v1_16_R3.World;
 import net.pl3x.map.configuration.WorldConfig;
+import org.bukkit.block.Biome;
+import org.bukkit.craftbukkit.v1_16_R3.block.CraftBlock;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.imageio.ImageIO;
@@ -84,7 +85,7 @@ public final class BiomeColors {
             int[] mapGrass = init(imgGrass);
             int[] mapFoliage = init(imgFoliage);
 
-            IRegistryWritable<BiomeBase> biomeRegistry = world.r().b(IRegistry.ay);
+            IRegistry<BiomeBase> biomeRegistry = getBiomeRegistry();
             for (BiomeBase biome : biomeRegistry) {
                 float temperature = MathHelper.a(biome.k(), 0.0F, 1.0F);
                 float humidity = MathHelper.a(biome.getHumidity(), 0.0F, 1.0F);
@@ -114,13 +115,18 @@ public final class BiomeColors {
 
         } else if (foliageColorBlocks.contains(block)) {
 
-            final Optional<Integer> foliageColor = BiomeEffectsReflection.foliageColor(this.getBiomeWithCaching(pos));
+            BiomeBase biome = this.getBiomeWithCaching(pos);
+            final Optional<Integer> foliageColor = BiomeEffectsReflection.foliageColor(biome);
             if (foliageColor.isPresent()) {
                 color = foliage(pos); // custom color
             } else if (block == Blocks.DARK_OAK_LEAVES) {
                 //int modColor = Colors.mix(color, foliage(pos), 0.75F);
                 int modColor = color;
                 color = (modColor & 0xFEFEFE) + 2634762 >> 1; // dark oak leaves (no custom color)
+            } else if (block == Blocks.OAK_LEAVES && (biome == getBiome(Biome.DARK_FOREST) || biome == getBiome(Biome.DARK_FOREST_HILLS))) {
+                // special case for oak leaves in dark forest
+                int modColor = color;
+                color = Colors.mix(color, (modColor & 0xFEFEFE) + 2634762 >> 1, 0.5F);
             } else {
                 //color = Colors.mix(color, foliage(pos), 0.75F);
                 color = foliage(pos); // any other foliage (no custom color)
@@ -185,8 +191,8 @@ public final class BiomeColors {
     }
 
     private int water(final @NonNull BlockPosition pos) {
-        if (this.worldConfig.MAP_WATER_BIOMES_BLEND > 0) {
-            return this.sampleNeighbors(pos, this.worldConfig.MAP_WATER_BIOMES_BLEND, (biome, b) -> this.waterColors.get(biome));
+        if (this.worldConfig.MAP_BIOMES_BLEND > 0) {
+            return this.sampleNeighbors(pos, this.worldConfig.MAP_BIOMES_BLEND, (biome, b) -> this.waterColors.get(biome));
         }
         return this.waterColors.get(this.getBiomeWithCaching(pos));
     }
@@ -218,6 +224,14 @@ public final class BiomeColors {
             blockPosBiomeCache.put(xz, biome);
         }
         return biome;
+    }
+
+    private BiomeBase getBiome(Biome biome) {
+        return CraftBlock.biomeToBiomeBase(getBiomeRegistry(), biome);
+    }
+
+    private IRegistry<BiomeBase> getBiomeRegistry() {
+        return world.r().b(IRegistry.ay);
     }
 
     private static int modifiedGrassColor(final @NonNull BiomeBase biome, final @NonNull BlockPosition pos, final int color) {

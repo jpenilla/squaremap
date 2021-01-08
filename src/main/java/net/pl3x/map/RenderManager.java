@@ -1,14 +1,15 @@
 package net.pl3x.map;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.task.AbstractRender;
 import net.pl3x.map.task.FullRender;
 import org.bukkit.Location;
 import org.bukkit.World;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class RenderManager {
     private static final Map<UUID, AbstractRender> renders = new HashMap<>();
@@ -42,7 +43,16 @@ public class RenderManager {
         render.runTaskAsynchronously(Pl3xMap.getInstance());
     }
 
-    public static void radiusRender(Location center, int radius) {
+    public static void radiusRender(World world, Location center, int radius) {
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public static void cancelRender(World world) {
+        AbstractRender render = renders.get(world.getUID());
+        if (render == null) {
+            throw new RuntimeException(Lang.RENDER_NOT_IN_PROGRESS
+                    .replace("{world}", world.getName()));
+        }
+        render.cancel();
     }
 }

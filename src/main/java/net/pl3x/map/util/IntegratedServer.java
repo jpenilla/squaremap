@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import net.pl3x.map.Logger;
 import net.pl3x.map.configuration.Config;
 import net.pl3x.map.configuration.Lang;

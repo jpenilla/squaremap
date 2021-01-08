@@ -1,5 +1,9 @@
 package net.pl3x.map.util;
 
+import net.pl3x.map.Logger;
+import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.task.Progress;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,9 +11,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
-import net.pl3x.map.Logger;
-import net.pl3x.map.configuration.Lang;
-import net.pl3x.map.task.Progress;
 
 public class JarDownloader {
     public boolean downloadJar(String url, File destination) {

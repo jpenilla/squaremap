@@ -14,9 +14,6 @@ var map = L.map('map', {
     center: [0, 0],
     attributionControl: false,
     noWrap: true
-})
-.addEventListener('zoomEnd', (event) => {
-    //
 });
 
 var layerControls = {};
@@ -65,6 +62,10 @@ function init() {
 
 function unproject(x, z) {
     return map.unproject([x, z], settings.maxZoom);
+}
+
+function project(latlng) {
+    return map.project(latlng, settings.maxZoom);
 }
 
 
@@ -164,10 +165,36 @@ function addUICoordinates() {
     });
     var coords = new Coords();
     map.addControl(coords);
-
     map.addEventListener('mousemove', (event) => {
-        coords.updateHTML(map.project(event.latlng, settings.maxZoom));
+        coords.updateHTML(project(event.latlng));
     });
+}
+
+function addUILink() {
+    let Link = L.Control.extend({
+        _container: null,
+        options: {
+            position: 'bottomleft'
+        },
+        onAdd: function (map) {
+            var link = L.DomUtil.create('div', 'leaflet-control-layers link');
+            this._link = link;
+            this.updateHTML(null);
+            return link;
+        },
+        updateHTML: function() {
+            var center = project(map.getCenter());
+            var zoom = map.getZoom();
+            var x = Math.floor(center.x);
+            var z = Math.floor(center.y);
+            var url = "?world=" + world + "&zoom=" + zoom + "&x=" + x + "&z=" + z
+            this._link.innerHTML = "<a href='" + url + "'><img src='images/clear.png'/></a>";
+        }
+    });
+    var link = new Link();
+    map.addControl(link);
+    map.addEventListener('move', (event) => link.updateHTML());
+    map.addEventListener('zoom', (event) => link.updateHTML());
 }
 
 function addPlayerList() {
@@ -227,6 +254,7 @@ function tick(count) {
                 players.init();
                 L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
                 if (settings.world.ui.coordinates) {
+                    addUILink();
                     addUICoordinates();
                 }
                 addPlayerList();

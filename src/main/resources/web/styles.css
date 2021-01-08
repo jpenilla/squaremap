@@ -30,9 +30,26 @@ div.leaflet-nameplate-pane div,
 div.leaflet-marker-pane img {
   transition: all 0.25s;
 }
+.leaflet-bottom.leaflet-left .link,
+.leaflet-bottom.leaflet-left .coordinates {
+  display: inline-block;
+  float: none;
+}
+div.leaflet-control-layers.link img {
+  width: 34px;
+  height: 34px;
+  vertical-align: bottom;
+  bottom: 0px;
+  background-image: url("images/link.png");
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
 div.leaflet-control-layers.coordinates {
-  padding: 5px 10px;
-  text-align: center;
+  vertical-align: bottom;
+  padding: 2px 5px;
+  line-height: 14px;
+  height: 30px;
 }
 #sidebar {
   position: absolute;
@@ -44,5 +61,4 @@ div.leaflet-control-layers.coordinates {
   border-left: 1px solid #000000;
   background-color: rgba(0,0,0,0.6);
   color: #ffffff;
-  display: hidden; /* not ready */
 }

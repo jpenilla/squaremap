@@ -1,5 +1,7 @@
 package net.pl3x.map.data;
 
+import net.pl3x.map.util.Numbers;
+
 public class Region {
     private final int x;
     private final int z;
@@ -18,19 +20,19 @@ public class Region {
     }
 
     public int getChunkX() {
-        return x << 5;
+        return Numbers.regionToChunk(x);
     }
 
     public int getChunkZ() {
-        return z << 5;
+        return Numbers.regionToChunk(z);
     }
 
     public int getBlockX() {
-        return x << 9;
+        return Numbers.regionToBlock(x);
     }
 
     public int getBlockZ() {
-        return z << 9;
+        return Numbers.regionToBlock(z);
     }
 
     @Override

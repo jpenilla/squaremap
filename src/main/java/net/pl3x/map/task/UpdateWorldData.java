@@ -1,13 +1,14 @@
 package net.pl3x.map.task;
 
 import com.google.gson.Gson;
-import java.util.HashMap;
-import java.util.Map;
 import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.util.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UpdateWorldData extends BukkitRunnable {
     private final Gson gson = new Gson();

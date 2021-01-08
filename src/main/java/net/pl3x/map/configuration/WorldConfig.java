@@ -64,8 +64,6 @@ public class WorldConfig {
     public boolean MAP_BIOMES = true;
     public int MAP_BIOMES_BLEND = 4;
 
-    public boolean MAP_WATER_BIOMES = true;
-    public int MAP_WATER_BIOMES_BLEND = 4;
     public boolean MAP_WATER_CLEAR = true;
     public boolean MAP_WATER_CHECKERBOARD = false;
 
@@ -81,8 +79,6 @@ public class WorldConfig {
     }
 
     private void waterSettings() {
-        MAP_WATER_BIOMES = getBoolean("map.water.biomes.enabled", MAP_WATER_BIOMES);
-        MAP_WATER_BIOMES_BLEND = MathHelper.clamp(getInt("map.water.biomes.blend-biomes", MAP_WATER_BIOMES_BLEND), 0, 15);
         MAP_WATER_CLEAR = getBoolean("map.water.clear-depth", MAP_WATER_CLEAR);
         MAP_WATER_CHECKERBOARD = getBoolean("map.water.checkerboard", MAP_WATER_CHECKERBOARD);
     }

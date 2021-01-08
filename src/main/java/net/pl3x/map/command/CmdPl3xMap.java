@@ -1,9 +1,5 @@
 package net.pl3x.map.command;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.RenderManager;
 import net.pl3x.map.configuration.Config;
@@ -17,12 +13,17 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class CmdPl3xMap implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
             String arg = args[0].toLowerCase(Locale.ROOT);
-            return Stream.of("fullrender", "reload")
+            return Stream.of("fullrender", "radiusrender", "cancelrender", "reload")
                     .filter(cmd -> cmd.startsWith(arg))
                     .collect(Collectors.toList());
         } else if (args.length == 2) {
@@ -53,6 +54,29 @@ public class CmdPl3xMap implements TabExecutor {
                 Lang.send(sender, Lang.FULL_RENDER_STARTED
                         .replace("{world}", world.getName()));
                 RenderManager.fullRender(world);
+                return true;
+            }
+
+            if (args[0].equalsIgnoreCase("radiusrender")) {
+                Lang.send(sender, "Not implemented yet");
+                return true;
+            }
+
+            if (args[0].equalsIgnoreCase("cancelrender")) {
+                World world = getWorld(sender, args);
+                if (world == null) {
+                    return true;
+                }
+
+                if (!RenderManager.isRendering(world)) {
+                    Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS
+                            .replace("{world}", world.getName()));
+                    return true;
+                }
+
+                Lang.send(sender, Lang.CANCELLED_RENDER
+                        .replace("{world}", world.getName()));
+                RenderManager.cancelRender(world);
                 return true;
             }
 

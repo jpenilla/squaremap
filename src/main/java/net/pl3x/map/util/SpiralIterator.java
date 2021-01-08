@@ -1,11 +1,12 @@
 package net.pl3x.map.util;
 
-import java.util.Iterator;
 import net.pl3x.map.data.Region;
+
+import java.util.Iterator;
 
 public class SpiralIterator implements Iterator<Region> {
     private final int radius, step;
-    private int x, z, legX, legZ, leg = 2;
+    private int x, z, legX, legZ, leg = 0;
     private boolean hasNext = true;
 
     public SpiralIterator(int x, int z, int radius) {
@@ -36,23 +37,23 @@ public class SpiralIterator implements Iterator<Region> {
             x += step;
             if (x >= legX) {
                 leg++;
-                legX += step;
             }
         } else if (leg == 1) {
             z += step;
             if (z >= legZ) {
                 leg++;
-                legZ += step;
             }
         } else if (leg == 2) {
             x -= step;
             if (-x >= legX) {
                 leg++;
+                legX += step;
             }
         } else if (leg == 3) {
             z -= step;
             if (-z >= legZ) {
                 leg = 0;
+                legZ += step;
             }
         }
         if (legX > radius && legZ > radius) {

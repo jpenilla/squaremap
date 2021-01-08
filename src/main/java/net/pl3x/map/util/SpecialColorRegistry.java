@@ -45,8 +45,14 @@ public final class SpecialColorRegistry {
 
         // Misc plants
         staticColorBuilder.put(Blocks.LILY_PAD, 0x208030);
-        staticColorBuilder.put(Blocks.ATTACHED_MELON_STEM, 0XE0C71C); // yellow?
-        staticColorBuilder.put(Blocks.ATTACHED_PUMPKIN_STEM, 0XE0C71C); // yellow ?
+        staticColorBuilder.put(Blocks.ATTACHED_MELON_STEM, 0xE0C71C); // yellow?
+        staticColorBuilder.put(Blocks.ATTACHED_PUMPKIN_STEM, 0xE0C71C); // yellow ?
+
+        // Lava
+        staticColorBuilder.put(Blocks.LAVA, 0xEA5C0F); // red was so ugly. lets go with orange
+
+        // Mycelium
+        staticColorBuilder.put(Blocks.MYCELIUM, 0x6F6265); // better mycelium color than purple
 
         staticColorMap = staticColorBuilder.build();
 

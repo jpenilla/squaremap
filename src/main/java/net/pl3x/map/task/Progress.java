@@ -1,8 +1,9 @@
 package net.pl3x.map.task;
 
-import java.text.DecimalFormat;
 import net.pl3x.map.Logger;
 import net.pl3x.map.configuration.Lang;
+
+import java.text.DecimalFormat;
 
 public class Progress extends Thread {
     private final DecimalFormat df = new DecimalFormat("##0.00%");
