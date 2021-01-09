@@ -2,12 +2,8 @@ var world = "world";
 var curZoom = 0;
 var maxZoom = 0;
 
-var settings = {
-    defZoom: 3,
-    minZoom: 0,
-    maxZoom: 3,
-    extraZoomIn: 2
-};
+var settings = {};
+var layerControls = {};
 
 var map = L.map('map', {
     crs: L.CRS.Simple,
@@ -16,13 +12,10 @@ var map = L.map('map', {
     noWrap: true
 });
 
-var layerControls = {};
-
 
 // init
 // TODO start with getJson of global settings file
 init();
-centerFromURL();
 
 
 // icons
@@ -41,19 +34,43 @@ var Icons = {
     })
 };
 
-// setup the map
+// init the json
 function init() {
+    getJSON("tiles/" + world + "/settings.json", function(json) {
+        settings = json.settings;
+
+        document.title = json.settings.ui.title;
+
+        initMap();
+        centerFromURL();
+
+        spawn.init();
+        players.init();
+
+        L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
+        if (settings.ui.coordinates) {
+            addUILink();
+            addUICoordinates();
+        }
+        addPlayerList();
+
+        spawn.update(json.spawn);
+    });
+}
+
+// setup the map
+function initMap() {
     map
-        .setView([0, 0], settings.defZoom)
-        .setMinZoom(settings.minZoom) // extra zoom out doesn't work :(
-        .setMaxZoom(settings.maxZoom + settings.extraZoomIn)
+        .setView([0, 0], settings.zoom.def)
+        .setMinZoom(0) // extra zoom out doesn't work :(
+        .setMaxZoom(settings.zoom.max + settings.zoom.extra)
     ;
 
     // setup the map tiles layer
     L.tileLayer("tiles/" + world + "/{z}/{x}_{y}.png", {
         tileSize: 512,
-        minNativeZoom: settings.minZoom,
-        maxNativeZoom: settings.maxZoom
+        minNativeZoom: 0,
+        maxNativeZoom: settings.zoom.max
     }).addTo(map);
 
     tick(0);
@@ -61,11 +78,11 @@ function init() {
 
 
 function unproject(x, z) {
-    return map.unproject([x, z], settings.maxZoom);
+    return map.unproject([x, z], settings.zoom.max);
 }
 
 function project(latlng) {
-    return map.project(latlng, settings.maxZoom);
+    return map.project(latlng, settings.zoom.max);
 }
 
 
@@ -97,14 +114,14 @@ var players = {
             icon: Icons.player,
             rotationAngle: (180 + player.yaw)
         }).addTo(this.layer);
-        if (settings.world.player_tracker.nameplates.enabled) {
+        if (settings.player_tracker.nameplates.enabled) {
             var tooltip = L.tooltip({
                 permanent: true,
                 direction: "right",
                 offset: [10,0],
                 pane: "nameplate"
             });
-            if (settings.world.player_tracker.nameplates.show_heads) {
+            if (settings.player_tracker.nameplates.show_heads) {
                 tooltip.setContent("<img src='https://crafatar.com/avatars/" + player.uuid + "?size=16&default=MHF_Steve&overlay' /><span>" + player.name + "</span>");
             } else {
                 tooltip.setContent("<span>" + player.name + "</span>");
@@ -214,7 +231,7 @@ function centerFromURL() {
     var w = getUrlParam("world");
     if (w == null) w = world;
     var y = getUrlParam("zoom");
-    if (y == null) y = settings.defZoom;
+    if (y == null) y = settings.zoom.def;
     var x = getUrlParam("x");
     if (x == null) x = 0;
     var z = getUrlParam("z");
@@ -246,19 +263,6 @@ function getJSON(url, fn) {
 function tick(count) {
     if (count % 5 == 0) {
         getJSON("tiles/" + world + "/settings.json", function(json) {
-            settings.world = json.settings;
-            if (count == 0) {
-                // TODO move all this to global json init
-                document.title = settings.world.ui.title;
-                spawn.init();
-                players.init();
-                L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
-                if (settings.world.ui.coordinates) {
-                    addUILink();
-                    addUICoordinates();
-                }
-                addPlayerList();
-            }
             spawn.update(json.spawn);
         });
     }
