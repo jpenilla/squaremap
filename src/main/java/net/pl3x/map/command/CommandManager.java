@@ -1,26 +1,26 @@
 package net.pl3x.map.command;
 
-import cloud.commandframework.annotations.AnnotationParser;
-import cloud.commandframework.arguments.parser.ParserParameters;
-import cloud.commandframework.arguments.parser.StandardParameters;
+import cloud.commandframework.Command;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.bukkit.CloudBukkitCapabilities;
 import cloud.commandframework.exceptions.CommandExecutionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
-import cloud.commandframework.meta.CommandMeta;
-import cloud.commandframework.meta.SimpleCommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.collect.ImmutableSet;
 import net.pl3x.map.Pl3xMap;
+import net.pl3x.map.command.commands.CancelRenderCommand;
+import net.pl3x.map.command.commands.FullRenderCommand;
+import net.pl3x.map.command.commands.RadiusRenderCommand;
+import net.pl3x.map.command.commands.ReloadCommand;
+import net.pl3x.map.command.exception.ConsoleMustProvidePlayerException;
 import net.pl3x.map.configuration.Lang;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 
-public class CommandManager extends PaperCommandManager<CommandSender> {
+public final class CommandManager extends PaperCommandManager<CommandSender> {
 
     public CommandManager(final @NonNull Pl3xMap plugin) throws Exception {
 
@@ -29,17 +29,6 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
                 CommandExecutionCoordinator.simpleCoordinator(),
                 UnaryOperator.identity(),
                 UnaryOperator.identity()
-        );
-
-        final Function<ParserParameters, CommandMeta> commandMetaFunction = parameters ->
-                SimpleCommandMeta.builder()
-                        .with(CommandMeta.DESCRIPTION, parameters.get(StandardParameters.DESCRIPTION, "No description"))
-                        .build();
-
-        final AnnotationParser<CommandSender> annotationParser = new AnnotationParser<>(
-                this,
-                CommandSender.class,
-                commandMetaFunction
         );
 
         if (this.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
@@ -65,9 +54,19 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
         });
 
         ImmutableSet.of(
-                new CmdPl3xMap(plugin)
-        ).forEach(annotationParser::parse);
+                new ReloadCommand(plugin, this),
+                new FullRenderCommand(plugin, this),
+                new CancelRenderCommand(plugin, this),
+                new RadiusRenderCommand(plugin, this)
+        ).forEach(Pl3xMapCommand::register);
 
+    }
+
+    @SafeVarargs
+    public final void commands(final @NonNull Command<CommandSender> @NonNull ... commands) {
+        for (final Command<CommandSender> command : commands) {
+            this.command(command);
+        }
     }
 
 }
