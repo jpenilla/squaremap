@@ -241,8 +241,6 @@ public abstract class AbstractRender extends BukkitRunnable {
             color = specialCase;
         }
 
-        double diffY;
-        byte colorOffset;
         int odd = (imgX + imgZ & 1);
 
         final Pair<Integer, IBlockData> fluidPair = this.findDepthIfFluid(pos1.getY(), state, chunk);
@@ -252,8 +250,8 @@ public abstract class AbstractRender extends BukkitRunnable {
             return getFluidColor(fluidDepth, color, state, fluidState, odd);
         }
 
-        diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
-        colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
+        double diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
+        byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
         lastY[imgX] = curY;
         return Colors.shade(color, colorOffset);
     }
@@ -278,33 +276,30 @@ public abstract class AbstractRender extends BukkitRunnable {
 
     private int getFluidColor(final int fluidCountY, int color, final @NonNull IBlockData state, final @NonNull IBlockData fluidState, final int odd) {
         final FluidType fluid = state.getFluid().getType();
+        boolean shaded = false;
         if (fluid == FluidTypes.WATER || fluid == FluidTypes.FLOWING_WATER) {
             if (this.worldConfig.MAP_WATER_CHECKERBOARD) {
                 color = applyDepthCheckerboard(fluidCountY, color, odd);
-            } else {
-                color = (0xFF << 24) | (color & 0x00FFFFFF); // alpha seems to be missing from fluids :/
+                shaded = true;
             }
             if (this.worldConfig.MAP_WATER_CLEAR) {
                 color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
                 color = Colors.mix(color, Colors.getMapColor(fluidState).rgb, 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
+                shaded = true;
             }
         } else if (fluid == FluidTypes.LAVA || fluid == FluidTypes.FLOWING_LAVA) {
             if (this.worldConfig.MAP_LAVA_CHECKERBOARD) {
                 color = applyDepthCheckerboard(fluidCountY, color, odd);
-            } else {
-                color = (0xFF << 24) | (color & 0x00FFFFFF); // alpha seems to be missing from fluids :/
+                shaded = true;
             }
         }
-        return color;
+        return shaded ? color : Colors.removeAlpha(color);
     }
 
-    private int applyDepthCheckerboard(final double fluidCountY, int color, final double odd) {
-        double diffY;
-        byte colorOffset;
-        diffY = fluidCountY * 0.1D + odd * 0.2D;
-        colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
-        color = Colors.shade(color, colorOffset);
-        return color;
+    private int applyDepthCheckerboard(final double fluidCountY, final int color, final double odd) {
+        double diffY = fluidCountY * 0.1D + odd * 0.2D;
+        byte colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
+        return Colors.shade(color, colorOffset);
     }
 
     private net.minecraft.server.v1_16_R3.Chunk getChunkAt(net.minecraft.server.v1_16_R3.World world, int x, int z) {

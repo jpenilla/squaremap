@@ -9,6 +9,10 @@ public final class Colors {
     private Colors() {
     }
 
+    public static int removeAlpha(final int color) {
+        return 0xFF << 24 | color & 0x00FFFFFF;
+    }
+
     public static int shade(int color, int shade) {
         float ratio = 220F / 255F;
         if (shade == 2) ratio = 1.0F;

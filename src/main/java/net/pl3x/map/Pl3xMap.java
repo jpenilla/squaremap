@@ -9,6 +9,8 @@ import net.pl3x.map.util.FileUtil;
 import net.pl3x.map.util.IntegratedServer;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Level;
+
 public final class Pl3xMap extends JavaPlugin {
     private static Pl3xMap instance;
     private UpdateWorldData updateWorldData;
@@ -23,13 +25,15 @@ public final class Pl3xMap extends JavaPlugin {
         Config.reload();
         Lang.reload();
 
-        start();
-
         try {
             new CommandManager(this);
         } catch (Exception e) {
-            getLogger().warning("Failed to initialize command manager");
+            getLogger().log(Level.WARNING, "Failed to initialize command manager", e);
+            this.setEnabled(false);
+            return;
         }
+
+        start();
     }
 
     @Override

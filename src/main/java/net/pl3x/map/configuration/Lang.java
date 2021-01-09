@@ -21,6 +21,8 @@ public class Lang {
     public static String RENDER_NOT_IN_PROGRESS = "&cNo renders running for {world}";
     public static String FULL_RENDER_STARTED = "&aFull render started on {world}";
     public static String CANCELLED_RENDER = "&aRender cancelled for {world}";
+    public static String PROVIDE_A_WORLD = "&cWhen running this command from console, you must specify the world";
+    public static String INTERNAL_ERROR = "&cAn internal error occurred while attempting to perform this command.";
 
     public static String PLUGIN_RELOADED = "&a{name} v{version} reloaded";
 
@@ -58,6 +60,8 @@ public class Lang {
         RENDER_NOT_IN_PROGRESS = getString("render-not-in-progress", RENDER_NOT_IN_PROGRESS);
         FULL_RENDER_STARTED = getString("full-render-started", FULL_RENDER_STARTED);
         CANCELLED_RENDER = getString("cancelled-render", CANCELLED_RENDER);
+        PROVIDE_A_WORLD = getString("provide-a-world", PROVIDE_A_WORLD);
+        INTERNAL_ERROR = getString("internal-error", INTERNAL_ERROR);
 
         PLUGIN_RELOADED = getString("plugin-reloaded", PLUGIN_RELOADED);
         PLUGIN_VERSION = getString("plugin-version", PLUGIN_VERSION);
