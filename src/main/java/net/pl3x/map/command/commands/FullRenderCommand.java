@@ -14,7 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class FullRenderCommand extends Pl3xMapCommand {
+public final class FullRenderCommand extends Pl3xMapCommand {
 
     public FullRenderCommand(final @NonNull Pl3xMap plugin, final @NonNull CommandManager commandManager) {
         super(plugin, commandManager);
@@ -22,7 +22,7 @@ public class FullRenderCommand extends Pl3xMapCommand {
 
     @Override
     public void register() {
-        final Command<CommandSender> anySender = this.commandManager.commandBuilder("pl3xmap", "map")
+        final Command<CommandSender> anySender = this.commandManager.commandBuilder("pl3xmap")
                 .argument(WorldArgument.of("world"))
                 .literal("fullrender")
                 .meta(CommandMeta.DESCRIPTION, "Starts a full render")
@@ -30,7 +30,7 @@ public class FullRenderCommand extends Pl3xMapCommand {
                 .handler(this::anySender)
                 .build();
 
-        final Command<CommandSender> player = this.commandManager.commandBuilder("pl3xmap", "map")
+        final Command<CommandSender> player = this.commandManager.commandBuilder("pl3xmap")
                 .literal("fullrender")
                 .meta(CommandMeta.DESCRIPTION, "Starts a full render")
                 .permission("pl3xmap.command.fullrender")

@@ -67,7 +67,11 @@ public final class Colors {
         return MaterialMapColor.b;
     }
 
-    public static @NonNull MaterialMapColor getMapColor(final @NonNull IBlockData state) {
-        return state.d(null, null);
+    public static int getMapColor(final @NonNull IBlockData state) {
+        final int special = SpecialColorRegistry.getColor(state);
+        if (special != -1) {
+            return special;
+        }
+        return state.d(null, null).rgb;
     }
 }

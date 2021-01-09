@@ -5,7 +5,7 @@ import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.bukkit.CloudBukkitCapabilities;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.command.commands.CancelRenderCommand;
 import net.pl3x.map.command.commands.FullRenderCommand;
@@ -39,7 +39,7 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
             this.registerAsynchronousCompletions();
         }
 
-        ImmutableSet.of(
+        ImmutableList.of(
                 new ReloadCommand(plugin, this),
                 new FullRenderCommand(plugin, this),
                 new CancelRenderCommand(plugin, this),

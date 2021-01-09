@@ -230,15 +230,10 @@ public abstract class AbstractRender extends BukkitRunnable {
 
         curY += pos1.getY();
 
-        int color = Colors.getMapColor(state).rgb;
+        int color = Colors.getMapColor(state);
 
         if (this.biomeColors != null) {
             color = this.biomeColors.modifyColorFromBiome(color, chunk, this.pos1);
-        }
-
-        int specialCase = SpecialColorRegistry.getColor(state);
-        if (specialCase != -1) {
-            color = specialCase;
         }
 
         int odd = (imgX + imgZ & 1);
@@ -284,7 +279,7 @@ public abstract class AbstractRender extends BukkitRunnable {
             }
             if (this.worldConfig.MAP_WATER_CLEAR) {
                 color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
-                color = Colors.mix(color, Colors.getMapColor(fluidState).rgb, 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
+                color = Colors.mix(color, Colors.getMapColor(fluidState), 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
                 shaded = true;
             }
         } else if (fluid == FluidTypes.LAVA || fluid == FluidTypes.FLOWING_LAVA) {

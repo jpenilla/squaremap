@@ -21,7 +21,7 @@ public final class ReloadCommand extends Pl3xMapCommand {
 
     @Override
     public void register() {
-        final Command<CommandSender> reloadCommand = this.commandManager.commandBuilder("pl3xmap")
+        final Command<CommandSender> reloadCommand = this.commandManager.commandBuilder("pl3xmap", "map")
                 .literal("reload")
                 .meta(CommandMeta.DESCRIPTION, "Reloads the plugin")
                 .permission("pl3xmap.command.reload")
