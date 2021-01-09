@@ -87,6 +87,16 @@ public class WorldConfig {
         MAP_LAVA_CHECKERBOARD = getBoolean("map.lava.checkerboard", MAP_LAVA_CHECKERBOARD);
     }
 
+    public int ZOOM_MAX = 3;
+    public int ZOOM_DEFAULT = 3;
+    public int ZOOM_EXTRA = 2;
+
+    private void zoomSettings() {
+        ZOOM_MAX = getInt("map.zoom.maximum", ZOOM_MAX);
+        ZOOM_DEFAULT = getInt("map.zoom.default", ZOOM_DEFAULT);
+        ZOOM_EXTRA = getInt("map.zoom.extra", ZOOM_EXTRA);
+    }
+
     public boolean PLAYER_TRACKER_ENABLED = true;
     public boolean PLAYER_TRACKER_SHOW_TOGGLE = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_ENABLED = true;

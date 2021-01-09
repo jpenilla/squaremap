@@ -145,7 +145,7 @@ public abstract class AbstractRender extends BukkitRunnable {
     }
 
     protected void mapRegion(Region region) {
-        Image image = new Image();
+        Image image = new Image(worldConfig.ZOOM_MAX);
         int scanned = 0;
         int startX = region.getBlockX();
         int startZ = region.getBlockZ();

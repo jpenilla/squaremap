@@ -40,9 +40,15 @@ public class UpdateWorldData extends BukkitRunnable {
             ui.put("title", worldConfig.UI_TITLE);
             ui.put("coordinates", worldConfig.UI_COORDINATES);
 
+            Map<String, Object> zoom = new HashMap<>();
+            zoom.put("max", worldConfig.ZOOM_MAX);
+            zoom.put("def", worldConfig.ZOOM_DEFAULT);
+            zoom.put("extra", worldConfig.ZOOM_EXTRA);
+
             Map<String, Object> settings = new HashMap<>();
             settings.put("player_tracker", playerTracker);
             settings.put("ui", ui);
+            settings.put("zoom", zoom);
 
             Map<String, Object> map = new HashMap<>();
             map.put("spawn", spawn);

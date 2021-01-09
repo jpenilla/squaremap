@@ -12,17 +12,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Image {
-    public static final int MAX_ZOOM = 3;
     public static final int SIZE = 512;
     private final int[][] pixels = new int[SIZE][SIZE];
+    private final int maxZoom;
+
+    public Image(int maxZoom) {
+        this.maxZoom = maxZoom;
+    }
 
     public void setPixel(int x, int z, int color) {
         this.pixels[x & (SIZE - 1)][z & (SIZE - 1)] = color;
     }
 
     public void save(Region region, Path directory) {
-        for (int zoom = 0; zoom <= MAX_ZOOM; zoom++) {
-            Path dir = Path.of(directory.toString(), Integer.toString(MAX_ZOOM - zoom));
+        for (int zoom = 0; zoom <= maxZoom; zoom++) {
+            Path dir = Path.of(directory.toString(), Integer.toString(maxZoom - zoom));
             try {
                 Files.createDirectories(dir);
             } catch (IOException e) {
