@@ -101,6 +101,7 @@ public class WorldConfig {
     public boolean PLAYER_TRACKER_SHOW_TOGGLE = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_ENABLED = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = true;
+    public String PLAYER_TRACKER_NAMEPLATE_HEADS_URL = "https://crafatar.com/avatars/{uuid}?size=16&default=MHF_Steve&overlay";
     public boolean PLAYER_TRACKER_HIDE_INVISIBLE = true;
     public boolean PLAYER_TRACKER_HIDE_SPECTATORS = true;
 
@@ -109,6 +110,7 @@ public class WorldConfig {
         PLAYER_TRACKER_SHOW_TOGGLE = getBoolean("player-tracker.show-toggle", PLAYER_TRACKER_SHOW_TOGGLE);
         PLAYER_TRACKER_NAMEPLATE_ENABLED = getBoolean("player-tracker.nameplate.enabled", PLAYER_TRACKER_NAMEPLATE_ENABLED);
         PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = getBoolean("player-tracker.nameplate.show-head", PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD);
+        PLAYER_TRACKER_NAMEPLATE_HEADS_URL = getString("player-tracker.nameplate.heads-url", PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
         PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", PLAYER_TRACKER_HIDE_INVISIBLE);
         PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", PLAYER_TRACKER_HIDE_SPECTATORS);
     }

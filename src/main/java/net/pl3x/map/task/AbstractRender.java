@@ -224,7 +224,8 @@ public abstract class AbstractRender extends BukkitRunnable {
                     state = chunk.getType(pos1);
                 } while ((state.isAir() || invisibleBlocks.contains(state.getBlock())) && pos1.getY() > 0);
             } else {
-                state = Blocks.BEDROCK.getBlockData();
+                // no blocks found, show invisible/air
+                return 0x00000000;
             }
         }
 

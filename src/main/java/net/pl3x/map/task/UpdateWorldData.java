@@ -7,7 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class UpdateWorldData extends BukkitRunnable {
@@ -34,6 +37,7 @@ public class UpdateWorldData extends BukkitRunnable {
             Map<String, Object> nameplates = new HashMap<>();
             nameplates.put("enabled", worldConfig.PLAYER_TRACKER_NAMEPLATE_ENABLED);
             nameplates.put("show_heads", worldConfig.PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD);
+            nameplates.put("heads_url", worldConfig.PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
             playerTracker.put("nameplates", nameplates);
 
             Map<String, Object> ui = new HashMap<>();
@@ -45,13 +49,24 @@ public class UpdateWorldData extends BukkitRunnable {
             zoom.put("def", worldConfig.ZOOM_DEFAULT);
             zoom.put("extra", worldConfig.ZOOM_EXTRA);
 
+            List<Object> worlds = new ArrayList<>();
+            Bukkit.getWorlds().forEach(w -> {
+                Map<String, Object> hmm = new HashMap<>();
+                hmm.put("name", w.getName());
+                hmm.put("type", w.getEnvironment().name().toLowerCase());
+                worlds.add(hmm);
+            });
+
             Map<String, Object> settings = new HashMap<>();
+            settings.put("spawn", spawn);
             settings.put("player_tracker", playerTracker);
             settings.put("ui", ui);
             settings.put("zoom", zoom);
+            settings.put("worlds", worlds);
 
             Map<String, Object> map = new HashMap<>();
-            map.put("spawn", spawn);
+            map.put("type", world.getEnvironment().name().toLowerCase());
+            map.put("name", world.getName());
             map.put("settings", settings);
 
             FileUtil.write(gson.toJson(map), FileUtil.getWorldFolder(world).resolve("settings.json"));

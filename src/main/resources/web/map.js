@@ -1,22 +1,17 @@
-var world = "world";
-var curZoom = 0;
-var maxZoom = 0;
+var world = getUrlParam("world", "world");
 
 var settings = {};
 var layerControls = {};
 
-var map = L.map('map', {
+
+// the map
+var mapId = "map";
+var map = L.map(mapId, {
     crs: L.CRS.Simple,
     center: [0, 0],
     attributionControl: false,
     noWrap: true
 });
-
-
-// init
-// TODO start with getJson of global settings file
-init();
-
 
 // icons
 var Icons = {
@@ -34,55 +29,56 @@ var Icons = {
     })
 };
 
-// init the json
+
+// get settings.json and init the map
 function init() {
     getJSON("tiles/" + world + "/settings.json", function(json) {
         settings = json.settings;
 
         document.title = json.settings.ui.title;
 
-        initMap();
-        centerFromURL();
+        var mapDom = document.getElementById(mapId);
+        switch(json.type) {
+            case "nether":
+                mapDom.style.background = "url('images/nether_sky.png')";
+                break;
+            case "the_end":
+                mapDom.style.background = "url('images/end_sky.png')";
+                break;
+            case "normal":
+            default:
+                mapDom.style.background = "url('images/overworld_sky.png')";
+                break;
+        }
+
+        // setup the map tiles layer
+        L.tileLayer("tiles/" + world + "/{z}/{x}_{y}.png", {
+            tileSize: 512,
+            minNativeZoom: 0,
+            maxNativeZoom: settings.zoom.max
+        }).addTo(map);
+
+        var zoom = getUrlParam("zoom", settings.zoom.def);
+        var x = getUrlParam("x", 0);
+        var z = getUrlParam("z", 0);
+
+        map.setView(unproject(x, z), zoom)
+            .setMinZoom(0) // extra zoom out doesn't work :(
+            .setMaxZoom(settings.zoom.max + settings.zoom.extra);
 
         spawn.init();
         players.init();
 
         L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
         if (settings.ui.coordinates) {
-            addUILink();
             addUICoordinates();
+            addUILink();
         }
-        addPlayerList();
 
-        spawn.update(json.spawn);
+        addSidebar(settings.worlds);
+
+        tick(0);
     });
-}
-
-// setup the map
-function initMap() {
-    map
-        .setView([0, 0], settings.zoom.def)
-        .setMinZoom(0) // extra zoom out doesn't work :(
-        .setMaxZoom(settings.zoom.max + settings.zoom.extra)
-    ;
-
-    // setup the map tiles layer
-    L.tileLayer("tiles/" + world + "/{z}/{x}_{y}.png", {
-        tileSize: 512,
-        minNativeZoom: 0,
-        maxNativeZoom: settings.zoom.max
-    }).addTo(map);
-
-    tick(0);
-}
-
-
-function unproject(x, z) {
-    return map.unproject([x, z], settings.zoom.max);
-}
-
-function project(latlng) {
-    return map.project(latlng, settings.zoom.max);
 }
 
 
@@ -95,11 +91,10 @@ var spawn = {
             .bindPopup("Spawn")
             .addTo(this.layer);
         layerControls.Spawn = this.layer.addTo(map);
-    },
-    update: function(point) {
-        this.spawn.setLatLng(unproject(point.x, point.z));
+        this.spawn.setLatLng(unproject(settings.spawn.x, settings.spawn.z));
     }
 }
+
 
 // player tracker
 var players = {
@@ -122,7 +117,10 @@ var players = {
                 pane: "nameplate"
             });
             if (settings.player_tracker.nameplates.show_heads) {
-                tooltip.setContent("<img src='https://crafatar.com/avatars/" + player.uuid + "?size=16&default=MHF_Steve&overlay' /><span>" + player.name + "</span>");
+                var url = settings.player_tracker.nameplates.heads_url
+                    .replaceAll("{uuid}", player.uuid)
+                    .replaceAll("{name}", player.name);
+                tooltip.setContent("<img src='" + url + "' /><span>" + player.name + "</span>");
             } else {
                 tooltip.setContent("<span>" + player.name + "</span>");
             }
@@ -161,7 +159,7 @@ var players = {
 }
 
 
-// ui stuff
+// coordinates box
 function addUICoordinates() {
     let Coords = L.Control.extend({
         _container: null,
@@ -187,6 +185,8 @@ function addUICoordinates() {
     });
 }
 
+
+// share link box
 function addUILink() {
     let Link = L.Control.extend({
         _container: null,
@@ -214,41 +214,76 @@ function addUILink() {
     map.addEventListener('zoom', (event) => link.updateHTML());
 }
 
-function addPlayerList() {
+// sidebar
+function addSidebar(worlds) {
     var sidebar = document.createElement("div");
     sidebar.id = "sidebar";
 
-    var newContent = document.createTextNode("Hi there and greetings!");
+    var top = document.createElement("fieldset");
+    top.id = "worlds";
+    var topLegend = document.createElement("legend");
+    topLegend.appendChild(document.createTextNode("Worlds"));
+    top.appendChild(topLegend);
 
-    sidebar.appendChild(newContent);
+    var bottom = document.createElement("fieldset");
+    bottom.id = "players";
+    var bottomLegend = document.createElement("legend");
+    bottomLegend.appendChild(document.createTextNode("Players"));
+    bottom.appendChild(bottomLegend);
+
+    sidebar.appendChild(top);
+    sidebar.appendChild(bottom);
 
     document.getElementById("map").appendChild(sidebar);
 
-}
+    for (var i = 0; i < worlds.length; i++) {
+        var link = document.createElement("a");
+        var img = document.createElement("img");
+        var span = document.createElement("span");
 
-
-function centerFromURL() {
-    var w = getUrlParam("world");
-    if (w == null) w = world;
-    var y = getUrlParam("zoom");
-    if (y == null) y = settings.zoom.def;
-    var x = getUrlParam("x");
-    if (x == null) x = 0;
-    var z = getUrlParam("z");
-    if (z == null) z = 0;
-    map.setView(unproject(x, z), y);
-}
-
-function getUrlParam(query) {
-    var url = window.location.search.substring(1);
-    var vars = url.split('&');
-    for (var i = 0; i < vars.length; i++) {
-        var param = vars[i].split('=');
-        if (param[0] === query) {
-            var value = param[1] === undefined ? '' : decodeURIComponent(param[1]);
-            return value === '' ? null : value;
+        link.href = "?world=" + worlds[i].name;
+        switch(worlds[i].type) {
+            case "nether":
+                img.src = "images/red-cube-smol.png";
+                break;
+            case "the_end":
+                img.src = "images/purple-cube-smol.png";
+                break;
+            case "normal":
+            default:
+                img.src = "images/green-cube-smol.png";
+                break;
         }
+        span.appendChild(document.createTextNode(worlds[i].name))
+
+        link.appendChild(img);
+        link.appendChild(span);
+        top.appendChild(link);
     }
+}
+
+
+// tick the map
+function tick(count) {
+    getJSON("tiles/" + world + "/players.json", function(json) {
+        players.updateAll(json.players);
+    });
+    setTimeout(function() {
+        tick(++count);
+    }, 1000);
+}
+
+// start it up
+init();
+
+
+// helper functions
+function unproject(x, z) {
+    return map.unproject([x, z], settings.zoom.max);
+}
+
+function project(latlng) {
+    return map.project(latlng, settings.zoom.max);
 }
 
 function getJSON(url, fn) {
@@ -260,18 +295,17 @@ function getJSON(url, fn) {
         });
 }
 
-function tick(count) {
-    if (count % 5 == 0) {
-        getJSON("tiles/" + world + "/settings.json", function(json) {
-            spawn.update(json.spawn);
-        });
+function getUrlParam(query, def) {
+    var url = window.location.search.substring(1);
+    var vars = url.split('&');
+    for (var i = 0; i < vars.length; i++) {
+        var param = vars[i].split('=');
+        if (param[0] === query) {
+            var value = param[1] === undefined ? '' : decodeURIComponent(param[1]);
+            return value === '' ? def : value;
+        }
     }
-    getJSON("tiles/" + world + "/players.json", function(json) {
-        players.updateAll(json.players);
-    });
-    setTimeout(function() {
-        tick(++count);
-    }, 1000);
+    return def;
 }
 
 
