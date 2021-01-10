@@ -23,8 +23,8 @@ public final class CancelRenderCommand extends Pl3xMapCommand {
     @Override
     public void register() {
         final Command<CommandSender> anySender = this.commandManager.commandBuilder("pl3xmap")
-                .argument(WorldArgument.of("world"))
                 .literal("cancelrender")
+                .argument(WorldArgument.of("world"))
                 .meta(CommandMeta.DESCRIPTION, "Cancels a render")
                 .permission("pl3xmap.command.cancelrender")
                 .handler(this::anySender)

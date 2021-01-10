@@ -23,8 +23,8 @@ public final class FullRenderCommand extends Pl3xMapCommand {
     @Override
     public void register() {
         final Command<CommandSender> anySender = this.commandManager.commandBuilder("pl3xmap")
-                .argument(WorldArgument.of("world"))
                 .literal("fullrender")
+                .argument(WorldArgument.of("world"))
                 .meta(CommandMeta.DESCRIPTION, "Starts a full render")
                 .permission("pl3xmap.command.fullrender")
                 .handler(this::anySender)
