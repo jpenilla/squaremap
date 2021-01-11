@@ -1,7 +1,9 @@
 var world = getUrlParam("world", "world");
 
+var worlds = {};
 var settings = {};
 var layerControls = {};
+var tileLayer;
 
 
 // the map
@@ -12,6 +14,7 @@ var map = L.map(mapId, {
     attributionControl: false,
     noWrap: true
 });
+
 
 // icons
 var Icons = {
@@ -30,13 +33,29 @@ var Icons = {
 };
 
 
-// get settings.json and init the map
+// start it up
+init();
+
+
+// get worlds.json and setup worlds list
 function init() {
+    getJSON("worlds.json", function(json) {
+        worlds = json.worlds;
+        loadWorld(true);
+    });
+}
+
+
+// get world settings.json and init the map
+var firstLoad = true;
+function loadWorld(centerOnSpawn) {
     getJSON("tiles/" + world + "/settings.json", function(json) {
         settings = json.settings;
 
-        document.title = json.settings.ui.title;
+        // setup page title
+        document.title = settings.ui.title;
 
+        // setup background
         var mapDom = document.getElementById(mapId);
         switch(json.type) {
             case "nether":
@@ -52,32 +71,53 @@ function init() {
         }
 
         // setup the map tiles layer
-        L.tileLayer("tiles/" + world + "/{z}/{x}_{y}.png", {
+        if (tileLayer != null) {
+            map.removeLayer(tileLayer);
+        }
+        tiles = L.tileLayer("tiles/" + world + "/{z}/{x}_{y}.png", {
             tileSize: 512,
             minNativeZoom: 0,
             maxNativeZoom: settings.zoom.max
         }).addTo(map);
+        tileLayer = tiles;
 
-        var zoom = getUrlParam("zoom", settings.zoom.def);
-        var x = getUrlParam("x", 0);
-        var z = getUrlParam("z", 0);
-
-        map.setView(unproject(x, z), zoom)
-            .setMinZoom(0) // extra zoom out doesn't work :(
-            .setMaxZoom(settings.zoom.max + settings.zoom.extra);
-
-        spawn.init();
-        players.init();
-
-        L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
-        if (settings.ui.coordinates) {
-            addUICoordinates();
-            addUILink();
+        if (centerOnSpawn) {
+            centerOn(settings.spawn.x, settings.spawn.z, settings.zoom.def);
         }
 
-        addSidebar(settings.worlds);
+        if (firstLoad) {
+            // setup view
+            var zoom = getUrlParam("zoom", settings.zoom.def);
+            var x = getUrlParam("x", settings.spawn.x);
+            var z = getUrlParam("z", settings.spawn.z);
+            centerOn(x, z, zoom)
+                .setMinZoom(0) // extra zoom out doesn't work :(
+                .setMaxZoom(settings.zoom.max + settings.zoom.extra);
 
-        tick(0);
+            firstLoad = false;
+
+            // init spawn marker
+            spawn.init();
+
+            // init player markers
+            playerList.init();
+
+            // add layer controls
+            L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
+            if (settings.ui.coordinates) {
+                addUICoordinates();
+                addUILink();
+            }
+
+            // add sidebar
+            addSidebar();
+
+            // start the tick loop
+            tick(0);
+        } else {
+            // update spawn marker
+            spawn.update();
+        }
     });
 }
 
@@ -91,20 +131,25 @@ var spawn = {
             .bindPopup("Spawn")
             .addTo(this.layer);
         layerControls.Spawn = this.layer.addTo(map);
+        this.update();
+    },
+    update: function() {
         this.spawn.setLatLng(unproject(settings.spawn.x, settings.spawn.z));
     }
 }
 
 
 // player tracker
-var players = {
+var playerList = {
     layer: new L.LayerGroup(),
+    players: {},
     markers: new Map(),
+    entries: new Map(),
     init: function() {
         layerControls.Player = this.layer.addTo(map);
         map.createPane("nameplate").style.zIndex = 1000;
     },
-    addPlayer: function(player) {
+    addPlayerMarker: function(player) {
         var marker = L.marker(unproject(player.x, player.z), {
             icon: Icons.player,
             rotationAngle: (180 + player.yaw)
@@ -117,10 +162,7 @@ var players = {
                 pane: "nameplate"
             });
             if (settings.player_tracker.nameplates.show_heads) {
-                var url = settings.player_tracker.nameplates.heads_url
-                    .replaceAll("{uuid}", player.uuid)
-                    .replaceAll("{name}", player.name);
-                tooltip.setContent("<img src='" + url + "' /><span>" + player.name + "</span>");
+                tooltip.setContent("<img src='" + getHeadUrl(player) + "' /><span>" + player.name + "</span>");
             } else {
                 tooltip.setContent("<span>" + player.name + "</span>");
             }
@@ -128,32 +170,64 @@ var players = {
         }
         this.markers.set(player.uuid, marker);
     },
-    removePlayer: function(uuid) {
+    addPlayerEntry: function(player) {
+        var head = document.createElement("img");
+        head.src = getHeadUrl(player);
+        var span = document.createElement("span");
+        span.appendChild(document.createTextNode(player.name));
+        var link = document.createElement("a");
+        link.id = player.uuid;
+        link.onclick = function() { showPlayer(this); };
+        link.appendChild(head);
+        link.appendChild(span);
+        var fieldset = document.getElementById("players");
+        fieldset.appendChild(link);
+        this.entries.set(player.uuid, link);
+    },
+    removeMarker: function(uuid) {
         var marker = this.markers.get(uuid);
         if (marker != null) {
             map.removeLayer(marker);
             this.markers.delete(uuid);
         }
     },
-    updatePlayer: function(marker, player) {
-        marker.setLatLng(unproject(player.x, player.z));
-        marker.setRotationAngle(180 + player.yaw);
+    removePlayer: function(uuid) {
+        playerEntry = document.getElementById(uuid);
+        if (playerEntry != null) {
+            playerEntry.remove();
+        }
     },
-    updateAll: function(players) {
-        var toRemove = Array.from(this.markers.keys());
-        for (var i = 0; i < players.length; i++) {
-            var player = players[i];
+    updateAll: function() {
+        var markersToRemove = Array.from(this.markers.keys());
+        var entriesToRemove = Array.from(this.players);
+        for (var i = 0; i < this.players.length; i++) {
+            var player = this.players[i];
+
             var marker = this.markers.get(player.uuid);
-            if (marker != null) {
-                toRemove.remove(player.uuid);
-                this.updatePlayer(marker, player);
+            if (player.world == world) {
+                if (marker == null) {
+                    markersToRemove.remove(player.uuid);
+                    this.addPlayerMarker(player);
+                } else {
+                    markersToRemove.remove(player.uuid);
+                    marker.setLatLng(unproject(player.x, player.z));
+                    marker.setRotationAngle(180 + player.yaw);
+                }
+            }
+
+            var entry = this.entries.get(player.uuid);
+            if (entry == null) {
+                entriesToRemove.remove(player.uuid);
+                this.addPlayerEntry(player);
             } else {
-                toRemove.remove(player.uuid);
-                this.addPlayer(player);
+                entriesToRemove.remove(player.uuid);
             }
         }
-        for (var i = 0; i < toRemove.length; i++) {
-            this.removePlayer(toRemove[i]);
+        for (var i = 0; i < markersToRemove.length; i++) {
+            this.removeMarker(markersToRemove[i]);
+        }
+        for (var i = 0; i < entriesToRemove.length; i++) {
+            this.removePlayer(entriesToRemove[i]);
         }
     }
 }
@@ -200,11 +274,8 @@ function addUILink() {
             return link;
         },
         updateHTML: function() {
-            var center = project(map.getCenter());
-            var zoom = map.getZoom();
-            var x = Math.floor(center.x);
-            var z = Math.floor(center.y);
-            var url = "?world=" + world + "&zoom=" + zoom + "&x=" + x + "&z=" + z
+            var url = getUrlFromView();
+            updateBrowserUrl(url);
             this._link.innerHTML = "<a href='" + url + "'><img src='images/clear.png'/></a>";
         }
     });
@@ -214,8 +285,9 @@ function addUILink() {
     map.addEventListener('zoom', (event) => link.updateHTML());
 }
 
+
 // sidebar
-function addSidebar(worlds) {
+function addSidebar() {
     var sidebar = document.createElement("div");
     sidebar.id = "sidebar";
 
@@ -238,10 +310,11 @@ function addSidebar(worlds) {
 
     for (var i = 0; i < worlds.length; i++) {
         var link = document.createElement("a");
+        link.id = worlds[i].name;
         var img = document.createElement("img");
         var span = document.createElement("span");
 
-        link.href = "?world=" + worlds[i].name;
+        link.onclick = function() { showWorld(this.id, true); };
         switch(worlds[i].type) {
             case "nether":
                 img.src = "images/red-cube-smol.png";
@@ -263,29 +336,70 @@ function addSidebar(worlds) {
 }
 
 
+// switch map to a world without reloading page
+function showWorld(world, centerOnSpawn) {
+    if (this.world == world) {
+        centerOn(settings.spawn.x, settings.spawn.z, settings.zoom.def);
+        return;
+    }
+    this.world = world;
+    loadWorld(centerOnSpawn);
+    updateBrowserUrl(getUrlFromView());
+}
+
+
+// center view on specific player
+function showPlayer(link) {
+    var uuid = link.id;
+    for (var i = 0; i < playerList.players.length; i++) {
+        var player = playerList.players[i];
+        if (uuid == player.uuid) {
+            showWorld(player.world, false);
+            map.panTo(unproject(player.x, player.z));
+        }
+    }
+}
+
+
+// center on new point
+function centerOn(x, z, zoom) {
+    return map.setView(unproject(x, z), zoom);
+}
+
+
 // tick the map
 function tick(count) {
-    getJSON("tiles/" + world + "/players.json", function(json) {
-        players.updateAll(json.players);
+    getJSON("players.json", function(json) {
+        playerList.players = json.players;
+        playerList.updateAll();
     });
     setTimeout(function() {
         tick(++count);
     }, 1000);
 }
 
-// start it up
-init();
 
-
-// helper functions
+// convert coords to latlng
 function unproject(x, z) {
     return map.unproject([x, z], settings.zoom.max);
 }
 
+
+// convert latlng to point
 function project(latlng) {
     return map.project(latlng, settings.zoom.max);
 }
 
+
+// get player's head url
+function getHeadUrl(player) {
+    return settings.player_tracker.nameplates.heads_url
+            .replaceAll("{uuid}", player.uuid)
+            .replaceAll("{name}", player.name);
+}
+
+
+// get a json object from url
 function getJSON(url, fn) {
     fetch(url)
         .then(async res => {
@@ -295,6 +409,8 @@ function getJSON(url, fn) {
         });
 }
 
+
+// get a param from browser's url
 function getUrlParam(query, def) {
     var url = window.location.search.substring(1);
     var vars = url.split('&');
@@ -306,6 +422,22 @@ function getUrlParam(query, def) {
         }
     }
     return def;
+}
+
+
+// contrust a url from the map's current view
+function getUrlFromView() {
+    var center = project(map.getCenter());
+    var zoom = map.getZoom();
+    var x = Math.floor(center.x);
+    var z = Math.floor(center.y);
+    return "?world=" + world + "&zoom=" + zoom + "&x=" + x + "&z=" + z;
+}
+
+
+// update the url in browser address bar without reloading page
+function updateBrowserUrl(url) {
+    window.history.pushState(null, "", url);
 }
 
 

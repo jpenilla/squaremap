@@ -10,7 +10,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class UpdateWorldData extends BukkitRunnable {
@@ -18,6 +17,8 @@ public class UpdateWorldData extends BukkitRunnable {
 
     @Override
     public void run() {
+        List<Object> worlds = new ArrayList<>();
+
         Bukkit.getWorlds().forEach(world -> {
             WorldConfig worldConfig = WorldConfig.get(world);
 
@@ -49,27 +50,31 @@ public class UpdateWorldData extends BukkitRunnable {
             zoom.put("def", worldConfig.ZOOM_DEFAULT);
             zoom.put("extra", worldConfig.ZOOM_EXTRA);
 
-            List<Object> worlds = new ArrayList<>();
-            Bukkit.getWorlds().forEach(w -> {
-                Map<String, Object> hmm = new HashMap<>();
-                hmm.put("name", w.getName());
-                hmm.put("type", w.getEnvironment().name().toLowerCase());
-                worlds.add(hmm);
-            });
-
             Map<String, Object> settings = new HashMap<>();
             settings.put("spawn", spawn);
             settings.put("player_tracker", playerTracker);
             settings.put("ui", ui);
             settings.put("zoom", zoom);
-            settings.put("worlds", worlds);
+
+            String name = world.getName();
+            String type = world.getEnvironment().name().toLowerCase();
 
             Map<String, Object> map = new HashMap<>();
-            map.put("type", world.getEnvironment().name().toLowerCase());
-            map.put("name", world.getName());
+            map.put("name", name);
+            map.put("type", type);
             map.put("settings", settings);
+
+            Map<String, Object> worldsList = new HashMap<>();
+            worldsList.put("name", name);
+            worldsList.put("type", type);
+            worlds.add(worldsList);
 
             FileUtil.write(gson.toJson(map), FileUtil.getWorldFolder(world).resolve("settings.json"));
         });
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("worlds", worlds);
+
+        FileUtil.write(gson.toJson(map), FileUtil.WEB_DIR.resolve("worlds.json"));
     }
 }

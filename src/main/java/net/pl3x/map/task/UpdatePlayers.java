@@ -1,12 +1,6 @@
 package net.pl3x.map.task;
 
 import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.util.FileUtil;
 import org.bukkit.Bukkit;
@@ -14,15 +8,20 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class UpdatePlayers extends BukkitRunnable {
     private final Gson gson = new Gson();
 
     @Override
     public void run() {
+        List<Object> players = new ArrayList<>();
+
         Bukkit.getWorlds().forEach(world -> {
             WorldConfig worldConfig = WorldConfig.get(world);
-
-            List<Object> players = new ArrayList<>();
 
             world.getPlayers().forEach(player -> {
                 if (worldConfig.PLAYER_TRACKER_HIDE_SPECTATORS && player.getGameMode() == GameMode.SPECTATOR) {
@@ -38,13 +37,14 @@ public class UpdatePlayers extends BukkitRunnable {
                 playerEntry.put("x", playerLoc.getBlockX());
                 playerEntry.put("z", playerLoc.getBlockZ());
                 playerEntry.put("yaw", playerLoc.getYaw());
+                playerEntry.put("world", playerLoc.getWorld().getName());
                 players.add(playerEntry);
             });
-
-            Map<String, Object> map = new HashMap<>();
-            map.put("players", players);
-
-            FileUtil.write(gson.toJson(map), FileUtil.getWorldFolder(world).resolve("players.json"));
         });
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("players", players);
+
+        FileUtil.write(gson.toJson(map), FileUtil.WEB_DIR.resolve("players.json"));
     }
 }
