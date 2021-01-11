@@ -192,14 +192,21 @@ var playerList = {
         }
     },
     removePlayer: function(uuid) {
-        playerEntry = document.getElementById(uuid);
+        playerEntry = this.entries.get(uuid);
         if (playerEntry != null) {
             playerEntry.remove();
+            this.entries.delete(uuid);
         }
     },
-    updateAll: function() {
+    clearMarkers: function () {
         var markersToRemove = Array.from(this.markers.keys());
-        var entriesToRemove = Array.from(this.players);
+        for (var i = 0; i < markersToRemove.length; i++) {
+            this.removeMarker(markersToRemove[i]);
+        }
+    },
+    update: function() {
+        var markersToRemove = Array.from(this.markers.keys());
+        var entriesToRemove = Array.from(this.entries.keys());
         for (var i = 0; i < this.players.length; i++) {
             var player = this.players[i];
 
@@ -311,10 +318,9 @@ function addSidebar() {
     for (var i = 0; i < worlds.length; i++) {
         var link = document.createElement("a");
         link.id = worlds[i].name;
-        var img = document.createElement("img");
-        var span = document.createElement("span");
-
         link.onclick = function() { showWorld(this.id, true); };
+
+        var img = document.createElement("img");
         switch(worlds[i].type) {
             case "nether":
                 img.src = "images/red-cube-smol.png";
@@ -327,6 +333,8 @@ function addSidebar() {
                 img.src = "images/green-cube-smol.png";
                 break;
         }
+
+        var span = document.createElement("span");
         span.appendChild(document.createTextNode(worlds[i].name))
 
         link.appendChild(img);
@@ -343,6 +351,8 @@ function showWorld(world, centerOnSpawn) {
         return;
     }
     this.world = world;
+    playerList.clearMarkers();
+    playerList.update();
     loadWorld(centerOnSpawn);
     updateBrowserUrl(getUrlFromView());
 }
@@ -354,7 +364,9 @@ function showPlayer(link) {
     for (var i = 0; i < playerList.players.length; i++) {
         var player = playerList.players[i];
         if (uuid == player.uuid) {
-            showWorld(player.world, false);
+            if (player.world != world) {
+                showWorld(player.world, false);
+            }
             map.panTo(unproject(player.x, player.z));
         }
     }
@@ -371,7 +383,7 @@ function centerOn(x, z, zoom) {
 function tick(count) {
     getJSON("players.json", function(json) {
         playerList.players = json.players;
-        playerList.updateAll();
+        playerList.update();
     });
     setTimeout(function() {
         tick(++count);
@@ -401,7 +413,7 @@ function getHeadUrl(player) {
 
 // get a json object from url
 function getJSON(url, fn) {
-    fetch(url)
+    fetch(url, {cache: "no-store"})
         .then(async res => {
             if (res.ok) {
                 fn(await res.json());
