@@ -45,6 +45,6 @@ public class UpdatePlayers extends BukkitRunnable {
         Map<String, Object> map = new HashMap<>();
         map.put("players", players);
 
-        FileUtil.write(gson.toJson(map), FileUtil.WEB_DIR.resolve("players.json"));
+        FileUtil.write(gson.toJson(map), FileUtil.TILES_DIR.resolve("players.json"));
     }
 }

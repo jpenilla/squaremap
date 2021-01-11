@@ -75,6 +75,6 @@ public class UpdateWorldData extends BukkitRunnable {
         Map<String, Object> map = new HashMap<>();
         map.put("worlds", worlds);
 
-        FileUtil.write(gson.toJson(map), FileUtil.WEB_DIR.resolve("worlds.json"));
+        FileUtil.write(gson.toJson(map), FileUtil.TILES_DIR.resolve("worlds.json"));
     }
 }

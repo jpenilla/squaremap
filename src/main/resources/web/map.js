@@ -39,7 +39,7 @@ init();
 
 // get worlds.json and setup worlds list
 function init() {
-    getJSON("worlds.json", function(json) {
+    getJSON("tiles/worlds.json", function(json) {
         worlds = json.worlds;
         loadWorld(true);
     });
@@ -149,7 +149,7 @@ var playerList = {
         layerControls.Player = this.layer.addTo(map);
         map.createPane("nameplate").style.zIndex = 1000;
     },
-    addPlayerMarker: function(player) {
+    addMarker: function(player) {
         var marker = L.marker(unproject(player.x, player.z), {
             icon: Icons.player,
             rotationAngle: (180 + player.yaw)
@@ -170,7 +170,30 @@ var playerList = {
         }
         this.markers.set(player.uuid, marker);
     },
-    addPlayerEntry: function(player) {
+    updateMarker(player, marker) {
+        var latlng = unproject(player.x, player.z);
+        if (!marker.getLatLng().equals(latlng)) {
+            marker.setLatLng(latlng);
+        }
+        var angle = 180 + player.yaw;
+        if (marker.options.rotationAngle != angle) {
+            marker.setRotationAngle(angle);
+        }
+    },
+    removeMarker: function(uuid) {
+        var marker = this.markers.get(uuid);
+        if (marker != null) {
+            map.removeLayer(marker);
+            this.markers.delete(uuid);
+        }
+    },
+    clearMarkers: function () {
+        var markersToRemove = Array.from(this.markers.keys());
+        for (var i = 0; i < markersToRemove.length; i++) {
+            this.removeMarker(markersToRemove[i]);
+        }
+    },
+    addEntry: function(player) {
         var head = document.createElement("img");
         head.src = getHeadUrl(player);
         var span = document.createElement("span");
@@ -184,29 +207,17 @@ var playerList = {
         fieldset.appendChild(link);
         this.entries.set(player.uuid, link);
     },
-    removeMarker: function(uuid) {
-        var marker = this.markers.get(uuid);
-        if (marker != null) {
-            map.removeLayer(marker);
-            this.markers.delete(uuid);
-        }
-    },
-    removePlayer: function(uuid) {
+    removeEntry: function(uuid) {
         playerEntry = this.entries.get(uuid);
         if (playerEntry != null) {
             playerEntry.remove();
             this.entries.delete(uuid);
         }
     },
-    clearMarkers: function () {
-        var markersToRemove = Array.from(this.markers.keys());
-        for (var i = 0; i < markersToRemove.length; i++) {
-            this.removeMarker(markersToRemove[i]);
-        }
-    },
     update: function() {
         var markersToRemove = Array.from(this.markers.keys());
         var entriesToRemove = Array.from(this.entries.keys());
+
         for (var i = 0; i < this.players.length; i++) {
             var player = this.players[i];
 
@@ -214,27 +225,27 @@ var playerList = {
             if (player.world == world) {
                 if (marker == null) {
                     markersToRemove.remove(player.uuid);
-                    this.addPlayerMarker(player);
+                    this.addMarker(player);
                 } else {
                     markersToRemove.remove(player.uuid);
-                    marker.setLatLng(unproject(player.x, player.z));
-                    marker.setRotationAngle(180 + player.yaw);
+                    this.updateMarker(player, marker);
                 }
             }
 
             var entry = this.entries.get(player.uuid);
             if (entry == null) {
                 entriesToRemove.remove(player.uuid);
-                this.addPlayerEntry(player);
+                this.addEntry(player);
             } else {
                 entriesToRemove.remove(player.uuid);
             }
         }
+
         for (var i = 0; i < markersToRemove.length; i++) {
             this.removeMarker(markersToRemove[i]);
         }
         for (var i = 0; i < entriesToRemove.length; i++) {
-            this.removePlayer(entriesToRemove[i]);
+            this.removeEntry(entriesToRemove[i]);
         }
     }
 }
@@ -381,7 +392,7 @@ function centerOn(x, z, zoom) {
 
 // tick the map
 function tick(count) {
-    getJSON("players.json", function(json) {
+    getJSON("tiles/players.json", function(json) {
         playerList.players = json.players;
         playerList.update();
     });
