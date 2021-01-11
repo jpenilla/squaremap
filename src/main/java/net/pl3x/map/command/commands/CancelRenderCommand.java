@@ -33,6 +33,7 @@ public final class CancelRenderCommand extends Pl3xMapCommand {
         final Command<CommandSender> player = this.commandManager.commandBuilder("pl3xmap")
                 .literal("cancelrender")
                 .meta(CommandMeta.DESCRIPTION, "Cancels a render")
+                .meta(CommandManager.INVALID_SENDER_ALTERNATE_COMMAND, "pl3xmap cancelrender <world>")
                 .permission("pl3xmap.command.cancelrender")
                 .senderType(Player.class)
                 .handler(this::player)

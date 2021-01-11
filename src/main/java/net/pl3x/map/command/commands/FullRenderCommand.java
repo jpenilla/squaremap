@@ -33,6 +33,7 @@ public final class FullRenderCommand extends Pl3xMapCommand {
         final Command<CommandSender> player = this.commandManager.commandBuilder("pl3xmap")
                 .literal("fullrender")
                 .meta(CommandMeta.DESCRIPTION, "Starts a full render")
+                .meta(CommandManager.INVALID_SENDER_ALTERNATE_COMMAND, "pl3xmap fullrender <world>")
                 .permission("pl3xmap.command.fullrender")
                 .senderType(Player.class)
                 .handler(this::player)

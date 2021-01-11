@@ -22,6 +22,8 @@ public class Lang {
     public static String FULL_RENDER_STARTED = "&aFull render started on {world}";
     public static String CANCELLED_RENDER = "&aRender cancelled for {world}";
 
+    public static String INVALID_COMMAND_SYNTAX = "&cInvalid command syntax. Correct command syntax: &7/{syntax}";
+
     public static String PLUGIN_RELOADED = "&a{name} v{version} reloaded";
 
     public static String PLUGIN_VERSION = "&a{name} v{version}";
@@ -58,6 +60,8 @@ public class Lang {
         RENDER_NOT_IN_PROGRESS = getString("render-not-in-progress", RENDER_NOT_IN_PROGRESS);
         FULL_RENDER_STARTED = getString("full-render-started", FULL_RENDER_STARTED);
         CANCELLED_RENDER = getString("cancelled-render", CANCELLED_RENDER);
+
+        INVALID_COMMAND_SYNTAX = getString("invalid-command-syntax", INVALID_COMMAND_SYNTAX);
 
         PLUGIN_RELOADED = getString("plugin-reloaded", PLUGIN_RELOADED);
         PLUGIN_VERSION = getString("plugin-version", PLUGIN_VERSION);
