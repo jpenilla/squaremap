@@ -329,7 +329,19 @@ function addSidebar() {
 
     var pin = document.createElement("img");
     pin.id = "pin";
-    pin.src = "images/pin.png";
+    pin.src = "images/" + (pinned ? "pinned" : "unpinned") + ".png";
+    pin.className = pinned ? "pinned" : "unpinned";
+    pin.onclick = function() {
+        if (pinned) {
+            pinned = false;
+            pin.src = "images/unpinned.png";
+            pin.className = "unpinned";
+        } else {
+            pinned = true;
+            pin.src = "images/pinned.png";
+            pin.className = "pinned";
+        }
+    }
     sidebar.appendChild(pin);
 
     if (pinned) {

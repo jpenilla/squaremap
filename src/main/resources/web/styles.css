@@ -117,10 +117,20 @@ div.leaflet-control-layers.coordinates {
   transition: all 0.25s;
 }
 #sidebar #pin {
-  width: 16px;
-  height: 16px;
-  margin: 10px 5px;
+  width: 23px;
+  height: 23px;
+  margin: 5px 5px 10px 5px;
   padding: 2px 2px;
+  border: 1px solid rgba(255,255,255,0);
   filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
   -webkit-filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
+  cursor: pointer;
+}
+#sidebar #pin.pinned:hover {
+  background: rgba(0,128,0,0.5);
+  border: 1px solid rgba(0,128,0,0.75);
+}
+#sidebar #pin.unpinned:hover {
+  background: rgba(128,0,0,0.5);
+  border: 1px solid rgba(128,0,0,0.75);
 }
