@@ -305,9 +305,40 @@ function addUILink() {
 
 
 // sidebar
+var pinned = false;
 function addSidebar() {
     var sidebar = document.createElement("div");
     sidebar.id = "sidebar";
+    sidebar.onmouseleave = function() {
+        if (!pinned) {
+            handle.style.width = "15px";
+            sidebar.style.width = "0px";
+        }
+    };
+
+    var handle = document.createElement("div");
+    handle.id = "handle";
+    handle.appendChild(document.createTextNode("<"));
+    handle.onmouseenter = function() {
+        if (!pinned) {
+            handle.style.width = "0px";
+            sidebar.style.width = "200px";
+        }
+    };
+    sidebar.appendChild(handle);
+
+    var pin = document.createElement("img");
+    pin.id = "pin";
+    pin.src = "images/pin.png";
+    sidebar.appendChild(pin);
+
+    if (pinned) {
+        handle.style.width = "0px";
+        sidebar.style.width = "200px";
+    } else {
+        handle.style.width = "15px";
+        sidebar.style.width = "0px";
+    }
 
     var top = document.createElement("fieldset");
     top.id = "worlds";
