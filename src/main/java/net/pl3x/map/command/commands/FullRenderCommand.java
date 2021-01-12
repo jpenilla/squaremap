@@ -25,14 +25,14 @@ public final class FullRenderCommand extends Pl3xMapCommand {
         final Command<CommandSender> anySender = this.commandManager.commandBuilder("pl3xmap")
                 .literal("fullrender")
                 .argument(WorldArgument.of("world"))
-                .meta(CommandMeta.DESCRIPTION, "Starts a full render")
+                .meta(CommandMeta.DESCRIPTION, "Starts a full render for the specified world")
                 .permission("pl3xmap.command.fullrender")
                 .handler(this::anySender)
                 .build();
 
         final Command<CommandSender> player = this.commandManager.commandBuilder("pl3xmap")
                 .literal("fullrender")
-                .meta(CommandMeta.DESCRIPTION, "Starts a full render")
+                .meta(CommandMeta.DESCRIPTION, "Starts a full render for the world you are currently in")
                 .meta(CommandManager.INVALID_SENDER_ALTERNATE_COMMAND, "pl3xmap fullrender <world>")
                 .permission("pl3xmap.command.fullrender")
                 .senderType(Player.class)

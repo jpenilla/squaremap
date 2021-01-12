@@ -1,6 +1,9 @@
 package net.pl3x.map.util;
 
-public class Numbers {
+public final class Numbers {
+    private Numbers() {
+    }
+
     public static int regionToBlock(int n) {
         return n << 9;
     }

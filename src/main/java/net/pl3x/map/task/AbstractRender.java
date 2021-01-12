@@ -26,7 +26,6 @@ import net.pl3x.map.util.Colors;
 import net.pl3x.map.util.FileUtil;
 import net.pl3x.map.util.Numbers;
 import net.pl3x.map.util.Pair;
-import net.pl3x.map.util.SpecialColorRegistry;
 import net.pl3x.map.util.SpiralIterator;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -62,8 +61,6 @@ public abstract class AbstractRender extends BukkitRunnable {
 
     private final DecimalFormat dfPercent = new DecimalFormat("0.00%");
     private final DecimalFormat dfRate = new DecimalFormat("0.0");
-    private final BlockPosition.MutableBlockPosition pos1 = new BlockPosition.MutableBlockPosition();
-    private final BlockPosition.MutableBlockPosition pos2 = new BlockPosition.MutableBlockPosition();
     private final BiomeColors biomeColors;
 
     protected int maxRadius = 0;
@@ -145,36 +142,26 @@ public abstract class AbstractRender extends BukkitRunnable {
     }
 
     protected void mapRegion(Region region) {
-        Image image = new Image(worldConfig.ZOOM_MAX);
+        Image image = new Image(region, worldTilesDir, worldConfig.ZOOM_MAX);
         int scanned = 0;
-        int startX = region.getBlockX();
-        int startZ = region.getBlockZ();
-        for (int blockX = startX; blockX < startX + Image.SIZE; blockX += 16) {
+        int startX = region.getChunkX();
+        int startZ = region.getChunkZ();
+        for (int chunkX = startX; chunkX < startX + 32; chunkX++) {
             int[] lastY = new int[16];
-            for (int blockZ = startZ; blockZ < startZ + Image.SIZE; blockZ += 16) {
-                int chunkX = Numbers.blockToChunk(blockX);
-                int chunkZ = Numbers.blockToChunk(blockZ);
+            for (int chunkZ = startZ; chunkZ < startZ + 32; chunkZ ++) {
                 net.minecraft.server.v1_16_R3.Chunk chunk;
-                if (blockZ == startZ) {
+                if (chunkZ == startZ) {
                     // this is the top line of the image, we need to
                     // scan the bottom line of the region to the north
                     // in order to get the correct lastY for shading
                     chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
                     if (chunk != null && !chunk.isEmpty()) {
-                        for (int x = 0; x < 16; x++) {
-                            if (cancelled) return;
-                            scanBlock(chunk, x, 15, lastY);
-                        }
+                        lastY = scanBottomRow(chunk);
                     }
                 }
                 chunk = getChunkAt(nmsWorld, chunkX, chunkZ);
                 if (chunk != null && !chunk.isEmpty()) {
-                    for (int x = 0; x < 16; x++) {
-                        for (int z = 0; z < 16; z++) {
-                            if (cancelled) return;
-                            image.setPixel(blockX + x, blockZ + z, scanBlock(chunk, x, z, lastY));
-                        }
-                    }
+                    scanChunk(image, lastY, chunk);
                     scanned++;
                 }
                 curChunks++;
@@ -187,7 +174,7 @@ public abstract class AbstractRender extends BukkitRunnable {
                     .replace("{total}", Integer.toString(scanned))
                     .replace("{x}", Integer.toString(region.getX()))
                     .replace("{z}", Integer.toString(region.getZ())));
-            image.save(region, worldTilesDir);
+            image.save();
         } else {
             Logger.debug(Lang.LOG_SKIPPING_EMPTY_REGION
                     .replace("{x}", Integer.toString(region.getX()))
@@ -195,51 +182,58 @@ public abstract class AbstractRender extends BukkitRunnable {
         }
     }
 
+    private void scanChunk(Image image, int[] lastY, Chunk chunk) {
+        final int blockX = chunk.getPos().getBlockX();
+        final int blockZ = chunk.getPos().getBlockZ();
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                if (cancelled) return;
+                image.setPixel(blockX + x, blockZ + z, scanBlock(chunk, x, z, lastY));
+            }
+        }
+    }
+
+    private int @NonNull [] scanBottomRow(final @NonNull Chunk chunk) {
+        final int[] lastY = new int[16];
+        for (int x = 0; x < 16; x++) {
+            if (cancelled) return lastY;
+            final BlockPosition.MutableBlockPosition pos = new BlockPosition.MutableBlockPosition();
+            final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, x, 15) + 1;
+            pos.setValues(chunk.getPos().getBlockX() + x, yDiff, chunk.getPos().getBlockZ() + 15);
+            iterateDown(chunk, pos);
+            lastY[x] = pos.getY();
+        }
+        return lastY;
+    }
+
     private int scanBlock(net.minecraft.server.v1_16_R3.Chunk chunk, int imgX, int imgZ, int[] lastY) {
-        int curY = 0;
         int blockX = chunk.getPos().getBlockX() + imgX;
         int blockZ = chunk.getPos().getBlockZ() + imgZ;
 
         IBlockData state;
+        final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
 
-        if (nmsWorld.getDimensionManager().hasCeiling()) {
-            final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ);
-            pos1.setValues(blockX, yDiff, blockZ);
+        final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
+        mutablePos.setValues(blockX, yDiff, blockZ);
 
-            do {
-                pos1.c(EnumDirection.DOWN);
-                state = chunk.getType(pos1);
-            } while (!state.isAir());
-            do {
-                pos1.c(EnumDirection.DOWN);
-                state = chunk.getType(pos1);
-            } while ((state.isAir() || invisibleBlocks.contains(state.getBlock())) && pos1.getY() > 0);
+        if (yDiff > 1) {
+            state = iterateDown(chunk, mutablePos);
         } else {
-            final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
-            pos1.setValues(blockX, yDiff, blockZ);
-
-            if (yDiff > 1) {
-                do {
-                    pos1.c(EnumDirection.DOWN);
-                    state = chunk.getType(pos1);
-                } while ((state.isAir() || invisibleBlocks.contains(state.getBlock())) && pos1.getY() > 0);
-            } else {
-                // no blocks found, show invisible/air
-                return 0x00000000;
-            }
+            // no blocks found, show invisible/air
+            return 0x00000000;
         }
 
-        curY += pos1.getY();
+        final int curY = mutablePos.getY();
 
         int color = Colors.getMapColor(state);
 
         if (this.biomeColors != null) {
-            color = this.biomeColors.modifyColorFromBiome(color, chunk, this.pos1);
+            color = this.biomeColors.modifyColorFromBiome(color, chunk, mutablePos);
         }
 
         int odd = (imgX + imgZ & 1);
 
-        final Pair<Integer, IBlockData> fluidPair = this.findDepthIfFluid(pos1.getY(), state, chunk);
+        final Pair<Integer, IBlockData> fluidPair = this.findDepthIfFluid(mutablePos, state, chunk);
         if (fluidPair != null) {
             final int fluidDepth = fluidPair.left();
             final IBlockData fluidState = fluidPair.right();
@@ -252,16 +246,32 @@ public abstract class AbstractRender extends BukkitRunnable {
         return Colors.shade(color, colorOffset);
     }
 
-    private @Nullable Pair<Integer, IBlockData> findDepthIfFluid(final int surfaceY, final @NonNull IBlockData state, final @NonNull Chunk chunk) {
-        if (surfaceY > 0 && !state.getFluid().isEmpty()) {
+    private @NonNull IBlockData iterateDown(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
+        IBlockData state;
+        if (chunk.getWorld().getDimensionManager().hasCeiling()) {
+            do {
+                mutablePos.c(EnumDirection.DOWN);
+                state = chunk.getType(mutablePos);
+            } while (!state.isAir());
+        }
+        do {
+            mutablePos.c(EnumDirection.DOWN);
+            state = chunk.getType(mutablePos);
+        } while ((state.isAir() || invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        return state;
+    }
+
+    private @Nullable Pair<Integer, IBlockData> findDepthIfFluid(final @NonNull BlockPosition blockPos, final @NonNull IBlockData state, final @NonNull Chunk chunk) {
+        if (blockPos.getY() > 0 && !state.getFluid().isEmpty()) {
             IBlockData fluidState;
             int fluidDepth = 0;
 
-            int yBelowSurface = surfaceY - 1;
-            pos2.setValues(pos1);
+            int yBelowSurface = blockPos.getY() - 1;
+            final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
+            mutablePos.setValues(blockPos);
             do {
-                pos2.setY(yBelowSurface--);
-                fluidState = chunk.getType(pos2);
+                mutablePos.setY(yBelowSurface--);
+                fluidState = chunk.getType(mutablePos);
                 ++fluidDepth;
             } while (yBelowSurface > 0 && fluidDepth <= 10 && !fluidState.getFluid().isEmpty());
 

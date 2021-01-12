@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.BiomeFog;
+import net.minecraft.server.v1_16_R3.Biomes;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.Blocks;
@@ -15,8 +16,6 @@ import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.MathHelper;
 import net.minecraft.server.v1_16_R3.World;
 import net.pl3x.map.configuration.WorldConfig;
-import org.bukkit.block.Biome;
-import org.bukkit.craftbukkit.v1_16_R3.block.CraftBlock;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.imageio.ImageIO;
@@ -29,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
 public final class BiomeColors {
@@ -61,6 +61,24 @@ public final class BiomeColors {
             Material.REPLACEABLE_WATER_PLANT
     );
 
+    private static final int[] mapGrass;
+    private static final int[] mapFoliage;
+
+    static {
+        final File imagesDir = FileUtil.WEB_DIR.resolve("images").toFile();
+        final BufferedImage imgGrass;
+        final BufferedImage imgFoliage;
+        try {
+            imgGrass = ImageIO.read(new File(imagesDir, "grass.png"));
+            imgFoliage = ImageIO.read(new File(imagesDir, "foliage.png"));
+        } catch (final IOException e) {
+            throw new IllegalStateException("Failed to read biome images", e);
+        }
+
+        mapGrass = init(imgGrass);
+        mapFoliage = init(imgFoliage);
+    }
+
     private final Cache<Long, BiomeBase> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
 
     private final World world;
@@ -76,28 +94,22 @@ public final class BiomeColors {
         this.world = world;
         this.worldConfig = WorldConfig.get(world.getWorld());
 
-        BufferedImage imgGrass, imgFoliage;
-        try {
-            File imagesDir = FileUtil.WEB_DIR.resolve("images").toFile();
-            imgGrass = ImageIO.read(new File(imagesDir, "grass.png"));
-            imgFoliage = ImageIO.read(new File(imagesDir, "foliage.png"));
-
-            int[] mapGrass = init(imgGrass);
-            int[] mapFoliage = init(imgFoliage);
-
-            IRegistry<BiomeBase> biomeRegistry = getBiomeRegistry();
-            for (BiomeBase biome : biomeRegistry) {
-                float temperature = MathHelper.a(biome.k(), 0.0F, 1.0F);
-                float humidity = MathHelper.a(biome.getHumidity(), 0.0F, 1.0F);
-                grassColors.put(biome, BiomeEffectsReflection.grassColor(biome)
-                        .orElse(getDefaultGrassColor(mapGrass, temperature, humidity)));
-                foliageColors.put(biome, BiomeEffectsReflection.foliageColor(biome)
-                        .orElse(getDefaultFoliageColor(mapFoliage, temperature, humidity)));
-                waterColors.put(biome, BiomeEffectsReflection.waterColor(biome));
-            }
-        } catch (final IOException e) {
-            throw new IllegalStateException("Failed to load biome information", e);
+        final IRegistry<BiomeBase> biomeRegistry = this.getBiomeRegistry();
+        for (final BiomeBase biome : biomeRegistry) {
+            float temperature = MathHelper.a(biome.k(), 0.0F, 1.0F);
+            float humidity = MathHelper.a(biome.getHumidity(), 0.0F, 1.0F);
+            grassColors.put(biome, BiomeEffectsReflection.grassColor(biome)
+                    .orElse(getDefaultGrassColor(temperature, humidity)));
+            foliageColors.put(biome, BiomeEffectsReflection.foliageColor(biome)
+                    .orElse(Colors.mix(Colors.leavesMapColor().rgb, getDefaultFoliageColor(temperature, humidity), 0.85f)));
+            waterColors.put(biome, BiomeEffectsReflection.waterColor(biome));
         }
+
+        final int darkForestColor = (Colors.leavesMapColor().rgb & 0xFEFEFE) + 2634762 >> 1;
+        final BiomeBase DARK_FOREST = biomeRegistry.get(Biomes.DARK_FOREST.a());
+        final BiomeBase DARK_FOREST_HILLS = biomeRegistry.get(Biomes.DARK_FOREST_HILLS.a());
+        foliageColors.put(DARK_FOREST, BiomeEffectsReflection.foliageColor(DARK_FOREST).orElse(darkForestColor));
+        foliageColors.put(DARK_FOREST_HILLS, BiomeEffectsReflection.foliageColor(DARK_FOREST_HILLS).orElse(darkForestColor));
     }
 
     public static @NonNull BiomeColors forWorld(final @NonNull World world) {
@@ -110,39 +122,18 @@ public final class BiomeColors {
         final Block block = data.getBlock();
 
         if (grassColorBlocks.contains(block)) {
-
             color = this.grass(pos);
-
         } else if (foliageColorBlocks.contains(block)) {
-
-            BiomeBase biome = this.getBiomeWithCaching(pos);
-            final Optional<Integer> foliageColor = BiomeEffectsReflection.foliageColor(biome);
-            if (foliageColor.isPresent()) {
-                color = foliage(pos); // custom color
-            } else if (block == Blocks.DARK_OAK_LEAVES) {
-                //int modColor = Colors.mix(color, foliage(pos), 0.75F);
-                int modColor = color;
-                color = (modColor & 0xFEFEFE) + 2634762 >> 1; // dark oak leaves (no custom color)
-            } else if (block == Blocks.OAK_LEAVES && (biome == getBiome(Biome.DARK_FOREST) || biome == getBiome(Biome.DARK_FOREST_HILLS))) {
-                // special case for oak leaves in dark forest
-                int modColor = color;
-                color = Colors.mix(color, (modColor & 0xFEFEFE) + 2634762 >> 1, 0.5F);
-            } else {
-                //color = Colors.mix(color, foliage(pos), 0.75F);
-                color = foliage(pos); // any other foliage (no custom color)
-            }
-
+            color = this.foliage(pos);
         } else if (waterColorBlocks.contains(block) || waterColorMaterials.contains(mat)) {
-
             int modColor = water(pos);
             color = Colors.mix(color, modColor, 0.8F);
-
         }
 
         return color;
     }
 
-    private int[] init(BufferedImage image) {
+    private static int @NonNull [] init(final @NonNull BufferedImage image) {
         int[] map = new int[256 * 256];
         for (int x = 0; x < 256; ++x) {
             for (int y = 0; y < 256; ++y) {
@@ -156,20 +147,20 @@ public final class BiomeColors {
         return map;
     }
 
-    private int getDefaultGrassColor(int[] map, double temperature, double humidity) {
+    private static int getDefaultGrassColor(double temperature, double humidity) {
         int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
         int i = (int) ((1.0 - temperature) * 255.0);
         int k = j << 8 | i;
-        if (k > map.length) {
+        if (k > mapGrass.length) {
             return 0;
         }
-        return map[k];
+        return mapGrass[k];
     }
 
-    private int getDefaultFoliageColor(int[] map, double temperature, double humidity) {
+    private static int getDefaultFoliageColor(double temperature, double humidity) {
         int i = (int) ((1.0 - temperature) * 255.0);
         int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
-        return map[(j << 8 | i)];
+        return mapFoliage[(j << 8 | i)];
     }
 
     private int grass(final @NonNull BlockPosition pos) {
@@ -216,18 +207,20 @@ public final class BiomeColors {
         return rgb;
     }
 
+    AtomicInteger hit = new AtomicInteger(0);
+    AtomicInteger miss = new AtomicInteger(0);
     private BiomeBase getBiomeWithCaching(final @NonNull BlockPosition pos) {
         long xz = (long) pos.getX() << 32 | pos.getZ() & 0xffffffffL;
         BiomeBase biome = blockPosBiomeCache.getIfPresent(xz);
         if (biome == null) {
             biome = world.getBiome(pos);
             blockPosBiomeCache.put(xz, biome);
+            miss.incrementAndGet();
+        } else {
+            hit.incrementAndGet();
         }
+        System.out.printf("%s/%s %s%n", hit.get(), miss.get(), hit.get() / miss.get());
         return biome;
-    }
-
-    private BiomeBase getBiome(Biome biome) {
-        return CraftBlock.biomeToBiomeBase(getBiomeRegistry(), biome);
     }
 
     private IRegistry<BiomeBase> getBiomeRegistry() {

@@ -15,16 +15,20 @@ public class Image {
     public static final int SIZE = 512;
     private final int[][] pixels = new int[SIZE][SIZE];
     private final int maxZoom;
+    private final Region region;
+    private final Path directory;
 
-    public Image(int maxZoom) {
+    public Image(Region region, Path directory, int maxZoom) {
+        this.region = region;
+        this.directory = directory;
         this.maxZoom = maxZoom;
     }
 
-    public void setPixel(int x, int z, int color) {
+    public synchronized void setPixel(int x, int z, int color) {
         this.pixels[x & (SIZE - 1)][z & (SIZE - 1)] = color;
     }
 
-    public void save(Region region, Path directory) {
+    public void save() {
         for (int zoom = 0; zoom <= maxZoom; zoom++) {
             Path dir = Path.of(directory.toString(), Integer.toString(maxZoom - zoom));
             try {
@@ -55,7 +59,10 @@ public class Image {
                 int baseZ = (region.getZ() * size) & (SIZE - 1);
                 for (int x = 0; x < SIZE; x += step) {
                     for (int z = 0; z < SIZE; z += step) {
-                        image.setRGB(baseX + (x / step), baseZ + (z / step), this.pixels[x][z]);
+                        final int rgb = this.pixels[x][z];
+                        if (rgb != 0) {
+                            image.setRGB(baseX + (x / step), baseZ + (z / step), rgb);
+                        }
                     }
                 }
 
