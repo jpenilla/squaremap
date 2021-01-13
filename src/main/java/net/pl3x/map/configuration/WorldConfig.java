@@ -60,6 +60,7 @@ public class WorldConfig {
     }
 
     public boolean MAP_ENABLED = true;
+    public String MAP_DISPLAY_NAME = "{world}";
 
     public boolean MAP_BIOMES = true;
     public int MAP_BIOMES_BLEND = 4;
@@ -71,6 +72,7 @@ public class WorldConfig {
 
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
+        MAP_DISPLAY_NAME = getString("map.display-name", MAP_DISPLAY_NAME);
     }
 
     private void biomeSettings() {
@@ -113,13 +115,5 @@ public class WorldConfig {
         PLAYER_TRACKER_NAMEPLATE_HEADS_URL = getString("player-tracker.nameplate.heads-url", PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
         PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", PLAYER_TRACKER_HIDE_INVISIBLE);
         PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", PLAYER_TRACKER_HIDE_SPECTATORS);
-    }
-
-    public String UI_TITLE = "Pl3xMap";
-    public boolean UI_COORDINATES = true;
-
-    private void uiSettings() {
-        UI_TITLE = getString("ui.title", UI_TITLE);
-        UI_COORDINATES = getBoolean("ui.coordinates", UI_COORDINATES);
     }
 }

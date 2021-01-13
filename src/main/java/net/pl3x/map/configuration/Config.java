@@ -1,15 +1,15 @@
 package net.pl3x.map.configuration;
 
+import net.pl3x.map.Logger;
+import net.pl3x.map.Pl3xMap;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-
-import net.pl3x.map.Logger;
-import net.pl3x.map.Pl3xMap;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 @SuppressWarnings("unused")
 public class Config {
@@ -106,5 +106,17 @@ public class Config {
         HTTPD_ENABLED = getBoolean("settings.internal-webserver.enabled", HTTPD_ENABLED);
         HTTPD_BIND = getString("settings.internal-webserver.bind", HTTPD_BIND);
         HTTPD_PORT = getInt("settings.internal-webserver.port", HTTPD_PORT);
+    }
+
+    public static String UI_TITLE = "Pl3xMap - {world}";
+    public static boolean UI_COORDINATES = true;
+    public static boolean UI_LINK = true;
+    public static String UI_SIDEBAR = "pinned";
+
+    private static void uiSettings() {
+        UI_TITLE = getString("settings.ui.title", UI_TITLE);
+        UI_COORDINATES = getBoolean("settings.ui.coordinates", UI_COORDINATES);
+        UI_LINK = getBoolean("settings.ui.link", UI_LINK);
+        UI_SIDEBAR = getString("settings.ui.sidebar", UI_SIDEBAR);
     }
 }

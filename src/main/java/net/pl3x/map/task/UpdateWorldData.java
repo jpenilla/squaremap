@@ -1,6 +1,7 @@
 package net.pl3x.map.task;
 
 import com.google.gson.Gson;
+import net.pl3x.map.configuration.Config;
 import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.util.FileUtil;
 import org.bukkit.Bukkit;
@@ -41,10 +42,6 @@ public class UpdateWorldData extends BukkitRunnable {
             nameplates.put("heads_url", worldConfig.PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
             playerTracker.put("nameplates", nameplates);
 
-            Map<String, Object> ui = new HashMap<>();
-            ui.put("title", worldConfig.UI_TITLE);
-            ui.put("coordinates", worldConfig.UI_COORDINATES);
-
             Map<String, Object> zoom = new HashMap<>();
             zoom.put("max", worldConfig.ZOOM_MAX);
             zoom.put("def", worldConfig.ZOOM_DEFAULT);
@@ -53,28 +50,38 @@ public class UpdateWorldData extends BukkitRunnable {
             Map<String, Object> settings = new HashMap<>();
             settings.put("spawn", spawn);
             settings.put("player_tracker", playerTracker);
-            settings.put("ui", ui);
             settings.put("zoom", zoom);
 
             String name = world.getName();
+            String displayName = worldConfig.MAP_DISPLAY_NAME
+                    .replace("{world}", name);
             String type = world.getEnvironment().name().toLowerCase();
 
             Map<String, Object> map = new HashMap<>();
             map.put("name", name);
+            map.put("display_name", displayName);
             map.put("type", type);
             map.put("settings", settings);
 
             Map<String, Object> worldsList = new HashMap<>();
             worldsList.put("name", name);
+            worldsList.put("display_name", displayName);
             worldsList.put("type", type);
             worlds.add(worldsList);
 
             FileUtil.write(gson.toJson(map), FileUtil.getWorldFolder(world).resolve("settings.json"));
         });
 
+        Map<String, Object> ui = new HashMap<>();
+        ui.put("title", Config.UI_TITLE);
+        ui.put("coordinates", Config.UI_COORDINATES);
+        ui.put("link", Config.UI_LINK);
+        ui.put("sidebar", Config.UI_SIDEBAR);
+
         Map<String, Object> map = new HashMap<>();
         map.put("worlds", worlds);
+        map.put("ui", ui);
 
-        FileUtil.write(gson.toJson(map), FileUtil.TILES_DIR.resolve("worlds.json"));
+        FileUtil.write(gson.toJson(map), FileUtil.TILES_DIR.resolve("settings.json"));
     }
 }

@@ -37,10 +37,12 @@ var Icons = {
 init();
 
 
-// get worlds.json and setup worlds list
+// get settings.json and setup worlds list
 function init() {
-    getJSON("tiles/worlds.json", function(json) {
+    getJSON("tiles/settings.json", function(json) {
         worlds = json.worlds;
+        settings.ui = json.ui;
+
         loadWorld(true);
     });
 }
@@ -50,10 +52,13 @@ function init() {
 var firstLoad = true;
 function loadWorld(centerOnSpawn) {
     getJSON("tiles/" + world + "/settings.json", function(json) {
-        settings = json.settings;
+        settings.spawn = json.settings.spawn;
+        settings.player_tracker = json.settings.player_tracker;
+        settings.zoom = json.settings.zoom;
 
         // setup page title
-        document.title = settings.ui.title;
+        document.title = settings.ui.title
+            .replaceAll("{world}", json.display_name);
 
         // setup background
         var mapDom = document.getElementById(mapId);
@@ -106,6 +111,8 @@ function loadWorld(centerOnSpawn) {
             L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
             if (settings.ui.coordinates) {
                 addUICoordinates();
+            }
+            if (settings.ui.link) {
                 addUILink();
             }
 
@@ -307,67 +314,54 @@ function addUILink() {
 // sidebar
 var pinned = false;
 function addSidebar() {
+    pinned = settings.ui.sidebar == "pinned";
+
     var sidebar = document.createElement("div");
     sidebar.id = "sidebar";
-    sidebar.onmouseleave = function() {
-        if (!pinned) {
-            handle.style.width = "15px";
-            sidebar.style.width = "0px";
-        }
-    };
-
     var handle = document.createElement("div");
     handle.id = "handle";
-    handle.appendChild(document.createTextNode("<"));
-    handle.onmouseenter = function() {
-        if (!pinned) {
-            handle.style.width = "0px";
-            sidebar.style.width = "200px";
-        }
-    };
     sidebar.appendChild(handle);
+    document.getElementById("map").appendChild(sidebar);
+
+    showSidebar(pinned);
+
+    sidebar.onmouseleave = function() { if (!pinned) showSidebar(false); };
+    handle.onmouseenter = function() { if (!pinned) showSidebar(true); };
 
     var pin = document.createElement("img");
     pin.id = "pin";
     pin.src = "images/" + (pinned ? "pinned" : "unpinned") + ".png";
     pin.className = pinned ? "pinned" : "unpinned";
-    pin.onclick = function() {
-        if (pinned) {
-            pinned = false;
-            pin.src = "images/unpinned.png";
-            pin.className = "unpinned";
-        } else {
-            pinned = true;
-            pin.src = "images/pinned.png";
-            pin.className = "pinned";
+    if (settings.ui.sidebar == "hide") {
+        pin.style.visibility = "hidden";
+    } else {
+        pin.onclick = function() {
+            if (pinned) {
+                pinned = false;
+                pin.src = "images/unpinned.png";
+                pin.className = "unpinned";
+            } else {
+                pinned = true;
+                pin.src = "images/pinned.png";
+                pin.className = "pinned";
+            }
         }
     }
     sidebar.appendChild(pin);
-
-    if (pinned) {
-        handle.style.width = "0px";
-        sidebar.style.width = "200px";
-    } else {
-        handle.style.width = "15px";
-        sidebar.style.width = "0px";
-    }
 
     var top = document.createElement("fieldset");
     top.id = "worlds";
     var topLegend = document.createElement("legend");
     topLegend.appendChild(document.createTextNode("Worlds"));
     top.appendChild(topLegend);
+    sidebar.appendChild(top);
 
     var bottom = document.createElement("fieldset");
     bottom.id = "players";
     var bottomLegend = document.createElement("legend");
     bottomLegend.appendChild(document.createTextNode("Players"));
     bottom.appendChild(bottomLegend);
-
-    sidebar.appendChild(top);
     sidebar.appendChild(bottom);
-
-    document.getElementById("map").appendChild(sidebar);
 
     for (var i = 0; i < worlds.length; i++) {
         var link = document.createElement("a");
@@ -389,11 +383,25 @@ function addSidebar() {
         }
 
         var span = document.createElement("span");
-        span.appendChild(document.createTextNode(worlds[i].name))
+        span.appendChild(document.createTextNode(worlds[i].display_name))
 
         link.appendChild(img);
         link.appendChild(span);
         top.appendChild(link);
+    }
+}
+
+
+// show sidebar
+function showSidebar(show) {
+    var handle = document.getElementById("handle");
+    var sidebar = document.getElementById("sidebar");
+    if (show) {
+        handle.style.width = "0px";
+        sidebar.style.width = "200px";
+    } else {
+        handle.style.width = "15px";
+        sidebar.style.width = "0px";
     }
 }
 
