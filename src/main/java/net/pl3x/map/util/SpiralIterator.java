@@ -5,6 +5,7 @@ import net.pl3x.map.data.Region;
 import java.util.Iterator;
 
 public class SpiralIterator implements Iterator<Region> {
+    private Direction direction = Direction.RIGHT;
     private int x, z, stepCount, stepLeg, legAxis, layer;
     private final int totalSteps;
 
@@ -25,7 +26,7 @@ public class SpiralIterator implements Iterator<Region> {
             return region;
         }
 
-        switch (Direction.currentDirection) {
+        switch (direction) {
             case RIGHT:
                 x += 1;
                 break;
@@ -43,7 +44,7 @@ public class SpiralIterator implements Iterator<Region> {
         stepCount++;
         stepLeg++;
         if (stepLeg > layer) {
-            Direction.next();
+            direction = direction.next();
             stepLeg = 0;
             legAxis++;
             if (legAxis > 1) {
@@ -59,10 +60,9 @@ public class SpiralIterator implements Iterator<Region> {
         RIGHT, DOWN, LEFT, UP;
 
         private static final Direction[] values = values();
-        private static Direction currentDirection = RIGHT;
 
-        public static void next() {
-            currentDirection = values[(currentDirection.ordinal() + 1) % values.length];
+        public Direction next() {
+            return values[(this.ordinal() + 1) % values.length];
         }
     }
 }
