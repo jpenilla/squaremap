@@ -325,7 +325,7 @@ public abstract class AbstractRender implements Runnable {
                 shaded = true;
             }
             if (this.worldConfig.MAP_WATER_CLEAR) {
-                color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
+                if (!this.worldConfig.MAP_WATER_CHECKERBOARD) color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
                 color = Colors.mix(color, Colors.getMapColor(fluidState), 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
                 shaded = true;
             }
