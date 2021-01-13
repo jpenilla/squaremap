@@ -1,15 +1,13 @@
-package net.pl3x.map.util;
-
-import net.pl3x.map.data.Region;
+package net.pl3x.map.util.iterator;
 
 import java.util.Iterator;
 
-public class SpiralIterator implements Iterator<Region> {
+public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
     private Direction direction = Direction.RIGHT;
     private int x, z, stepCount, stepLeg, legAxis, layer;
     private final int totalSteps;
 
-    public SpiralIterator(int x, int z, int radius) {
+    protected AbstractSpiralIterator(int x, int z, int radius) {
         this.x = x;
         this.z = z;
         this.totalSteps = (radius * 2 + 1) * (radius * 2 + 1);
@@ -20,10 +18,12 @@ public class SpiralIterator implements Iterator<Region> {
         return stepCount < totalSteps;
     }
 
-    public Region next() {
-        final Region region = new Region(x, z);
+    protected abstract T fromCoordPair(final int x, final int z);
+
+    public T next() {
+        final T t = this.fromCoordPair(x, z);
         if (!hasNext()) {
-            return region;
+            return t;
         }
 
         switch (direction) {
@@ -53,7 +53,7 @@ public class SpiralIterator implements Iterator<Region> {
             }
         }
 
-        return region;
+        return t;
     }
 
     private enum Direction {

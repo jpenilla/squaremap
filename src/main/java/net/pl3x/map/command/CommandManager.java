@@ -11,9 +11,11 @@ import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.collect.ImmutableList;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.command.commands.CancelRenderCommand;
+import net.pl3x.map.command.commands.ConfirmCommand;
 import net.pl3x.map.command.commands.FullRenderCommand;
 import net.pl3x.map.command.commands.RadiusRenderCommand;
 import net.pl3x.map.command.commands.ReloadCommand;
+import net.pl3x.map.command.commands.ResetMapCommand;
 import net.pl3x.map.configuration.Lang;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -59,9 +61,11 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
 
         ImmutableList.of(
                 new ReloadCommand(plugin, this),
+                new ConfirmCommand(plugin, this),
                 new FullRenderCommand(plugin, this),
                 new CancelRenderCommand(plugin, this),
-                new RadiusRenderCommand(plugin, this)
+                new RadiusRenderCommand(plugin, this),
+                new ResetMapCommand(plugin, this)
         ).forEach(Pl3xMapCommand::register);
 
     }

@@ -5,7 +5,7 @@ import cloud.commandframework.bukkit.parsers.WorldArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
 import net.pl3x.map.Pl3xMap;
-import net.pl3x.map.RenderManager;
+import net.pl3x.map.WorldManager;
 import net.pl3x.map.command.CommandManager;
 import net.pl3x.map.command.Pl3xMapCommand;
 import net.pl3x.map.configuration.Lang;
@@ -55,7 +55,7 @@ public final class CancelRenderCommand extends Pl3xMapCommand {
     }
 
     private void executeCancelRender(final @NonNull CommandSender sender, final @NonNull World world) {
-        if (!RenderManager.isRendering(world)) {
+        if (!WorldManager.getWorld(world).isRendering()) {
             Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS
                     .replace("{world}", world.getName()));
             return;
@@ -63,6 +63,6 @@ public final class CancelRenderCommand extends Pl3xMapCommand {
 
         Lang.send(sender, Lang.CANCELLED_RENDER
                 .replace("{world}", world.getName()));
-        RenderManager.cancelRender(world);
+        WorldManager.getWorld(world).stopRender();
     }
 }

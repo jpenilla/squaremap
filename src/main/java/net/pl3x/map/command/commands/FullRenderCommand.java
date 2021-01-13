@@ -5,10 +5,11 @@ import cloud.commandframework.bukkit.parsers.WorldArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
 import net.pl3x.map.Pl3xMap;
-import net.pl3x.map.RenderManager;
+import net.pl3x.map.WorldManager;
 import net.pl3x.map.command.CommandManager;
 import net.pl3x.map.command.Pl3xMapCommand;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.task.FullRender;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,7 +56,7 @@ public final class FullRenderCommand extends Pl3xMapCommand {
     }
 
     private void executeFullRender(final @NonNull CommandSender sender, final @NonNull World world) {
-        if (RenderManager.isRendering(world)) {
+        if (WorldManager.getWorld(world).isRendering()) {
             Lang.send(sender, Lang.RENDER_IN_PROGRESS
                     .replace("{world}", world.getName()));
             return;
@@ -63,6 +64,6 @@ public final class FullRenderCommand extends Pl3xMapCommand {
 
         Lang.send(sender, Lang.FULL_RENDER_STARTED
                 .replace("{world}", world.getName()));
-        RenderManager.fullRender(world);
+        WorldManager.getWorld(world).startRender(new FullRender(world));
     }
 }

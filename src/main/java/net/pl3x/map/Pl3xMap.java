@@ -53,6 +53,8 @@ public final class Pl3xMap extends JavaPlugin {
         this.updateWorldData = new UpdateWorldData();
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
+        WorldManager.start();
+
         if (Config.HTTPD_ENABLED) {
             if (IntegratedServer.setup()) {
                 IntegratedServer.startServer();
@@ -74,7 +76,7 @@ public final class Pl3xMap extends JavaPlugin {
             this.updateWorldData = null;
         }
 
-        RenderManager.stop();
+        WorldManager.shutdown();
 
         getServer().getScheduler().cancelTasks(this);
     }

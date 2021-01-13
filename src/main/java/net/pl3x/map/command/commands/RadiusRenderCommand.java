@@ -8,9 +8,11 @@ import cloud.commandframework.bukkit.parsers.location.Location2DArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
 import net.pl3x.map.Pl3xMap;
+import net.pl3x.map.WorldManager;
 import net.pl3x.map.command.CommandManager;
 import net.pl3x.map.command.Pl3xMapCommand;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.task.RadiusRender;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -39,8 +41,16 @@ public final class RadiusRenderCommand extends Pl3xMapCommand {
         final CommandSender sender = context.getSender();
         final World world = context.get("world");
         final Location2D center = context.getOrDefault("center", Location2D.from(world, 0, 0));
-        final double centerX = center.getX();
-        final double centerZ = center.getZ();
-        Lang.send(sender, "Not yet implemented");
+        final int radius = context.get("radius");
+
+        if (WorldManager.getWorld(world).isRendering()) {
+            Lang.send(sender, Lang.RENDER_IN_PROGRESS
+                    .replace("{world}", world.getName()));
+            return;
+        }
+
+        Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER
+                .replace("{world}", world.getName()));
+        WorldManager.getWorld(world).startRender(new RadiusRender(center, radius));
     }
 }

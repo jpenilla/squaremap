@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
 public final class BiomeColors {
@@ -207,19 +206,13 @@ public final class BiomeColors {
         return rgb;
     }
 
-    AtomicInteger hit = new AtomicInteger(0);
-    AtomicInteger miss = new AtomicInteger(0);
     private BiomeBase getBiomeWithCaching(final @NonNull BlockPosition pos) {
         long xz = (long) pos.getX() << 32 | pos.getZ() & 0xffffffffL;
         BiomeBase biome = blockPosBiomeCache.getIfPresent(xz);
         if (biome == null) {
             biome = world.getBiome(pos);
             blockPosBiomeCache.put(xz, biome);
-            miss.incrementAndGet();
-        } else {
-            hit.incrementAndGet();
         }
-        System.out.printf("%s/%s %s%n", hit.get(), miss.get(), hit.get() / miss.get());
         return biome;
     }
 

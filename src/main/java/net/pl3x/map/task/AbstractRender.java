@@ -16,7 +16,7 @@ import net.minecraft.server.v1_16_R3.IChunkAccess;
 import net.minecraft.server.v1_16_R3.PlayerChunk;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.Logger;
-import net.pl3x.map.RenderManager;
+import net.pl3x.map.WorldManager;
 import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.data.Image;
@@ -24,26 +24,28 @@ import net.pl3x.map.data.Region;
 import net.pl3x.map.util.BiomeColors;
 import net.pl3x.map.util.Colors;
 import net.pl3x.map.util.FileUtil;
-import net.pl3x.map.util.Numbers;
 import net.pl3x.map.util.Pair;
-import net.pl3x.map.util.SpiralIterator;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class AbstractRender extends BukkitRunnable {
+public abstract class AbstractRender implements Runnable {
     private static final Set<Block> invisibleBlocks = ImmutableSet.of(
             Blocks.TALL_GRASS,
             Blocks.FERN,
@@ -51,106 +53,135 @@ public abstract class AbstractRender extends BukkitRunnable {
             Blocks.LARGE_FERN
     );
 
+    private final ExecutorService executor;
+    private final FutureTask<Void> futureTask;
+    protected volatile boolean cancelled = false;
+
     protected final World world;
-    private final WorldServer nmsWorld;
-    private final WorldConfig worldConfig;
+    protected final WorldServer nmsWorld;
+    protected final WorldConfig worldConfig;
     protected final Path worldTilesDir;
-    private final int centerX;
-    private final int centerZ;
-    private final int radius;
 
     private final DecimalFormat dfPercent = new DecimalFormat("0.00%");
     private final DecimalFormat dfRate = new DecimalFormat("0.0");
-    private final BiomeColors biomeColors;
+    private final ThreadLocal<BiomeColors> biomeColors;
 
-    protected int maxRadius = 0;
-    protected int totalRegions, curRegions;
-    private int curChunks, lastChunks, totalChunks;
-    private long lastTime;
-    protected boolean cancelled = false;
+    protected final AtomicInteger curChunks = new AtomicInteger(0);
 
-    public AbstractRender(World world, Location center, int radius) {
+    public AbstractRender(World world) {
+        this.futureTask = new FutureTask<>(this, null);
+        this.worldConfig = WorldConfig.get(world);
+        this.executor = Executors.newFixedThreadPool(this.worldConfig.MAX_RENDER_THREADS);
         this.world = world;
         this.nmsWorld = ((CraftWorld) world).getHandle();
-        this.worldConfig = WorldConfig.get(world);
         this.worldTilesDir = FileUtil.getWorldFolder(world);
-        this.centerX = Numbers.blockToRegion(center.getBlockX());
-        this.centerZ = Numbers.blockToRegion(center.getBlockZ());
-        this.radius = Numbers.blockToRegion(radius);
-        this.biomeColors = this.worldConfig.MAP_BIOMES ? BiomeColors.forWorld(nmsWorld) : null; // We don't need to bother with initing this if we don't map biomes
+        this.biomeColors = this.worldConfig.MAP_BIOMES
+                ? ThreadLocal.withInitial(() -> BiomeColors.forWorld(nmsWorld))
+                : null; // this should be null if we are not mapping biomes
+    }
+
+    public synchronized void cancel() {
+        this.executor.shutdown();
+        this.cancelled = true;
+        this.futureTask.cancel(false);
     }
 
     @Override
-    public void cancel() {
-        RenderManager.finish(world);
-        cancelled = true;
-        super.cancel();
-    }
+    public final void run() {
+        final long startTime = System.currentTimeMillis();
+        final Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            final int[] rollingAvgCps = new int[15];
+            final List<Integer> totalAvgCps = new ArrayList<>();
+            int index = 0;
+            int prevChunks = 0;
 
-    @Override
-    public void run() {
-        lastTime = System.currentTimeMillis();
+            @Override
+            public void run() {
+                final int curChunks = processedChunks();
+                final int diff = curChunks - prevChunks;
+                prevChunks = curChunks;
 
-        Logger.info(Lang.LOG_SCANNING_REGION_FILES);
-        List<Region> regions = getRegions();
+                rollingAvgCps[index] = diff;
+                totalAvgCps.add(diff);
+                index++;
+                if (index == 15) {
+                    index = 0;
+                }
+                final double rollingAvg = Arrays.stream(rollingAvgCps).filter(i -> i != 0).average().orElse(0.00D);
 
-        maxRadius = Math.min(maxRadius, radius);
+                final int chunksLeft = totalChunks() - curChunks;
+                final long timeLeft = (long) (chunksLeft / (totalAvgCps.stream().filter(i -> i != 0).mapToInt(i -> i).average().orElse(0.00D) / 1000));
 
-        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES
-                .replace("{total}", Integer.toString(totalRegions)));
+                String etaStr = formatMilliseconds(timeLeft);
+                String elapsedStr = formatMilliseconds(System.currentTimeMillis() - startTime);
 
-        SpiralIterator spiral = new SpiralIterator(centerX, centerZ, maxRadius);
-        while (spiral.hasNext()) {
-            if (cancelled) return;
-            Region region = spiral.next();
-            if (regions.contains(region)) {
-                mapRegion(region);
+                double percent = (double) curChunks / (double) totalChunks();
+
+                String rateStr = dfRate.format(rollingAvg);
+                String percentStr = dfPercent.format(percent);
+
+                Logger.info("Render progress for {world}: {current_chunks}/{total_chunks} chunks ({percent}), Elapsed: {elapsed}, ETA: {eta}, Rate: {rate}cps"
+                        .replace("{world}", world.getName())
+                        .replace("{current_chunks}", Integer.toString(curChunks))
+                        .replace("{total_chunks}", Integer.toString(totalChunks()))
+                        .replace("{percent}", percentStr)
+                        .replace("{elapsed}", elapsedStr)
+                        .replace("{eta}", etaStr)
+                        .replace("{rate}", rateStr));
             }
-        }
+        }, 1000L, 1000L);
+
+        this.render();
+
+        timer.cancel();
 
         Logger.info(Lang.LOG_FINISHED_RENDERING
                 .replace("{world}", world.getName()));
 
-        cancel();
+        WorldManager.getWorld(world).stopRender();
     }
 
-    protected List<Region> getRegions() {
-        int minX = centerX - radius;
-        int maxX = centerX + radius;
-        int minZ = centerZ - radius;
-        int maxZ = centerZ + radius;
-        List<Region> regions = new ArrayList<>();
-        File[] files = FileUtil.getRegionFiles(world);
-        for (File file : files) {
-            if (cancelled) return new ArrayList<>();
-            if (file.length() == 0) continue;
-            try {
-                String[] split = file.getName().split("\\.");
-                int x = Integer.parseInt(split[1]);
-                int z = Integer.parseInt(split[2]);
-                if (x >= minX && x <= maxX && z >= minZ && z <= maxZ) {
-                    Region region = new Region(x, z);
-                    maxRadius = Math.max(Math.max(maxRadius, Math.abs(x)), Math.abs(z));
-                    regions.add(region);
-                }
-            } catch (NumberFormatException ignore) {
-            }
-        }
-        totalRegions = regions.size();
-        totalChunks = totalRegions * 32 * 32;
-        return regions;
+    private static @NonNull String formatMilliseconds(long timeLeft) {
+        int hrs = (int) TimeUnit.MILLISECONDS.toHours(timeLeft) % 24;
+        int min = (int) TimeUnit.MILLISECONDS.toMinutes(timeLeft) % 60;
+        int sec = (int) TimeUnit.MILLISECONDS.toSeconds(timeLeft) % 60;
+        return String.format("%02d:%02d:%02d", hrs, min, sec);
+    }
+
+    public abstract int totalChunks();
+
+    public final int processedChunks() {
+        return this.curChunks.get();
+    }
+
+    protected abstract void render();
+
+    public final @NonNull FutureTask<Void> getFutureTask() {
+        return this.futureTask;
     }
 
     protected void mapRegion(Region region) {
         Image image = new Image(region, worldTilesDir, worldConfig.ZOOM_MAX);
-        int scanned = 0;
         int startX = region.getChunkX();
         int startZ = region.getChunkZ();
+        final List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (int chunkX = startX; chunkX < startX + 32; chunkX++) {
+            futures.add(this.mapChunkColumn(image, chunkX, startZ));
+        }
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+        if (!this.cancelled) {
+            image.save();
+        }
+    }
+
+    protected CompletableFuture<Void> mapChunkColumn(final @NonNull Image image, final int chunkX, final int startChunkZ) {
+        return CompletableFuture.runAsync(() -> {
             int[] lastY = new int[16];
-            for (int chunkZ = startZ; chunkZ < startZ + 32; chunkZ ++) {
+            for (int chunkZ = startChunkZ; chunkZ < startChunkZ + 32; chunkZ++) {
+                if (this.cancelled) return;
                 net.minecraft.server.v1_16_R3.Chunk chunk;
-                if (chunkZ == startZ) {
+                if (chunkZ == startChunkZ) {
                     // this is the top line of the image, we need to
                     // scan the bottom line of the region to the north
                     // in order to get the correct lastY for shading
@@ -162,24 +193,29 @@ public abstract class AbstractRender extends BukkitRunnable {
                 chunk = getChunkAt(nmsWorld, chunkX, chunkZ);
                 if (chunk != null && !chunk.isEmpty()) {
                     scanChunk(image, lastY, chunk);
-                    scanned++;
                 }
-                curChunks++;
+                curChunks.incrementAndGet();
             }
-        }
-        curRegions++;
-        printProgress(region);
-        if (scanned > 0) {
-            Logger.debug(Lang.LOG_SAVING_CHUNKS_FOR_REGION
-                    .replace("{total}", Integer.toString(scanned))
-                    .replace("{x}", Integer.toString(region.getX()))
-                    .replace("{z}", Integer.toString(region.getZ())));
-            image.save();
-        } else {
-            Logger.debug(Lang.LOG_SKIPPING_EMPTY_REGION
-                    .replace("{x}", Integer.toString(region.getX()))
-                    .replace("{z}", Integer.toString(region.getZ())));
-        }
+        }, this.executor);
+    }
+
+    protected CompletableFuture<Void> mapSingleChunk(final @NonNull Image image, final int chunkX, final int chunkZ) {
+        return CompletableFuture.runAsync(() -> {
+            int[] lastY = new int[16];
+
+            net.minecraft.server.v1_16_R3.Chunk chunk;
+            chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
+            if (chunk != null && !chunk.isEmpty()) {
+                lastY = scanBottomRow(chunk);
+            }
+
+            chunk = getChunkAt(nmsWorld, chunkX, chunkZ);
+            if (chunk != null && !chunk.isEmpty()) {
+                scanChunk(image, lastY, chunk);
+            }
+
+            curChunks.incrementAndGet();
+        }, this.executor);
     }
 
     private void scanChunk(Image image, int[] lastY, Chunk chunk) {
@@ -228,7 +264,7 @@ public abstract class AbstractRender extends BukkitRunnable {
         int color = Colors.getMapColor(state);
 
         if (this.biomeColors != null) {
-            color = this.biomeColors.modifyColorFromBiome(color, chunk, mutablePos);
+            color = this.biomeColors.get().modifyColorFromBiome(color, chunk, mutablePos);
         }
 
         int odd = (imgX + imgZ & 1);
@@ -319,38 +355,5 @@ public abstract class AbstractRender extends BukkitRunnable {
             if (cancelled) return null;
         }
         return (Chunk) future.join().left().orElse(null);
-    }
-
-    protected void printProgress(Region region) {
-        long curTime = System.currentTimeMillis();
-        long timeDiff = curTime - lastTime;
-        lastTime = curTime;
-
-        double chunks = curChunks - lastChunks;
-        lastChunks = curChunks;
-
-        double cpms = chunks / timeDiff;
-
-        double chunksLeft = totalChunks - curChunks;
-        long timeLeft = (long) (chunksLeft / cpms);
-
-        int hrs = (int) TimeUnit.MILLISECONDS.toHours(timeLeft) % 24;
-        int min = (int) TimeUnit.MILLISECONDS.toMinutes(timeLeft) % 60;
-        int sec = (int) TimeUnit.MILLISECONDS.toSeconds(timeLeft) % 60;
-
-        double percent = (double) curRegions / (double) totalRegions;
-
-        String rateStr = dfRate.format(cpms * 1000);
-        String percentStr = dfPercent.format(percent);
-        String etaStr = String.format("%02d:%02d:%02d", hrs, min, sec);
-
-        Logger.info(region == null ? Lang.LOG_SCANNING_REGIONS_FINISHED : Lang.LOG_SCANNING_REGIONS_PROGRESS
-                .replace("{world}", world.getName())
-                .replace("{chunks}", Integer.toString(curChunks))
-                .replace("{percent}", percentStr)
-                .replace("{eta}", etaStr)
-                .replace("{rate}", rateStr)
-                .replace("{x}", Integer.toString(region.getX()))
-                .replace("{z}", Integer.toString(region.getZ())));
     }
 }

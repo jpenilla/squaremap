@@ -61,6 +61,7 @@ public class WorldConfig {
 
     public boolean MAP_ENABLED = true;
     public String MAP_DISPLAY_NAME = "{world}";
+    public int MAX_RENDER_THREADS = 8;
 
     public boolean MAP_BIOMES = true;
     public int MAP_BIOMES_BLEND = 4;
@@ -73,6 +74,7 @@ public class WorldConfig {
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
         MAP_DISPLAY_NAME = getString("map.display-name", MAP_DISPLAY_NAME);
+        MAX_RENDER_THREADS = getInt("map.max-render-threads", MAX_RENDER_THREADS);
     }
 
     private void biomeSettings() {
