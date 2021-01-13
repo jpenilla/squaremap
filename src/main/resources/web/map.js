@@ -515,7 +515,7 @@ function updateBrowserUrl(url) {
 }
 
 
-// Array Remove - By John Resig (MIT Licensed)
+// https://stackoverflow.com/a/3955096
 Array.prototype.remove = function() {
     var what, a = arguments, L = a.length, ax;
     while (L && this.length) {
