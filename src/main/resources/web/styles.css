@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding: 0;
+  background: #000000;
 }
 #map {
   width: 100%;
@@ -57,12 +58,17 @@ div.leaflet-control-layers.coordinates {
   right: 0px;
   width: 0px;
   height: 100vh;
+  padding-left: 15px;
   z-index: 10000;
   border-left: 1px solid #000000;
   background-color: rgba(0,0,0,0.6);
   color: #ffffff;
   text-align: right;
   transition: all 0.25s;
+}
+#sidebar.show {
+  width: 200px;
+  padding-left: 0px;
 }
 #sidebar fieldset {
   clear: right;
@@ -104,17 +110,6 @@ div.leaflet-control-layers.coordinates {
 }
 #sidebar fieldset a img {
   padding-right: 10px;
-}
-#sidebar #handle {
-  float:left;
-  margin: 0px 0px 0px -15px;
-  width: 15px;
-  height: 100vh;
-  line-height: 100vh;
-  text-align: center;
-  background: inherit;
-  color: #999999;
-  transition: all 0.25s;
 }
 #sidebar #pin {
   width: 23px;
