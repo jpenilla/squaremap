@@ -11,12 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public final class BackgroundRender extends AbstractRender {
 
     public BackgroundRender(final @NonNull MapWorld world) {
-        super(world);
+        super(world, Executors.newFixedThreadPool(world.config().BACKGROUND_RENDER_MAX_THREADS));
     }
 
     @Override

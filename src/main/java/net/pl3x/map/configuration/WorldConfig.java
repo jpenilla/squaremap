@@ -101,6 +101,18 @@ public class WorldConfig {
         ZOOM_EXTRA = getInt("map.zoom.extra", ZOOM_EXTRA);
     }
 
+    public boolean BACKGROUND_RENDER_ENABLED = true;
+    public int BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = 1024;
+    public int BACKGROUND_RENDER_INTERVAL_SECONDS = 15;
+    public int BACKGROUND_RENDER_MAX_THREADS = 8;
+
+    private void backgroundRenderSettings() {
+        BACKGROUND_RENDER_ENABLED = getBoolean("map.background-render.enabled", BACKGROUND_RENDER_ENABLED);
+        BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = getInt("map.background-render.max-chunks-per-interval", BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL);
+        BACKGROUND_RENDER_INTERVAL_SECONDS = getInt("map.background-render.interval-seconds", BACKGROUND_RENDER_INTERVAL_SECONDS);
+        BACKGROUND_RENDER_MAX_THREADS = getInt("map.background-render.max-render-threads", BACKGROUND_RENDER_MAX_THREADS);
+    }
+
     public boolean PLAYER_TRACKER_ENABLED = true;
     public boolean PLAYER_TRACKER_SHOW_TOGGLE = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_ENABLED = true;
@@ -117,15 +129,5 @@ public class WorldConfig {
         PLAYER_TRACKER_NAMEPLATE_HEADS_URL = getString("player-tracker.nameplate.heads-url", PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
         PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", PLAYER_TRACKER_HIDE_INVISIBLE);
         PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", PLAYER_TRACKER_HIDE_SPECTATORS);
-    }
-
-    public boolean BACKGROUND_RENDER_ENABLED = true;
-    public int BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = 1024;
-    public int BACKGROUND_RENDER_INTERVAL_SECONDS = 15;
-
-    private void backgroundRenderSettings() {
-        BACKGROUND_RENDER_ENABLED = getBoolean("background-render.enabled", BACKGROUND_RENDER_ENABLED);
-        BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = getInt("background-render.max-chunks-per-interval", BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL);
-        BACKGROUND_RENDER_INTERVAL_SECONDS = getInt("background-render.interval-seconds", BACKGROUND_RENDER_INTERVAL_SECONDS);
     }
 }

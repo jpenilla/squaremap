@@ -104,8 +104,12 @@ final class MapUpdateListeners {
     }
 
     private void markChunk(final @NonNull Location loc) {
+        this.markChunk(loc, false);
+    }
+
+    private void markChunk(final @NonNull Location loc, final boolean ignoreCeiling) {
         WorldManager.getWorldIfEnabled(loc.getWorld()).ifPresent(mapWorld -> {
-            if (loc.getY() >= loc.getWorld().getHighestBlockYAt(loc) - 10) {
+            if (ignoreCeiling || loc.getY() >= loc.getWorld().getHighestBlockYAt(loc) - 10) {
                 mapWorld.chunkModified(new ChunkCoordinate(
                         Numbers.blockToChunk(loc.getBlockX()),
                         Numbers.blockToChunk(loc.getBlockZ())
@@ -164,7 +168,10 @@ final class MapUpdateListeners {
 
     private void handleBlockFromToEvent(final @NonNull BlockFromToEvent event) {
         //this.handleBlockEvent(event);
-        this.markChunk(event.getToBlock().getLocation());
+        //this.markChunk(event.getToBlock().getLocation());
+        // this event gets spammed really hard, to the point where checking the highest Y becomes quite expensive.
+        // it's better to queue some unnecessary map updates than to cause tps lag if this listener is enabled.
+        this.markChunk(event.getToBlock().getLocation(), true);
     }
 
     private void handleEntityChangeBlockEvent(final @NonNull EntityChangeBlockEvent event) {

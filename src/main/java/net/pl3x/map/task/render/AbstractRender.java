@@ -61,10 +61,14 @@ public abstract class AbstractRender implements Runnable {
     protected final AtomicInteger curChunks = new AtomicInteger(0);
 
     public AbstractRender(final @NonNull MapWorld mapWorld) {
+        this(mapWorld, Executors.newFixedThreadPool(mapWorld.config().MAX_RENDER_THREADS));
+    }
+
+    public AbstractRender(final @NonNull MapWorld mapWorld, final @NonNull ExecutorService executor) {
         this.futureTask = new FutureTask<>(this, null);
         this.mapWorld = mapWorld;
         this.worldConfig = mapWorld.config();
-        this.executor = Executors.newFixedThreadPool(this.worldConfig.MAX_RENDER_THREADS);
+        this.executor = executor;
         this.world = mapWorld.bukkit();
         this.nmsWorld = ((CraftWorld) this.world).getHandle();
         this.worldTilesDir = FileUtil.getWorldFolder(world);
