@@ -18,10 +18,11 @@ public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
         return stepCount < totalSteps;
     }
 
-    protected abstract T fromCoordPair(final int x, final int z);
+    protected abstract T fromCoordinatePair(final int x, final int z);
 
+    @Override
     public T next() {
-        final T t = this.fromCoordPair(x, z);
+        final T t = this.fromCoordinatePair(x, z);
         if (!hasNext()) {
             return t;
         }

@@ -1,4 +1,4 @@
-package net.pl3x.map.task;
+package net.pl3x.map.task.render;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Either;
@@ -15,11 +15,9 @@ import net.minecraft.server.v1_16_R3.IBlockData;
 import net.minecraft.server.v1_16_R3.IChunkAccess;
 import net.minecraft.server.v1_16_R3.PlayerChunk;
 import net.minecraft.server.v1_16_R3.WorldServer;
-import net.pl3x.map.Logger;
-import net.pl3x.map.WorldManager;
-import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.data.Image;
+import net.pl3x.map.data.MapWorld;
 import net.pl3x.map.data.Region;
 import net.pl3x.map.util.BiomeColors;
 import net.pl3x.map.util.Colors;
@@ -31,18 +29,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.nio.file.Path;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractRender implements Runnable {
@@ -57,23 +50,23 @@ public abstract class AbstractRender implements Runnable {
     private final FutureTask<Void> futureTask;
     protected volatile boolean cancelled = false;
 
+    protected final MapWorld mapWorld;
     protected final World world;
     protected final WorldServer nmsWorld;
     protected final WorldConfig worldConfig;
     protected final Path worldTilesDir;
 
-    private final DecimalFormat dfPercent = new DecimalFormat("0.00%");
-    private final DecimalFormat dfRate = new DecimalFormat("0.0");
     private final ThreadLocal<BiomeColors> biomeColors;
 
     protected final AtomicInteger curChunks = new AtomicInteger(0);
 
-    public AbstractRender(World world) {
+    public AbstractRender(final @NonNull MapWorld mapWorld) {
         this.futureTask = new FutureTask<>(this, null);
-        this.worldConfig = WorldConfig.get(world);
+        this.mapWorld = mapWorld;
+        this.worldConfig = mapWorld.config();
         this.executor = Executors.newFixedThreadPool(this.worldConfig.MAX_RENDER_THREADS);
-        this.world = world;
-        this.nmsWorld = ((CraftWorld) world).getHandle();
+        this.world = mapWorld.bukkit();
+        this.nmsWorld = ((CraftWorld) this.world).getHandle();
         this.worldTilesDir = FileUtil.getWorldFolder(world);
         this.biomeColors = this.worldConfig.MAP_BIOMES
                 ? ThreadLocal.withInitial(() -> BiomeColors.forWorld(nmsWorld))
@@ -88,65 +81,11 @@ public abstract class AbstractRender implements Runnable {
 
     @Override
     public final void run() {
-        final long startTime = System.currentTimeMillis();
-        final Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            final int[] rollingAvgCps = new int[15];
-            final List<Integer> totalAvgCps = new ArrayList<>();
-            int index = 0;
-            int prevChunks = 0;
-
-            @Override
-            public void run() {
-                final int curChunks = processedChunks();
-                final int diff = curChunks - prevChunks;
-                prevChunks = curChunks;
-
-                rollingAvgCps[index] = diff;
-                totalAvgCps.add(diff);
-                index++;
-                if (index == 15) {
-                    index = 0;
-                }
-                final double rollingAvg = Arrays.stream(rollingAvgCps).filter(i -> i != 0).average().orElse(0.00D);
-
-                final int chunksLeft = totalChunks() - curChunks;
-                final long timeLeft = (long) (chunksLeft / (totalAvgCps.stream().filter(i -> i != 0).mapToInt(i -> i).average().orElse(0.00D) / 1000));
-
-                String etaStr = formatMilliseconds(timeLeft);
-                String elapsedStr = formatMilliseconds(System.currentTimeMillis() - startTime);
-
-                double percent = (double) curChunks / (double) totalChunks();
-
-                String rateStr = dfRate.format(rollingAvg);
-                String percentStr = dfPercent.format(percent);
-
-                Logger.info("Render progress for {world}: {current_chunks}/{total_chunks} chunks ({percent}), Elapsed: {elapsed}, ETA: {eta}, Rate: {rate}cps"
-                        .replace("{world}", world.getName())
-                        .replace("{current_chunks}", Integer.toString(curChunks))
-                        .replace("{total_chunks}", Integer.toString(totalChunks()))
-                        .replace("{percent}", percentStr)
-                        .replace("{elapsed}", elapsedStr)
-                        .replace("{eta}", etaStr)
-                        .replace("{rate}", rateStr));
-            }
-        }, 1000L, 1000L);
-
         this.render();
 
-        timer.cancel();
-
-        Logger.info(Lang.LOG_FINISHED_RENDERING
-                .replace("{world}", world.getName()));
-
-        WorldManager.getWorld(world).stopRender();
-    }
-
-    private static @NonNull String formatMilliseconds(long timeLeft) {
-        int hrs = (int) TimeUnit.MILLISECONDS.toHours(timeLeft) % 24;
-        int min = (int) TimeUnit.MILLISECONDS.toMinutes(timeLeft) % 60;
-        int sec = (int) TimeUnit.MILLISECONDS.toSeconds(timeLeft) % 60;
-        return String.format("%02d:%02d:%02d", hrs, min, sec);
+        if (!(this instanceof BackgroundRender)) {
+            this.mapWorld.stopRender();
+        }
     }
 
     public abstract int totalChunks();
@@ -169,10 +108,13 @@ public abstract class AbstractRender implements Runnable {
         for (int chunkX = startX; chunkX < startX + 32; chunkX++) {
             futures.add(this.mapChunkColumn(image, chunkX, startZ));
         }
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
-        if (!this.cancelled) {
-            image.save();
-        }
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
+                .whenComplete((result, throwable) -> {
+                    if (!this.cancelled) {
+                        this.mapWorld.saveImage(image);
+                    }
+                })
+                .join();
     }
 
     protected final @NonNull CompletableFuture<Void> mapChunkColumn(final @NonNull Image image, final int chunkX, final int startChunkZ) {
@@ -325,7 +267,9 @@ public abstract class AbstractRender implements Runnable {
                 shaded = true;
             }
             if (this.worldConfig.MAP_WATER_CLEAR) {
-                if (!this.worldConfig.MAP_WATER_CHECKERBOARD) color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
+                if (!this.worldConfig.MAP_WATER_CHECKERBOARD) {
+                    color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
+                }
                 color = Colors.mix(color, Colors.getMapColor(fluidState), 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
                 shaded = true;
             }

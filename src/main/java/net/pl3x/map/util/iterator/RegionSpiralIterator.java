@@ -9,7 +9,7 @@ public final class RegionSpiralIterator extends AbstractSpiralIterator<Region> {
     }
 
     @Override
-    protected Region fromCoordPair(final int x, final int z) {
+    protected Region fromCoordinatePair(final int x, final int z) {
         return new Region(x, z);
     }
 }

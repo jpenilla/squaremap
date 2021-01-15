@@ -118,4 +118,14 @@ public class WorldConfig {
         PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", PLAYER_TRACKER_HIDE_INVISIBLE);
         PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", PLAYER_TRACKER_HIDE_SPECTATORS);
     }
+
+    public boolean BACKGROUND_RENDER_ENABLED = true;
+    public int BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = 1024;
+    public int BACKGROUND_RENDER_INTERVAL_SECONDS = 15;
+
+    private void backgroundRenderSettings() {
+        BACKGROUND_RENDER_ENABLED = getBoolean("background-render.enabled", BACKGROUND_RENDER_ENABLED);
+        BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = getInt("background-render.max-chunks-per-interval", BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL);
+        BACKGROUND_RENDER_INTERVAL_SECONDS = getInt("background-render.interval-seconds", BACKGROUND_RENDER_INTERVAL_SECONDS);
+    }
 }

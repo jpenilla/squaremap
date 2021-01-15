@@ -1,4 +1,4 @@
-package net.pl3x.map.task;
+package net.pl3x.map.task.render;
 
 import net.pl3x.map.Logger;
 import net.pl3x.map.configuration.Lang;
@@ -11,10 +11,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
-public class FullRender extends AbstractRender {
+public final class FullRender extends AbstractRender {
     public FullRender(final @NonNull MapWorld world) {
-        super(world.bukkit());
+        super(world);
     }
 
     private int maxRadius = 0;
@@ -30,13 +31,21 @@ public class FullRender extends AbstractRender {
         Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES
                 .replace("{total}", Integer.toString(this.totalRegions)));
 
+        final Timer timer = RenderProgress.printProgress(this);
+
         RegionSpiralIterator spiral = new RegionSpiralIterator(0, 0, maxRadius);
         while (spiral.hasNext()) {
+            if (this.cancelled) break;
             Region region = spiral.next();
             if (regions.contains(region)) {
                 mapRegion(region);
             }
         }
+
+        timer.cancel();
+
+        Logger.info(Lang.LOG_FINISHED_RENDERING
+                .replace("{world}", world.getName()));
 
     }
 

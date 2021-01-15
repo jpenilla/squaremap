@@ -3,11 +3,11 @@ package net.pl3x.map.data;
 import net.pl3x.map.util.Numbers;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public final class Region {
+public final class ChunkCoordinate {
     private final int x;
     private final int z;
 
-    public Region(int x, int z) {
+    public ChunkCoordinate(int x, int z) {
         this.x = x;
         this.z = z;
     }
@@ -20,24 +20,24 @@ public final class Region {
         return z;
     }
 
-    public int getChunkX() {
-        return Numbers.regionToChunk(x);
+    public int getRegionX() {
+        return Numbers.chunkToRegion(x);
     }
 
-    public int getChunkZ() {
-        return Numbers.regionToChunk(z);
+    public int getRegionZ() {
+        return Numbers.chunkToRegion(z);
     }
 
     public int getBlockX() {
-        return Numbers.regionToBlock(x);
+        return Numbers.chunkToBlock(x);
     }
 
     public int getBlockZ() {
-        return Numbers.regionToBlock(z);
+        return Numbers.chunkToBlock(z);
     }
 
-    public @NonNull ChunkCoordinate chunkCoordinate() {
-        return new ChunkCoordinate(this.getChunkX(), this.getChunkZ());
+    public @NonNull Region regionCoordinate() {
+        return new Region(this.getRegionX(), this.getRegionZ());
     }
 
     @Override
@@ -45,10 +45,10 @@ public final class Region {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Region)) {
+        if (!(o instanceof ChunkCoordinate)) {
             return false;
         }
-        Region other = (Region) o;
+        ChunkCoordinate other = (ChunkCoordinate) o;
         return this.x == other.x && this.z == other.z;
     }
 
@@ -63,6 +63,6 @@ public final class Region {
 
     @Override
     public String toString() {
-        return "Region{x=" + x + ",z=" + z + "}";
+        return "Chunk{x=" + x + ",z=" + z + "}";
     }
 }

@@ -11,7 +11,7 @@ import net.pl3x.map.command.Pl3xMapCommand;
 import net.pl3x.map.command.argument.MapWorldArgument;
 import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.data.MapWorld;
-import net.pl3x.map.task.RadiusRender;
+import net.pl3x.map.task.render.RadiusRender;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

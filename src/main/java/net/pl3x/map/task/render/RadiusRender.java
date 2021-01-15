@@ -1,30 +1,31 @@
-package net.pl3x.map.task;
+package net.pl3x.map.task.render;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.server.v1_16_R3.ChunkCoordIntPair;
 import net.pl3x.map.Logger;
+import net.pl3x.map.WorldManager;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.data.ChunkCoordinate;
 import net.pl3x.map.data.Image;
 import net.pl3x.map.data.Region;
 import net.pl3x.map.util.Numbers;
 import net.pl3x.map.util.iterator.ChunkSpiralIterator;
 import org.bukkit.Location;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class RadiusRender extends AbstractRender {
+public final class RadiusRender extends AbstractRender {
     final int centerX;
     final int centerZ;
     final int radius;
     final int totalChunks;
 
-    public RadiusRender(Location center, int radius) {
-        super(center.getWorld());
+    public RadiusRender(final @NonNull Location center, int radius) {
+        super(WorldManager.getWorld(center.getWorld()));
         this.radius = Numbers.blockToChunk(radius);
         this.centerX = Numbers.blockToChunk(center.getBlockX());
         this.centerZ = Numbers.blockToChunk(center.getBlockZ());
@@ -41,13 +42,15 @@ public class RadiusRender extends AbstractRender {
         Logger.info(Lang.LOG_STARTED_RADIUSRENDER
                 .replace("{world}", world.getName()));
 
+        final Timer timer = RenderProgress.printProgress(this);
+
         ChunkSpiralIterator spiral = new ChunkSpiralIterator(this.centerX, this.centerZ, this.radius);
         final Map<Region, Image> images = new HashMap<>();
         final Multimap<Region, CompletableFuture<Void>> futures = ArrayListMultimap.create();
 
         while (spiral.hasNext()) {
-            ChunkCoordIntPair pair = spiral.next();
-            final Region region = new Region(pair.getRegionX(), pair.getRegionZ());
+            ChunkCoordinate chunkCoord = spiral.next();
+            final Region region = chunkCoord.regionCoordinate();
 
             Image image = images.get(region);
             if (image == null) {
@@ -55,25 +58,26 @@ public class RadiusRender extends AbstractRender {
                 images.put(region, image);
             }
 
-            futures.put(region, this.mapSingleChunk(image, pair.x, pair.z));
+            futures.put(region, this.mapSingleChunk(image, chunkCoord.getX(), chunkCoord.getZ()));
         }
 
         final Map<Region, CompletableFuture<Void>> regionFutureMap = new HashMap<>();
         futures.asMap().forEach((region, futureCollection) ->
                 regionFutureMap.put(region, CompletableFuture.allOf(futureCollection.toArray(CompletableFuture[]::new))));
 
-        final ExecutorService imageSave = Executors.newSingleThreadExecutor();
-
         regionFutureMap.forEach((region, combinedFuture) ->
-                combinedFuture.whenComplete((completedFuture, throwable) ->
-                        imageSave.submit(() -> {
-                            if (!this.cancelled) {
-                                images.get(region).save();
-                            }
-                        })));
+                combinedFuture.whenComplete((result, throwable) -> {
+                    if (!this.cancelled) {
+                        this.mapWorld.saveImage(images.get(region));
+                    }
+                }));
 
         CompletableFuture.allOf(regionFutureMap.values().toArray(CompletableFuture[]::new)).join();
 
-        imageSave.shutdown();
+        timer.cancel();
+
+        Logger.info(Lang.LOG_FINISHED_RENDERING
+                .replace("{world}", world.getName()));
+
     }
 }

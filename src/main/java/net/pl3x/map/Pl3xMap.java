@@ -7,6 +7,7 @@ import net.pl3x.map.task.UpdatePlayers;
 import net.pl3x.map.task.UpdateWorldData;
 import net.pl3x.map.util.FileUtil;
 import net.pl3x.map.util.IntegratedServer;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -55,6 +56,8 @@ public final class Pl3xMap extends JavaPlugin {
 
         WorldManager.start();
 
+        new MapUpdateListeners(this).register();
+
         if (Config.HTTPD_ENABLED) {
             if (IntegratedServer.setup()) {
                 IntegratedServer.startServer();
@@ -63,6 +66,8 @@ public final class Pl3xMap extends JavaPlugin {
     }
 
     public void stop() {
+        HandlerList.unregisterAll(this);
+
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.stopServer();
         }
@@ -80,4 +85,5 @@ public final class Pl3xMap extends JavaPlugin {
 
         getServer().getScheduler().cancelTasks(this);
     }
+
 }

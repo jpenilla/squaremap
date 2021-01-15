@@ -9,7 +9,7 @@ import net.pl3x.map.command.Pl3xMapCommand;
 import net.pl3x.map.command.argument.MapWorldArgument;
 import net.pl3x.map.configuration.Lang;
 import net.pl3x.map.data.MapWorld;
-import net.pl3x.map.task.FullRender;
+import net.pl3x.map.task.render.FullRender;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
