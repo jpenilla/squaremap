@@ -1,6 +1,5 @@
 package net.pl3x.map.command.commands;
 
-import cloud.commandframework.Command;
 import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
 import cloud.commandframework.meta.CommandMeta;
 import net.pl3x.map.Pl3xMap;
@@ -29,11 +28,9 @@ public final class ConfirmCommand extends Pl3xMapCommand {
     public void register() {
         this.confirmationManager.registerConfirmationProcessor(this.commandManager);
 
-        final Command<CommandSender> confirm = this.commandManager.commandBuilder("pl3xmap")
-                .literal("confirm")
-                .meta(CommandMeta.DESCRIPTION, "Confirm a pending command")
-                .handler(this.confirmationManager.createConfirmationExecutionHandler())
-                .build();
-        this.commandManager.command(confirm);
+        this.commandManager.registerSubcommand(builder ->
+                builder.literal("confirm")
+                        .meta(CommandMeta.DESCRIPTION, "Confirm a pending command")
+                        .handler(this.confirmationManager.createConfirmationExecutionHandler()));
     }
 }

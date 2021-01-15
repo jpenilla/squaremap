@@ -4,19 +4,29 @@ import net.pl3x.map.configuration.WorldConfig;
 import net.pl3x.map.data.MapWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class WorldManager {
 
     private static final Map<UUID, MapWorld> worlds = new HashMap<>();
+
+    public static @NonNull Map<UUID, MapWorld> worlds() {
+        return Collections.unmodifiableMap(WorldManager.worlds);
+    }
+
+    public static @NonNull Optional<MapWorld> getWorldIfEnabled(final @NonNull World world) {
+        if (WorldConfig.get(world).MAP_ENABLED) {
+            return Optional.of(getWorld(world));
+        } else {
+            return Optional.empty();
+        }
+    }
 
     public static @NonNull MapWorld getWorld(final @NonNull World world) {
         final MapWorld w = worlds.get(world.getUID());

@@ -46,7 +46,6 @@ public class RadiusRender extends AbstractRender {
         final Multimap<Region, CompletableFuture<Void>> futures = ArrayListMultimap.create();
 
         while (spiral.hasNext()) {
-            if (cancelled) return;
             ChunkCoordIntPair pair = spiral.next();
             final Region region = new Region(pair.getRegionX(), pair.getRegionZ());
 

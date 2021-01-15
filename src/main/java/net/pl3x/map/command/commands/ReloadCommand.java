@@ -1,6 +1,5 @@
 package net.pl3x.map.command.commands;
 
-import cloud.commandframework.Command;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
 import net.pl3x.map.Pl3xMap;
@@ -21,13 +20,11 @@ public final class ReloadCommand extends Pl3xMapCommand {
 
     @Override
     public void register() {
-        final Command<CommandSender> reloadCommand = this.commandManager.commandBuilder("pl3xmap", "map")
-                .literal("reload")
-                .meta(CommandMeta.DESCRIPTION, "Reloads the plugin")
-                .permission("pl3xmap.command.reload")
-                .handler(this::execute)
-                .build();
-        this.commandManager.command(reloadCommand);
+        this.commandManager.registerSubcommand(builder ->
+                builder.literal("reload")
+                        .meta(CommandMeta.DESCRIPTION, "Reloads the plugin")
+                        .permission("pl3xmap.command.reload")
+                        .handler(this::execute));
     }
 
     public void execute(final @NonNull CommandContext<CommandSender> context) {

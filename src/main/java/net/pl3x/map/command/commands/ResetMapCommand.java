@@ -1,6 +1,5 @@
 package net.pl3x.map.command.commands;
 
-import cloud.commandframework.Command;
 import cloud.commandframework.bukkit.parsers.WorldArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
@@ -26,15 +25,13 @@ public final class ResetMapCommand extends Pl3xMapCommand {
 
     @Override
     public void register() {
-        final Command<CommandSender> resetMap = this.commandManager.commandBuilder("pl3xmap")
-                .literal("resetmap")
-                .argument(WorldArgument.of("world"))
-                .meta(CommandMeta.DESCRIPTION, "Resets the map of a specified world")
-                .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
-                .permission("pl3xmap.command.resetmap")
-                .handler(this::executeResetMap)
-                .build();
-        this.commandManager.command(resetMap);
+        this.commandManager.registerSubcommand(builder ->
+                builder.literal("resetmap")
+                        .argument(WorldArgument.of("world"))
+                        .meta(CommandMeta.DESCRIPTION, "Resets the map of a specified world")
+                        .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
+                        .permission("pl3xmap.command.resetmap")
+                        .handler(this::executeResetMap));
     }
 
     private void executeResetMap(final @NonNull CommandContext<CommandSender> context) {

@@ -161,7 +161,7 @@ public abstract class AbstractRender implements Runnable {
         return this.futureTask;
     }
 
-    protected void mapRegion(Region region) {
+    protected final void mapRegion(final @NonNull Region region) {
         Image image = new Image(region, worldTilesDir, worldConfig.ZOOM_MAX);
         int startX = region.getChunkX();
         int startZ = region.getChunkZ();
@@ -175,7 +175,7 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    protected CompletableFuture<Void> mapChunkColumn(final @NonNull Image image, final int chunkX, final int startChunkZ) {
+    protected final @NonNull CompletableFuture<Void> mapChunkColumn(final @NonNull Image image, final int chunkX, final int startChunkZ) {
         return CompletableFuture.runAsync(() -> {
             int[] lastY = new int[16];
             for (int chunkZ = startChunkZ; chunkZ < startChunkZ + 32; chunkZ++) {
@@ -199,7 +199,7 @@ public abstract class AbstractRender implements Runnable {
         }, this.executor);
     }
 
-    protected CompletableFuture<Void> mapSingleChunk(final @NonNull Image image, final int chunkX, final int chunkZ) {
+    protected final @NonNull CompletableFuture<Void> mapSingleChunk(final @NonNull Image image, final int chunkX, final int chunkZ) {
         return CompletableFuture.runAsync(() -> {
             int[] lastY = new int[16];
 

@@ -2,18 +2,19 @@ package net.pl3x.map.task;
 
 import net.pl3x.map.Logger;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.data.MapWorld;
 import net.pl3x.map.data.Region;
 import net.pl3x.map.util.FileUtil;
 import net.pl3x.map.util.iterator.RegionSpiralIterator;
-import org.bukkit.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FullRender extends AbstractRender {
-    public FullRender(World world) {
-        super(world);
+    public FullRender(final @NonNull MapWorld world) {
+        super(world.bukkit());
     }
 
     private int maxRadius = 0;
@@ -31,7 +32,6 @@ public class FullRender extends AbstractRender {
 
         RegionSpiralIterator spiral = new RegionSpiralIterator(0, 0, maxRadius);
         while (spiral.hasNext()) {
-            if (cancelled) return;
             Region region = spiral.next();
             if (regions.contains(region)) {
                 mapRegion(region);

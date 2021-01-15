@@ -1,19 +1,21 @@
 package net.pl3x.map.command.commands;
 
-import cloud.commandframework.Command;
-import cloud.commandframework.bukkit.parsers.WorldArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
 import net.pl3x.map.Pl3xMap;
 import net.pl3x.map.WorldManager;
 import net.pl3x.map.command.CommandManager;
 import net.pl3x.map.command.Pl3xMapCommand;
+import net.pl3x.map.command.argument.MapWorldArgument;
 import net.pl3x.map.configuration.Lang;
+import net.pl3x.map.data.MapWorld;
 import net.pl3x.map.task.FullRender;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.Optional;
 
 public final class FullRenderCommand extends Pl3xMapCommand {
 
@@ -23,47 +25,48 @@ public final class FullRenderCommand extends Pl3xMapCommand {
 
     @Override
     public void register() {
-        final Command<CommandSender> anySender = this.commandManager.commandBuilder("pl3xmap")
-                .literal("fullrender")
-                .argument(WorldArgument.of("world"))
-                .meta(CommandMeta.DESCRIPTION, "Starts a full render for the specified world")
-                .permission("pl3xmap.command.fullrender")
-                .handler(this::anySender)
-                .build();
+        this.commandManager.registerSubcommand(builder ->
+                builder.literal("fullrender")
+                        .argument(MapWorldArgument.of("world"))
+                        .meta(CommandMeta.DESCRIPTION, "Starts a full render for the specified world")
+                        .permission("pl3xmap.command.fullrender")
+                        .handler(this::anySender));
 
-        final Command<CommandSender> player = this.commandManager.commandBuilder("pl3xmap")
-                .literal("fullrender")
-                .meta(CommandMeta.DESCRIPTION, "Starts a full render for the world you are currently in")
-                .meta(CommandManager.INVALID_SENDER_ALTERNATE_COMMAND, "pl3xmap fullrender <world>")
-                .permission("pl3xmap.command.fullrender")
-                .senderType(Player.class)
-                .handler(this::player)
-                .build();
-
-        this.commandManager.commands(anySender, player);
+        this.commandManager.registerSubcommand(builder ->
+                builder.literal("fullrender")
+                        .meta(CommandMeta.DESCRIPTION, "Starts a full render for the world you are currently in")
+                        .meta(CommandManager.INVALID_SENDER_ALTERNATE_COMMAND, "pl3xmap fullrender <world>")
+                        .permission("pl3xmap.command.fullrender")
+                        .senderType(Player.class)
+                        .handler(this::player));
     }
 
     private void player(final @NonNull CommandContext<CommandSender> context) {
         final Player sender = (Player) context.getSender();
         final World world = sender.getWorld();
-        this.executeFullRender(sender, world);
+        Optional<MapWorld> optionalMapWorld = WorldManager.getWorldIfEnabled(world);
+        if (optionalMapWorld.isEmpty()) {
+            Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("{world}", world.getName()));
+            return;
+        }
+        this.executeFullRender(sender, optionalMapWorld.get());
     }
 
     private void anySender(final @NonNull CommandContext<CommandSender> context) {
         final CommandSender sender = context.getSender();
-        final World world = context.get("world");
+        final MapWorld world = context.get("world");
         this.executeFullRender(sender, world);
     }
 
-    private void executeFullRender(final @NonNull CommandSender sender, final @NonNull World world) {
-        if (WorldManager.getWorld(world).isRendering()) {
+    private void executeFullRender(final @NonNull CommandSender sender, final @NonNull MapWorld world) {
+        if (world.isRendering()) {
             Lang.send(sender, Lang.RENDER_IN_PROGRESS
-                    .replace("{world}", world.getName()));
+                    .replace("{world}", world.name()));
             return;
         }
 
         Lang.send(sender, Lang.FULL_RENDER_STARTED
-                .replace("{world}", world.getName()));
-        WorldManager.getWorld(world).startRender(new FullRender(world));
+                .replace("{world}", world.name()));
+        world.startRender(new FullRender(world));
     }
 }

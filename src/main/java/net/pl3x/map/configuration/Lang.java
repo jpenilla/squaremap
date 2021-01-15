@@ -23,6 +23,8 @@ public class Lang {
     public static String CANCELLED_RENDER = "&aRender cancelled for {world}";
 
     public static String INVALID_COMMAND_SYNTAX = "&cInvalid command syntax. Correct command syntax: &7/{syntax}";
+    public static String NO_SUCH_WORLD = "&cNo such world '{world}'";
+    public static String MAP_NOT_ENABLED_FOR_WORLD = "&cMap is not enabled for world '{world}'";
 
     public static String PLUGIN_RELOADED = "&a{name} v{version} reloaded";
 
@@ -62,6 +64,8 @@ public class Lang {
         CANCELLED_RENDER = getString("cancelled-render", CANCELLED_RENDER);
 
         INVALID_COMMAND_SYNTAX = getString("invalid-command-syntax", INVALID_COMMAND_SYNTAX);
+        NO_SUCH_WORLD = getString("no-such-world", NO_SUCH_WORLD);
+        MAP_NOT_ENABLED_FOR_WORLD = getString("map-not-enabled-for-world", MAP_NOT_ENABLED_FOR_WORLD);
 
         PLUGIN_RELOADED = getString("plugin-reloaded", PLUGIN_RELOADED);
         PLUGIN_VERSION = getString("plugin-version", PLUGIN_VERSION);

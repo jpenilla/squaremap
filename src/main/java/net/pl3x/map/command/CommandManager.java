@@ -70,11 +70,12 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
 
     }
 
-    @SafeVarargs
-    public final void commands(final @NonNull Command<CommandSender> @NonNull ... commands) {
-        for (final Command<CommandSender> command : commands) {
-            this.command(command);
-        }
+    public void registerSubcommand(UnaryOperator<Command.Builder<CommandSender>> builderModifier) {
+        this.command(builderModifier.apply(this.rootBuilder()));
+    }
+
+    private Command.@NonNull Builder<CommandSender> rootBuilder() {
+        return this.commandBuilder("pl3xmap", "map");
     }
 
 }
