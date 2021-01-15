@@ -1,88 +1,130 @@
-var settings = {};
+class Pl3xMap {
+    constructor() {
+        this.settings = {};
 
-var layerControls = {};
-var tileLayer;
+        this.map = L.map("map", {
+            crs: L.CRS.Simple,
+            center: [0, 0],
+            attributionControl: false,
+            noWrap: true
+        })
+        .addEventListener('move', (event) => {
+            this.updateBrowserUrl(this.getUrlFromView());
+        })
+        .addEventListener('zoom', (event) => {
+            this.updateBrowserUrl(this.getUrlFromView());
+        });
 
-var sidebar;
-var worldList;
-var playerList;
+        this.playersLayer = new L.LayerGroup()
+            .addTo(this.map);
+        this.spawnLayer = new L.LayerGroup()
+            .addTo(this.map);
 
+        this.tileLayer;
 
-// the map
-var mapId = "map";
-var map = L.map(mapId, {
-    crs: L.CRS.Simple,
-    center: [0, 0],
-    attributionControl: false,
-    noWrap: true
-});
+        this.sidebar;
+        this.worldList;
+        this.playerList;
 
-
-// icons
-var Icons = {
-    spawn: L.icon({
-        iconUrl: 'images/spawn.png',
-        iconSize: [16, 16],
-        iconAnchor: [8, 8],
-        popupAnchor: [0, -10]
-    }),
-    player: L.icon({
-        iconUrl: 'images/player.png',
-        iconSize: [17, 16],
-        iconAnchor: [8, 9],
-        tooltipAnchor: [0, 0]
-    })
-};
-
-
-// start it up
-init();
-
-
-// get settings.json and setup worlds list
-function init() {
-    getJSON("tiles/settings.json", function(json) {
-        settings.ui = json.ui;
-
-        sidebar = new Sidebar();
-
-        playerList = new PlayerList();
-
-        worldList = new WorldList(json.worlds);
-
-        worldList.loadWorld(getUrlParam("world", "world"), function(world) {
+        this.init();
+    }
+    tick() {
+        this.getJSON("tiles/players.json", function(json) {
+            P.playerList.update(json.players);
+        });
+        setTimeout(function() {
+            P.tick();
+        }, 1000);
+    }
+    init() {
+        this.getJSON("tiles/settings.json", function(json) {
+            P.__init(json);
+        });
+    }
+    __init(json) {
+        this.settings.ui = json.ui;
+        this.sidebar = new Sidebar();
+        this.playerList = new PlayerList();
+        this.worldList = new WorldList(json.worlds);
+        if (P.settings.ui.coordinates) {
+            new UICoordinates();
+        }
+        this.worldList.loadWorld(this.getUrlParam("world", "world"), function(world) {
             // setup view
-            centerOn(getUrlParam("x", world.spawn.x),
-                    getUrlParam("z", world.spawn.z),
-                    getUrlParam("zoom", world.zoom.def))
+            P.centerOn(P.getUrlParam("x", world.spawn.x),
+                    P.getUrlParam("z", world.spawn.z),
+                    P.getUrlParam("zoom", world.zoom.def))
                 .setMinZoom(0) // extra zoom out doesn't work :(
                 .setMaxZoom(world.zoom.max + world.zoom.extra);
 
             // add layer controls
-            L.control.layers({}, layerControls, {position: 'topleft'}).addTo(map);
-            if (settings.ui.coordinates) {
-                new UICoordinates();
-            }
-            if (settings.ui.link) {
-                new UILink();
-            }
+            L.control.layers({}, {
+                Players: P.playersLayer,
+                Spawn: P.spawnLayer
+            }, {
+                position: 'topleft'
+            }).addTo(P.map);
 
             // start the tick loop
-            tick(0);
+            P.tick();
         });
-    });
+    }
+    centerOn(x, z, zoom) {
+        return this.map.setView(this.unproject(x, z), zoom);
+    }
+    unproject(x, z) {
+        return this.map.unproject([x, z], this.worldList.curWorld.zoom.max);
+    }
+    project(latlng) {
+        return this.map.project(latlng, this.worldList.curWorld.zoom.max);
+    }
+    createElement(tag, id, parent) {
+        var element = document.createElement(tag);
+        element.id = id;
+        element.parent = parent;
+        return element;
+    }
+    createTextElement(tag, text) {
+        var element = document.createElement(tag);
+        element.appendChild(document.createTextNode(text));
+        return element;
+    }
+    getHeadUrl(player) {
+        return this.worldList.curWorld.player_tracker.nameplates.heads_url
+            .replaceAll("{uuid}", player.uuid)
+            .replaceAll("{name}", player.name);
+    }
+    getJSON(url, fn) {
+        fetch(url, {cache: "no-store"})
+            .then(async res => {
+                if (res.ok) {
+                    fn(await res.json());
+                }
+            });
+    }
+    getUrlParam(query, def) {
+        var url = window.location.search.substring(1);
+        var vars = url.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var param = vars[i].split('=');
+            if (param[0] === query) {
+                var value = param[1] === undefined ? '' : decodeURIComponent(param[1]);
+                return value === '' ? def : value;
+            }
+        }
+        return def;
+    }
+    getUrlFromView() {
+        var center = this.project(this.map.getCenter());
+        var zoom = this.map.getZoom();
+        var x = Math.floor(center.x);
+        var z = Math.floor(center.y);
+        return "?world=" + this.worldList.curWorld.name + "&zoom=" + zoom + "&x=" + x + "&z=" + z;
+    }
+    updateBrowserUrl(url) {
+        window.history.pushState(null, "", url);
+    }
 }
-
-
-
-
-
-
-// #######################################################################################################
-
-
-
-
 
 
 class WorldList {
@@ -93,15 +135,15 @@ class WorldList {
             var world = new World(json[i]);
             this.worlds.set(world.name, world);
 
-            var link = createElement("a", world.name, this);
+            var link = P.createElement("a", world.name, this);
             link.onclick = function() {
                 var curWorld = this.parent.curWorld;
                 var name = this.id;
                 if (curWorld.name == name) {
-                    centerOn(curWorld.spawn.x, curWorld.spawn.z, curWorld.zoom.def);
+                    P.centerOn(curWorld.spawn.x, curWorld.spawn.z, curWorld.zoom.def);
                     return;
                 }
-                playerList.clearMarkers();
+                P.playerList.clearMarkers();
                 this.parent.loadWorld(name);
             };
 
@@ -120,9 +162,9 @@ class WorldList {
             }
 
             link.appendChild(img);
-            link.appendChild(createTextElement("span", world.display_name));
+            link.appendChild(P.createTextElement("span", world.display_name));
 
-            sidebar.worldList.element.appendChild(link);
+            P.sidebar.worldList.element.appendChild(link);
         }
     }
     loadWorld(name, callback) {
@@ -138,15 +180,15 @@ class WorldList {
     }
     showWorld(world, callback) {
         if (this.curWorld.name == world) {
-            centerOn(this.curWorld.spawn.x, this.curWorld.spawn.z, this.curWorld.zoom.def);
+            P.centerOn(this.curWorld.spawn.x, this.curWorld.spawn.z, this.curWorld.zoom.def);
             if (callback != null) {
                 callback();
             }
             return;
         }
-        playerList.clearMarkers();
+        P.playerList.clearMarkers();
         this.loadWorld(world, callback);
-        updateBrowserUrl(getUrlFromView());
+        P.updateBrowserUrl(P.getUrlFromView());
     }
 }
 
@@ -159,8 +201,8 @@ class World {
         this.spawn = new Spawn(this);
     }
     load(callback) {
-        getJSON("tiles/" + this.name + "/settings.json", function(json) {
-            worldList.curWorld.__load(json, callback);
+        P.getJSON("tiles/" + this.name + "/settings.json", function(json) {
+            P.worldList.curWorld.__load(json, callback);
         });
     }
     unload() {
@@ -168,83 +210,86 @@ class World {
     }
     // "internal" function so we get a proper scope for "this"
     __load(json, callback) {
-            this.player_tracker = json.settings.player_tracker;
-            this.zoom = json.settings.zoom;
+        this.player_tracker = json.settings.player_tracker;
+        this.zoom = json.settings.zoom;
 
-            // setup page title
-            document.title = settings.ui.title
-                .replaceAll("{world}", json.display_name);
+        // setup page title
+        document.title = P.settings.ui.title
+            .replaceAll("{world}", json.display_name);
 
-            // setup background
-            var mapDom = document.getElementById(mapId);
-            switch(json.type) {
-                case "nether":
-                    mapDom.style.background = "url('images/nether_sky.png')";
-                    break;
-                case "the_end":
-                    mapDom.style.background = "url('images/end_sky.png')";
-                    break;
-                case "normal":
-                default:
-                    mapDom.style.background = "url('images/overworld_sky.png')";
-                    break;
-            }
+        // setup background
+        var mapDom = document.getElementById("map");
+        switch(json.type) {
+            case "nether":
+                mapDom.style.background = "url('images/nether_sky.png')";
+                break;
+            case "the_end":
+                mapDom.style.background = "url('images/end_sky.png')";
+                break;
+            case "normal":
+            default:
+                mapDom.style.background = "url('images/overworld_sky.png')";
+                break;
+        }
 
-            // setup the map tiles layer
-            if (tileLayer != null) {
-                map.removeLayer(tileLayer);
-            }
-            var tiles = L.tileLayer("tiles/" + this.name + "/{z}/{x}_{y}.png", {
-                tileSize: 512,
-                minNativeZoom: 0,
-                maxNativeZoom: this.zoom.max
-            }).addTo(map);
-            tileLayer = tiles;
+        // setup the map tiles layer
+        if (P.tileLayer != null) {
+            P.map.removeLayer(P.tileLayer);
+        }
+        P.tileLayer = L.tileLayer("tiles/" + this.name + "/{z}/{x}_{y}.png", {
+            tileSize: 512,
+            minNativeZoom: 0,
+            maxNativeZoom: this.zoom.max
+        }).addTo(P.map);
 
-            // update and show spawn point
-            this.spawn.x = json.settings.spawn.x;
-            this.spawn.z = json.settings.spawn.z;
-            this.spawn.show();
+        // update and show spawn point
+        this.spawn.x = json.settings.spawn.x;
+        this.spawn.z = json.settings.spawn.z;
+        this.spawn.show();
 
-            // center on spawn
-            centerOn(this.spawn.x, this.spawn.z, this.zoom.def);
+        // center on spawn
+        P.centerOn(this.spawn.x, this.spawn.z, this.zoom.def);
 
-            // force self update with existing player list
-            playerList.update(Array.from(playerList.players.values()));
+        // force self update with existing player list
+        P.playerList.update(Array.from(P.playerList.players.values()));
 
-            if (callback != null) {
-                callback(this);
-            }
+        if (callback != null) {
+            callback(this);
+        }
     }
 }
 
 
 class Spawn {
     constructor(world) {
-        this.layer = new L.LayerGroup();
-        this.spawn = L.marker([0, 0], {icon: Icons.spawn})
-            .bindPopup(world.display_name + " Spawn")
-            .addTo(this.layer);
         this.x = 0;
         this.z = 0;
+        this.spawn = L.marker([this.x, this.z],{
+            icon: L.icon({
+                iconUrl: 'images/spawn.png',
+                iconSize: [16, 16],
+                iconAnchor: [8, 8],
+                popupAnchor: [0, -10]
+            })
+        }).bindPopup(world.display_name + " Spawn");
     }
     show() {
-        layerControls.Spawn = this.layer.addTo(map);
-        this.spawn.setLatLng(unproject(this.x, this.z));
+        this.spawn.addTo(P.map);
+        this.spawn.setLatLng(P.unproject(this.x, this.z));
     }
     hide() {
-        map.removeLayer(this.layer);
+        P.map.removeLayer(this.spawn);
     }
 }
 
 
 class Sidebar {
     constructor() {
-        this.sidebar = createElement("div", "sidebar", this);
+        this.sidebar = P.createElement("div", "sidebar", this);
         document.getElementById("map").appendChild(this.sidebar);
 
-        if (settings.ui.sidebar != "hide") {
-            this.pin = new Pin(settings.ui.sidebar == "pinned");
+        if (P.settings.ui.sidebar != "hide") {
+            this.pin = new Pin(P.settings.ui.sidebar == "pinned");
             this.sidebar.appendChild(this.pin.element);
             this.show(this.pin.pinned);
         }
@@ -269,20 +314,13 @@ class Sidebar {
     show(show) {
         this.sidebar.className = show ? "show" : "";
     }
-    updateWorlds() {
-        worldList.update();
-    }
-    updatePlayers() {
-        //
-        //
-    }
 }
 
 
 class Fieldset {
     constructor(id, title) {
-        this.element = createElement("fieldset", id);
-        var legend = createTextElement("legend", title);
+        this.element = P.createElement("fieldset", id);
+        var legend = P.createTextElement("legend", title);
         this.element.appendChild(legend);
     }
 }
@@ -292,7 +330,7 @@ class Pin {
     constructor(def) {
         this.pinned = def;
 
-        this.element = createElement("img", "pin", this);
+        this.element = P.createElement("img", "pin", this);
 
         this.element.onclick = function() {
             this.parent.toggle();
@@ -313,37 +351,32 @@ class Pin {
 
 class PlayerList {
     constructor() {
-        this.layer = new L.LayerGroup();
         this.players = new Map();
-
-        layerControls.Player = this.layer.addTo(map);
-        map.createPane("nameplate").style.zIndex = 1000;
+        P.map.createPane("nameplate").style.zIndex = 1000;
     }
     showPlayer(link) {
         var uuid = link.id;
-        var keys = Array.from(playerList.players.keys());
+        var keys = Array.from(P.playerList.players.keys());
         for (var i = 0; i < keys.length; i++) {
-            var player = playerList.players.get(keys[i]);
-            if (uuid == player.uuid) {
-                if (player.world != world) {
-                    worldList.showWorld(player.world, function () {
-                        map.panTo(unproject(player.x, player.z));
-                    });
-                }
+            var player = P.playerList.players.get(keys[i]);
+            if (uuid == player.uuid && player.world != world) {
+                P.worldList.showWorld(player.world, function () {
+                    P.map.panTo(P.unproject(player.x, player.z));
+                });
             }
         }
     }
     add(player) {
         var head = document.createElement("img");
-        head.src = getHeadUrl(player);
-        var span = createTextElement("span", player.name);
-        var link = createElement("a", player.uuid, this);
+        head.src = P.getHeadUrl(player);
+        var span = P.createTextElement("span", player.name);
+        var link = P.createElement("a", player.uuid, this);
         link.onclick = function() {
             this.parent.showPlayer(this);
         };
         link.appendChild(head);
         link.appendChild(span);
-        var fieldset = sidebar.playerList.element;
+        var fieldset = P.sidebar.playerList.element;
         fieldset.appendChild(link);
     }
     remove(uuid) {
@@ -388,11 +421,16 @@ class Player {
         this.world = player.world;
         this.x = 0;
         this.z = 0;
-        this.marker = L.marker(unproject(player.x, player.z), {
-            icon: Icons.player,
+        this.marker = L.marker(P.unproject(player.x, player.z), {
+            icon: L.icon({
+                iconUrl: 'images/player.png',
+                iconSize: [17, 16],
+                iconAnchor: [8, 9],
+                tooltipAnchor: [0, 0]
+            }),
             rotationAngle: (180 + player.yaw)
         });
-        if (worldList.curWorld.player_tracker.nameplates.enabled) {
+        if (P.worldList.curWorld.player_tracker.nameplates.enabled) {
             var tooltip = L.tooltip({
                 permanent: true,
                 direction: "right",
@@ -400,8 +438,8 @@ class Player {
                 pane: "nameplate"
             });
             var headImg = "";
-            if (worldList.curWorld.player_tracker.nameplates.show_heads) {
-                headImg = "<img src='" + getHeadUrl(player) + "' />";
+            if (P.worldList.curWorld.player_tracker.nameplates.show_heads) {
+                headImg = "<img src='" + P.getHeadUrl(player) + "' />";
             }
             tooltip.setContent(headImg + "<span>" + player.name + "</span>");
             this.marker.bindTooltip(tooltip);
@@ -410,9 +448,9 @@ class Player {
     update(player) {
         this.x = player.x;
         this.z = player.z;
-        if (worldList.curWorld.name == player.world) {
-            this.marker.addTo(playerList.layer);
-            var latlng = unproject(player.x, player.z);
+        if (P.worldList.curWorld.name == player.world) {
+            this.marker.addTo(P.playersLayer);
+            var latlng = P.unproject(player.x, player.z);
             if (!this.marker.getLatLng().equals(latlng)) {
                 this.marker.setLatLng(latlng);
             }
@@ -437,7 +475,7 @@ class UICoordinates {
             onAdd: function (map) {
                 var coords = L.DomUtil.create('div', 'leaflet-control-layers coordinates');
                 this._coords = coords;
-                this.updateHTML();
+                this.updateHTML(null);
                 return coords;
             },
             updateHTML: function(point) {
@@ -447,145 +485,17 @@ class UICoordinates {
             }
         });
         var coords = new Coords();
-        map.addControl(coords);
-        map.addEventListener('mousemove', (event) => {
-            if (worldList.curWorld != null) {
-                coords.updateHTML(project(event.latlng));
+        P.map.addControl(coords);
+        P.map.addEventListener('mousemove', (event) => {
+            if (P.worldList.curWorld != null) {
+                coords.updateHTML(P.project(event.latlng));
             }
         });
     }
 }
 
 
-class UILink {
-    constructor() {
-        let Link = L.Control.extend({
-            _container: null,
-            options: {
-                position: 'bottomleft'
-            },
-            onAdd: function (map) {
-                var link = L.DomUtil.create('div', 'leaflet-control-layers link');
-                this._link = link;
-                this.updateHTML();
-                return link;
-            },
-            updateHTML: function() {
-                var url = getUrlFromView();
-                updateBrowserUrl(url);
-                this._link.innerHTML = "<a href='" + url + "'><img src='images/clear.png'/></a>";
-            }
-        });
-        var link = new Link();
-        map.addControl(link);
-        map.addEventListener('move', (event) => link.updateHTML());
-        map.addEventListener('zoom', (event) => link.updateHTML());
-    }
-}
-
-
-
-
-
-// #######################################################################################################
-
-
-
-
-
-
-// tick the map
-function tick(count) {
-    getJSON("tiles/players.json", function(json) {
-        playerList.update(json.players);
-    });
-    setTimeout(function() {
-        tick(++count);
-    }, 1000);
-}
-
-// center on new point
-function centerOn(x, z, zoom) {
-    return map.setView(unproject(x, z), zoom);
-}
-
-
-// convert coords to latlng
-function unproject(x, z) {
-    return map.unproject([x, z], worldList.curWorld.zoom.max);
-}
-
-
-// convert latlng to point
-function project(latlng) {
-    return map.project(latlng, worldList.curWorld.zoom.max);
-}
-
-
-// create new dom element with id and parent
-function createElement(tag, id, parent) {
-    var element = document.createElement(tag);
-    element.id = id;
-    element.parent = parent;
-    return element;
-}
-
-// create simple element with text inside
-function createTextElement(tag, text) {
-    var element = document.createElement(tag);
-    element.appendChild(document.createTextNode(text));
-    return element;
-}
-
-
-// get player's head url
-function getHeadUrl(player) {
-    return worldList.curWorld.player_tracker.nameplates.heads_url
-            .replaceAll("{uuid}", player.uuid)
-            .replaceAll("{name}", player.name);
-}
-
-
-// get a json object from url
-function getJSON(url, fn) {
-    fetch(url, {cache: "no-store"})
-        .then(async res => {
-            if (res.ok) {
-                fn(await res.json());
-            }
-        });
-}
-
-
-// get a param from browser's url
-function getUrlParam(query, def) {
-    var url = window.location.search.substring(1);
-    var vars = url.split('&');
-    for (var i = 0; i < vars.length; i++) {
-        var param = vars[i].split('=');
-        if (param[0] === query) {
-            var value = param[1] === undefined ? '' : decodeURIComponent(param[1]);
-            return value === '' ? def : value;
-        }
-    }
-    return def;
-}
-
-
-// contrust a url from the map's current view
-function getUrlFromView() {
-    var center = project(map.getCenter());
-    var zoom = map.getZoom();
-    var x = Math.floor(center.x);
-    var z = Math.floor(center.y);
-    return "?world=" + worldList.curWorld.name + "&zoom=" + zoom + "&x=" + x + "&z=" + z;
-}
-
-
-// update the url in browser address bar without reloading page
-function updateBrowserUrl(url) {
-    window.history.pushState(null, "", url);
-}
+var P = new Pl3xMap();
 
 
 // https://stackoverflow.com/a/3955096
