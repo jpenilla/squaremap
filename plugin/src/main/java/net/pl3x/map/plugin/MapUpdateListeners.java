@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -37,6 +38,7 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -44,6 +46,7 @@ import java.util.stream.Collectors;
 final class MapUpdateListeners {
 
     private final Pl3xMap plugin;
+    private final List<Listener> registeredListeners = new ArrayList<>();
 
     MapUpdateListeners(final @NonNull Pl3xMap plugin) {
         this.plugin = plugin;
@@ -75,20 +78,27 @@ final class MapUpdateListeners {
         this.registerListener(StructureGrowEvent.class, this::handleStructureGrowEvent);
     }
 
-    private <E extends Event> void registerListener(final @NonNull Class<E> eventClass, final @NonNull Consumer<E> listener) {
+    public void unregister() {
+        this.registeredListeners.forEach(HandlerList::unregisterAll);
+        this.registeredListeners.clear();
+    }
+
+    private <E extends Event> void registerListener(final @NonNull Class<E> eventClass, final @NonNull Consumer<E> eventConsumer) {
         if (!Config.listenerEnabled(eventClass)) {
             return;
         }
+        final Listener listener = new Listener() {
+        };
+        this.registeredListeners.add(listener);
         Bukkit.getPluginManager().registerEvent(
                 eventClass,
-                new Listener() {
-                },
+                listener,
                 EventPriority.MONITOR,
                 (l, event) -> {
                     if (!eventClass.isAssignableFrom(event.getClass())) {
                         return;
                     }
-                    listener.accept(eventClass.cast(event));
+                    eventConsumer.accept(eventClass.cast(event));
                 },
                 this.plugin,
                 true

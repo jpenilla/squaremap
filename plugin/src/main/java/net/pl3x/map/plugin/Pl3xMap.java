@@ -16,6 +16,7 @@ public final class Pl3xMap extends JavaPlugin {
     private static Pl3xMap instance;
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
+    private MapUpdateListeners mapUpdateListeners;
 
     public Pl3xMap() {
         instance = this;
@@ -56,7 +57,8 @@ public final class Pl3xMap extends JavaPlugin {
 
         WorldManager.start();
 
-        new MapUpdateListeners(this).register();
+        this.mapUpdateListeners = new MapUpdateListeners(this);
+        this.mapUpdateListeners.register();
 
         if (Config.HTTPD_ENABLED) {
             if (IntegratedServer.setup()) {
@@ -66,7 +68,8 @@ public final class Pl3xMap extends JavaPlugin {
     }
 
     public void stop() {
-        HandlerList.unregisterAll(this);
+        this.mapUpdateListeners.unregister();
+        this.mapUpdateListeners = null;
 
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.stopServer();
