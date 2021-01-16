@@ -1,21 +1,22 @@
 import { Pin } from "./util/Pin.js";
 import { Fieldset } from "./util/Fieldset.js";
+import { P } from '../map.js';
 
 class Sidebar {
-    constructor(P) {
+    constructor() {
         this.sidebar = P.createElement("div", "sidebar", this);
         document.getElementById("map").appendChild(this.sidebar);
 
         if (P.settings.ui.sidebar != "hide") {
-            this.pin = new Pin(P.settings.ui.sidebar == "pinned", P);
+            this.pin = new Pin(P.settings.ui.sidebar == "pinned");
             this.sidebar.appendChild(this.pin.element);
             this.show(this.pin.pinned);
         }
 
-        this.worldList = new Fieldset("worlds", "Worlds", P);
+        this.worldList = new Fieldset("worlds", "Worlds");
         this.sidebar.appendChild(this.worldList.element);
 
-        this.playerList = new Fieldset("players", "Players", P);
+        this.playerList = new Fieldset("players", "Players");
         this.sidebar.appendChild(this.playerList.element);
 
         this.sidebar.onmouseleave = function () {

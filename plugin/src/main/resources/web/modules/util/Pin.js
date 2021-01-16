@@ -1,5 +1,7 @@
+import { P } from '../../map.js';
+
 class Pin {
-    constructor(def, P) {
+    constructor(def) {
         this.pinned = def;
 
         this.element = P.createElement("img", "pin", this);

@@ -20,12 +20,18 @@ class Pl3xMap {
             this.updateBrowserUrl(this.getUrlFromView());
         });
 
+        this.tileLayer;
+
         this.playersLayer = new L.LayerGroup()
             .addTo(this.map);
         this.spawnLayer = new L.LayerGroup()
             .addTo(this.map);
+        this.markerLayers = [];
 
-        this.tileLayer;
+        this.controls = L.control.layers({}, {}, {position: 'topleft'})
+            .addTo(this.map)
+            .addOverlay(this.spawnLayer, "Spawn")
+            .addOverlay(this.playersLayer, "Players");
 
         this.sidebar;
         this.worldList;
@@ -49,22 +55,11 @@ class Pl3xMap {
             new UICoordinates(this);
         }
         this.worldList.loadWorld(this.getUrlParam("world", "world"), (world) => {
-            // setup view
             P.centerOn(P.getUrlParam("x", world.spawn.x),
                     P.getUrlParam("z", world.spawn.z),
                     P.getUrlParam("zoom", world.zoom.def))
                 .setMinZoom(0) // extra zoom out doesn't work :(
                 .setMaxZoom(world.zoom.max + world.zoom.extra);
-
-            // add layer controls
-            L.control.layers({}, {
-                Players: P.playersLayer,
-                Spawn: P.spawnLayer
-            }, {
-                position: 'topleft'
-            }).addTo(P.map);
-
-            // start the tick loop
             P.tick();
         });
     }
@@ -126,7 +121,7 @@ class Pl3xMap {
 }
 
 
-var P = new Pl3xMap();
+export const P = new Pl3xMap();
 
 
 // https://stackoverflow.com/a/3955096

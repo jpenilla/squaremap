@@ -1,44 +1,46 @@
 import { World } from "./util/World.js";
+import { P } from '../map.js';
 
 class WorldList {
-    constructor(json, P) {
+    constructor(json,) {
         this.worlds = new Map();
-        this.P = P;
 
         for (let i = 0; i < json.length; i++) {
-            const world = new World(json[i], this.P);
+            const world = new World(json[i]);
             this.worlds.set(world.name, world);
 
-            const link = this.P.createElement("a", world.name, this);
+            const link = P.createElement("a", world.name, this);
             link.onclick = function () {
                 const curWorld = this.parent.curWorld;
                 const name = this.id;
                 if (curWorld.name == name) {
-                    this.parent.P.centerOn(curWorld.spawn.x, curWorld.spawn.z, curWorld.zoom.def);
+                    P.centerOn(curWorld.spawn.x, curWorld.spawn.z, curWorld.zoom.def);
                     return;
                 }
-                this.parent.P.playerList.clearMarkers();
-                this.parent.loadWorld(name);
+                P.playerList.clearMarkers();
+                this.parent.loadWorld(name, function() {
+                    P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def);
+                });
             };
 
             const img = document.createElement("img");
-            switch (world.type) {
-                case "nether":
-                    img.src = "images/red-cube-smol.png";
-                    break;
-                case "the_end":
-                    img.src = "images/purple-cube-smol.png";
-                    break;
-                case "normal":
-                default:
-                    img.src = "images/green-cube-smol.png";
-                    break;
-            }
+            img.src = this.getIcon(world.type);
 
             link.appendChild(img);
-            link.appendChild(this.P.createTextElement("span", world.display_name));
+            link.appendChild(P.createTextElement("span", world.display_name));
 
-            this.P.sidebar.worldList.element.appendChild(link);
+            P.sidebar.worldList.element.appendChild(link);
+        }
+    }
+    getIcon(type) {
+        switch (type) {
+            case "nether":
+                return "images/red-cube-smol.png";
+            case "the_end":
+                return "images/purple-cube-smol.png";
+            case "normal":
+            default:
+                return "images/green-cube-smol.png";
         }
     }
     loadWorld(name, callback) {
@@ -54,15 +56,15 @@ class WorldList {
     }
     showWorld(world, callback) {
         if (this.curWorld.name == world) {
-            this.P.centerOn(this.curWorld.spawn.x, this.curWorld.spawn.z, this.curWorld.zoom.def);
+            P.centerOn(this.curWorld.spawn.x, this.curWorld.spawn.z, this.curWorld.zoom.def);
             if (callback != null) {
                 callback();
             }
             return;
         }
-        this.P.playerList.clearMarkers();
+        P.playerList.clearMarkers();
         this.loadWorld(world, callback);
-        this.P.updateBrowserUrl(this.P.getUrlFromView());
+        P.updateBrowserUrl(P.getUrlFromView());
     }
 }
 

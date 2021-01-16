@@ -1,11 +1,12 @@
+import { P } from '../../map.js';
+
 class Player {
-    constructor(player, P) {
+    constructor(player) {
         this.name = player.name;
         this.uuid = player.uuid;
         this.world = player.world;
         this.x = 0;
         this.z = 0;
-        this.P = P
         this.marker = L.marker(P.unproject(player.x, player.z), {
             icon: L.icon({
                 iconUrl: 'images/player.png',
@@ -33,9 +34,9 @@ class Player {
     update(player) {
         this.x = player.x;
         this.z = player.z;
-        if (this.P.worldList.curWorld.name == player.world) {
-            this.marker.addTo(this.P.playersLayer);
-            const latlng = this.P.unproject(player.x, player.z);
+        if (P.worldList.curWorld.name == player.world) {
+            this.marker.addTo(P.playersLayer);
+            const latlng = P.unproject(player.x, player.z);
             if (!this.marker.getLatLng().equals(latlng)) {
                 this.marker.setLatLng(latlng);
             }
