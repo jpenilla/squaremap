@@ -7,6 +7,11 @@ dependencies {
     compileOnlyApi("org.checkerframework", "checker-qual", "3.9.0")
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
