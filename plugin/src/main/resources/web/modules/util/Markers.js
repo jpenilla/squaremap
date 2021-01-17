@@ -13,36 +13,68 @@ class Options {
     }
 }
 
-class Box {
+class Rectangle {
     constructor(opts) {
         const points = opts.pop("points");
-        this.rect = L.rectangle([P.unproject(points[0].x, points[0].z), P.unproject(points[1].x, points[1].z)]);
+        this.rectangle = L.rectangle([P.unproject(points[0].x, points[0].z), P.unproject(points[1].x, points[1].z)]);
         for (const key in opts) {
-            this.rect.options[key] = opts[key];
+            this.rectangle.options[key] = opts[key];
         }
     }
     draw(layer) {
-        this.rect.remove();
-        this.rect.addTo(layer);
+        this.rectangle.remove();
+        this.rectangle.addTo(layer);
     }
 }
 
-class Line {
+class PolyLine {
     constructor(opts) {
         const points = opts.pop("points");
         const latlng = [];
         for (let i = 0; i < points.length; i++) {
             latlng.push(P.unproject(points[i].x, points[i].z));
         }
-        this.line = L.polyline(latlng);
+        this.polyline = L.polyline(latlng);
         for (const key in opts) {
-            this.line.options[key] = opts[key];
+            this.polyline.options[key] = opts[key];
         }
     }
     draw(layer) {
-        this.line.remove();
-        this.line.addTo(layer);
+        this.polyline.remove();
+        this.polyline.addTo(layer);
     }
 }
 
-export { Options, Box, Line };
+class Polygon {
+    constructor(opts) {
+        const points = opts.pop("points");
+        const latlng = [];
+        for (let i = 0; i < points.length; i++) {
+            latlng.push(P.unproject(points[i].x, points[i].z));
+        }
+        this.polygon = L.polygon(latlng);
+        for (const key in opts) {
+            this.polygon.options[key] = opts[key];
+        }
+    }
+    draw(layer) {
+        this.polygon.remove();
+        this.polygon.addTo(layer);
+    }
+}
+
+class Circle {
+    constructor(opts) {
+        const center = opts.pop("center");
+        this.circle = L.circle(P.unproject(center.x, center.z), opts.pop("radius"));
+        for (const key in opts) {
+            this.circle.options[key] = opts[key];
+        }
+    }
+    draw(layer) {
+        this.circle.remove();
+        this.circle.addTo(layer);
+    }
+}
+
+export { Options, Rectangle, PolyLine, Polygon, Circle };
