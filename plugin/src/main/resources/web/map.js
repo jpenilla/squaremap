@@ -2,6 +2,7 @@ import { Sidebar } from "./modules/Sidebar.js";
 import { PlayerList } from "./modules/PlayerList.js";
 import { WorldList } from "./modules/WorldList.js";
 import { UICoordinates } from "./modules/UICoordinates.js";
+import { UILink } from "./modules/UILink.js";
 
 class Pl3xMap {
     constructor() {
@@ -12,12 +13,6 @@ class Pl3xMap {
             center: [0, 0],
             attributionControl: false,
             noWrap: true
-        })
-        .addEventListener('move', () => {
-            this.updateBrowserUrl(this.getUrlFromView());
-        })
-        .addEventListener('zoom', () => {
-            this.updateBrowserUrl(this.getUrlFromView());
         });
 
         this.tileLayer;
@@ -37,6 +32,8 @@ class Pl3xMap {
         this.worldList;
         this.playerList;
 
+        this.stateObj = { foo: 'bar' };
+
         this.init();
     }
     tick() {
@@ -48,11 +45,14 @@ class Pl3xMap {
     }
     __init(json) {
         this.settings.ui = json.ui;
-        this.sidebar = new Sidebar(this);
-        this.playerList = new PlayerList(this);
-        this.worldList = new WorldList(json.worlds, this);
+        this.sidebar = new Sidebar();
+        this.playerList = new PlayerList();
+        this.worldList = new WorldList(json.worlds);
         if (P.settings.ui.coordinates) {
-            new UICoordinates(this);
+            new UICoordinates();
+        }
+        if (P.settings.ui.link) {
+            new UILink();
         }
         this.worldList.loadWorld(this.getUrlParam("world", "world"), (world) => {
             P.centerOn(P.getUrlParam("x", world.spawn.x),
@@ -116,7 +116,7 @@ class Pl3xMap {
         return `?world=${this.worldList.curWorld.name}&zoom=${zoom}&x=${x}&z=${z}`;
     }
     updateBrowserUrl(url) {
-        window.history.replaceState(null, "", url);
+        window.history.replaceState(this.stateObj, "", url);
     }
 }
 

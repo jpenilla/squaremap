@@ -6,9 +6,7 @@ class Pin {
 
         this.element = P.createElement("img", "pin", this);
 
-        this.element.onclick = function () {
-            this.parent.toggle();
-        };
+        this.element.onclick = () => this.toggle();
 
         this.pin(this.pinned);
     }

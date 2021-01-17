@@ -20,12 +20,12 @@ class UICoordinates {
             }
         });
         const coords = new Coords();
-        P.map.addControl(coords);
-        P.map.addEventListener('mousemove', (event) => {
-            if (P.worldList.curWorld != null) {
-                coords.update(P.project(event.latlng));
-            }
-        });
+        P.map.addControl(coords)
+            .addEventListener('mousemove', (event) => {
+                if (P.worldList.curWorld != null) {
+                    coords.update(P.project(event.latlng));
+                }
+            });
     }
 }
 

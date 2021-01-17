@@ -2,7 +2,7 @@ import { World } from "./util/World.js";
 import { P } from '../map.js';
 
 class WorldList {
-    constructor(json,) {
+    constructor(json) {
         this.worlds = new Map();
 
         for (let i = 0; i < json.length; i++) {
