@@ -3,11 +3,10 @@ package net.pl3x.map.plugin;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
+import net.pl3x.map.plugin.httpd.IntegratedServer;
 import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
-import net.pl3x.map.plugin.util.IntegratedServer;
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -61,9 +60,7 @@ public final class Pl3xMap extends JavaPlugin {
         this.mapUpdateListeners.register();
 
         if (Config.HTTPD_ENABLED) {
-            if (IntegratedServer.setup()) {
-                IntegratedServer.startServer();
-            }
+            IntegratedServer.startServer();
         }
     }
 

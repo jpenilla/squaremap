@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation(project(":pl3xmap-api"))
     implementation("cloud.commandframework", "cloud-paper", "1.4.0-SNAPSHOT")
+    implementation("io.undertow", "undertow-core", "2.2.3.Final")
     compileOnly("net.pl3x.purpur", "purpur", "1.16.5-R0.1-SNAPSHOT")
     compileOnly("net.pl3x.map", "Pl3xMapServer", "1.0")
 }
@@ -18,6 +19,7 @@ tasks {
         from(rootProject.projectDir.resolve("LICENSE"))
         minimize {
             exclude { it.moduleName == "pl3xmap-api" }
+            exclude(dependency("io.undertow:.*:.*")) // does not like being minimized _or_ relocated (xnio errors)
         }
         listOf(
             "cloud.commandframework",
@@ -33,6 +35,5 @@ spigot {
     name = rootProject.name
     apiVersion = "1.16"
     website = rootProject.ext["url"].toString()
-    authors("BillyGalbreath")
-    softDepends("Pl3xMapServer")
+    authors("BillyGalbreath", "jmp")
 }
