@@ -5,10 +5,9 @@ plugins {
 
 dependencies {
     implementation(project(":pl3xmap-api"))
-    implementation("cloud.commandframework", "cloud-paper", "1.4.0-SNAPSHOT")
+    implementation("cloud.commandframework", "cloud-paper", "1.4.0")
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
     compileOnly("net.pl3x.purpur", "purpur", "1.16.5-R0.1-SNAPSHOT")
-    compileOnly("net.pl3x.map", "Pl3xMapServer", "1.0")
 }
 
 tasks {
