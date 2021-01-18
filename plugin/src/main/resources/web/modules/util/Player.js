@@ -9,7 +9,7 @@ class Player {
         this.z = 0;
         this.marker = L.marker(P.unproject(player.x, player.z), {
             icon: L.icon({
-                iconUrl: 'images/player.png',
+                iconUrl: 'images/icon/player.png',
                 iconSize: [17, 16],
                 iconAnchor: [8, 9],
                 tooltipAnchor: [0, 0]

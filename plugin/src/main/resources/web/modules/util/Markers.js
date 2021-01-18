@@ -1,5 +1,22 @@
 import { P } from '../../map.js';
 
+class Marker {
+    constructor(opts) {
+        this.opts = opts;
+        this.id = this.opts.pop("id");
+        this.tooltip = this.opts.pop("tooltip");
+    }
+    init() {
+        for (const key in this.opts) {
+            this.marker.options[key] = this.opts[key];
+        }
+    }
+    addTo(layer) {
+        this.marker.remove();
+        this.marker.addTo(layer);
+    }
+}
+
 class Options {
     constructor(json) {
         for (const prop in json) {
@@ -13,68 +30,67 @@ class Options {
     }
 }
 
-class Rectangle {
+class Rectangle extends Marker {
     constructor(opts) {
-        const points = opts.pop("points");
-        this.rectangle = L.rectangle([P.unproject(points[0].x, points[0].z), P.unproject(points[1].x, points[1].z)]);
-        for (const key in opts) {
-            this.rectangle.options[key] = opts[key];
-        }
-    }
-    draw(layer) {
-        this.rectangle.remove();
-        this.rectangle.addTo(layer);
+        super(opts);
+        const points = this.opts.pop("points");
+        this.marker = L.rectangle([P.unproject(points[0].x, points[0].z), P.unproject(points[1].x, points[1].z)]);
+        super.init();
     }
 }
 
-class PolyLine {
+class PolyLine extends Marker {
     constructor(opts) {
-        const points = opts.pop("points");
+        super(opts);
+        const points = this.opts.pop("points");
         const latlng = [];
         for (let i = 0; i < points.length; i++) {
             latlng.push(P.unproject(points[i].x, points[i].z));
         }
-        this.polyline = L.polyline(latlng);
-        for (const key in opts) {
-            this.polyline.options[key] = opts[key];
-        }
-    }
-    draw(layer) {
-        this.polyline.remove();
-        this.polyline.addTo(layer);
+        this.marker = L.polyline(latlng);
+        super.init();
     }
 }
 
-class Polygon {
+class Polygon extends Marker {
     constructor(opts) {
-        const points = opts.pop("points");
+        super(opts);
+        const points = this.opts.pop("points");
         const latlng = [];
         for (let i = 0; i < points.length; i++) {
             latlng.push(P.unproject(points[i].x, points[i].z));
         }
-        this.polygon = L.polygon(latlng);
-        for (const key in opts) {
-            this.polygon.options[key] = opts[key];
-        }
-    }
-    draw(layer) {
-        this.polygon.remove();
-        this.polygon.addTo(layer);
+        this.marker = L.polygon(latlng);
+        super.init();
     }
 }
 
-class Circle {
+class Circle extends Marker {
     constructor(opts) {
-        const center = opts.pop("center");
-        this.circle = L.circle(P.unproject(center.x, center.z), opts.pop("radius"));
-        for (const key in opts) {
-            this.circle.options[key] = opts[key];
-        }
-    }
-    draw(layer) {
-        this.circle.remove();
-        this.circle.addTo(layer);
+        super(opts);
+        const center = this.opts.pop("center");
+        this.marker = L.circle(P.unproject(center.x, center.z), String(opts.pop("radius")));
+        super.init();
     }
 }
 
-export { Options, Rectangle, PolyLine, Polygon, Circle };
+class Icon extends Marker {
+    constructor(opts) {
+        super(opts);
+        const point = this.opts.pop("point");
+        const size = this.opts.pop("size");
+        const anchor = this.opts.pop("anchor");
+        const popup_anchor = this.opts.pop("popup_anchor");
+        this.marker = L.marker(P.unproject(point.x, point.z), {
+            icon: L.icon({
+                iconUrl: `images/icon/${opts.pop("icon")}`,
+                iconSize: [size.x, size.z],
+                iconAnchor: [anchor.x, anchor.z],
+                popupAnchor: [popup_anchor.x, popup_anchor.z]
+            })
+        }).bindPopup(opts.pop("popup"));
+        super.init();
+    }
+}
+
+export { Marker, Options, Rectangle, PolyLine, Polygon, Circle, Icon };

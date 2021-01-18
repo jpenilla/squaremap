@@ -19,10 +19,13 @@ class UILink {
                 this._link.innerHTML = "<a href='" + url + "'><img src='images/clear.png'/></a>";
             }
         });
-        var link = new Link();
-        P.map.addControl(link)
-            .addEventListener('move', () => link.update())
-            .addEventListener('zoom', () => link.update());
+        this.link = new Link();
+        P.map.addControl(this.link)
+            .addEventListener('move', () => this.update())
+            .addEventListener('zoom', () => this.update());
+    }
+    update() {
+        this.link.update();
     }
 }
 

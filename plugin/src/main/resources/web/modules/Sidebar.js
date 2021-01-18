@@ -3,12 +3,12 @@ import { Fieldset } from "./util/Fieldset.js";
 import { P } from '../map.js';
 
 class Sidebar {
-    constructor() {
+    constructor(pinned) {
         this.sidebar = P.createElement("div", "sidebar", this);
         document.getElementById("map").appendChild(this.sidebar);
 
-        if (P.settings.ui.sidebar != "hide") {
-            this.pin = new Pin(P.settings.ui.sidebar == "pinned");
+        if (pinned != "hide") {
+            this.pin = new Pin(pinned == "pinned");
             this.sidebar.appendChild(this.pin.element);
             this.show(this.pin.pinned);
         }

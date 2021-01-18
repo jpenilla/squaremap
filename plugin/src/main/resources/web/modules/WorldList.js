@@ -14,12 +14,11 @@ class WorldList {
                 const curWorld = this.parent.curWorld;
                 const name = this.id;
                 if (curWorld.name == name) {
-                    P.centerOn(curWorld.spawn.x, curWorld.spawn.z, curWorld.zoom.def);
                     return;
                 }
                 P.playerList.clearMarkers();
-                this.parent.loadWorld(name, function() {
-                    P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def);
+                this.parent.loadWorld(name, (world) => {
+                    P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
                 });
             };
 
@@ -35,12 +34,12 @@ class WorldList {
     getIcon(type) {
         switch (type) {
             case "nether":
-                return "images/red-cube-smol.png";
+                return "images/icon/red-cube-smol.png";
             case "the_end":
-                return "images/purple-cube-smol.png";
+                return "images/icon/purple-cube-smol.png";
             case "normal":
             default:
-                return "images/green-cube-smol.png";
+                return "images/icon/green-cube-smol.png";
         }
     }
     loadWorld(name, callback) {
@@ -56,7 +55,6 @@ class WorldList {
     }
     showWorld(world, callback) {
         if (this.curWorld.name == world) {
-            P.centerOn(this.curWorld.spawn.x, this.curWorld.spawn.z, this.curWorld.zoom.def);
             if (callback != null) {
                 callback();
             }

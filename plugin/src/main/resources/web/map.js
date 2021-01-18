@@ -6,8 +6,6 @@ import { UILink } from "./modules/UILink.js";
 
 class Pl3xMap {
     constructor() {
-        this.settings = {};
-
         this.map = L.map("map", {
             crs: L.CRS.Simple,
             center: [0, 0],
@@ -15,24 +13,20 @@ class Pl3xMap {
             noWrap: true
         });
 
-        this.tileLayer;
-
         this.playersLayer = new L.LayerGroup()
             .addTo(this.map);
-        this.spawnLayer = new L.LayerGroup()
-            .addTo(this.map);
+        this.playersLayer.order = 1;
         this.markerLayers = [];
 
-        this.controls = L.control.layers({}, {}, {position: 'topleft'})
+        this.controls = L.control.layers({}, {}, {
+            position: 'topleft',
+            sortLayers: true,
+            sortFunction: function (a, b) {
+                return a.order - b.order;
+            }
+        })
             .addTo(this.map)
-            .addOverlay(this.spawnLayer, "Spawn")
             .addOverlay(this.playersLayer, "Players");
-
-        this.sidebar;
-        this.worldList;
-        this.playerList;
-
-        this.stateObj = { foo: 'bar' };
 
         this.init();
     }
@@ -41,30 +35,28 @@ class Pl3xMap {
         setTimeout(() => P.tick(), 1000);
     }
     init() {
-        this.getJSON("tiles/settings.json", (json) => P.__init(json));
-    }
-    __init(json) {
-        this.settings.ui = json.ui;
-        this.sidebar = new Sidebar();
-        this.playerList = new PlayerList();
-        this.worldList = new WorldList(json.worlds);
-        if (P.settings.ui.coordinates) {
-            new UICoordinates();
-        }
-        if (P.settings.ui.link) {
-            new UILink();
-        }
-        this.worldList.loadWorld(this.getUrlParam("world", "world"), (world) => {
-            P.centerOn(P.getUrlParam("x", world.spawn.x),
-                    P.getUrlParam("z", world.spawn.z),
-                    P.getUrlParam("zoom", world.zoom.def))
-                .setMinZoom(0) // extra zoom out doesn't work :(
-                .setMaxZoom(world.zoom.max + world.zoom.extra);
-            P.tick();
+        this.getJSON("tiles/settings.json", (json) => {
+            this.title = json.ui.title;
+            this.sidebar = new Sidebar(json.ui.sidebar);
+            this.playerList = new PlayerList();
+            this.worldList = new WorldList(json.worlds);
+            if (json.ui.coordinates) {
+                this.coordinates = new UICoordinates();
+            }
+            if (json.ui.link) {
+                this.uiLink = new UILink();
+            }
+            this.worldList.loadWorld(this.getUrlParam("world", "world"), (world) => {
+                this.centerOn(world.spawn.x, world.spawn.z, world.zoom.def).setMinZoom(0) // extra zoom out doesn't work :(
+                    .setMaxZoom(world.zoom.max + world.zoom.extra);
+                P.tick();
+            });
         });
     }
     centerOn(x, z, zoom) {
-        return this.map.setView(this.unproject(x, z), zoom);
+        this.map.setView(this.unproject(x, z), zoom);
+        P.uiLink.update();
+        return this.map;
     }
     unproject(x, z) {
         return this.map.unproject([x, z], this.worldList.curWorld.zoom.max);
