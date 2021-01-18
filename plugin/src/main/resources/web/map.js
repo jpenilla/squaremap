@@ -47,8 +47,6 @@ class Pl3xMap {
                 this.uiLink = new UILink();
             }
             this.worldList.loadWorld(this.getUrlParam("world", "world"), (world) => {
-                this.centerOn(world.spawn.x, world.spawn.z, world.zoom.def).setMinZoom(0) // extra zoom out doesn't work :(
-                    .setMaxZoom(world.zoom.max + world.zoom.extra);
                 P.tick();
             });
         });
@@ -63,6 +61,9 @@ class Pl3xMap {
     }
     project(latlng) {
         return this.map.project(latlng, this.worldList.curWorld.zoom.max);
+    }
+    pixelsToMeters(num) {
+        return P.unproject(num, 0).lng - P.unproject(0, 0).lng;
     }
     createElement(tag, id, parent) {
         const element = document.createElement(tag);

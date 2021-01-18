@@ -20,6 +20,11 @@ class World {
         this.zoom = json.settings.zoom;
         this.spawn = json.settings.spawn;
 
+        // set center and zoom
+        P.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)
+                    .setMinZoom(0) // extra zoom out doesn't work :(
+                    .setMaxZoom(this.zoom.max + this.zoom.extra);
+
         // update page title
         document.title = P.title
             .replaceAll("{world}", this.display_name);

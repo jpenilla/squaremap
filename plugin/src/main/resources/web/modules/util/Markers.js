@@ -73,7 +73,10 @@ class Circle extends Marker {
     constructor(opts) {
         super(opts);
         const center = this.opts.pop("center");
-        this.marker = L.circleMarker(P.unproject(center.x, center.z), {radius: opts.pop("radius")});
+        const radius = this.opts.pop("radius");
+        this.marker = L.circle(P.unproject(center.x, center.z), {
+            radius: P.pixelsToMeters(radius)
+        });
         super.init();
     }
 }
