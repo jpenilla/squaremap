@@ -28,9 +28,9 @@ public final class ReflectionUtil {
         }
     }
 
-    public static @NonNull Method needMethod(final @NonNull Class<?> clazz, final @NonNull String name) {
+    public static @NonNull Method needMethod(final @NonNull Class<?> clazz, final @NonNull String name, final Class<?> @NonNull ... parameterTypes) {
         try {
-            final Method method = clazz.getDeclaredMethod(name);
+            final Method method = clazz.getDeclaredMethod(name, parameterTypes);
             method.setAccessible(true);
             return method;
         } catch (final NoSuchMethodException ex) {

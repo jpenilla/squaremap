@@ -3,7 +3,6 @@ package net.pl3x.map.plugin.command.commands;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.WorldManager;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
 import net.pl3x.map.plugin.command.argument.MapWorldArgument;
@@ -44,7 +43,7 @@ public final class FullRenderCommand extends Pl3xMapCommand {
     private void player(final @NonNull CommandContext<CommandSender> context) {
         final Player sender = (Player) context.getSender();
         final World world = sender.getWorld();
-        Optional<MapWorld> optionalMapWorld = WorldManager.getWorldIfEnabled(world);
+        Optional<MapWorld> optionalMapWorld = this.plugin.worldManager().getWorldIfEnabled(world);
         if (optionalMapWorld.isEmpty()) {
             Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("{world}", world.getName()));
             return;

@@ -1,6 +1,10 @@
 package net.pl3x.map.api;
 
+import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Pl3xMap API
@@ -20,10 +24,22 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 public interface Pl3xMap {
 
     /**
-     * Get the layer registry
+     * Get an unmodifiable view of the enabled worlds
      *
-     * @return the layer registry
+     * @return The set of worlds
      */
-    @NonNull Registry<LayerProvider> layerRegistry();
+    @NonNull Collection<MapWorld> mapWorlds();
+
+    /**
+     * Get an optional which will either
+     * <ul>
+     *     <li>A) Be empty, if the world does not have Pl3xMap enabled</li>
+     *     <li>B) Contain the {@link MapWorld} instance for the provided {@link World}, if the world does have Pl3xMap enabled</li>
+     * </ul>
+     *
+     * @param world Bukkit World
+     * @return optional
+     */
+    @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull World world);
 
 }

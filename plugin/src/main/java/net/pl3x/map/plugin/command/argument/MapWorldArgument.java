@@ -6,7 +6,7 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
-import net.pl3x.map.plugin.WorldManager;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -132,12 +132,12 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
             }
 
             inputQueue.remove();
-            return ArgumentParseResult.success(WorldManager.getWorld(world));
+            return ArgumentParseResult.success(Pl3xMapPlugin.getInstance().worldManager().getWorld(world));
         }
 
         @Override
         public @NonNull List<String> suggestions(final @NonNull CommandContext<C> commandContext, final @NonNull String input) {
-            return WorldManager.worlds().values().stream().map(MapWorld::name).collect(Collectors.toList());
+            return Pl3xMapPlugin.getInstance().worldManager().worlds().values().stream().map(MapWorld::name).collect(Collectors.toList());
         }
 
     }

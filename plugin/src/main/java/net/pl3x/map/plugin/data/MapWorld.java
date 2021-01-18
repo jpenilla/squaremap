@@ -1,6 +1,9 @@
 package net.pl3x.map.plugin.data;
 
 import net.minecraft.server.v1_16_R3.World;
+import net.pl3x.map.api.LayerProvider;
+import net.pl3x.map.api.Registry;
+import net.pl3x.map.plugin.api.LayerRegistry;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
@@ -9,6 +12,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,12 +20,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public final class MapWorld {
+public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private final World world;
     private final org.bukkit.World bukkitWorld;
     private final ExecutorService imageIOexecutor = Executors.newSingleThreadExecutor();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
+    private final LayerRegistry layerRegistry = new LayerRegistry();
 
     private AbstractRender activeRender = null;
     private ScheduledFuture<?> backgroundRender = null;
@@ -74,8 +79,14 @@ public final class MapWorld {
         return new MapWorld(world);
     }
 
+    @Override
     public @NonNull String name() {
         return this.bukkitWorld.getName();
+    }
+
+    @Override
+    public @NonNull UUID uuid() {
+        return this.bukkitWorld.getUID();
     }
 
     public @NonNull WorldConfig config() {
@@ -124,4 +135,10 @@ public final class MapWorld {
     public void saveImage(final @NonNull Image image) {
         this.imageIOexecutor.submit(image::save);
     }
+
+    @Override
+    public @NonNull Registry<LayerProvider> layerRegistry() {
+        return this.layerRegistry;
+    }
+
 }

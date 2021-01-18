@@ -3,7 +3,7 @@ package net.pl3x.map.plugin.task.render;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.WorldManager;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
@@ -25,7 +25,7 @@ public final class RadiusRender extends AbstractRender {
     final int totalChunks;
 
     public RadiusRender(final @NonNull Location center, int radius) {
-        super(WorldManager.getWorld(center.getWorld()));
+        super(Pl3xMapPlugin.getInstance().worldManager().getWorld(center.getWorld()));
         this.radius = Numbers.blockToChunk(radius);
         this.centerX = Numbers.blockToChunk(center.getBlockX());
         this.centerZ = Numbers.blockToChunk(center.getBlockZ());

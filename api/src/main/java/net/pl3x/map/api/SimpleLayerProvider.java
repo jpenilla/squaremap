@@ -16,9 +16,15 @@ public final class SimpleLayerProvider implements LayerProvider {
 
     private final Supplier<String> labelSupplier;
     private final Map<Key, Marker> markers = new ConcurrentHashMap<>();
+    private final boolean defaultHidden;
+    private final boolean showControls;
+    private final int layerPriority;
 
-    private SimpleLayerProvider(final @NonNull Supplier<String> labelSupplier) {
+    private SimpleLayerProvider(final @NonNull Supplier<String> labelSupplier, final boolean defaultHidden, final boolean showControls, final int layerPriority) {
         this.labelSupplier = labelSupplier;
+        this.defaultHidden = defaultHidden;
+        this.showControls = showControls;
+        this.layerPriority = layerPriority;
     }
 
     /**
@@ -94,6 +100,21 @@ public final class SimpleLayerProvider implements LayerProvider {
     }
 
     @Override
+    public boolean showControls() {
+        return this.showControls;
+    }
+
+    @Override
+    public boolean defaultHidden() {
+        return this.defaultHidden;
+    }
+
+    @Override
+    public int layerPriority() {
+        return this.layerPriority;
+    }
+
+    @Override
     public @NonNull Collection<Marker> getMarkers() {
         return this.markers.values();
     }
@@ -102,10 +123,47 @@ public final class SimpleLayerProvider implements LayerProvider {
      * Builder for {@link SimpleLayerProvider}
      */
     public static final class Builder {
+
         private final Supplier<String> labelSupplier;
+        private boolean defaultHidden = false;
+        private boolean showControls = true;
+        private int layerPriority = 99;
 
         private Builder(final @NonNull Supplier<String> labelSupplier) {
             this.labelSupplier = labelSupplier;
+        }
+
+        /**
+         * Set whether this layer is hidden by default, see {@link LayerProvider#defaultHidden()}
+         *
+         * @param defaultHidden whether to be default hidden
+         * @return this builder
+         */
+        public @NonNull Builder defaultHidden(final boolean defaultHidden) {
+            this.defaultHidden = defaultHidden;
+            return this;
+        }
+
+        /**
+         * Set whether to show controls for this layer, see {@link LayerProvider#showControls()}
+         *
+         * @param showControls whether to show controls
+         * @return this builder
+         */
+        public @NonNull Builder showControls(final boolean showControls) {
+            this.showControls = showControls;
+            return this;
+        }
+
+        /**
+         * Set the priority for this layer (default 99 if unset), see {@link LayerProvider#layerPriority()}
+         *
+         * @param layerPriority layer priority
+         * @return this builder
+         */
+        public @NonNull Builder layerPriority(final int layerPriority) {
+            this.layerPriority = layerPriority;
+            return this;
         }
 
         /**
@@ -114,8 +172,9 @@ public final class SimpleLayerProvider implements LayerProvider {
          * @return the built instance
          */
         public @NonNull SimpleLayerProvider build() {
-            return new SimpleLayerProvider(this.labelSupplier);
+            return new SimpleLayerProvider(this.labelSupplier, this.defaultHidden, this.showControls, this.layerPriority);
         }
+
     }
 
 }

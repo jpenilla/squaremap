@@ -21,6 +21,7 @@ import java.util.logging.Level;
 public final class Pl3xMapPlugin extends JavaPlugin {
     private static Pl3xMapPlugin instance;
     private Pl3xMap pl3xMap;
+    private WorldManager worldManager;
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
@@ -64,7 +65,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         this.updateWorldData = new UpdateWorldData();
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
-        WorldManager.start();
+        this.worldManager = new WorldManager();
+        this.worldManager.start();
 
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();
@@ -91,15 +93,20 @@ public final class Pl3xMapPlugin extends JavaPlugin {
             this.updateWorldData = null;
         }
 
-        WorldManager.shutdown();
+        this.worldManager.shutdown();
+        this.worldManager = null;
 
         this.getServer().getScheduler().cancelTasks(this);
+    }
+
+    public @NonNull WorldManager worldManager() {
+        return this.worldManager;
     }
 
     private void setupApi() {
         this.pl3xMap = new Pl3xMapApiProvider(this);
         this.getServer().getServicesManager().register(Pl3xMap.class, this.pl3xMap, this, ServicePriority.Normal);
-        final Method register = ReflectionUtil.needMethod(Pl3xMapProvider.class, "register");
+        final Method register = ReflectionUtil.needMethod(Pl3xMapProvider.class, "register", Pl3xMap.class);
         ReflectionUtil.invokeOrThrow(register, null, this.pl3xMap);
     }
 

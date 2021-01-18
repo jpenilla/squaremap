@@ -118,7 +118,7 @@ final class MapUpdateListeners {
     }
 
     private void markChunk(final @NonNull Location loc, final boolean ignoreCeiling) {
-        WorldManager.getWorldIfEnabled(loc.getWorld()).ifPresent(mapWorld -> {
+        this.plugin.worldManager().getWorldIfEnabled(loc.getWorld()).ifPresent(mapWorld -> {
             if (ignoreCeiling || loc.getY() >= loc.getWorld().getHighestBlockYAt(loc) - 10) {
                 mapWorld.chunkModified(new ChunkCoordinate(
                         Numbers.blockToChunk(loc.getBlockX()),
@@ -129,7 +129,7 @@ final class MapUpdateListeners {
     }
 
     private void markLocations(final @NonNull World world, final @NonNull List<Location> locations) {
-        WorldManager.getWorldIfEnabled(world).ifPresent(mapWorld -> locations.stream()
+        this.plugin.worldManager().getWorldIfEnabled(world).ifPresent(mapWorld -> locations.stream()
                 .map(loc -> new ChunkCoordinate(
                         Numbers.blockToChunk(loc.getBlockX()),
                         Numbers.blockToChunk(loc.getBlockZ())
@@ -139,7 +139,7 @@ final class MapUpdateListeners {
     }
 
     private void markChunksFromBlocks(final @NonNull World world, final @NonNull List<BlockState> blockStates) {
-        WorldManager.getWorldIfEnabled(world).ifPresent(mapWorld ->
+        this.plugin.worldManager().getWorldIfEnabled(world).ifPresent(mapWorld ->
                 blockStates.stream()
                         .map(BlockState::getLocation)
                         .filter(loc -> loc.getY() >= world.getHighestBlockYAt(loc) - 10)

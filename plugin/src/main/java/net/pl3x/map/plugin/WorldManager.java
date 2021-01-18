@@ -14,13 +14,13 @@ import java.util.UUID;
 
 public final class WorldManager {
 
-    private static final Map<UUID, MapWorld> worlds = new HashMap<>();
+    private final Map<UUID, MapWorld> worlds = new HashMap<>();
 
-    public static @NonNull Map<UUID, MapWorld> worlds() {
-        return Collections.unmodifiableMap(WorldManager.worlds);
+    public @NonNull Map<UUID, MapWorld> worlds() {
+        return Collections.unmodifiableMap(this.worlds);
     }
 
-    public static @NonNull Optional<MapWorld> getWorldIfEnabled(final @NonNull World world) {
+    public @NonNull Optional<MapWorld> getWorldIfEnabled(final @NonNull World world) {
         if (WorldConfig.get(world).MAP_ENABLED) {
             return Optional.of(getWorld(world));
         } else {
@@ -28,17 +28,17 @@ public final class WorldManager {
         }
     }
 
-    public static @NonNull MapWorld getWorld(final @NonNull World world) {
-        final MapWorld w = worlds.get(world.getUID());
+    public @NonNull MapWorld getWorld(final @NonNull World world) {
+        final MapWorld w = this.worlds.get(world.getUID());
         if (w != null) {
             return w;
         }
         final MapWorld mapWorld = MapWorld.forWorld(world);
-        worlds.put(world.getUID(), mapWorld);
+        this.worlds.put(world.getUID(), mapWorld);
         return mapWorld;
     }
 
-    public static void start() {
+    public void start() {
         Bukkit.getWorlds().forEach(world -> {
             WorldConfig config = WorldConfig.get(world);
             if (config.MAP_ENABLED) {
@@ -47,9 +47,9 @@ public final class WorldManager {
         });
     }
 
-    public static void shutdown() {
-        worlds.values().forEach(MapWorld::shutdown);
-        worlds.clear();
+    public void shutdown() {
+        this.worlds.values().forEach(MapWorld::shutdown);
+        this.worlds.clear();
     }
 
 }
