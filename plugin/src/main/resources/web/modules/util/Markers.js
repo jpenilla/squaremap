@@ -7,6 +7,10 @@ class Marker {
         this.tooltip = this.opts.pop("tooltip");
     }
     init() {
+        if (this.tooltip != null) {
+            // use popup instead of tooltip (tooltips are mouse over, popups are on click)
+            this.marker.bindPopup(this.tooltip);
+        }
         for (const key in this.opts) {
             this.marker.options[key] = this.opts[key];
         }
@@ -80,15 +84,15 @@ class Icon extends Marker {
         const point = this.opts.pop("point");
         const size = this.opts.pop("size");
         const anchor = this.opts.pop("anchor");
-        const popup_anchor = this.opts.pop("popup_anchor");
+        const tooltipAnchor = this.opts.pop("tooltip_anchor");
         this.marker = L.marker(P.unproject(point.x, point.z), {
             icon: L.icon({
                 iconUrl: `images/icon/${opts.pop("icon")}`,
                 iconSize: [size.x, size.z],
                 iconAnchor: [anchor.x, anchor.z],
-                popupAnchor: [popup_anchor.x, popup_anchor.z]
+                popupAnchor: [tooltipAnchor.x, tooltipAnchor.z]
             })
-        }).bindPopup(opts.pop("popup"));
+        });
         super.init();
     }
 }

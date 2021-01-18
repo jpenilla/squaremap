@@ -68,7 +68,7 @@ class World {
                 "hide":false,
                 "order":0,
                 "markers":[
-                    {"type":"icon","point":{"x":0,"z":0},"icon":"spawn.png","size":{"x":16,"z":16},"anchor":{"x":8,"z":8},"popup_anchor":{"x":0,"z":-10},"popup":"World Spawn"},
+                    {"type":"icon","point":{"x":0,"z":0},"icon":"spawn.png","size":{"x":16,"z":16},"anchor":{"x":8,"z":8},"tooltip":"World Spawn","tooltip_anchor":{"x":0,"z":-10}},
                 ]
             },
             {
@@ -77,7 +77,7 @@ class World {
                 "hide":false,
                 "order":2,
                 "markers":[
-                    {"type":"rectangle","points":[{"x":25,"z":25},{"x":150,"z":250}],"color":"#ff0000","fillColor":"#0000ff"},
+                    {"type":"rectangle","points":[{"x":25,"z":25},{"x":150,"z":250}],"color":"#ff0000","fillColor":"#0000ff","tooltip":"Some region owned<br />by BillyGalbreath"},
                     {"type":"polyline","points":[{"x":25,"z":25},{"x":150,"z":250},{"x":125,"z":125}],"color":"#ffff00"},
                     {"type":"polygon","points":[{"x":0,"z":-15},{"x":-30,"z":80},{"x":45,"z":20},{"x":-45,"z":20},{"x":30,"z":80},{"x":0,"z":-15}],"color":"#00ffff","fillColor":"#550000","fillOpacity":0.5},
                     {"type":"polygon","points":[{"x":-25,"z":85},{"x":-36,"z":120},{"x":-70,"z":120},{"x":-43,"z":142},{"x":-55,"z":180},{"x":-25,"z":157},{"x":5,"z":180},{"x":-7,"z":142},{"x":20,"z":120},{"x":-14,"z":120},{"x":-25,"z":85}],"color":"#ff00ff","fillColor":"#00ff00","fillOpacity":0.5},
