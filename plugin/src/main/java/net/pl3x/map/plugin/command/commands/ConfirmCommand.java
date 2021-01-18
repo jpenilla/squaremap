@@ -2,7 +2,7 @@ package net.pl3x.map.plugin.command.commands;
 
 import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
 import cloud.commandframework.meta.CommandMeta;
-import net.pl3x.map.plugin.Pl3xMap;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
 import org.bukkit.ChatColor;
@@ -20,7 +20,7 @@ public final class ConfirmCommand extends Pl3xMapCommand {
             sender -> sender.sendMessage(ChatColor.RED + "You don't have any pending commands.")
     );
 
-    public ConfirmCommand(final @NonNull Pl3xMap plugin, final @NonNull CommandManager commandManager) {
+    public ConfirmCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull CommandManager commandManager) {
         super(plugin, commandManager);
     }
 

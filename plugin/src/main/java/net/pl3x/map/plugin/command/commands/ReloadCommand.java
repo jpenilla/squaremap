@@ -2,7 +2,7 @@ package net.pl3x.map.plugin.command.commands;
 
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.meta.CommandMeta;
-import net.pl3x.map.plugin.Pl3xMap;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
 import net.pl3x.map.plugin.configuration.Config;
@@ -14,7 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class ReloadCommand extends Pl3xMapCommand {
 
-    public ReloadCommand(final @NonNull Pl3xMap plugin, final @NonNull CommandManager commandManager) {
+    public ReloadCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull CommandManager commandManager) {
         super(plugin, commandManager);
     }
 

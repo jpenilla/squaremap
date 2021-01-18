@@ -5,7 +5,7 @@ import net.pl3x.map.plugin.configuration.Lang;
 
 public class Logger {
     public static java.util.logging.Logger log() {
-        return Pl3xMap.getInstance().getLogger();
+        return Pl3xMapPlugin.getInstance().getLogger();
     }
 
     public static void debug(String msg) {

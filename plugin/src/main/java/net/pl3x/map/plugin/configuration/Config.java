@@ -2,7 +2,7 @@ package net.pl3x.map.plugin.configuration;
 
 import com.google.common.collect.ImmutableSet;
 import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.Pl3xMap;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Event;
@@ -44,7 +44,7 @@ public class Config {
     static int VERSION;
 
     public static void reload() {
-        CONFIG_FILE = new File(Pl3xMap.getInstance().getDataFolder(), "config.yml");
+        CONFIG_FILE = new File(Pl3xMapPlugin.getInstance().getDataFolder(), "config.yml");
         CONFIG = new YamlConfiguration();
         try {
             CONFIG.load(CONFIG_FILE);

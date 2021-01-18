@@ -5,7 +5,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
 import cloud.commandframework.meta.CommandMeta;
 import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.Pl3xMap;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -19,7 +19,7 @@ import java.nio.file.Path;
 
 public final class ResetMapCommand extends Pl3xMapCommand {
 
-    public ResetMapCommand(final @NonNull Pl3xMap plugin, final @NonNull CommandManager commandManager) {
+    public ResetMapCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull CommandManager commandManager) {
         super(plugin, commandManager);
     }
 

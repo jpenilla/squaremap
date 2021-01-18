@@ -1,5 +1,8 @@
 package net.pl3x.map.plugin;
 
+import net.pl3x.map.api.Pl3xMap;
+import net.pl3x.map.api.Pl3xMapProvider;
+import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -7,17 +10,22 @@ import net.pl3x.map.plugin.httpd.IntegratedServer;
 import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
+import net.pl3x.map.plugin.util.ReflectionUtil;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 
-public final class Pl3xMap extends JavaPlugin {
-    private static Pl3xMap instance;
+public final class Pl3xMapPlugin extends JavaPlugin {
+    private static Pl3xMapPlugin instance;
+    private Pl3xMap pl3xMap;
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
 
-    public Pl3xMap() {
+    public Pl3xMapPlugin() {
         instance = this;
     }
 
@@ -29,20 +37,22 @@ public final class Pl3xMap extends JavaPlugin {
         try {
             new CommandManager(this);
         } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Failed to initialize command manager", e);
+            this.getLogger().log(Level.WARNING, "Failed to initialize command manager", e);
             this.setEnabled(false);
             return;
         }
 
-        start();
+        this.start();
+        this.setupApi();
     }
 
     @Override
     public void onDisable() {
-        stop();
+        this.shutdownApi();
+        this.stop();
     }
 
-    public static Pl3xMap getInstance() {
+    public static Pl3xMapPlugin getInstance() {
         return instance;
     }
 
@@ -83,7 +93,25 @@ public final class Pl3xMap extends JavaPlugin {
 
         WorldManager.shutdown();
 
-        getServer().getScheduler().cancelTasks(this);
+        this.getServer().getScheduler().cancelTasks(this);
+    }
+
+    private void setupApi() {
+        this.pl3xMap = new Pl3xMapApiProvider(this);
+        this.getServer().getServicesManager().register(Pl3xMap.class, this.pl3xMap, this, ServicePriority.Normal);
+        final Method register = ReflectionUtil.needMethod(Pl3xMapProvider.class, "register");
+        ReflectionUtil.invokeOrThrow(register, null, this.pl3xMap);
+    }
+
+    private void shutdownApi() {
+        this.getServer().getServicesManager().unregister(Pl3xMap.class, this.pl3xMap);
+        final Method unregister = ReflectionUtil.needMethod(Pl3xMapProvider.class, "unregister");
+        ReflectionUtil.invokeOrThrow(unregister, null);
+        this.pl3xMap = null;
+    }
+
+    public @NonNull Pl3xMap getApi() {
+        return this.pl3xMap;
     }
 
 }

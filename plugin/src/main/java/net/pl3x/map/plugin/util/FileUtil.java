@@ -1,7 +1,7 @@
 package net.pl3x.map.plugin.util;
 
 import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.Pl3xMap;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import org.bukkit.World;
@@ -31,7 +31,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 
 public class FileUtil {
-    public static Path PLUGIN_DIR = Pl3xMap.getInstance().getDataFolder().toPath();
+    public static Path PLUGIN_DIR = Pl3xMapPlugin.getInstance().getDataFolder().toPath();
     public static Path WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
     public static Path TILES_DIR = WEB_DIR.resolve("tiles");
     public static final Map<UUID, Path> WORLD_DIRS = new HashMap<>();
@@ -40,7 +40,7 @@ public class FileUtil {
     private static FileSystem fileSystem;
 
     public static void reload() {
-        PLUGIN_DIR = Pl3xMap.getInstance().getDataFolder().toPath();
+        PLUGIN_DIR = Pl3xMapPlugin.getInstance().getDataFolder().toPath();
         WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
         TILES_DIR = WEB_DIR.resolve("tiles");
 
@@ -122,7 +122,7 @@ public class FileUtil {
 
     public static void copyFromJar(String source, final Path destination) throws URISyntaxException, IOException {
         if (fileSystem == null) {
-            fileSystem = FileSystems.newFileSystem(Pl3xMap.getInstance().getClass().getResource("").toURI(), Collections.emptyMap());
+            fileSystem = FileSystems.newFileSystem(Pl3xMapPlugin.getInstance().getClass().getResource("").toURI(), Collections.emptyMap());
         }
         final Path jarPath = fileSystem.getPath(source);
         Files.walkFileTree(jarPath, new SimpleFileVisitor<>() {

@@ -1,11 +1,17 @@
-package net.pl3x.map.plugin.util;
+package net.pl3x.map.api;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Objects;
 
-public class Pair<L, R> {
+/**
+ * Data class for holding a pair of non-null objects with generic types.
+ *
+ * @param <L> Left generic type argument
+ * @param <R> Right generic type argument
+ */
+public final class Pair<L, R> {
     private final L left;
     private final R right;
 
@@ -14,10 +20,20 @@ public class Pair<L, R> {
         this.right = right;
     }
 
+    /**
+     * Get the left value
+     *
+     * @return Left value
+     */
     public @NonNull L left() {
         return this.left;
     }
 
+    /**
+     * Get the right value
+     *
+     * @return Right value
+     */
     public @NonNull R right() {
         return this.right;
     }
@@ -35,6 +51,15 @@ public class Pair<L, R> {
         return Objects.hash(this.left, this.right);
     }
 
+    /**
+     * Create a new Pair
+     *
+     * @param left  Left value
+     * @param right Right value
+     * @param <L>   Left generic type
+     * @param <R>   Right generic type
+     * @return new pair
+     */
     public static <L, R> @NonNull Pair<L, R> of(final @NonNull L left, final @NonNull R right) {
         return new Pair<>(left, right);
     }

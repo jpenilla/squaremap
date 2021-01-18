@@ -45,10 +45,10 @@ import java.util.stream.Collectors;
 
 final class MapUpdateListeners {
 
-    private final Pl3xMap plugin;
+    private final Pl3xMapPlugin plugin;
     private final List<Listener> registeredListeners = new ArrayList<>();
 
-    MapUpdateListeners(final @NonNull Pl3xMap plugin) {
+    MapUpdateListeners(final @NonNull Pl3xMapPlugin plugin) {
         this.plugin = plugin;
     }
 

@@ -9,7 +9,7 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.collect.ImmutableList;
-import net.pl3x.map.plugin.Pl3xMap;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.commands.CancelRenderCommand;
 import net.pl3x.map.plugin.command.commands.ConfirmCommand;
 import net.pl3x.map.plugin.command.commands.FullRenderCommand;
@@ -27,7 +27,7 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
 
     public static final CommandMeta.Key<String> INVALID_SENDER_ALTERNATE_COMMAND = CommandMeta.Key.of(String.class, "pl3xmap:invalid_sender_alternate_command");
 
-    public CommandManager(final @NonNull Pl3xMap plugin) throws Exception {
+    public CommandManager(final @NonNull Pl3xMapPlugin plugin) throws Exception {
 
         super(
                 plugin,

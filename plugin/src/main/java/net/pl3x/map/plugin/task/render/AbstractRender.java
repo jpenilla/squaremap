@@ -22,7 +22,7 @@ import net.pl3x.map.plugin.data.Region;
 import net.pl3x.map.plugin.util.BiomeColors;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
-import net.pl3x.map.plugin.util.Pair;
+import net.pl3x.map.api.Pair;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
