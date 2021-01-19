@@ -65,8 +65,9 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         this.start();
         this.setupApi();
 
+        final Key spawnIconKey = Key.of("pl3xmap-spawn_icon");
         try {
-            this.getApi().iconRegistry().register(Key.of("pl3xmap-spawn_icon"), ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
+            this.getApi().iconRegistry().register(spawnIconKey, ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
         } catch (IOException e) {
             Logger.info("Failed to register spawn icon");
         }
@@ -92,14 +93,15 @@ public final class Pl3xMapPlugin extends JavaPlugin {
                 return 0;
             }
 
+            private final MarkerOptions options = MarkerOptions.builder().hoverTooltip("Spawn").build();
+
             @Override
             public @NonNull Collection<Marker> getMarkers() {
                 return Collections.singletonList(Marker.icon(
                         Point.fromLocation(world.bukkit().getSpawnLocation()),
-                        Key.of("pl3xmap-spawn_icon"),
-                        16,
+                        spawnIconKey,
                         16
-                ));
+                ).markerOptions(this.options));
             }
 
         }));
@@ -114,7 +116,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         polyline.markerOptions(MarkerOptions.builder().strokeColor(Color.YELLOW));
 
         final Circle circle = Marker.circle(Point.of(-100, -100), 50);
-        circle.markerOptions(MarkerOptions.builder().strokeColor(Color.PINK).tooltip("Hello world!"));
+        circle.markerOptions(MarkerOptions.builder().strokeColor(Color.PINK).clickTooltip("Hello world!"));
 
         final Polygon polygon = Marker.polygon(Point.of(333, 555), Point.of(123, 456), Point.of(-100, 50));
 

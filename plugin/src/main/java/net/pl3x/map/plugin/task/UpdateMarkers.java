@@ -110,9 +110,13 @@ public final class UpdateMarkers extends BukkitRunnable {
         if (options.fillRule() != defaults.fillRule()) {
             marker.put("fillRule", options.fillRule().toString().toLowerCase(Locale.ENGLISH));
         }
-        final String tooltip = options.tooltip();
-        if (tooltip != null) {
-            marker.put("tooltip", tooltip);
+        final String clickTooltip = options.clickTooltip();
+        if (clickTooltip != null) {
+            marker.put("popup", clickTooltip);
+        }
+        final String hoverTooltip = options.hoverTooltip();
+        if (hoverTooltip != null) {
+            marker.put("tooltip", hoverTooltip);
         }
     }
 

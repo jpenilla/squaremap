@@ -26,7 +26,8 @@ public final class MarkerOptions {
     private final Color fillColor;
     private final double fillOpacity;
     private final FillRule fillRule;
-    private final String tooltip;
+    private final String clickTooltip;
+    private final String hoverTooltip;
 
     private MarkerOptions(
             final boolean stroke,
@@ -37,7 +38,8 @@ public final class MarkerOptions {
             final @Nullable Color fillColor,
             final double fillOpacity,
             final @NonNull FillRule fillRule,
-            final @Nullable String tooltip
+            final @Nullable String clickTooltip,
+            final @Nullable String hoverTooltip
     ) {
         this.stroke = stroke;
         this.strokeColor = strokeColor;
@@ -47,7 +49,8 @@ public final class MarkerOptions {
         this.fillColor = fillColor;
         this.fillOpacity = fillOpacity;
         this.fillRule = fillRule;
-        this.tooltip = tooltip;
+        this.clickTooltip = clickTooltip;
+        this.hoverTooltip = hoverTooltip;
     }
 
     /**
@@ -132,12 +135,25 @@ public final class MarkerOptions {
     }
 
     /**
-     * Get the tooltip
+     * Get the click tooltip
+     *
+     * <p>Will be {@code null} if not set</p>
      *
      * @return tooltip
      */
-    public @Nullable String tooltip() {
-        return this.tooltip;
+    public @Nullable String clickTooltip() {
+        return this.clickTooltip;
+    }
+
+    /**
+     * Get the hover tooltip
+     *
+     * <p>Will be {@code null} if not set</p>
+     *
+     * @return tooltip
+     */
+    public @Nullable String hoverTooltip() {
+        return this.hoverTooltip;
     }
 
     /**
@@ -155,7 +171,8 @@ public final class MarkerOptions {
                 this.fillColor,
                 this.fillOpacity,
                 this.fillRule,
-                this.tooltip
+                this.clickTooltip,
+                this.hoverTooltip
         );
     }
 
@@ -190,7 +207,8 @@ public final class MarkerOptions {
         private Color fillColor = null;
         private double fillOpacity = 0.2;
         private FillRule fillRule = FillRule.EVENODD;
-        private String tooltip = null;
+        private String clickTooltip = null;
+        private String hoverTooltip = null;
 
         private Builder() {
         }
@@ -204,7 +222,8 @@ public final class MarkerOptions {
                 final @Nullable Color fillColor,
                 final double fillOpacity,
                 final @NonNull FillRule fillRule,
-                final @Nullable String tooltip
+                final @Nullable String clickTooltip,
+                final @Nullable String hoverTooltip
         ) {
             this.stroke = stroke;
             this.strokeColor = strokeColor;
@@ -214,7 +233,8 @@ public final class MarkerOptions {
             this.fillColor = fillColor;
             this.fillOpacity = fillOpacity;
             this.fillRule = fillRule;
-            this.tooltip = tooltip;
+            this.clickTooltip = clickTooltip;
+            this.hoverTooltip = hoverTooltip;
         }
 
         /**
@@ -306,13 +326,24 @@ public final class MarkerOptions {
         }
 
         /**
-         * Set the tooltip, accepts HTML
+         * Set the click tooltip, accepts HTML
          *
          * @param tooltip new tooltip
          * @return this builder
          */
-        public @NonNull Builder tooltip(final @Nullable String tooltip) {
-            this.tooltip = tooltip;
+        public @NonNull Builder clickTooltip(final @Nullable String tooltip) {
+            this.clickTooltip = tooltip;
+            return this;
+        }
+
+        /**
+         * Set the hover tooltip, accepts HTML
+         *
+         * @param tooltip new tooltip
+         * @return this builder
+         */
+        public @NonNull Builder hoverTooltip(final @Nullable String tooltip) {
+            this.hoverTooltip = tooltip;
             return this;
         }
 
@@ -331,7 +362,8 @@ public final class MarkerOptions {
                     this.fillColor,
                     this.fillOpacity,
                     this.fillRule,
-                    this.tooltip
+                    this.clickTooltip,
+                    this.hoverTooltip
             );
         }
 
