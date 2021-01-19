@@ -25,7 +25,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkPopulateEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -190,7 +190,7 @@ public class Config {
                 EntityExplodeEvent.class,
                 EntityChangeBlockEvent.class,
                 StructureGrowEvent.class
-        ).forEach(clazz -> eventListenerToggles.put(clazz, getBoolean("settings.event-listeners." + clazz.getSimpleName(), true)));
+        ).forEach(clazz -> eventListenerToggles.put(clazz, getBoolean("settings.event-listeners." + clazz.getSimpleName() + ".enabled", true)));
 
         ImmutableSet.of(
                 BlockFromToEvent.class,
@@ -200,7 +200,13 @@ public class Config {
                 BlockPhysicsEvent.class,
                 BlockPistonExtendEvent.class,
                 BlockPistonRetractEvent.class,
-                ChunkPopulateEvent.class
-        ).forEach(clazz -> eventListenerToggles.put(clazz, getBoolean("settings.event-listeners." + clazz.getSimpleName(), false)));
+                ChunkLoadEvent.class
+        ).forEach(clazz -> eventListenerToggles.put(clazz, getBoolean("settings.event-listeners." + clazz.getSimpleName() + ".enabled", false)));
+    }
+
+    public static boolean CHUNK_LOAD_EVENT_ONLY_NEW_CHUNKS = true;
+
+    private static void specialEventSettings() {
+        CHUNK_LOAD_EVENT_ONLY_NEW_CHUNKS = getBoolean("settings.event-listeners.ChunkLoadEvent.only-new-chunks", true);
     }
 }

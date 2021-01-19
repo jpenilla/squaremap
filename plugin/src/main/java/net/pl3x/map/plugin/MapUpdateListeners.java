@@ -34,7 +34,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkPopulateEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -70,7 +70,7 @@ final class MapUpdateListeners {
 
         this.registerListener(BlockPistonExtendEvent.class, this::handleBlockPistonExtendEvent);
         this.registerListener(BlockPistonRetractEvent.class, this::handleBlockPistonRetractEvent);
-        this.registerListener(ChunkPopulateEvent.class, this::handleChunkPopulateEvent);
+        this.registerListener(ChunkLoadEvent.class, this::handleChunkLoadEvent);
         this.registerListener(FluidLevelChangeEvent.class, this::handleFluidLevelChangeEvent);
         this.registerListener(BlockFromToEvent.class, this::handleBlockFromToEvent);
         this.registerListener(EntityExplodeEvent.class, this::handleEntityExplodeEvent);
@@ -159,9 +159,11 @@ final class MapUpdateListeners {
         this.markLocations(event.getBlock().getWorld(), event.getBlocks().stream().map(Block::getLocation).collect(Collectors.toList()));
     }
 
-    private void handleChunkPopulateEvent(final @NonNull ChunkPopulateEvent event) {
-        final Chunk chunk = event.getChunk();
-        this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())));
+    private void handleChunkLoadEvent(final @NonNull ChunkLoadEvent event) {
+        if (event.isNewChunk() || !Config.CHUNK_LOAD_EVENT_ONLY_NEW_CHUNKS) {
+            final Chunk chunk = event.getChunk();
+            this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())));
+        }
     }
 
     private void handleBlockEvent(final @NonNull BlockEvent blockEvent) {
