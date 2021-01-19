@@ -28,6 +28,7 @@ class World {
             this.player_tracker = json.settings.player_tracker;
             this.zoom = json.settings.zoom;
             this.spawn = json.settings.spawn;
+            P.updateInterval = json.settings.update_interval;
 
             // set center and zoom
             P.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)
@@ -41,15 +42,13 @@ class World {
             // setup background
             document.getElementById("map").style.background = this.getBackground();
 
-            // setup the map tiles layer
+            // setup the map tile layers
+            // we need 2 layers to swap between for seamless refreshing
             if (P.tileLayer != null) {
                 P.map.removeLayer(P.tileLayer);
             }
-            P.tileLayer = L.tileLayer(`tiles/${this.name}/{z}/{x}_{y}.png`, {
-                tileSize: 512,
-                minNativeZoom: 0,
-                maxNativeZoom: this.zoom.max
-            }).addTo(P.map);
+            P.tileLayer1 = this.createTileLayer();
+            P.tileLayer2 = this.createTileLayer();
 
             // force self update with existing player list
             P.playerList.update(Array.from(P.playerList.players.values()));
@@ -60,6 +59,20 @@ class World {
             if (callback != null) {
                 callback(this);
             }
+        });
+    }
+    createTileLayer() {
+        return L.tileLayer(`tiles/${this.name}/{z}/{x}_{y}.png?{rand}`, {
+            tileSize: 512,
+            minNativeZoom: 0,
+            maxNativeZoom: this.zoom.max,
+            rand: function() { 
+                return Math.random(); 
+            }
+        }).addTo(P.map)
+        .addEventListener("load", function() {
+            // when all tiles are loaded, switch to this layer
+            P.switchTileLayer();
         });
     }
     getBackground() {

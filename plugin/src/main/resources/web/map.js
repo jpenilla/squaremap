@@ -13,6 +13,9 @@ class Pl3xMap {
             noWrap: true
         });
 
+        this.currentLayer = 1;
+        this.updateInterval = 60;
+
         this.playersLayer = new L.LayerGroup()
             .setZIndex(1000)
             .addTo(this.map);
@@ -37,8 +40,12 @@ class Pl3xMap {
         // tick players every 1 second
         this.playerList.tick();
         // tick world every 10 seconds
-        if (count % 10 == 0) {
+        if (count % 5 == 0) {
             this.worldList.curWorld.tick();
+        }
+        // refresh map tile layer
+        if (count % this.updateInterval == 0) {
+            this.updateTileLayer();
         }
         setTimeout(() => P.tick(++count), 1000);
     }
@@ -58,6 +65,26 @@ class Pl3xMap {
                 P.tick();
             });
         });
+    }
+    updateTileLayer() {
+        // redraw background tile layer
+        if (this.currentLayer == 1) {
+            P.tileLayer2.redraw();
+        } else {
+            P.tileLayer1.redraw();
+        }
+    }
+    switchTileLayer() {
+        // swap current tile layer
+        if (this.currentLayer == 1) {
+            P.tileLayer1.setZIndex(0);
+            P.tileLayer2.setZIndex(1);
+            this.currentLayer = 2;
+        } else {
+            P.tileLayer1.setZIndex(1);
+            P.tileLayer2.setZIndex(0);
+            this.currentLayer = 1;
+        }
     }
     centerOn(x, z, zoom) {
         this.map.setView(this.unproject(x, z), zoom);
