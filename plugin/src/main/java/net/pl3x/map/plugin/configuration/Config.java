@@ -108,6 +108,16 @@ public class Config {
         return CONFIG.getInt(path, CONFIG.getInt(path));
     }
 
+    private static double getDouble(String path, double def) {
+        CONFIG.addDefault(path, def);
+        return CONFIG.getDouble(path, CONFIG.getDouble(path));
+    }
+
+    private static float getFloat(String path, float def) {
+        CONFIG.addDefault(path, def);
+        return (float) CONFIG.getDouble(path, CONFIG.getDouble(path));
+    }
+
     public static String LANGUAGE_FILE = "lang-en.yml";
     public static boolean DEBUG_MODE = false;
 
@@ -122,6 +132,14 @@ public class Config {
     private static void webDirSettings() {
         WEB_DIR = getString("settings.web-directory.path", WEB_DIR);
         UPDATE_WEB_DIR = getBoolean("settings.web-directory.auto-update", UPDATE_WEB_DIR);
+    }
+
+    public static boolean COMPRESS_IMAGES = true;
+    public static float COMPRESSION_RATIO = 0.0F;
+
+    private void imageQualitySettings() {
+        COMPRESS_IMAGES = getBoolean("settings.image-quality.compress-images", COMPRESS_IMAGES);
+        COMPRESSION_RATIO = getFloat("settings.image-quality.compress-images", COMPRESSION_RATIO);
     }
 
     public static boolean HTTPD_ENABLED = true;

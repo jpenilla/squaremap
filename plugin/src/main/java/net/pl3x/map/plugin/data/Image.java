@@ -2,11 +2,16 @@ package net.pl3x.map.plugin.data;
 
 import net.minecraft.server.v1_16_R3.MathHelper;
 import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,7 +71,21 @@ public class Image {
                     }
                 }
 
-                ImageIO.write(image, "png", file);
+                if (Config.COMPRESS_IMAGES) {
+                    ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
+                    writer.setOutput(ImageIO.createImageOutputStream(new FileOutputStream(file)));
+                    ImageWriteParam param = writer.getDefaultWriteParam();
+                    if (param.canWriteCompressed()) {
+                        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                        if (param.getCompressionType() == null) {
+                            param.setCompressionType(param.getCompressionTypes()[0]);
+                        }
+                        param.setCompressionQuality(Config.COMPRESSION_RATIO);
+                    }
+                    writer.write(null, new IIOImage(image, null, null), param);
+                } else {
+                    ImageIO.write(image, "png", file);
+                }
             } catch (IOException e) {
                 Logger.severe(Lang.LOG_COULD_NOT_SAVE_REGION
                         .replace("{x}", Integer.toString(region.getX()))
