@@ -167,7 +167,7 @@ final class MapUpdateListeners {
     private void handleChunkLoadEvent(final @NonNull ChunkLoadEvent event) {
         if (event.isNewChunk() || !Config.CHUNK_LOAD_EVENT_ONLY_NEW_CHUNKS) {
             final Chunk chunk = event.getChunk();
-            this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())));
+            this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())), true);
         }
     }
 
