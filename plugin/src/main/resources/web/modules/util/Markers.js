@@ -9,10 +9,10 @@ class Marker {
     }
     init() {
         if (this.popup != null) {
-            this.marker.bindPopup(this.popup);
+            this.marker.bindPopup(() => this.popup);
         }
         if (this.tooltip != null) {
-            this.marker.bindTooltip(this.tooltip);
+            this.marker.bindTooltip(() => this.tooltip);
         }
         for (const key in this.opts) {
             this.marker.options[key] = this.opts[key];
