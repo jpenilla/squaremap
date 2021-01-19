@@ -14,6 +14,7 @@ class WorldList {
                 const curWorld = this.parent.curWorld;
                 const name = this.id;
                 if (curWorld.name == name) {
+                    P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
                     return;
                 }
                 P.playerList.clearMarkers();

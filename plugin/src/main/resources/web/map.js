@@ -14,9 +14,9 @@ class Pl3xMap {
         });
 
         this.playersLayer = new L.LayerGroup()
+            .setZIndex(1000)
             .addTo(this.map);
         this.playersLayer.order = 1;
-        this.markerLayers = [];
 
         this.controls = L.control.layers({}, {}, {
             position: 'topleft',
@@ -30,9 +30,17 @@ class Pl3xMap {
 
         this.init();
     }
-    tick() {
-        this.getJSON("tiles/players.json", (json) => P.playerList.update(json.players));
-        setTimeout(() => P.tick(), 1000);
+    tick(count) {
+        if (count === undefined) {
+            count = 0;
+        }
+        // tick players every 1 second
+        this.playerList.tick();
+        // tick world every 10 seconds
+        if (count % 10 == 0) {
+            this.worldList.curWorld.tick();
+        }
+        setTimeout(() => P.tick(++count), 1000);
     }
     init() {
         this.getJSON("tiles/settings.json", (json) => {
@@ -63,7 +71,7 @@ class Pl3xMap {
         return this.map.project(latlng, this.worldList.curWorld.zoom.max);
     }
     pixelsToMeters(num) {
-        return P.unproject(num, 0).lng - P.unproject(0, 0).lng;
+        return this.unproject(num, 0).lng - this.unproject(0, 0).lng;
     }
     createElement(tag, id, parent) {
         const element = document.createElement(tag);

@@ -6,6 +6,11 @@ class PlayerList {
         this.players = new Map();
         P.map.createPane("nameplate").style.zIndex = 1000;
     }
+    tick() {
+        P.getJSON("tiles/players.json", (json) => {
+            this.update(json.players);
+        });
+    }
     showPlayer(link) {
         const uuid = link.id;
         const keys = Array.from(P.playerList.players.keys());
