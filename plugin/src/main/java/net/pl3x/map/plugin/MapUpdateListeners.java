@@ -117,9 +117,9 @@ final class MapUpdateListeners {
         this.markChunk(loc, false);
     }
 
-    private void markChunk(final @NonNull Location loc, final boolean ignoreCeiling) {
+    private void markChunk(final @NonNull Location loc, final boolean skipVisibilityCheck) {
         this.plugin.worldManager().getWorldIfEnabled(loc.getWorld()).ifPresent(mapWorld -> {
-            if (ignoreCeiling || loc.getY() >= loc.getWorld().getHighestBlockYAt(loc) - 10) {
+            if (skipVisibilityCheck || locationVisible(loc)) {
                 mapWorld.chunkModified(new ChunkCoordinate(
                         Numbers.blockToChunk(loc.getBlockX()),
                         Numbers.blockToChunk(loc.getBlockZ())
@@ -130,6 +130,7 @@ final class MapUpdateListeners {
 
     private void markLocations(final @NonNull World world, final @NonNull List<Location> locations) {
         this.plugin.worldManager().getWorldIfEnabled(world).ifPresent(mapWorld -> locations.stream()
+                .filter(MapUpdateListeners::locationVisible)
                 .map(loc -> new ChunkCoordinate(
                         Numbers.blockToChunk(loc.getBlockX()),
                         Numbers.blockToChunk(loc.getBlockZ())
@@ -142,13 +143,17 @@ final class MapUpdateListeners {
         this.plugin.worldManager().getWorldIfEnabled(world).ifPresent(mapWorld ->
                 blockStates.stream()
                         .map(BlockState::getLocation)
-                        .filter(loc -> loc.getY() >= world.getHighestBlockYAt(loc) - 10)
+                        .filter(MapUpdateListeners::locationVisible)
                         .map(loc -> new ChunkCoordinate(
                                 Numbers.blockToChunk(loc.getBlockX()),
                                 Numbers.blockToChunk(loc.getBlockZ())
                         ))
                         .distinct()
                         .forEach(mapWorld::chunkModified));
+    }
+
+    private static boolean locationVisible(final @NonNull Location loc) {
+        return loc.getY() >= loc.getWorld().getHighestBlockYAt(loc) - 10;
     }
 
     private void handleBlockPistonExtendEvent(final @NonNull BlockPistonExtendEvent event) {
@@ -171,7 +176,7 @@ final class MapUpdateListeners {
     }
 
     private void handlePlayerEvent(final @NonNull PlayerEvent playerEvent) {
-        this.markChunk(playerEvent.getPlayer().getLocation());
+        this.markChunk(playerEvent.getPlayer().getLocation(), true);
     }
 
     private void handleStructureGrowEvent(final @NonNull StructureGrowEvent event) {

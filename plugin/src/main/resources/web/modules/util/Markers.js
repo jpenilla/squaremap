@@ -118,7 +118,7 @@ class Icon extends Marker {
         const tooltipAnchor = this.opts.pop("tooltip_anchor", L.point(0, 0));
         this.marker = L.marker(P.toLatLng(point.x, point.z), {
             icon: L.icon({
-                iconUrl: `images/icon/${opts.pop("icon")}`,
+                iconUrl: `images/icon/registered/${opts.pop("icon")}.png`,
                 iconSize: [size.x, size.z],
                 iconAnchor: [anchor.x, anchor.z],
                 popupAnchor: [popupAnchor.x, popupAnchor.z],

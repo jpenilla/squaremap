@@ -26,6 +26,16 @@ public final class Key {
     }
 
     /**
+     * Get a new Key instance for the provided key string.
+     *
+     * @param key string for the key
+     * @return new key
+     */
+    public static @NonNull Key key(final @NonNull String key) {
+        return new Key(key);
+    }
+
+    /**
      * Get the key string for this key
      *
      * @return key string

@@ -3,6 +3,7 @@ package net.pl3x.map.api;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -41,5 +42,12 @@ public interface Pl3xMap {
      * @return optional
      */
     @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull World world);
+
+    /**
+     * Get the registry of images which can be used with icon markers
+     *
+     * @return icon registry
+     */
+    @NonNull Registry<BufferedImage> iconRegistry();
 
 }

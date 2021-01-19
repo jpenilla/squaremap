@@ -1,21 +1,39 @@
 package net.pl3x.map.plugin;
 
+import net.pl3x.map.api.Key;
+import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
+import net.pl3x.map.api.Point;
+import net.pl3x.map.api.SimpleLayerProvider;
+import net.pl3x.map.api.marker.Circle;
+import net.pl3x.map.api.marker.Marker;
+import net.pl3x.map.api.marker.MarkerOptions;
+import net.pl3x.map.api.marker.MultiPolygon;
+import net.pl3x.map.api.marker.Polygon;
+import net.pl3x.map.api.marker.Polyline;
+import net.pl3x.map.api.marker.Rectangle;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.httpd.IntegratedServer;
+import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.ReflectionUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Level;
 
 public final class Pl3xMapPlugin extends JavaPlugin {
@@ -24,6 +42,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private WorldManager worldManager;
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
+    private UpdateMarkers updateMarkers;
     private MapUpdateListeners mapUpdateListeners;
 
     public Pl3xMapPlugin() {
@@ -45,6 +64,73 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         this.start();
         this.setupApi();
+
+        try {
+            this.getApi().iconRegistry().register(Key.of("pl3xmap-spawn_icon"), ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
+        } catch (IOException e) {
+            Logger.info("Failed to register spawn icon");
+        }
+        this.worldManager.worlds().values().forEach(world -> world.layerRegistry().register(Key.key("pl3xmap-spawn_icon"), new LayerProvider() {
+
+            @Override
+            public @NonNull String getLabel() {
+                return "Spawn";
+            }
+
+            @Override
+            public boolean showControls() {
+                return true;
+            }
+
+            @Override
+            public boolean defaultHidden() {
+                return false;
+            }
+
+            @Override
+            public int layerPriority() {
+                return 0;
+            }
+
+            @Override
+            public @NonNull Collection<Marker> getMarkers() {
+                return Collections.singletonList(Marker.icon(
+                        Point.fromLocation(world.bukkit().getSpawnLocation()),
+                        Key.of("pl3xmap-spawn_icon"),
+                        16,
+                        16
+                ));
+            }
+
+        }));
+
+        final SimpleLayerProvider provider = SimpleLayerProvider.builder("My amazing label").build();
+        this.worldManager.getWorld(Bukkit.getWorlds().get(0)).layerRegistry().register(Key.of("myLayer"), provider);
+
+        final Rectangle rect = Marker.rectangle(Point.of(0, 0), Point.of(100, 100));
+        rect.markerOptions(MarkerOptions.builder().fillColor(Color.GREEN).fillOpacity(0.5));
+
+        final Polyline polyline = Marker.polyline(Point.of(100, 100), Point.of(200, 200));
+        polyline.markerOptions(MarkerOptions.builder().strokeColor(Color.YELLOW));
+
+        final Circle circle = Marker.circle(Point.of(-100, -100), 50);
+        circle.markerOptions(MarkerOptions.builder().strokeColor(Color.PINK).tooltip("Hello world!"));
+
+        final Polygon polygon = Marker.polygon(Point.of(333, 555), Point.of(123, 456), Point.of(-100, 50));
+
+        final MultiPolygon multiPolygon = Marker.multiPolygon(
+                MultiPolygon.subPolygon(
+                        new Point[]{Point.of(0, 0), Point.of(0, 100), Point.of(100, 100), Point.of(100, 0)},
+                        new Point[]{Point.of(0, 0), Point.of(0, 25), Point.of(25, 25), Point.of(25, 0)}
+                ),
+                MultiPolygon.subPolygon(Point.of(0, 0), Point.of(-100, -300), Point.of(-50, -500))
+        );
+
+        //provider.addMarker(Key.of("mulitpolygon"), multiPolygon);
+        provider.addMarker(Key.of("rect"), rect);
+        provider.addMarker(Key.of("polyline"), polyline);
+        provider.addMarker(Key.of("circle"), circle);
+        provider.addMarker(Key.of("polygon"), polygon);
     }
 
     @Override
@@ -67,6 +153,9 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         this.worldManager = new WorldManager();
         this.worldManager.start();
+
+        this.updateMarkers = new UpdateMarkers(this);
+        this.updateMarkers.runTaskTimer(this, 20 * 5, 20 * 5); // todo: config
 
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();

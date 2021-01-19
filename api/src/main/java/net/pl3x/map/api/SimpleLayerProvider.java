@@ -1,5 +1,6 @@
 package net.pl3x.map.api;
 
+import net.pl3x.map.api.marker.Marker;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 

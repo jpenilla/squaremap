@@ -1,5 +1,6 @@
 package net.pl3x.map.api;
 
+import net.pl3x.map.api.marker.Marker;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
@@ -39,7 +40,7 @@ public interface LayerProvider {
     int layerPriority();
 
     /**
-     * Get the collection of markers to display
+     * Get the markers to display
      *
      * @return markers
      */
