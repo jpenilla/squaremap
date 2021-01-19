@@ -47,11 +47,19 @@ class PolyLine extends Marker {
     constructor(opts) {
         super(opts);
         const points = this.opts.pop("points");
-        const latlng = [];
+        const outer = [];
         for (let i = 0; i < points.length; i++) {
-            latlng.push(P.unproject(points[i].x, points[i].z));
+            if (Symbol.iterator in Object(points[i])) {
+                const inner = [];
+                for (let j = 0; j < points[i].length; j++) {
+                    inner.push(P.unproject(points[i][j].x, points[i][j].z));
+                }
+                outer.push(inner);
+            } else {
+                outer.push(P.unproject(points[i].x, points[i].z));
+            }
         }
-        this.marker = L.polyline(latlng);
+        this.marker = L.polyline(outer);
         super.init();
     }
 }
