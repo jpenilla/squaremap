@@ -187,7 +187,7 @@ public final class MarkerOptions {
         private int strokeWeight = 3;
         private double strokeOpacity = 1.0;
         private boolean fill = true;
-        private Color fillColor = Color.BLUE;
+        private Color fillColor = null;
         private double fillOpacity = 0.2;
         private FillRule fillRule = FillRule.EVENODD;
         private String tooltip = null;

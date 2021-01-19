@@ -134,10 +134,10 @@ public class Config {
         UPDATE_WEB_DIR = getBoolean("settings.web-directory.auto-update", UPDATE_WEB_DIR);
     }
 
-    public static boolean COMPRESS_IMAGES = true;
+    public static boolean COMPRESS_IMAGES = false;
     public static float COMPRESSION_RATIO = 0.0F;
 
-    private void imageQualitySettings() {
+    private static void imageQualitySettings() {
         COMPRESS_IMAGES = getBoolean("settings.image-quality.compress-images", COMPRESS_IMAGES);
         COMPRESSION_RATIO = getFloat("settings.image-quality.compress-images", COMPRESSION_RATIO);
     }
