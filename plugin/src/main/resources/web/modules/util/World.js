@@ -44,8 +44,11 @@ class World {
 
             // setup the map tile layers
             // we need 2 layers to swap between for seamless refreshing
-            if (P.tileLayer != null) {
-                P.map.removeLayer(P.tileLayer);
+            if (P.tileLayer1 != null) {
+                P.map.removeLayer(P.tileLayer1);
+            }
+            if (P.tileLayer2 != null) {
+                P.map.removeLayer(P.tileLayer2);
             }
             P.tileLayer1 = this.createTileLayer();
             P.tileLayer2 = this.createTileLayer();
