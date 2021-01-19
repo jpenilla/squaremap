@@ -76,7 +76,7 @@ public final class UpdateMarkers extends BukkitRunnable {
         for (final Marker marker : markers) {
             final Map<String, Object> markerMap = new HashMap<>();
             populateOptions(markerMap, marker.markerOptions());
-            serialize(marker.getClass(), marker, markerMap);
+            serialize(marker, markerMap);
             processed.add(markerMap);
         }
 
@@ -120,15 +120,16 @@ public final class UpdateMarkers extends BukkitRunnable {
         }
     }
 
-    private static String toHexString(final @NonNull Color color) {
+    private static @NonNull String toHexString(final @NonNull Color color) {
         return "#" + Integer.toHexString(color.getRGB()).substring(2);
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends Marker> void serialize(final @NonNull Class<? extends Marker> markerClass, final @NonNull T marker, final @NonNull Map<String, Object> destination) {
+    private static <T extends Marker> void serialize(final @NonNull T marker, final @NonNull Map<String, Object> destination) {
+        final Class<? extends Marker> markerClass = marker.getClass();
         final MarkerSerializer<T> markerSerializer = (MarkerSerializer<T>) serializers.get(markerClass);
         if (markerSerializer == null) {
-            throw new IllegalStateException("unknown marker type! no serializer present");
+            throw new IllegalStateException("unknown marker type! no serializer present for " + markerClass.getName());
         }
         markerSerializer.serialize(destination, marker);
     }
