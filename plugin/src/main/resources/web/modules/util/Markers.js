@@ -68,11 +68,27 @@ class Polygon extends Marker {
     constructor(opts) {
         super(opts);
         const points = this.opts.pop("points");
-        const latlng = [];
+        const outer = [];
         for (let i = 0; i < points.length; i++) {
-            latlng.push(P.unproject(points[i].x, points[i].z));
+            if (Symbol.iterator in Object(points[i])) {
+                const inner = [];
+                for (let j = 0; j < points[i].length; j++) {
+                    if (Symbol.iterator in Object(points[i][j])) {
+                        const inner2 = [];
+                        for (let k = 0; k < points[i][j].length; k++) {
+                            inner2.push(P.unproject(points[i][j][k].x, points[i][j][k].z));
+                        }
+                        inner.push(inner2);
+                    } else {
+                        inner.push(P.unproject(points[i][j].x, points[i][j].z));
+                    }
+                }
+                outer.push(inner);
+            } else {
+                outer.push(P.unproject(points[i].x, points[i].z));
+            }
         }
-        this.marker = L.polygon(latlng);
+        this.marker = L.polygon(outer);
         super.init();
     }
 }
