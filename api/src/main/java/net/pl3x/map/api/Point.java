@@ -59,22 +59,12 @@ public final class Point {
     }
 
     /**
-     * Get a new point from a Bukkit {@link Location}. Uses precise location
-     *
-     * @param location location
-     * @return point
-     */
-    public static @NonNull Point fromLocation(final @NonNull Location location) {
-        return new Point(location.getX(), location.getZ());
-    }
-
-    /**
      * Get a new point from a Bukkit {@link Location}. Uses block location
      *
      * @param location location
      * @return point
      */
-    public static @NonNull Point fromBlockLocation(final @NonNull Location location) {
+    public static @NonNull Point fromLocation(final @NonNull Location location) {
         return new Point(location.getBlockX(), location.getBlockZ());
     }
 
