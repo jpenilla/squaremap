@@ -200,7 +200,7 @@ public final class UpdateMarkers extends BukkitRunnable {
         });
     }
 
-    private static @NonNull List<List<Map<String, Double>>> serializePoints(final @NonNull Stream<Point[]> stream) {
+    private static @NonNull List<List<Map<String, Integer>>> serializePoints(final @NonNull Stream<Point[]> stream) {
         return stream.map(pointArray ->
                 Arrays.stream(pointArray)
                         .map(point -> toMap(point))
@@ -213,7 +213,7 @@ public final class UpdateMarkers extends BukkitRunnable {
         void serialize(@NonNull Map<String, Object> destination, @NonNull T marker);
     }
 
-    private static @NonNull Map<String, Double> toMap(final @NonNull Point point) {
+    private static @NonNull Map<String, Integer> toMap(final @NonNull Point point) {
         return Map.of("x", point.x(), "z", point.z());
     }
 

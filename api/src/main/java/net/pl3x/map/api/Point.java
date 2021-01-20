@@ -2,6 +2,7 @@ package net.pl3x.map.api;
 
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Objects;
 
@@ -10,10 +11,10 @@ import java.util.Objects;
  */
 public final class Point {
 
-    private final double x;
-    private final double z;
+    private final int x;
+    private final int z;
 
-    private Point(double x, double z) {
+    private Point(final int x, final int z) {
         this.x = x;
         this.z = z;
     }
@@ -23,7 +24,7 @@ public final class Point {
      *
      * @return x
      */
-    public double x() {
+    public int x() {
         return this.x;
     }
 
@@ -32,7 +33,7 @@ public final class Point {
      *
      * @return z
      */
-    public double z() {
+    public int z() {
         return this.z;
     }
 
@@ -43,7 +44,7 @@ public final class Point {
      * @param z z position
      * @return point
      */
-    public static @NonNull Point of(final double x, final double z) {
+    public static @NonNull Point of(final int x, final int z) {
         return new Point(x, z);
     }
 
@@ -54,7 +55,7 @@ public final class Point {
      * @param z z position
      * @return point
      */
-    public static @NonNull Point point(final double x, final double z) {
+    public static @NonNull Point point(final int x, final int z) {
         return new Point(x, z);
     }
 
@@ -65,15 +66,15 @@ public final class Point {
      * @return point
      */
     public static @NonNull Point fromLocation(final @NonNull Location location) {
-        return new Point(location.getBlockX(), location.getBlockZ());
+        return point(location.getBlockX(), location.getBlockZ());
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Point that = (Point) o;
-        return Double.compare(that.x, this.x) == 0 && Double.compare(that.z, this.z) == 0;
+        return that.x == this.x && that.z == this.z;
     }
 
     @Override
