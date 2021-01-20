@@ -63,7 +63,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         } catch (IOException e) {
             Logger.log().log(Level.WARNING, "Failed to register spawn icon", e);
         }
-        this.worldManager.worlds().values().forEach(world -> world.layerRegistry().register(Key.key("pl3xmap-spawn_icon"), new LayerProvider() {
+        this.worldManager.worlds().values().forEach(world -> world.layerRegistry().register(spawnIconKey, new LayerProvider() {
 
             @Override
             public @NonNull String getLabel() {
@@ -82,6 +82,11 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
             @Override
             public int layerPriority() {
+                return 0;
+            }
+
+            @Override
+            public int zIndex() {
                 return 0;
             }
 

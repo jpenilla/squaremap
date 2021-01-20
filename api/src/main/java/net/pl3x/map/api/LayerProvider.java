@@ -18,26 +18,35 @@ public interface LayerProvider {
     @NonNull String getLabel();
 
     /**
-     * Whether or not to show this marker in the control box
+     * Whether or not to show this layer in the control box
      *
      * @return boolean
      */
     boolean showControls();
 
     /**
-     * Whether this marker is hidden by default in the control box
+     * Whether this layer is hidden by default in the control box
      *
      * @return boolean
      */
     boolean defaultHidden();
 
     /**
-     * 0-indexed order for this marker in the control box
+     * 0-indexed order for this layer in the control box
      * <p>Falls back to alpha-numeric ordering based on name if there are order conflicts</p>
      *
      * @return arbitrary number
      */
     int layerPriority();
+
+    /**
+     * 0-indexed z-index for this layer. Used in determining what layers are visually on top of other layers.
+     *
+     * <p>Falls back to alpha-numeric ordering based on name if there are order conflicts</p>
+     *
+     * @return arbitrary number
+     */
+    int zIndex();
 
     /**
      * Get the markers to display

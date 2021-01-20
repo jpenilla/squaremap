@@ -20,12 +20,14 @@ public final class SimpleLayerProvider implements LayerProvider {
     private final boolean defaultHidden;
     private final boolean showControls;
     private final int layerPriority;
+    private final int zIndex;
 
-    private SimpleLayerProvider(final @NonNull Supplier<String> labelSupplier, final boolean defaultHidden, final boolean showControls, final int layerPriority) {
+    private SimpleLayerProvider(final @NonNull Supplier<String> labelSupplier, final boolean defaultHidden, final boolean showControls, final int layerPriority, final int zIndex) {
         this.labelSupplier = labelSupplier;
         this.defaultHidden = defaultHidden;
         this.showControls = showControls;
         this.layerPriority = layerPriority;
+        this.zIndex = zIndex;
     }
 
     /**
@@ -116,6 +118,11 @@ public final class SimpleLayerProvider implements LayerProvider {
     }
 
     @Override
+    public int zIndex() {
+        return this.zIndex;
+    }
+
+    @Override
     public @NonNull Collection<Marker> getMarkers() {
         return this.markers.values();
     }
@@ -129,6 +136,7 @@ public final class SimpleLayerProvider implements LayerProvider {
         private boolean defaultHidden = false;
         private boolean showControls = true;
         private int layerPriority = 99;
+        private int zIndex = 99;
 
         private Builder(final @NonNull Supplier<String> labelSupplier) {
             this.labelSupplier = labelSupplier;
@@ -168,12 +176,23 @@ public final class SimpleLayerProvider implements LayerProvider {
         }
 
         /**
+         * Set the z-index for this layer (default 99 if unset), see {@link LayerProvider#zIndex()}
+         *
+         * @param zIndex new z-index
+         * @return this builder
+         */
+        public @NonNull Builder zIndex(final int zIndex) {
+            this.zIndex = zIndex;
+            return this;
+        }
+
+        /**
          * Build a {@link SimpleLayerProvider} instance from the current state of this builder
          *
          * @return the built instance
          */
         public @NonNull SimpleLayerProvider build() {
-            return new SimpleLayerProvider(this.labelSupplier, this.defaultHidden, this.showControls, this.layerPriority);
+            return new SimpleLayerProvider(this.labelSupplier, this.defaultHidden, this.showControls, this.layerPriority, this.zIndex);
         }
 
     }
