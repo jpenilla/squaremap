@@ -6,26 +6,27 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Polygon extends Marker {
+/**
+ * Polygon marker
+ */
+public final class Polygon extends Marker implements IPolygon {
 
-    private Point[] mainPolygon;
-    private final List<Point[]> negativeSpace;
+    private final List<Point> mainPolygon;
+    private final List<List<Point>> negativeSpace;
 
-    Polygon(final @NonNull Point @NonNull [] points, final @NonNull List<Point @NonNull []> negativeSpace) {
-        this.mainPolygon = points;
+    Polygon(final @NonNull List<Point> points, final @NonNull List<List<Point>> negativeSpace) {
+        this.mainPolygon = new ArrayList<>(points);
         this.negativeSpace = new ArrayList<>(negativeSpace);
     }
 
-    public @NonNull List<Point @NonNull []> negativeSpace() {
+    @Override
+    public @NonNull List<List<Point>> negativeSpace() {
         return this.negativeSpace;
     }
 
-    public @NonNull Point @NonNull [] mainPolygon() {
+    @Override
+    public @NonNull List<Point> mainPolygon() {
         return this.mainPolygon;
-    }
-
-    public void mainPolygon(final @NonNull Point @NonNull ... mainPolygon) {
-        this.mainPolygon = mainPolygon;
     }
 
 }

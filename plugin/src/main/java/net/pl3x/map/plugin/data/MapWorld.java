@@ -3,8 +3,10 @@ package net.pl3x.map.plugin.data;
 import net.minecraft.server.v1_16_R3.World;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Registry;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.api.LayerRegistry;
 import net.pl3x.map.plugin.configuration.WorldConfig;
+import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
@@ -27,6 +29,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final LayerRegistry layerRegistry = new LayerRegistry();
+    private final UpdateMarkers updateMarkersTask;
 
     private AbstractRender activeRender = null;
     private ScheduledFuture<?> backgroundRender = null;
@@ -35,6 +38,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         this.bukkitWorld = world;
         this.world = ((CraftWorld) world).getHandle();
         this.startBackgroundRender();
+        this.updateMarkersTask = new UpdateMarkers(this);
+        this.updateMarkersTask.runTaskTimer(Pl3xMapPlugin.getInstance(), 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
     }
 
     private void startBackgroundRender() {
@@ -122,6 +127,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     }
 
     public void shutdown() {
+        this.updateMarkersTask.cancel();
         if (this.isRendering()) {
             this.stopRender();
         }

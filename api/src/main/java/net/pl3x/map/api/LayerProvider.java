@@ -20,16 +20,24 @@ public interface LayerProvider {
     /**
      * Whether or not to show this layer in the control box
      *
+     * <p>Default implementation always returns {@code true}</p>
+     *
      * @return boolean
      */
-    boolean showControls();
+    default boolean showControls() {
+        return true;
+    }
 
     /**
      * Whether this layer is hidden by default in the control box
      *
+     * <p>Default implementation always returns {@code false}</p>
+     *
      * @return boolean
      */
-    boolean defaultHidden();
+    default boolean defaultHidden() {
+        return false;
+    }
 
     /**
      * 0-indexed order for this layer in the control box
@@ -44,9 +52,13 @@ public interface LayerProvider {
      *
      * <p>Falls back to alpha-numeric ordering based on name if there are order conflicts</p>
      *
+     * <p>Default implementation returns {@link #layerPriority()}</p>
+     *
      * @return arbitrary number
      */
-    int zIndex();
+    default int zIndex() {
+        return this.layerPriority();
+    }
 
     /**
      * Get the markers to display

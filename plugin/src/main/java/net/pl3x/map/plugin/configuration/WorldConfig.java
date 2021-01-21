@@ -130,4 +130,10 @@ public class WorldConfig {
         PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", PLAYER_TRACKER_HIDE_INVISIBLE);
         PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", PLAYER_TRACKER_HIDE_SPECTATORS);
     }
+
+    public int MARKER_API_UPDATE_INTERVAL_SECONDS = 15;
+
+    private void markerApiSettings() {
+        MARKER_API_UPDATE_INTERVAL_SECONDS = getInt("map.markers.update-interval-seconds", MARKER_API_UPDATE_INTERVAL_SECONDS);
+    }
 }

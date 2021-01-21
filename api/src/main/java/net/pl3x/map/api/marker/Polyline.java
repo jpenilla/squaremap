@@ -3,6 +3,8 @@ package net.pl3x.map.api.marker;
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -10,19 +12,19 @@ import java.util.List;
  */
 public final class Polyline extends Marker {
 
-    private Point[][] points;
+    private final List<List<Point>> points;
 
-    Polyline(final @NonNull Point @NonNull [] @NonNull [] points) {
-        this.points = points;
+    Polyline(final @NonNull List<List<Point>> points) {
+        this.points = new ArrayList<>(points);
     }
 
     /**
-     * Get the points that make up this polyline. The inner arrays each represent a line, with the outer array being the array of lines.
-     * If only a single line is represented by this polyline, the outer array will be of size 1.
+     * Get the points that make up this polyline. The inner lists each represent a line, with the outer list being the list of lines.
+     * If only a single line is represented by this polyline, the outer list will only have one element.
      *
      * @return points
      */
-    public @NonNull Point @NonNull [] @NonNull [] points() {
+    public @NonNull List<List<Point>> points() {
         return this.points;
     }
 
@@ -32,7 +34,7 @@ public final class Polyline extends Marker {
      * @param points new points
      */
     public void points(final @NonNull List<Point> points) {
-        this.points(points.toArray(Point[]::new));
+        this.multiPoints(List.of(points));
     }
 
     /**
@@ -41,7 +43,7 @@ public final class Polyline extends Marker {
      * @param points new points
      */
     public void points(final @NonNull Point @NonNull ... points) {
-        this.multiPoints(new Point[][]{points});
+        this.points(Arrays.asList(points));
     }
 
     /**
@@ -50,7 +52,8 @@ public final class Polyline extends Marker {
      * @param points new points
      */
     public void multiPoints(final @NonNull List<List<Point>> points) {
-        this.multiPoints(points.stream().map(l -> l.toArray(Point[]::new)).toArray(Point[][]::new));
+        this.points.clear();
+        this.points.addAll(points);
     }
 
     /**
@@ -58,8 +61,10 @@ public final class Polyline extends Marker {
      *
      * @param points new points
      */
-    public void multiPoints(final @NonNull Point @NonNull [] @NonNull ... points) {
-        this.points = points;
+    @SafeVarargs
+    public final void multiPoints(final @NonNull List<Point> @NonNull ... points) {
+        this.points.clear();
+        this.points.addAll(Arrays.asList(points));
     }
 
 }

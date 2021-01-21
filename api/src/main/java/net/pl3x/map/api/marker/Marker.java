@@ -59,7 +59,7 @@ public abstract class Marker {
      * @return new polyline
      */
     public static @NonNull Polyline polyline(final @NonNull List<Point> points) {
-        return polyline(points.toArray(Point[]::new));
+        return multiPolyline(List.of(points));
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class Marker {
      * @return new polyline
      */
     public static @NonNull Polyline polyline(final @NonNull Point @NonNull ... points) {
-        return new Polyline(new Point[][]{points});
+        return polyline(Arrays.asList(points));
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class Marker {
      * @return new polyline
      */
     public static @NonNull Polyline multiPolyline(final @NonNull List<List<Point>> points) {
-        return multiPolyline(points.stream().map(l -> l.toArray(Point[]::new)).toArray(Point[][]::new));
+        return new Polyline(points);
     }
 
     /**
@@ -88,8 +88,9 @@ public abstract class Marker {
      * @param points points
      * @return new polyline
      */
-    public static @NonNull Polyline multiPolyline(final @NonNull Point @NonNull [] @NonNull ... points) {
-        return new Polyline(points);
+    @SafeVarargs
+    public static @NonNull Polyline multiPolyline(final @NonNull List<Point> @NonNull ... points) {
+        return multiPolyline(Arrays.asList(points));
     }
     // End polyline factory methods
 
@@ -126,12 +127,12 @@ public abstract class Marker {
     /**
      * Create a new icon marker
      *
-     * @param point location for this marker
+     * @param point         location for this marker
      * @param tooltipAnchor tooltip anchor, see {@link Icon#tooltipAnchor()}
-     * @param anchor icon anchor, see {@link Icon#anchor()}
-     * @param image image key, must be registered with the {@link Pl3xMap#iconRegistry() icon registry}.
-     * @param sizeX x size
-     * @param sizeZ z size
+     * @param anchor        icon anchor, see {@link Icon#anchor()}
+     * @param image         image key, must be registered with the {@link Pl3xMap#iconRegistry() icon registry}.
+     * @param sizeX         x size
+     * @param sizeZ         z size
      * @return new icon
      */
     public static @NonNull Icon icon(
@@ -168,7 +169,7 @@ public abstract class Marker {
      *
      * @param point location for this marker
      * @param image image key, must be registered with the {@link Pl3xMap#iconRegistry() icon registry}.
-     * @param size size to use for X and Z size
+     * @param size  size to use for X and Z size
      * @return new icon
      */
     public static @NonNull Icon icon(
@@ -181,38 +182,71 @@ public abstract class Marker {
     // End icon factory methods
 
     // Begin multipolygon factory methods
+
+    /**
+     * Create a new multi polygon marker from parts
+     *
+     * @param polygons parts
+     * @return new multi polygon
+     */
     public static @NonNull MultiPolygon multiPolygon(final @NonNull MultiPolygon.MultiPolygonPart @NonNull ... polygons) {
         return multiPolygon(Arrays.asList(polygons));
     }
 
+    /**
+     * Create a new multi polygon marker from parts
+     *
+     * @param polygons parts
+     * @return new multi polygon
+     */
     public static @NonNull MultiPolygon multiPolygon(final @NonNull List<MultiPolygon.MultiPolygonPart> polygons) {
         return new MultiPolygon(polygons);
     }
     // End multipolygon factory methods
 
     // Begin polygon factory methods
+
+    /**
+     * Create a new polygon marker from points
+     *
+     * @param points points
+     * @return new polygon
+     */
     public static @NonNull Polygon polygon(final @NonNull Point @NonNull ... points) {
+        return polygon(Arrays.asList(points));
+    }
+
+    /**
+     * Create a new polygon marker from points
+     *
+     * @param points points
+     * @return new polygon
+     */
+    public static @NonNull Polygon polygon(final @NonNull List<Point> points) {
         return polygon(points, Collections.emptyList());
     }
 
-    public static @NonNull Polygon polygon(final @NonNull List<Point> points) {
-        return polygon(points.toArray(Point[]::new));
-    }
-
-    public static @NonNull Polygon polygon(final @NonNull Point @NonNull [] mainPolygon, final @NonNull List<Point[]> negativeSpace) {
+    /**
+     * Create a new polygon marker from a main polygon, and a list of polygons which make up the negative space
+     *
+     * @param mainPolygon   main polygon
+     * @param negativeSpace negative space polygons
+     * @return new polygon
+     */
+    public static @NonNull Polygon polygon(final @NonNull List<Point> mainPolygon, final @NonNull List<List<Point>> negativeSpace) {
         return new Polygon(mainPolygon, negativeSpace);
     }
 
-    public static @NonNull Polygon polygon(final @NonNull Point @NonNull [] mainPolygon, final @NonNull Point @NonNull [] @NonNull ... negativeSpace) {
+    /**
+     * Create a new polygon marker from a main polygon, and a list of polygons which make up the negative space
+     *
+     * @param mainPolygon   main polygon
+     * @param negativeSpace negative space polygons
+     * @return new polygon
+     */
+    @SafeVarargs
+    public static @NonNull Polygon polygon(final @NonNull List<Point> mainPolygon, final @NonNull List<Point> @NonNull ... negativeSpace) {
         return polygon(mainPolygon, Arrays.asList(negativeSpace));
-    }
-
-    public static @NonNull Polygon polygon(final @NonNull List<Point> mainPolygon, final @NonNull Point @NonNull [] @NonNull ... negativeSpace) {
-        return polygon(mainPolygon.toArray(Point[]::new), Arrays.asList(negativeSpace));
-    }
-
-    public static @NonNull Polygon polygon(final @NonNull List<Point> mainPolygon, final @NonNull List<List<Point>> negativeSpace) {
-        return polygon(mainPolygon, negativeSpace.stream().map(list -> list.toArray(Point[]::new)).toArray(Point[][]::new));
     }
     // End polygon factory methods
 

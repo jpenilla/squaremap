@@ -34,7 +34,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private WorldManager worldManager;
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
-    private UpdateMarkers updateMarkers;
     private MapUpdateListeners mapUpdateListeners;
 
     public Pl3xMapPlugin() {
@@ -124,9 +123,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         this.worldManager = new WorldManager();
         this.worldManager.start();
-
-        this.updateMarkers = new UpdateMarkers(this);
-        this.updateMarkers.runTaskTimer(this, 20 * 5, 20 * 5); // todo: config
 
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();

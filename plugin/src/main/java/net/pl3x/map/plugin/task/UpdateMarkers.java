@@ -14,8 +14,7 @@ import net.pl3x.map.api.marker.MultiPolygon;
 import net.pl3x.map.api.marker.Polygon;
 import net.pl3x.map.api.marker.Polyline;
 import net.pl3x.map.api.marker.Rectangle;
-import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.WorldManager;
+import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -23,7 +22,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.awt.Color;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,40 +33,36 @@ import java.util.stream.Stream;
 
 public final class UpdateMarkers extends BukkitRunnable {
 
-    private final Pl3xMapPlugin plugin;
-    private final WorldManager worldManager;
+    private final MapWorld mapWorld;
     private final Gson gson = new Gson();
 
-    public UpdateMarkers(final @NonNull Pl3xMapPlugin plugin) {
-        this.plugin = plugin;
-        this.worldManager = plugin.worldManager();
+    public UpdateMarkers(final @NonNull MapWorld mapWorld) {
+        this.mapWorld = mapWorld;
     }
 
     @Override
     public void run() {
-        this.worldManager.worlds().values().forEach(enabledWorld -> {
-            final Registry<LayerProvider> layerRegistry = enabledWorld.layerRegistry();
+        final Registry<LayerProvider> layerRegistry = this.mapWorld.layerRegistry();
 
-            List<Map<String, Object>> layers = new ArrayList<>();
-            layerRegistry.entries().forEach(registeredLayer -> {
-                final LayerProvider provider = registeredLayer.right();
-                final Key key = registeredLayer.left();
+        List<Map<String, Object>> layers = new ArrayList<>();
+        layerRegistry.entries().forEach(registeredLayer -> {
+            final LayerProvider provider = registeredLayer.right();
+            final Key key = registeredLayer.left();
 
-                final Map<String, Object> layerMap = new HashMap<>();
-                layerMap.put("id", key.getKey());
-                layerMap.put("name", provider.getLabel());
-                layerMap.put("control", provider.showControls());
-                layerMap.put("hide", provider.defaultHidden());
-                layerMap.put("order", provider.layerPriority());
-                layerMap.put("z_index", provider.zIndex());
-                layerMap.put("markers", this.serializeMarkers(ImmutableList.copyOf(provider.getMarkers())));
+            final Map<String, Object> layerMap = new HashMap<>();
+            layerMap.put("id", key.getKey());
+            layerMap.put("name", provider.getLabel());
+            layerMap.put("control", provider.showControls());
+            layerMap.put("hide", provider.defaultHidden());
+            layerMap.put("order", provider.layerPriority());
+            layerMap.put("z_index", provider.zIndex());
+            layerMap.put("markers", this.serializeMarkers(ImmutableList.copyOf(provider.getMarkers())));
 
-                layers.add(layerMap);
-            });
-
-            final Path file = FileUtil.getWorldFolder(enabledWorld.bukkit()).resolve("markers.json");
-            FileUtil.write(gson.toJson(layers), file);
+            layers.add(layerMap);
         });
+
+        final Path file = FileUtil.getWorldFolder(this.mapWorld.bukkit()).resolve("markers.json");
+        FileUtil.write(gson.toJson(layers), file);
     }
 
     private @NonNull List<Map<String, Object>> serializeMarkers(final @NonNull Collection<Marker> markers) {
@@ -145,12 +139,12 @@ public final class UpdateMarkers extends BukkitRunnable {
         register(Polyline.class, (destination, line) -> {
             destination.put("type", "polyline");
             final Object points;
-            if (line.points().length == 1) {
-                points = Arrays.stream(line.points()[0])
+            if (line.points().size() == 1) {
+                points = line.points().get(0).stream()
                         .map(point -> toMap(point))
                         .collect(Collectors.toList());
             } else {
-                points = serializePoints(Arrays.stream(line.points()));
+                points = serializePoints(line.points().stream());
             }
             destination.put("points", points);
         });
@@ -171,7 +165,7 @@ public final class UpdateMarkers extends BukkitRunnable {
 
         register(Polygon.class, (destination, polygon) -> {
             destination.put("type", "polygon");
-            final List<Point[]> list = new ArrayList<>(Collections.singleton(polygon.mainPolygon()));
+            final List<List<Point>> list = new ArrayList<>(Collections.singleton(polygon.mainPolygon()));
             list.addAll(polygon.negativeSpace());
             destination.put(
                     "points",
@@ -184,7 +178,7 @@ public final class UpdateMarkers extends BukkitRunnable {
             destination.put(
                     "points",
                     multiPolygon.subPolygons().stream().map(subPoly -> {
-                        final List<Point[]> list = new ArrayList<>(Collections.singleton(subPoly.mainPolygon()));
+                        final List<List<Point>> list = new ArrayList<>(Collections.singleton(subPoly.mainPolygon()));
                         list.addAll(subPoly.negativeSpace());
                         return serializePoints(list.stream());
                     }).collect(Collectors.toList())
@@ -201,9 +195,9 @@ public final class UpdateMarkers extends BukkitRunnable {
         });
     }
 
-    private static @NonNull List<List<Map<String, Integer>>> serializePoints(final @NonNull Stream<Point[]> stream) {
-        return stream.map(pointArray ->
-                Arrays.stream(pointArray)
+    private static @NonNull List<List<Map<String, Integer>>> serializePoints(final @NonNull Stream<List<Point>> stream) {
+        return stream.map(points ->
+                points.stream()
                         .map(point -> toMap(point))
                         .collect(Collectors.toList())
         ).collect(Collectors.toList());
