@@ -1,5 +1,5 @@
 import { Player } from "./util/Player.js";
-import { P } from '../map.js';
+import { P } from './Pl3xMap.js';
 
 class PlayerList {
     constructor() {
@@ -18,7 +18,7 @@ class PlayerList {
             const player = P.playerList.players.get(keys[i]);
             if (uuid == player.uuid && player.world != world) {
                 P.worldList.showWorld(player.world, function () {
-                    P.map.panTo(P.unproject(player.x, player.z));
+                    P.map.panTo(P.toLatLng(player.x, player.z));
                 });
             }
         }

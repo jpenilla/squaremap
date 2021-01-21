@@ -1,4 +1,4 @@
-import { P } from '../../map.js';
+import { P } from '../Pl3xMap.js';
 
 class Marker {
     constructor(opts) {
@@ -41,7 +41,7 @@ class Rectangle extends Marker {
     constructor(opts) {
         super(opts);
         const points = this.opts.pop("points");
-        this.marker = L.rectangle([P.unproject(points[0].x, points[0].z), P.unproject(points[1].x, points[1].z)]);
+        this.marker = L.rectangle([P.toLatLng(points[0].x, points[0].z), P.toLatLng(points[1].x, points[1].z)]);
         super.init();
     }
 }
@@ -55,11 +55,11 @@ class PolyLine extends Marker {
             if (Symbol.iterator in Object(points[i])) {
                 const inner = [];
                 for (let j = 0; j < points[i].length; j++) {
-                    inner.push(P.unproject(points[i][j].x, points[i][j].z));
+                    inner.push(P.toLatLng(points[i][j].x, points[i][j].z));
                 }
                 outer.push(inner);
             } else {
-                outer.push(P.unproject(points[i].x, points[i].z));
+                outer.push(P.toLatLng(points[i].x, points[i].z));
             }
         }
         this.marker = L.polyline(outer);
@@ -79,16 +79,16 @@ class Polygon extends Marker {
                     if (Symbol.iterator in Object(points[i][j])) {
                         const inner2 = [];
                         for (let k = 0; k < points[i][j].length; k++) {
-                            inner2.push(P.unproject(points[i][j][k].x, points[i][j][k].z));
+                            inner2.push(P.toLatLng(points[i][j][k].x, points[i][j][k].z));
                         }
                         inner.push(inner2);
                     } else {
-                        inner.push(P.unproject(points[i][j].x, points[i][j].z));
+                        inner.push(P.toLatLng(points[i][j].x, points[i][j].z));
                     }
                 }
                 outer.push(inner);
             } else {
-                outer.push(P.unproject(points[i].x, points[i].z));
+                outer.push(P.toLatLng(points[i].x, points[i].z));
             }
         }
         this.marker = L.polygon(outer);
@@ -101,7 +101,7 @@ class Circle extends Marker {
         super(opts);
         const center = this.opts.pop("center");
         const radius = this.opts.pop("radius");
-        this.marker = L.circle(P.unproject(center.x, center.z), {
+        this.marker = L.circle(P.toLatLng(center.x, center.z), {
             radius: P.pixelsToMeters(radius)
         });
         super.init();
@@ -116,7 +116,7 @@ class Icon extends Marker {
         const anchor = this.opts.pop("anchor");
         const popupAnchor = this.opts.pop("popup_anchor", L.point(0, 0));
         const tooltipAnchor = this.opts.pop("tooltip_anchor", L.point(0, 0));
-        this.marker = L.marker(P.unproject(point.x, point.z), {
+        this.marker = L.marker(P.toLatLng(point.x, point.z), {
             icon: L.icon({
                 iconUrl: `images/icon/${opts.pop("icon")}`,
                 iconSize: [size.x, size.z],

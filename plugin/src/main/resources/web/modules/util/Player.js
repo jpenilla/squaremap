@@ -1,4 +1,4 @@
-import { P } from '../../map.js';
+import { P } from '../Pl3xMap.js';
 
 class Player {
     constructor(player) {
@@ -7,7 +7,7 @@ class Player {
         this.world = player.world;
         this.x = 0;
         this.z = 0;
-        this.marker = L.marker(P.unproject(player.x, player.z), {
+        this.marker = L.marker(P.toLatLng(player.x, player.z), {
             icon: L.icon({
                 iconUrl: 'images/icon/player.png',
                 iconSize: [17, 16],
@@ -36,7 +36,7 @@ class Player {
         this.z = player.z;
         if (P.worldList.curWorld.name == player.world) {
             this.marker.addTo(P.playersLayer);
-            const latlng = P.unproject(player.x, player.z);
+            const latlng = P.toLatLng(player.x, player.z);
             if (!this.marker.getLatLng().equals(latlng)) {
                 this.marker.setLatLng(latlng);
             }

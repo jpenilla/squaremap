@@ -1,4 +1,4 @@
-import { P } from '../../map.js';
+import { P } from '../Pl3xMap.js';
 
 class Fieldset {
     constructor(id, title) {

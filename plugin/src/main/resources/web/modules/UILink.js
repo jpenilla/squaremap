@@ -1,4 +1,4 @@
-import { P } from '../map.js';
+import { P } from './Pl3xMap.js';
 
 class UILink {
     constructor() {
@@ -16,7 +16,7 @@ class UILink {
             update: function() {
                 const url = P.worldList.curWorld == null ? "" : P.getUrlFromView();
                 //P.updateBrowserUrl(url); // this spams browser history
-                this._link.innerHTML = "<a href='" + url + "'><img src='images/clear.png'/></a>";
+                this._link.innerHTML = `<a href='${url}'><img src='images/clear.png'/></a>`;
             }
         });
         this.link = new Link();

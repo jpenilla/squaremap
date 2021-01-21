@@ -4,13 +4,16 @@ import io.undertow.Undertow;
 import io.undertow.UndertowLogger;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
+import io.undertow.util.ETag;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.util.FileUtil;
 
-import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 
 public class IntegratedServer {
     private static Undertow server;
@@ -22,9 +25,19 @@ public class IntegratedServer {
         }
 
         try {
-            Path path = Paths.get(FileUtil.WEB_DIR.toFile().getAbsolutePath());
-            PathResourceManager prm = new PathResourceManager(path);
-            ResourceHandler handler = new ResourceHandler(prm, exchange -> {
+            ResourceHandler handler = new ResourceHandler(PathResourceManager.builder()
+                    .setBase(Paths.get(FileUtil.WEB_DIR.toFile().getAbsolutePath()))
+                    .setETagFunction((path) -> {
+                        try {
+                            BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+                            long time = attr.lastModifiedTime().toMillis();
+                            return new ETag(false, Long.toString(time));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    })
+                    .build(), exchange -> {
                 String url = exchange.getRelativePath();
                 if (url.startsWith("/tiles") && url.endsWith(".png")) {
                     exchange.setStatusCode(200);

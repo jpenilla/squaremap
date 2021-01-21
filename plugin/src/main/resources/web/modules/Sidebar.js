@@ -1,6 +1,6 @@
 import { Pin } from "./util/Pin.js";
 import { Fieldset } from "./util/Fieldset.js";
-import { P } from '../map.js';
+import { P } from './Pl3xMap.js';
 
 class Sidebar {
     constructor(pinned) {

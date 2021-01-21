@@ -1,8 +1,8 @@
-import { Sidebar } from "./modules/Sidebar.js";
-import { PlayerList } from "./modules/PlayerList.js";
-import { WorldList } from "./modules/WorldList.js";
-import { UICoordinates } from "./modules/UICoordinates.js";
-import { UILink } from "./modules/UILink.js";
+import { Sidebar } from "./Sidebar.js";
+import { PlayerList } from "./PlayerList.js";
+import { WorldList } from "./WorldList.js";
+import { UICoordinates } from "./UICoordinates.js";
+import { UILink } from "./UILink.js";
 
 class Pl3xMap {
     constructor() {
@@ -47,7 +47,7 @@ class Pl3xMap {
         if (count % this.updateInterval == 0) {
             this.updateTileLayer();
         }
-        setTimeout(() => P.tick(++count), 1000);
+        setTimeout(() => this.tick(++count), 1000);
     }
     init() {
         this.getJSON("tiles/settings.json", (json) => {
@@ -62,43 +62,55 @@ class Pl3xMap {
                 this.uiLink = new UILink();
             }
             this.worldList.loadWorld(this.getUrlParam("world", "world"), (world) => {
-                P.tick();
+                this.tick();
+                this.centerOn(
+                    this.getUrlParam("x", world.spawn.x),
+                    this.getUrlParam("z", world.spawn.z),
+                    this.getUrlParam("zoom", world.zoom.def));
             });
         });
     }
     updateTileLayer() {
         // redraw background tile layer
         if (this.currentLayer == 1) {
-            P.tileLayer2.redraw();
+            this.tileLayer2.redraw();
         } else {
-            P.tileLayer1.redraw();
+            this.tileLayer1.redraw();
         }
     }
     switchTileLayer() {
         // swap current tile layer
         if (this.currentLayer == 1) {
-            P.tileLayer1.setZIndex(0);
-            P.tileLayer2.setZIndex(1);
+            this.tileLayer1.setZIndex(0);
+            this.tileLayer2.setZIndex(1);
             this.currentLayer = 2;
         } else {
-            P.tileLayer1.setZIndex(1);
-            P.tileLayer2.setZIndex(0);
+            this.tileLayer1.setZIndex(1);
+            this.tileLayer2.setZIndex(0);
             this.currentLayer = 1;
         }
     }
     centerOn(x, z, zoom) {
-        this.map.setView(this.unproject(x, z), zoom);
-        P.uiLink.update();
+        this.map.setView(this.toLatLng(x, z), zoom);
+        this.uiLink.update();
         return this.map;
     }
-    unproject(x, z) {
-        return this.map.unproject([x, z], this.worldList.curWorld.zoom.max);
+    toLatLng(x, z) {
+        return L.latLng(this.pixelsToMeters(-z), this.pixelsToMeters(x));
+        //return this.map.unproject([x, z], this.worldList.curWorld.zoom.max);
     }
-    project(latlng) {
-        return this.map.project(latlng, this.worldList.curWorld.zoom.max);
+    toPoint(latlng) {
+        return L.point(this.metersToPixels(latlng.lng), this.metersToPixels(-latlng.lat));
+        //return this.map.project(latlng, this.worldList.curWorld.zoom.max);
     }
     pixelsToMeters(num) {
-        return this.unproject(num, 0).lng - this.unproject(0, 0).lng;
+        return num * this.scale;
+    }
+    metersToPixels(num) {
+        return num / this.scale;
+    }
+    setScale(zoom) {
+        this.scale = (1 / Math.pow(2, zoom))
     }
     createElement(tag, id, parent) {
         const element = document.createElement(tag);
@@ -120,6 +132,7 @@ class Pl3xMap {
         fetch(url, {cache: "no-store"})
             .then(async res => {
                 if (res.ok) {
+                    console.log(res.headers);
                     fn(await res.json());
                 }
             });
@@ -137,14 +150,14 @@ class Pl3xMap {
         return def;
     }
     getUrlFromView() {
-        const center = this.project(this.map.getCenter());
+        const center = this.toPoint(this.map.getCenter());
         const zoom = this.map.getZoom();
         const x = Math.floor(center.x);
         const z = Math.floor(center.y);
         return `?world=${this.worldList.curWorld.name}&zoom=${zoom}&x=${x}&z=${z}`;
     }
     updateBrowserUrl(url) {
-        window.history.replaceState(this.stateObj, "", url);
+        window.history.replaceState(null, "", url);
     }
 }
 

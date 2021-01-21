@@ -1,5 +1,5 @@
 import { Options, Rectangle, PolyLine, Polygon, Circle, Icon } from "./Markers.js";
-import { P } from '../../map.js';
+import { P } from '../Pl3xMap.js';
 
 class World {
     constructor(world) {
@@ -29,6 +29,9 @@ class World {
             this.zoom = json.settings.zoom;
             this.spawn = json.settings.spawn;
             P.updateInterval = json.settings.update_interval;
+
+            // set the scale for our projection calculations
+            P.setScale(this.zoom.max);
 
             // set center and zoom
             P.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)

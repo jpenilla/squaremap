@@ -1,4 +1,4 @@
-import { P } from '../map.js';
+import { P } from './Pl3xMap.js';
 
 class UICoordinates {
     constructor() {
@@ -23,7 +23,7 @@ class UICoordinates {
         P.map.addControl(coords)
             .addEventListener('mousemove', (event) => {
                 if (P.worldList.curWorld != null) {
-                    coords.update(P.project(event.latlng));
+                    coords.update(P.toPoint(event.latlng));
                 }
             });
     }

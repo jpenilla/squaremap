@@ -1,5 +1,5 @@
 import { World } from "./util/World.js";
-import { P } from '../map.js';
+import { P } from './Pl3xMap.js';
 
 class WorldList {
     constructor(json) {
