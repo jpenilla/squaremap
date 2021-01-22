@@ -133,7 +133,21 @@ public class WorldConfig {
 
     public int MARKER_API_UPDATE_INTERVAL_SECONDS = 15;
 
-    private void markerApiSettings() {
+    public boolean SPAWN_MARKER_ICON_ENABLED = true;
+    public boolean SPAWN_MARKER_ICON_SHOW_CONTROLS = true;
+    public boolean SPAWN_MARKER_ICON_DEFAULT_HIDDEN = false;
+    public int SPAWN_MARKER_ICON_LAYER_PRIORITY = 0;
+    public int SPAWN_MARKER_ICON_Z_INDEX = 0;
+    public String SPAWN_MARKER_ICON_LABEL = "Spawn";
+
+    private void markerSettings() {
         MARKER_API_UPDATE_INTERVAL_SECONDS = getInt("map.markers.update-interval-seconds", MARKER_API_UPDATE_INTERVAL_SECONDS);
+
+        SPAWN_MARKER_ICON_ENABLED = getBoolean("map.markers.spawn-icon.enabled", SPAWN_MARKER_ICON_ENABLED);
+        SPAWN_MARKER_ICON_SHOW_CONTROLS = getBoolean("map.markers.spawn-icon.show-controls", SPAWN_MARKER_ICON_SHOW_CONTROLS);
+        SPAWN_MARKER_ICON_DEFAULT_HIDDEN = getBoolean("map.markers.spawn-icon.default-hidden", SPAWN_MARKER_ICON_DEFAULT_HIDDEN);
+        SPAWN_MARKER_ICON_LAYER_PRIORITY = getInt("map.markers.spawn-icon.layer-priority", SPAWN_MARKER_ICON_LAYER_PRIORITY);
+        SPAWN_MARKER_ICON_Z_INDEX = getInt("map.markers.spawn-icon.z-index", SPAWN_MARKER_ICON_Z_INDEX);
+        SPAWN_MARKER_ICON_LABEL = getString("map.markers.spawn-icon.label", SPAWN_MARKER_ICON_LABEL);
     }
 }

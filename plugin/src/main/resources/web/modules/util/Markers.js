@@ -9,12 +9,12 @@ class Marker {
     }
     init() {
         if (this.popup != null) {
-            this.marker.bindPopup(this.popup, {
+            this.marker.bindPopup(() => this.popup, {
                 direction: this.opts.pop("tooltip_direction", "top")
             });
         }
         if (this.tooltip != null) {
-            this.marker.bindTooltip(this.tooltip, {
+            this.marker.bindTooltip(() => this.tooltip, {
                 direction: this.opts.pop("tooltip_direction", "top")
             });
         }

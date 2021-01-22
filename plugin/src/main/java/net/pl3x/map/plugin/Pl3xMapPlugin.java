@@ -1,13 +1,10 @@
 package net.pl3x.map.plugin;
 
 import net.pl3x.map.api.Key;
-import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
-import net.pl3x.map.api.Point;
-import net.pl3x.map.api.marker.Marker;
-import net.pl3x.map.api.marker.MarkerOptions;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
+import net.pl3x.map.plugin.api.SpawnIconProvider;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -23,8 +20,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.logging.Level;
 
 public final class Pl3xMapPlugin extends JavaPlugin {
@@ -61,45 +56,12 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         } catch (IOException e) {
             Logger.log().log(Level.WARNING, "Failed to register spawn icon", e);
         }
-        this.worldManager.worlds().values().forEach(world -> world.layerRegistry().register(spawnIconKey, new LayerProvider() {
-
-            @Override
-            public @NonNull String getLabel() {
-                return "Spawn";
-            }
-
-            @Override
-            public boolean showControls() {
-                return true;
-            }
-
-            @Override
-            public boolean defaultHidden() {
-                return false;
-            }
-
-            @Override
-            public int layerPriority() {
-                return 0;
-            }
-
-            @Override
-            public int zIndex() {
-                return 0;
-            }
-
-            private final MarkerOptions options = MarkerOptions.builder().hoverTooltip("Spawn").build();
-
-            @Override
-            public @NonNull Collection<Marker> getMarkers() {
-                return Collections.singletonList(Marker.icon(
-                        Point.fromLocation(world.bukkit().getSpawnLocation()),
+        this.worldManager.worlds().values().forEach(world ->
+                world.layerRegistry().register(
                         spawnIconKey,
-                        16
-                ).markerOptions(this.options));
-            }
-
-        }));
+                        new SpawnIconProvider(world, spawnIconKey)
+                )
+        );
     }
 
     @Override
