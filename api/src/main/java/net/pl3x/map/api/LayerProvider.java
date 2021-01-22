@@ -67,4 +67,19 @@ public interface LayerProvider {
      */
     @NonNull Collection<Marker> getMarkers();
 
+    /**
+     * Updates the timestamp this layer was last modified
+     */
+    default void updateTimestamp() {
+    }
+
+    /**
+     * Gets the time since this layer was last modified
+     *
+     * @return last modified time (epoch millis)
+     */
+    default long getTimestamp() {
+        return 0;
+    }
+
 }

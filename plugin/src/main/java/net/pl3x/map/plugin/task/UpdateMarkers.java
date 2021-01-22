@@ -56,6 +56,7 @@ public final class UpdateMarkers extends BukkitRunnable {
             layerMap.put("hide", provider.defaultHidden());
             layerMap.put("order", provider.layerPriority());
             layerMap.put("z_index", provider.zIndex());
+            layerMap.put("timestamp", provider.getTimestamp());
             layerMap.put("markers", this.serializeMarkers(ImmutableList.copyOf(provider.getMarkers())));
 
             layers.add(layerMap);

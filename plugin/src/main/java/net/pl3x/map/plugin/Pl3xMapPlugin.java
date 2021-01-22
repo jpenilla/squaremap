@@ -70,23 +70,13 @@ public final class Pl3xMapPlugin extends JavaPlugin {
             }
 
             @Override
-            public boolean showControls() {
-                return true;
-            }
-
-            @Override
-            public boolean defaultHidden() {
-                return false;
-            }
-
-            @Override
             public int layerPriority() {
                 return 0;
             }
 
             @Override
-            public int zIndex() {
-                return 0;
+            public long getTimestamp() {
+                return System.currentTimeMillis();
             }
 
             private final MarkerOptions options = MarkerOptions.builder().hoverTooltip("Spawn").build();
