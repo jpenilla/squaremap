@@ -2,11 +2,13 @@ package net.pl3x.map.api.marker;
 
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * MultiPolygon marker, used to display multiple polygons while treating them as a single marker
@@ -80,6 +82,19 @@ public final class MultiPolygon extends Marker {
         this.subPolygons(Arrays.asList(subPolygons));
     }
 
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final MultiPolygon that = (MultiPolygon) o;
+        return this.subPolygons.equals(that.subPolygons);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.subPolygons);
+    }
+
     /**
      * MultiPolygonPart is a class to represent sub polygons of {@link MultiPolygon MultiPolygons}
      */
@@ -101,6 +116,20 @@ public final class MultiPolygon extends Marker {
         @Override
         public @NonNull List<Point> mainPolygon() {
             return this.mainPolygon;
+        }
+
+        @Override
+        public boolean equals(final @Nullable Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final MultiPolygonPart that = (MultiPolygonPart) o;
+            return this.mainPolygon.equals(that.mainPolygon)
+                    && this.negativeSpace.equals(that.negativeSpace);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.mainPolygon, this.negativeSpace);
         }
 
     }

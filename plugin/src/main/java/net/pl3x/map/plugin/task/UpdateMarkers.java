@@ -40,30 +40,67 @@ public final class UpdateMarkers extends BukkitRunnable {
         this.mapWorld = mapWorld;
     }
 
+    private final Map<Key, Long> lastUpdatedTime = new HashMap<>();
+    private final Map<Key, Map<String, Object>> layerCache = new HashMap<>();
+    private final Map<Key, Map<String, Object>> serializedLayerCache = new HashMap<>();
+
     @Override
     public void run() {
         final Registry<LayerProvider> layerRegistry = this.mapWorld.layerRegistry();
 
-        List<Map<String, Object>> layers = new ArrayList<>();
+        final List<Map<String, Object>> layers = new ArrayList<>();
         layerRegistry.entries().forEach(registeredLayer -> {
             final LayerProvider provider = registeredLayer.right();
             final Key key = registeredLayer.left();
+            final List<Marker> markers = ImmutableList.copyOf(provider.getMarkers());
 
-            final Map<String, Object> layerMap = new HashMap<>();
-            layerMap.put("id", key.getKey());
-            layerMap.put("name", provider.getLabel());
-            layerMap.put("control", provider.showControls());
-            layerMap.put("hide", provider.defaultHidden());
-            layerMap.put("order", provider.layerPriority());
-            layerMap.put("z_index", provider.zIndex());
-            layerMap.put("timestamp", provider.getTimestamp());
-            layerMap.put("markers", this.serializeMarkers(ImmutableList.copyOf(provider.getMarkers())));
+            final Map<String, Object> current = new HashMap<>();
+            current.put("id", key.getKey());
+            current.put("name", provider.getLabel());
+            current.put("control", provider.showControls());
+            current.put("hide", provider.defaultHidden());
+            current.put("order", provider.layerPriority());
+            current.put("z_index", provider.zIndex());
+            current.put("markers", markers.hashCode());
 
-            layers.add(layerMap);
+            final Map<String, Object> previous = this.layerCache.get(key);
+
+            if (previous == null || !previous.equals(current)) {
+                this.layerCache.put(key, current);
+
+                final Map<String, Object> serializedLayer = this.serializeLayer(key, provider, markers);
+                this.serializedLayerCache.put(key, serializedLayer);
+
+                final long time = System.currentTimeMillis();
+                this.lastUpdatedTime.put(key, System.currentTimeMillis());
+
+                final Map<String, Object> timeStamptedLayer = new HashMap<>(serializedLayer);
+                timeStamptedLayer.put("timestamp", time);
+                layers.add(timeStamptedLayer);
+            } else {
+                final Map<String, Object> serializedLayer = this.serializedLayerCache.get(key);
+                final long lastUpdate = this.lastUpdatedTime.get(key);
+
+                final Map<String, Object> timeStamptedLayer = new HashMap<>(serializedLayer);
+                timeStamptedLayer.put("timestamp", lastUpdate);
+                layers.add(timeStamptedLayer);
+            }
         });
 
         final Path file = FileUtil.getWorldFolder(this.mapWorld.bukkit()).resolve("markers.json");
         FileUtil.write(gson.toJson(layers), file);
+    }
+
+    private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {
+        final Map<String, Object> map = new HashMap<>();
+        map.put("id", key.getKey());
+        map.put("name", provider.getLabel());
+        map.put("control", provider.showControls());
+        map.put("hide", provider.defaultHidden());
+        map.put("order", provider.layerPriority());
+        map.put("z_index", provider.zIndex());
+        map.put("markers", this.serializeMarkers(markers));
+        return map;
     }
 
     private @NonNull List<Map<String, Object>> serializeMarkers(final @NonNull Collection<Marker> markers) {

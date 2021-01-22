@@ -12,7 +12,6 @@ import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.httpd.IntegratedServer;
-import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
@@ -70,13 +69,23 @@ public final class Pl3xMapPlugin extends JavaPlugin {
             }
 
             @Override
+            public boolean showControls() {
+                return true;
+            }
+
+            @Override
+            public boolean defaultHidden() {
+                return false;
+            }
+
+            @Override
             public int layerPriority() {
                 return 0;
             }
 
             @Override
-            public long getTimestamp() {
-                return System.currentTimeMillis();
+            public int zIndex() {
+                return 0;
             }
 
             private final MarkerOptions options = MarkerOptions.builder().hoverTooltip("Spawn").build();

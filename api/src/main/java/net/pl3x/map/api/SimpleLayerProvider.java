@@ -21,7 +21,6 @@ public final class SimpleLayerProvider implements LayerProvider {
     private final boolean showControls;
     private final int layerPriority;
     private final int zIndex;
-    private long timestamp;
 
     private SimpleLayerProvider(final @NonNull Supplier<String> labelSupplier, final boolean defaultHidden, final boolean showControls, final int layerPriority, final int zIndex) {
         this.labelSupplier = labelSupplier;
@@ -29,7 +28,6 @@ public final class SimpleLayerProvider implements LayerProvider {
         this.showControls = showControls;
         this.layerPriority = layerPriority;
         this.zIndex = zIndex;
-        updateTimestamp();
     }
 
     /**
@@ -59,7 +57,6 @@ public final class SimpleLayerProvider implements LayerProvider {
      * @param marker marker
      */
     public void addMarker(final @NonNull Key key, final @NonNull Marker marker) {
-        updateTimestamp();
         this.markers.put(key, marker);
     }
 
@@ -71,7 +68,6 @@ public final class SimpleLayerProvider implements LayerProvider {
      * @return the existing marker or {@code null}
      */
     public @Nullable Marker removeMarker(final @NonNull Key key) {
-        updateTimestamp();
         return this.markers.remove(key);
     }
 
@@ -79,7 +75,6 @@ public final class SimpleLayerProvider implements LayerProvider {
      * Remove all registered markers
      */
     public void clearMarkers() {
-        updateTimestamp();
         this.markers.clear();
     }
 
@@ -130,16 +125,6 @@ public final class SimpleLayerProvider implements LayerProvider {
     @Override
     public @NonNull Collection<Marker> getMarkers() {
         return this.markers.values();
-    }
-
-    @Override
-    public void updateTimestamp() {
-        this.timestamp = System.currentTimeMillis();
-    }
-
-    @Override
-    public long getTimestamp() {
-        return this.timestamp;
     }
 
     /**

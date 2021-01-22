@@ -2,6 +2,9 @@ package net.pl3x.map.api.marker;
 
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Objects;
 
 /**
  * Rectangle marker
@@ -55,6 +58,20 @@ public final class Rectangle extends Marker {
      */
     public void point2(final @NonNull Point point) {
         this.point2 = point;
+    }
+
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Rectangle rectangle = (Rectangle) o;
+        return this.point1.equals(rectangle.point1)
+                && this.point2.equals(rectangle.point2);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.point1, this.point2);
     }
 
 }

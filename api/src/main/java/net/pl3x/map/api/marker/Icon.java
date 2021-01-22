@@ -4,6 +4,9 @@ import net.pl3x.map.api.Key;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.Objects;
 
 /**
  * Icon marker, used to create an icon with an image on a map
@@ -144,6 +147,24 @@ public final class Icon extends Marker {
      */
     public void sizeZ(final int size) {
         this.sizeZ = size;
+    }
+
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Icon icon = (Icon) o;
+        return this.sizeX == icon.sizeX
+                && this.sizeZ == icon.sizeZ
+                && this.point.equals(icon.point)
+                && this.tooltipAnchor.equals(icon.tooltipAnchor)
+                && this.anchor.equals(icon.anchor)
+                && this.image.equals(icon.image);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.point, this.tooltipAnchor, this.anchor, this.image, this.sizeX, this.sizeZ);
     }
 
 }

@@ -2,10 +2,12 @@ package net.pl3x.map.api.marker;
 
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Polyline marker, used to draw any number of lines
@@ -65,6 +67,19 @@ public final class Polyline extends Marker {
     public final void multiPoints(final @NonNull List<Point> @NonNull ... points) {
         this.points.clear();
         this.points.addAll(Arrays.asList(points));
+    }
+
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Polyline polyline = (Polyline) o;
+        return this.points.equals(polyline.points);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.points);
     }
 
 }

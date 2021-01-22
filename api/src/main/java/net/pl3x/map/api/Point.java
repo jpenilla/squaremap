@@ -73,7 +73,7 @@ public final class Point {
     public boolean equals(final @Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Point that = (Point) o;
+        final Point that = (Point) o;
         return that.x == this.x && that.z == this.z;
     }
 
