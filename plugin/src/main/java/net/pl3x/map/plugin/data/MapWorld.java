@@ -12,7 +12,9 @@ import net.pl3x.map.plugin.task.render.BackgroundRender;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,12 +25,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public final class MapWorld implements net.pl3x.map.api.MapWorld {
+    private static final Map<UUID, LayerRegistry> layerRegistries = new HashMap<>();
+
     private final World world;
     private final org.bukkit.World bukkitWorld;
     private final ExecutorService imageIOexecutor = Executors.newSingleThreadExecutor();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
-    private final LayerRegistry layerRegistry = new LayerRegistry();
     private final UpdateMarkers updateMarkersTask;
 
     private AbstractRender activeRender = null;
@@ -144,7 +147,13 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     @Override
     public @NonNull Registry<LayerProvider> layerRegistry() {
-        return this.layerRegistry;
+        final LayerRegistry registry = layerRegistries.get(this.uuid());
+        if (registry == null) {
+            final LayerRegistry newRegistry = new LayerRegistry();
+            layerRegistries.put(this.uuid(), newRegistry);
+            return newRegistry;
+        }
+        return registry;
     }
 
 }

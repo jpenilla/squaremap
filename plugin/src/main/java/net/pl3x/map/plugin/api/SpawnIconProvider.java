@@ -7,6 +7,7 @@ import net.pl3x.map.api.marker.Marker;
 import net.pl3x.map.api.marker.MarkerOptions;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.data.MapWorld;
+import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collection;
@@ -19,12 +20,12 @@ public class SpawnIconProvider implements LayerProvider {
     private final boolean defaultHidden;
     private final int layerPriority;
     private final int zIndex;
-    private final MapWorld world;
+    private final World world;
     private final Key key;
     private final MarkerOptions options;
 
     public SpawnIconProvider(final @NonNull MapWorld world, final @NonNull Key key) {
-        this.world = world;
+        this.world = world.bukkit();
         this.key = key;
         final WorldConfig config = world.config();
         this.label = config.SPAWN_MARKER_ICON_LABEL;
@@ -63,7 +64,7 @@ public class SpawnIconProvider implements LayerProvider {
     @Override
     public @NonNull Collection<Marker> getMarkers() {
         return Collections.singletonList(Marker.icon(
-                Point.fromLocation(this.world.bukkit().getSpawnLocation()),
+                Point.fromLocation(this.world.getSpawnLocation()),
                 this.key,
                 16
         ).markerOptions(this.options));
