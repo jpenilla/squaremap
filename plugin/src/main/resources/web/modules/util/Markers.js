@@ -9,10 +9,14 @@ class Marker {
     }
     init() {
         if (this.popup != null) {
-            this.marker.bindPopup(() => this.popup);
+            this.marker.bindPopup(this.popup, {
+                direction: this.opts.pop("tooltip_direction", "top")
+            });
         }
         if (this.tooltip != null) {
-            this.marker.bindTooltip(() => this.tooltip);
+            this.marker.bindTooltip(this.tooltip, {
+                direction: this.opts.pop("tooltip_direction", "top")
+            });
         }
         for (const key in this.opts) {
             this.marker.options[key] = this.opts[key];
@@ -114,14 +118,13 @@ class Icon extends Marker {
         const point = this.opts.pop("point");
         const size = this.opts.pop("size");
         const anchor = this.opts.pop("anchor");
-        const popupAnchor = this.opts.pop("popup_anchor", L.point(0, 0));
-        const tooltipAnchor = this.opts.pop("tooltip_anchor", L.point(0, 0));
+        const tooltipAnchor = this.opts.pop("tooltip_anchor", L.point(0, -size.z / 2));
         this.marker = L.marker(P.toLatLng(point.x, point.z), {
             icon: L.icon({
                 iconUrl: `images/icon/registered/${opts.pop("icon")}.png`,
                 iconSize: [size.x, size.z],
                 iconAnchor: [anchor.x, anchor.z],
-                popupAnchor: [popupAnchor.x, popupAnchor.z],
+                popupAnchor: [tooltipAnchor.x, tooltipAnchor.z],
                 tooltipAnchor: [tooltipAnchor.x, tooltipAnchor.z]
             })
         });
