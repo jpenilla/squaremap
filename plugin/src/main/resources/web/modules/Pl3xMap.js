@@ -61,7 +61,7 @@ class Pl3xMap {
             if (json.ui.link) {
                 this.uiLink = new UILink();
             }
-            this.worldList.loadWorld(this.getUrlParam("world", "world"), (world) => {
+            this.worldList.loadWorld(this.getUrlParam("world", json.worlds[0].name), (world) => {
                 this.tick();
                 this.centerOn(
                     this.getUrlParam("x", world.spawn.x),
