@@ -1,7 +1,6 @@
 package net.pl3x.map.plugin;
 
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.pl3x.map.api.Key;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
@@ -10,10 +9,13 @@ import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.httpd.IntegratedServer;
+import net.pl3x.map.plugin.listener.MapUpdateListeners;
+import net.pl3x.map.plugin.listener.WorldEventListener;
 import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.ReflectionUtil;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -30,6 +32,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
+    private WorldEventListener worldEventListener;
     private BukkitAudiences audiences;
 
     public Pl3xMapPlugin() {
@@ -53,18 +56,11 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         this.start();
         this.setupApi();
 
-        final Key spawnIconKey = Key.of("pl3xmap-spawn_icon");
         try {
-            this.getApi().iconRegistry().register(spawnIconKey, ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
+            this.getApi().iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
         } catch (IOException e) {
             Logger.log().log(Level.WARNING, "Failed to register spawn icon", e);
         }
-        this.worldManager.worlds().values().forEach(world ->
-                world.layerRegistry().register(
-                        spawnIconKey,
-                        new SpawnIconProvider(world, spawnIconKey)
-                )
-        );
     }
 
     @Override
@@ -90,6 +86,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();
+        this.worldEventListener = new WorldEventListener(this);
+        this.getServer().getPluginManager().registerEvents(this.worldEventListener, this);
 
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.startServer();
@@ -101,6 +99,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     public void stop() {
         this.mapUpdateListeners.unregister();
         this.mapUpdateListeners = null;
+        HandlerList.unregisterAll(this.worldEventListener);
+        this.worldEventListener = null;
 
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.stopServer();

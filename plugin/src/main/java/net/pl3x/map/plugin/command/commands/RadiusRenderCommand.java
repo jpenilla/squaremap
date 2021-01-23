@@ -14,6 +14,7 @@ import net.pl3x.map.plugin.command.argument.MapWorldArgument;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.task.render.RadiusRender;
+import net.pl3x.map.plugin.util.CommandUtil;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -29,7 +30,7 @@ public final class RadiusRenderCommand extends Pl3xMapCommand {
                 builder.literal("radiusrender")
                         .argument(MapWorldArgument.of("world"))
                         .argument(IntegerArgument.<CommandSender>newBuilder("radius").withMin(1).build())
-                        .argument(Location2DArgument.optional("center"))
+                        .argument(Location2DArgument.optional("center"), CommandUtil.description(Lang.OPTIONAL_CENTER_ARGUMENT_DESCRIPTION))
                         .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.RADIUSRENDER_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.radiusrender")
                         .handler(this::executeRadiusRender));

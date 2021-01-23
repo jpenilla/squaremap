@@ -43,7 +43,13 @@ public abstract class AbstractRender implements Runnable {
             Blocks.TALL_GRASS,
             Blocks.FERN,
             Blocks.GRASS,
-            Blocks.LARGE_FERN
+            Blocks.LARGE_FERN,
+            Blocks.TORCH,
+            Blocks.WALL_TORCH,
+            Blocks.SOUL_TORCH,
+            Blocks.SOUL_WALL_TORCH,
+            Blocks.REDSTONE_TORCH,
+            Blocks.REDSTONE_WALL_TORCH
     );
 
     private final ExecutorService executor;

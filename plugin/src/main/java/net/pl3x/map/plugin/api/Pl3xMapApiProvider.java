@@ -35,7 +35,7 @@ public final class Pl3xMapApiProvider implements Pl3xMap {
     }
 
     @Override
-    public @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull UUID uuid) {
+    public @NonNull Optional<MapWorld> getWorldIfEnabled(final @NonNull UUID uuid) {
         final World world = Bukkit.getWorld(uuid);
         if (world == null) {
             return Optional.empty();

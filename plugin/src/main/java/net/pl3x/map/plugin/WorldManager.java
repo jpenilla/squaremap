@@ -47,6 +47,11 @@ public final class WorldManager {
         });
     }
 
+    public void worldUnloaded(final @NonNull World world) {
+        this.getWorldIfEnabled(world).ifPresent(MapWorld::shutdown);
+        this.worlds.remove(world.getUID());
+    }
+
     public void shutdown() {
         this.worlds.values().forEach(MapWorld::shutdown);
         this.worlds.clear();

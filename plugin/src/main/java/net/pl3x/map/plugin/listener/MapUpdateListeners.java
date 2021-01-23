@@ -1,5 +1,6 @@
-package net.pl3x.map.plugin;
+package net.pl3x.map.plugin.listener;
 
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.util.Numbers;
@@ -43,12 +44,12 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-final class MapUpdateListeners {
+public final class MapUpdateListeners {
 
     private final Pl3xMapPlugin plugin;
     private final List<Listener> registeredListeners = new ArrayList<>();
 
-    MapUpdateListeners(final @NonNull Pl3xMapPlugin plugin) {
+    public MapUpdateListeners(final @NonNull Pl3xMapPlugin plugin) {
         this.plugin = plugin;
     }
 

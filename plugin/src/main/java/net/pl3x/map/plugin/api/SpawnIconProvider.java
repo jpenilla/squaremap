@@ -15,18 +15,18 @@ import java.util.Collections;
 
 public class SpawnIconProvider implements LayerProvider {
 
+    public static final Key SPAWN_ICON_KEY = Key.of("pl3xmap-spawn_icon");
+
     private final String label;
     private final boolean showControls;
     private final boolean defaultHidden;
     private final int layerPriority;
     private final int zIndex;
     private final World world;
-    private final Key key;
     private final MarkerOptions options;
 
-    public SpawnIconProvider(final @NonNull MapWorld world, final @NonNull Key key) {
+    public SpawnIconProvider(final @NonNull MapWorld world) {
         this.world = world.bukkit();
-        this.key = key;
         final WorldConfig config = world.config();
         this.label = config.SPAWN_MARKER_ICON_LABEL;
         this.showControls = config.SPAWN_MARKER_ICON_SHOW_CONTROLS;
@@ -65,7 +65,7 @@ public class SpawnIconProvider implements LayerProvider {
     public @NonNull Collection<Marker> getMarkers() {
         return Collections.singletonList(Marker.icon(
                 Point.fromLocation(this.world.getSpawnLocation()),
-                this.key,
+                SPAWN_ICON_KEY,
                 16
         ).markerOptions(this.options));
     }

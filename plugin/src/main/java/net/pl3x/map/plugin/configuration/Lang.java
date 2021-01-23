@@ -17,10 +17,11 @@ import java.util.logging.Level;
 
 public class Lang {
 
-    // MiniMessage formatted strings, to be sent using Logger.info(String, Template...) or send(CommandSender, Template...)
+    // MiniMessage formatted strings, to be sent using Logger.info(String, Template...) or Lang.send(CommandSender, String, Template...)
     public static String RENDER_IN_PROGRESS = "<red>A render is already in progress on <world>";
     public static String RENDER_NOT_IN_PROGRESS = "<red>No renders running for <world>";
     public static String CANCELLED_RENDER = "<green>Render cancelled for <world>";
+    public static String SUCCESSFULLY_RESET_MAP = "<green>Successfully reset map for <world>";
 
     public static String CONSOLE_MUST_SPECIFY_WORLD = "<red>You must specify the world when running this command from console";
     public static String NO_SUCH_WORLD = "<red>No such world '<world>'";
@@ -28,13 +29,18 @@ public class Lang {
     public static String CONFIRMATION_REQUIRED_MESSAGE = "<red>Confirmation required. Confirm using /<command> confirm.";
     public static String NO_PENDING_COMMANDS_MESSAGE = "<red>You don't have any pending commands.";
 
+    public static String CLICK_FOR_HELP = "Click for help";
+
+    public static String COMMAND_PREFIX = "<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white>";
     public static String HELP_COMMAND_DESCRIPTION = "Get help for Pl3xmap commands";
+    public static String RESETMAP_COMMAND_DESCRIPTION = "Resets the map of a specified world";
     public static String CONFIRM_COMMAND_DESCRIPTION = "Confirm a pending command";
     public static String RELOAD_COMMAND_DESCRIPTION = "Reloads the plugin";
     public static String FULLRENDER_COMMAND_DESCRIPTION = "Starts a full render for the specified world";
     public static String CANCEL_RENDER_COMMAND_DESCRIPTION = "Cancels a render for the specified world";
     public static String OPTIONAL_WORLD_ARGUMENT_DESCRIPTION = "Defaults to the players current world if not provided";
     public static String RADIUSRENDER_COMMAND_DESCRIPTION = "Starts a radius render";
+    public static String OPTIONAL_CENTER_ARGUMENT_DESCRIPTION = "Defaults to (<white>0<gray>,</gray> 0</white>) if unspecified";
     public static String HELP_QUERY_ARGUMENT_DESCRIPTION = "Help Query";
 
     public static String PLUGIN_RELOADED = "<green><name> v<version> reloaded";
@@ -63,6 +69,7 @@ public class Lang {
         RENDER_IN_PROGRESS = getString("render-in-progress", RENDER_IN_PROGRESS);
         RENDER_NOT_IN_PROGRESS = getString("render-not-in-progress", RENDER_NOT_IN_PROGRESS);
         CANCELLED_RENDER = getString("cancelled-render", CANCELLED_RENDER);
+        SUCCESSFULLY_RESET_MAP = getString("successfully-reset-map", SUCCESSFULLY_RESET_MAP);
 
         CONSOLE_MUST_SPECIFY_WORLD = getString("command.message.console-must-specify-world", CONSOLE_MUST_SPECIFY_WORLD);
         NO_SUCH_WORLD = getString("command.message.no-such-world", NO_SUCH_WORLD);
@@ -70,13 +77,18 @@ public class Lang {
         CONFIRMATION_REQUIRED_MESSAGE = getString("command.message.confirmation-required", CONFIRMATION_REQUIRED_MESSAGE);
         NO_PENDING_COMMANDS_MESSAGE = getString("command.message.no-pending-commands", NO_PENDING_COMMANDS_MESSAGE);
 
+        CLICK_FOR_HELP = getString("click-for-help", CLICK_FOR_HELP);
+
+        COMMAND_PREFIX = getString("command.prefix", COMMAND_PREFIX);
         HELP_COMMAND_DESCRIPTION = getString("command.description.help", HELP_COMMAND_DESCRIPTION);
+        RESETMAP_COMMAND_DESCRIPTION = getString("command.description.resetmap", RESETMAP_COMMAND_DESCRIPTION);
         CONFIRM_COMMAND_DESCRIPTION = getString("command.description.confirm", CONFIRM_COMMAND_DESCRIPTION);
         RELOAD_COMMAND_DESCRIPTION = getString("command.description.reload", RELOAD_COMMAND_DESCRIPTION);
         FULLRENDER_COMMAND_DESCRIPTION = getString("command.description.full-render", FULLRENDER_COMMAND_DESCRIPTION);
         CANCEL_RENDER_COMMAND_DESCRIPTION = getString("command.description.cancel-render", CANCEL_RENDER_COMMAND_DESCRIPTION);
         RADIUSRENDER_COMMAND_DESCRIPTION = getString("command.description.radius-render", RADIUSRENDER_COMMAND_DESCRIPTION);
         OPTIONAL_WORLD_ARGUMENT_DESCRIPTION = getString("command.argument.optional-world", OPTIONAL_WORLD_ARGUMENT_DESCRIPTION);
+        OPTIONAL_CENTER_ARGUMENT_DESCRIPTION = getString("command.argument.optional-center", OPTIONAL_CENTER_ARGUMENT_DESCRIPTION);
         HELP_QUERY_ARGUMENT_DESCRIPTION = getString("command.argument.help-query", HELP_QUERY_ARGUMENT_DESCRIPTION);
 
         PLUGIN_RELOADED = getString("plugin-reloaded", PLUGIN_RELOADED);

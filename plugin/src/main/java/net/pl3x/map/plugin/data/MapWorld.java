@@ -1,19 +1,30 @@
 package net.pl3x.map.plugin.data;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import net.minecraft.server.v1_16_R3.World;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Registry;
+import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.api.LayerRegistry;
+import net.pl3x.map.plugin.api.SpawnIconProvider;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
+import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -25,10 +36,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public final class MapWorld implements net.pl3x.map.api.MapWorld {
+    private static final String dirtyChunksFileName = "dirty_chunks.json";
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final Map<UUID, LayerRegistry> layerRegistries = new HashMap<>();
 
     private final World world;
     private final org.bukkit.World bukkitWorld;
+    private final Path dataPath;
     private final ExecutorService imageIOexecutor = Executors.newSingleThreadExecutor();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
@@ -40,9 +54,43 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private MapWorld(final org.bukkit.@NonNull World world) {
         this.bukkitWorld = world;
         this.world = ((CraftWorld) world).getHandle();
+
+        this.dataPath = Pl3xMapPlugin.getInstance().getDataFolder().toPath().resolve("data").resolve(world.getName());
+        try {
+            if (!Files.exists(this.dataPath)) {
+                Files.createDirectories(this.dataPath);
+            }
+        } catch (IOException e) {
+            throw this.failedToCreateDataDirectory(e);
+        }
         this.startBackgroundRender();
+
         this.updateMarkersTask = new UpdateMarkers(this);
         this.updateMarkersTask.runTaskTimer(Pl3xMapPlugin.getInstance(), 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
+
+        if (this.config().SPAWN_MARKER_ICON_ENABLED) {
+            this.layerRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, new SpawnIconProvider(this));
+        }
+
+        this.deserializeDirtyChunks();
+    }
+
+    private void serializeDirtyChunks() {
+        FileUtil.write(gson.toJson(this.modifiedChunks), this.dataPath.resolve(dirtyChunksFileName));
+    }
+
+    private void deserializeDirtyChunks() {
+        try {
+            final Path file = this.dataPath.resolve(dirtyChunksFileName);
+            if (Files.exists(file)) {
+                this.modifiedChunks.addAll(gson.fromJson(
+                        new FileReader(file.toFile()),
+                        TypeToken.getParameterized(List.class, ChunkCoordinate.class).getType()
+                ));
+            }
+        } catch (IOException e) {
+            Logger.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.name()), e);
+        }
     }
 
     private void startBackgroundRender() {
@@ -139,6 +187,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         }
         executor.shutdown();
         imageIOexecutor.shutdown();
+        this.serializeDirtyChunks();
     }
 
     public void saveImage(final @NonNull Image image) {
@@ -154,6 +203,10 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
             return newRegistry;
         }
         return registry;
+    }
+
+    private @NonNull IllegalStateException failedToCreateDataDirectory(final @NonNull Throwable cause) {
+        return new IllegalStateException(String.format("Failed to create data directory for world '%s'", this.name()), cause);
     }
 
 }

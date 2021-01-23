@@ -5,9 +5,13 @@ import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.bukkit.CloudBukkitCapabilities;
 import cloud.commandframework.exceptions.CommandExecutionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.collect.ImmutableList;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.commands.CancelRenderCommand;
 import net.pl3x.map.plugin.command.commands.ConfirmCommand;
@@ -66,6 +70,13 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
     private void registerExceptionHandlers(final @NonNull Pl3xMapPlugin plugin) {
         new MinecraftExceptionHandler<CommandSender>()
                 .withDefaultHandlers()
+                .withDecorator(component -> Component.text()
+                        .append(MiniMessage.get().parse(Lang.COMMAND_PREFIX)
+                                .hoverEvent(MiniMessage.get().parse(Lang.CLICK_FOR_HELP))
+                                .clickEvent(ClickEvent.runCommand(String.format("/%s help", Config.MAIN_COMMAND_LABEL))))
+                        .append(Component.space())
+                        .append(component)
+                        .build())
                 .apply(this, plugin.audiences()::sender);
 
         final var minecraftExtrasDefaultHandler = Objects.requireNonNull(this.getExceptionHandler(CommandExecutionException.class));
@@ -88,7 +99,10 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
     }
 
     private Command.@NonNull Builder<CommandSender> rootBuilder() {
-        return this.commandBuilder(Config.MAIN_COMMAND_LABEL, Config.MAIN_COMMAND_ALIASES.toArray(String[]::new));
+        return this.commandBuilder(Config.MAIN_COMMAND_LABEL, Config.MAIN_COMMAND_ALIASES.toArray(String[]::new))
+                /* MinecraftHelp uses the MinecraftExtrasMetaKeys.DESCRIPTION meta, this is just so we give Bukkit a description
+                 * for our commands in the Bukkit and EssentialsX '/help' command */
+                .meta(CommandMeta.DESCRIPTION, String.format("Pl3xMap command. '/%s help'", Config.MAIN_COMMAND_LABEL));
     }
 
 }

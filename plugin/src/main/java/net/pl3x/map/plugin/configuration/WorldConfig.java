@@ -15,18 +15,15 @@ public class WorldConfig {
 
     public static void reload() {
         configs.clear();
-        Bukkit.getWorlds().forEach(world -> {
-            final WorldConfig config = new WorldConfig(world);
-            configs.put(world.getUID(), config);
-        });
-    }
-
-    public static WorldConfig get(final @NonNull UUID uuid) {
-        return configs.get(uuid);
+        Bukkit.getWorlds().forEach(WorldConfig::load);
     }
 
     public static WorldConfig get(World world) {
         return configs.get(world.getUID());
+    }
+
+    public static void load(final @NonNull World world) {
+        configs.put(world.getUID(), new WorldConfig(world));
     }
 
     private final String worldName;
