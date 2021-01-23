@@ -8,13 +8,13 @@ import java.util.function.IntPredicate;
 /**
  * Simple string wrapper used to identify things. Equality is checked based only on the key string.
  *
- * <p>Valid characters for keys are <a href="https://regexr.com/5ks7f">{@code [a-z0-9._-]}</a>.</p>
+ * <p>Valid characters for keys are <a href="https://regexr.com/5ks7l">{@code [a-zA-Z0-9._-]}</a>.</p>
  *
- * <p>Keys should be unique, so prefixing keys with a plugin name, for example {@code "myplugin_marker-1"}, would be good practice.</p>
+ * <p>In most cases Keys should be unique, so prefixing keys with a plugin name, for example {@code "myplugin_layer-1"}, would be good practice.</p>
  */
 public final class Key {
 
-    private static final IntPredicate CHARACTER_PREDICATE = value -> value == '_' || value == '-' || (value >= 'a' && value <= 'z') || (value >= '0' && value <= '9') || value == '.';
+    private static final IntPredicate CHARACTER_PREDICATE = value -> value == '_' || value == '-' || (value >= 'a' && value <= 'z') || (value >= 'A' && value <= 'Z') || (value >= '0' && value <= '9') || value == '.';
 
     private final String key;
 
@@ -81,7 +81,7 @@ public final class Key {
 
     private static @NonNull IllegalArgumentException invalidKey(final @NonNull String key) {
         return new IllegalArgumentException(String.format(
-                "Non [a-z0-9._-] character in key '%s'",
+                "Non [a-zA-Z0-9._-] character in key '%s'",
                 key
         ));
     }
