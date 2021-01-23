@@ -1,5 +1,6 @@
 package net.pl3x.map.api.marker;
 
+import com.google.common.collect.ImmutableList;
 import net.pl3x.map.api.Key;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Point;
@@ -59,7 +60,7 @@ public abstract class Marker {
      * @return new polyline
      */
     public static @NonNull Polyline polyline(final @NonNull List<Point> points) {
-        return multiPolyline(List.of(points));
+        return multiPolyline(ImmutableList.of(points));
     }
 
     /**

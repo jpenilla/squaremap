@@ -53,7 +53,7 @@ public final class Ellipse extends Marker {
      *
      * @param radius new radiusX
      */
-    public void radiusX(double radius) {
+    public void radiusX(final double radius) {
         this.radiusX = radius;
     }
 
@@ -71,7 +71,7 @@ public final class Ellipse extends Marker {
      *
      * @param radius new radiusZ
      */
-    public void radiusZ(double radius) {
+    public void radiusZ(final double radius) {
         this.radiusZ = radius;
     }
 
@@ -80,9 +80,9 @@ public final class Ellipse extends Marker {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Ellipse ellipse = (Ellipse) o;
-        return Double.compare(ellipse.radiusX, this.radiusX) == 0 &&
-                Double.compare(ellipse.radiusZ, this.radiusZ) == 0 &&
-                this.center.equals(ellipse.center);
+        return Double.compare(ellipse.radiusX, this.radiusX) == 0
+                && Double.compare(ellipse.radiusZ, this.radiusZ) == 0
+                && this.center.equals(ellipse.center);
     }
 
     @Override

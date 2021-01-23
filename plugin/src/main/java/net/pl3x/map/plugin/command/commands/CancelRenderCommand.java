@@ -1,8 +1,9 @@
 package net.pl3x.map.plugin.command.commands;
 
-import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.meta.CommandMeta;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
@@ -23,8 +24,8 @@ public final class CancelRenderCommand extends Pl3xMapCommand {
     public void register() {
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("cancelrender")
-                        .argument(MapWorldArgument.optional("world"), ArgumentDescription.of("Defaults to the players current world if not provided"))
-                        .meta(CommandMeta.DESCRIPTION, "Cancels a render for the specified world")
+                        .argument(MapWorldArgument.optional("world"), CommandUtil.description(Lang.OPTIONAL_WORLD_ARGUMENT_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.CANCEL_RENDER_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.cancelrender")
                         .handler(this::executeCancelRender));
     }
@@ -33,13 +34,11 @@ public final class CancelRenderCommand extends Pl3xMapCommand {
         final CommandSender sender = context.getSender();
         final MapWorld world = CommandUtil.resolveWorld(context);
         if (!world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS
-                    .replace("{world}", world.name()));
+            Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS, Template.of("world", world.name()));
             return;
         }
 
-        Lang.send(sender, Lang.CANCELLED_RENDER
-                .replace("{world}", world.name()));
+        Lang.send(sender, Lang.CANCELLED_RENDER, Template.of("world", world.name()));
         world.stopRender();
     }
 

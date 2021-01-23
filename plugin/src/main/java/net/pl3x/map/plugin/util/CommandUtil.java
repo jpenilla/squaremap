@@ -1,6 +1,9 @@
 package net.pl3x.map.plugin.util;
 
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.minecraft.extras.RichDescription;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.exception.CompletedSuccessfullyException;
 import net.pl3x.map.plugin.command.exception.ConsoleMustProvideWorldException;
@@ -28,7 +31,7 @@ public final class CommandUtil {
             final World bukkit = player.getWorld();
             Optional<MapWorld> optionalMapWorld = Pl3xMapPlugin.getInstance().worldManager().getWorldIfEnabled(bukkit);
             if (optionalMapWorld.isEmpty()) {
-                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("{world}", bukkit.getName()));
+                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Template.of("world", bukkit.getName()));
                 throw new CompletedSuccessfullyException();
             } else {
                 return optionalMapWorld.get();
@@ -36,6 +39,10 @@ public final class CommandUtil {
         } else {
             throw new ConsoleMustProvideWorldException(context);
         }
+    }
+
+    public static @NonNull RichDescription description(final @NonNull String miniMessage) {
+        return RichDescription.of(MiniMessage.get().parse(miniMessage));
     }
 
 }

@@ -1,5 +1,6 @@
 package net.pl3x.map.plugin.task.render;
 
+import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Lang;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -61,14 +62,17 @@ public final class RenderProgress extends TimerTask {
         String rateStr = dfRate.format(rollingAvg);
         String percentStr = dfPercent.format(percent);
 
-        Logger.info(Lang.LOG_RENDER_PROGRESS
-                .replace("{world}", render.world.getName())
-                .replace("{current_chunks}", Integer.toString(curChunks))
-                .replace("{total_chunks}", Integer.toString(this.render.totalChunks()))
-                .replace("{percent}", percentStr)
-                .replace("{elapsed}", elapsedStr)
-                .replace("{eta}", etaStr)
-                .replace("{rate}", rateStr));
+        Logger.info(
+                Lang.LOG_RENDER_PROGRESS,
+                Template.of("world", render.world.getName()),
+                Template.of("current_chunks", Integer.toString(curChunks)),
+                Template.of("total_chunks", Integer.toString(this.render.totalChunks())),
+                Template.of("percent", percentStr),
+                Template.of("elapsed", elapsedStr),
+                Template.of("eta", etaStr),
+                Template.of("rate", rateStr)
+        );
+
     }
 
     private static @NonNull String formatMilliseconds(long timeLeft) {

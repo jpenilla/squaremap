@@ -93,6 +93,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.startServer();
+        } else {
+            Logger.info(Lang.LOG_INTERNAL_WEB_DISABLED);
         }
     }
 

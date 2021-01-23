@@ -1,7 +1,11 @@
 package net.pl3x.map.plugin;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.configuration.Config;
-import net.pl3x.map.plugin.configuration.Lang;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.logging.Level;
 
 public class Logger {
     public static java.util.logging.Logger log() {
@@ -10,27 +14,31 @@ public class Logger {
 
     public static void debug(String msg) {
         if (Config.DEBUG_MODE) {
-            for (String part : Lang.split(msg)) {
-                log().info(part);
-            }
-        }
-    }
-
-    public static void info(String msg) {
-        for (String part : Lang.split(msg)) {
-            log().info(part);
+            info("<yellow>[DEBUG]</yellow> " + msg);
         }
     }
 
     public static void warn(String msg) {
-        for (String part : Lang.split(msg)) {
-            log().warning(part);
-        }
+        log().warning(msg);
     }
 
     public static void severe(String msg) {
-        for (String part : Lang.split(msg)) {
-            log().severe(part);
-        }
+        log().severe(msg);
     }
+
+    public static void warn(String msg, Throwable t) {
+        log().log(Level.WARNING, msg, t);
+    }
+
+    public static void severe(String msg, Throwable t) {
+        log().log(Level.SEVERE, msg, t);
+    }
+
+    public static void info(final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
+        Pl3xMapPlugin.getInstance().audiences().console().sendMessage(MiniMessage.get().parse(
+                "<white>[<gray>Pl3xMap</gray>]</white> " + miniMessage,
+                placeholders
+        ));
+    }
+
 }

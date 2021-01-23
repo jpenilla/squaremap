@@ -5,6 +5,7 @@ import io.undertow.UndertowLogger;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.util.ETag;
+import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -19,11 +20,6 @@ public class IntegratedServer {
     private static Undertow server;
 
     public static void startServer() {
-        if (!Config.HTTPD_ENABLED) {
-            Logger.warn(Lang.LOG_INTERNAL_WEB_DISABLED);
-            return;
-        }
-
         try {
             ResourceHandler handler = new ResourceHandler(PathResourceManager.builder()
                     .setBase(Paths.get(FileUtil.WEB_DIR.toFile().getAbsolutePath()))
@@ -55,22 +51,18 @@ public class IntegratedServer {
                     .build();
             server.start();
 
-            Logger.info(Lang.LOG_INTERNAL_WEB_STARTED
-                    .replace("{bind}", Config.HTTPD_BIND)
-                    .replace("{port}", Integer.toString(Config.HTTPD_PORT)));
+            Logger.info(
+                    Lang.LOG_INTERNAL_WEB_STARTED,
+                    Template.of("bind", Config.HTTPD_BIND),
+                    Template.of("port", Integer.toString(Config.HTTPD_PORT))
+            );
         } catch (Exception e) {
-            e.printStackTrace();
             server = null;
-            Logger.severe(Lang.LOG_INTERNAL_WEB_START_ERROR);
+            Logger.severe(Lang.LOG_INTERNAL_WEB_START_ERROR, e);
         }
     }
 
     public static void stopServer() {
-        if (!Config.HTTPD_ENABLED) {
-            Logger.warn(Lang.LOG_INTERNAL_WEB_DISABLED);
-            return;
-        }
-
         if (server == null) {
             Logger.warn(Lang.LOG_INTERNAL_WEB_STOP_ERROR);
             return;

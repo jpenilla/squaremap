@@ -75,7 +75,7 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
             if (cause instanceof CompletedSuccessfullyException) {
                 return;
             } else if (cause instanceof ConsoleMustProvideWorldException) {
-                Lang.send(sender, Lang.WORLD_NOT_SPECIFIED);
+                Lang.send(sender, Lang.CONSOLE_MUST_SPECIFY_WORLD);
                 return;
             }
 

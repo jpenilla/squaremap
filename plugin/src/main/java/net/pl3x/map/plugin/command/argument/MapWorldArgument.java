@@ -6,6 +6,7 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.configuration.WorldConfig;
@@ -166,9 +167,9 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
         public @NonNull String getMessage() {
             switch (this.reason) {
                 case NO_SUCH_WORLD:
-                    return Lang.NO_SUCH_WORLD.replace("{world}", this.input);
+                    return MiniMessage.get().stripTokens(Lang.NO_SUCH_WORLD.replace("<world>", this.input));
                 case MAP_NOT_ENABLED:
-                    return Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("{world}", this.input);
+                    return MiniMessage.get().stripTokens(Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("<world>", this.input));
                 default:
                     throw new IllegalArgumentException("Unknown MapWorld argument parse failure reason");
             }

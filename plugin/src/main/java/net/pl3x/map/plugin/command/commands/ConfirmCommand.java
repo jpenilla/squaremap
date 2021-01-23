@@ -1,11 +1,14 @@
 package net.pl3x.map.plugin.command.commands;
 
 import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
-import cloud.commandframework.meta.CommandMeta;
+import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
-import org.bukkit.ChatColor;
+import net.pl3x.map.plugin.configuration.Config;
+import net.pl3x.map.plugin.configuration.Lang;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -16,8 +19,12 @@ public final class ConfirmCommand extends Pl3xMapCommand {
     private final CommandConfirmationManager<CommandSender> confirmationManager = new CommandConfirmationManager<>(
             15L,
             TimeUnit.SECONDS,
-            context -> context.getCommandContext().getSender().sendMessage(ChatColor.RED + "Confirmation required. Confirm using /pl3xmap confirm."),
-            sender -> sender.sendMessage(ChatColor.RED + "You don't have any pending commands.")
+            context -> Lang.send(
+                    context.getCommandContext().getSender(),
+                    Lang.CONFIRMATION_REQUIRED_MESSAGE,
+                    Template.of("command", Config.MAIN_COMMAND_LABEL)
+            ),
+            sender -> Lang.send(sender, Lang.NO_PENDING_COMMANDS_MESSAGE)
     );
 
     public ConfirmCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull CommandManager commandManager) {
@@ -30,7 +37,7 @@ public final class ConfirmCommand extends Pl3xMapCommand {
 
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("confirm")
-                        .meta(CommandMeta.DESCRIPTION, "Confirm a pending command")
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.CONFIRM_COMMAND_DESCRIPTION))
                         .handler(this.confirmationManager.createConfirmationExecutionHandler()));
     }
 }

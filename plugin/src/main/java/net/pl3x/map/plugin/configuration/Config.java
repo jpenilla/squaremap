@@ -121,9 +121,10 @@ public class Config {
         return (float) CONFIG.getDouble(path, CONFIG.getDouble(path));
     }
 
-    private static <T> List<?> getList(String path, T def) {
+    @SuppressWarnings("unchecked")
+    private static <T> List<T> getList(String path, List<T> def) {
         CONFIG.addDefault(path, def);
-        return CONFIG.getList(path, CONFIG.getList(path));
+        return (List<T>) CONFIG.getList(path, CONFIG.getList(path));
     }
 
     public static String LANGUAGE_FILE = "lang-en.yml";
@@ -221,10 +222,9 @@ public class Config {
     public static String MAIN_COMMAND_LABEL = "pl3xmap";
     public static List<String> MAIN_COMMAND_ALIASES = new ArrayList<>(Collections.singletonList("map"));
 
-    @SuppressWarnings("unchecked")
     private static void commandSettings() {
         MAIN_COMMAND_LABEL = getString("settings.commands.main-command-label", MAIN_COMMAND_LABEL);
-        MAIN_COMMAND_ALIASES = (List<String>) getList("settings.commands.main-command-aliases", MAIN_COMMAND_ALIASES);
+        MAIN_COMMAND_ALIASES = getList("settings.commands.main-command-aliases", MAIN_COMMAND_ALIASES);
     }
 
 }

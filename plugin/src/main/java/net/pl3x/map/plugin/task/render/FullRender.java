@@ -1,5 +1,6 @@
 package net.pl3x.map.plugin.task.render;
 
+import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -24,12 +25,12 @@ public final class FullRender extends AbstractRender {
 
     @Override
     protected void render() {
+        Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.getName()));
 
         final List<Region> regions = getRegions();
         this.totalRegions = regions.size();
         this.totalChunks = this.totalRegions * 32 * 32;
-        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES
-                .replace("{total}", Integer.toString(this.totalRegions)));
+        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.of("total", Integer.toString(this.totalRegions)));
 
         final Timer timer = RenderProgress.printProgress(this);
 
@@ -44,8 +45,7 @@ public final class FullRender extends AbstractRender {
 
         timer.cancel();
 
-        Logger.info(Lang.LOG_FINISHED_RENDERING
-                .replace("{world}", world.getName()));
+        Logger.info(Lang.LOG_FINISHED_RENDERING, Template.of("world", world.getName()));
 
     }
 
