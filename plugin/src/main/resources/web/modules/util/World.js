@@ -18,7 +18,7 @@ class World {
         const keys = Array.from(this.markerLayers.keys());
         for (let i = 0; i < keys.length; i++) {
             const layer = this.markerLayers.get(keys[i]);
-            P.controls.removeLayer(layer);
+            P.layerControl.controls.removeLayer(layer);
             layer.remove();
             this.markerLayers.delete(keys[i]);
         }
@@ -45,16 +45,8 @@ class World {
             // setup background
             document.getElementById("map").style.background = this.getBackground();
 
-            // setup the map tile layers
-            // we need 2 layers to swap between for seamless refreshing
-            if (P.tileLayer1 != null) {
-                P.map.removeLayer(P.tileLayer1);
-            }
-            if (P.tileLayer2 != null) {
-                P.map.removeLayer(P.tileLayer2);
-            }
-            P.tileLayer1 = this.createTileLayer();
-            P.tileLayer2 = this.createTileLayer();
+            // setup tile layers
+            P.layerControl.setupTileLayers(this);
 
             // force self update with existing player list
             P.playerList.update(Array.from(P.playerList.players.values()));
@@ -65,20 +57,6 @@ class World {
             if (callback != null) {
                 callback(this);
             }
-        });
-    }
-    createTileLayer() {
-        return L.tileLayer(`tiles/${this.name}/{z}/{x}_{y}.png?{rand}`, {
-            tileSize: 512,
-            minNativeZoom: 0,
-            maxNativeZoom: this.zoom.max,
-            rand: function() { 
-                return Math.random(); 
-            }
-        }).addTo(P.map)
-        .addEventListener("load", function() {
-            // when all tiles are loaded, switch to this layer
-            P.switchTileLayer();
         });
     }
     getBackground() {
@@ -122,10 +100,7 @@ class World {
 
             // setup the layer control
             if (entry.control === true) {
-                P.controls.addOverlay(layer, entry.name);
-            }
-            if (entry.hide !== true) {
-                layer.addTo(P.map);
+                P.layerControl.addOverlay(entry.name, layer, entry.hide);
             }
 
             // setup the markers

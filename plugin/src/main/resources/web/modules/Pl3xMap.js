@@ -3,6 +3,7 @@ import { PlayerList } from "./PlayerList.js";
 import { WorldList } from "./WorldList.js";
 import { UICoordinates } from "./UICoordinates.js";
 import { UILink } from "./UILink.js";
+import { LayerControl } from "./LayerControl.js";
 
 class Pl3xMap {
     constructor() {
@@ -11,25 +12,15 @@ class Pl3xMap {
             center: [0, 0],
             attributionControl: false,
             noWrap: true
+        })
+        .on('overlayadd', (e) => {
+            this.layerControl.showLayer(e.layer);
+        })
+        .on('overlayremove', (e) => {
+            this.layerControl.hideLayer(e.layer);
         });
 
-        this.currentLayer = 1;
-        this.updateInterval = 60;
-
-        this.playersLayer = new L.LayerGroup()
-            .setZIndex(1000)
-            .addTo(this.map);
-        this.playersLayer.order = 1;
-
-        this.controls = L.control.layers({}, {}, {
-            position: 'topleft',
-            sortLayers: true,
-            sortFunction: function (a, b) {
-                return a.order - b.order;
-            }
-        })
-            .addTo(this.map)
-            .addOverlay(this.playersLayer, "Players");
+        this.layerControl = new LayerControl();
 
         this.init();
     }
@@ -45,12 +36,14 @@ class Pl3xMap {
         }
         // refresh map tile layer
         if (count % this.updateInterval == 0) {
-            this.updateTileLayer();
+            this.layerControl.updateTileLayer();
         }
         setTimeout(() => this.tick(++count), 1000);
     }
     init() {
         this.getJSON("tiles/settings.json", (json) => {
+            this.layerControl.init();
+
             this.title = json.ui.title;
             this.sidebar = new Sidebar(json.ui.sidebar);
             this.playerList = new PlayerList();
@@ -69,26 +62,6 @@ class Pl3xMap {
                     this.getUrlParam("zoom", world.zoom.def));
             });
         });
-    }
-    updateTileLayer() {
-        // redraw background tile layer
-        if (this.currentLayer == 1) {
-            this.tileLayer2.redraw();
-        } else {
-            this.tileLayer1.redraw();
-        }
-    }
-    switchTileLayer() {
-        // swap current tile layer
-        if (this.currentLayer == 1) {
-            this.tileLayer1.setZIndex(0);
-            this.tileLayer2.setZIndex(1);
-            this.currentLayer = 2;
-        } else {
-            this.tileLayer1.setZIndex(1);
-            this.tileLayer2.setZIndex(0);
-            this.currentLayer = 1;
-        }
     }
     centerOn(x, z, zoom) {
         this.map.setView(this.toLatLng(x, z), zoom);
