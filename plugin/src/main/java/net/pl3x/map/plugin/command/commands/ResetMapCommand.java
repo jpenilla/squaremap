@@ -42,7 +42,7 @@ public final class ResetMapCommand extends Pl3xMapCommand {
             FileUtil.deleteSubdirectories(worldTilesDir);
         } catch (IOException e) {
             Logger.severe(Lang.LOG_UNABLE_TO_WRITE_TO_FILE
-                    .replace("{path}", worldTilesDir.toAbsolutePath().toString()));
+                    .replace("{path}", worldTilesDir.toAbsolutePath().toString()), e);
             Lang.send(sender, "Failed to reset map");
             return;
         }

@@ -40,7 +40,7 @@ public class Image {
                 Files.createDirectories(dir);
             } catch (IOException e) {
                 Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                        .replace("{path}", dir.toAbsolutePath().toString()));
+                        .replace("{path}", dir.toAbsolutePath().toString()), e);
                 continue;
             }
 

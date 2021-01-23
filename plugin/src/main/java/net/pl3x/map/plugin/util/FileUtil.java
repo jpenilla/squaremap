@@ -105,8 +105,7 @@ public class FileUtil {
                 WORLD_DIRS.put(world.getUID(), dir);
             } catch (IOException e) {
                 Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                        .replace("{path}", dir.toAbsolutePath().toString()));
-                e.printStackTrace();
+                        .replace("{path}", dir.toAbsolutePath().toString()), e);
             }
         }
         return dir;

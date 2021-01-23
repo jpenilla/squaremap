@@ -15,7 +15,8 @@ class Marker {
         }
         if (this.tooltip != null) {
             this.marker.bindTooltip(() => this.tooltip, {
-                direction: this.opts.pop("tooltip_direction", "top")
+                direction: this.opts.pop("tooltip_direction", "top"),
+                sticky: true
             });
         }
         for (const key in this.opts) {
