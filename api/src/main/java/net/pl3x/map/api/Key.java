@@ -10,7 +10,7 @@ import java.util.function.IntPredicate;
  *
  * <p>Valid characters for keys are <a href="https://regexr.com/5ks7l">{@code [a-zA-Z0-9._-]}</a>.</p>
  *
- * <p>In most cases Keys should be unique, so prefixing keys with a plugin name, for example {@code "myplugin_layer-1"}, would be good practice.</p>
+ * <p>In most cases keys should be unique, so prefixing keys with a plugin name, for example {@code "myplugin_layer-1"}, would be good practice.</p>
  */
 public final class Key {
 

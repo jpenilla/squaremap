@@ -143,10 +143,13 @@ public final class SimpleLayerProvider implements LayerProvider {
         }
 
         /**
-         * Set whether this layer is hidden by default, see {@link LayerProvider#defaultHidden()}
+         * Set whether this layer is hidden by default
+         *
+         * <p>Default: {@code false}</p>
          *
          * @param defaultHidden whether to be default hidden
          * @return this builder
+         * @see LayerProvider#defaultHidden()
          */
         public @NonNull Builder defaultHidden(final boolean defaultHidden) {
             this.defaultHidden = defaultHidden;
@@ -154,10 +157,13 @@ public final class SimpleLayerProvider implements LayerProvider {
         }
 
         /**
-         * Set whether to show controls for this layer, see {@link LayerProvider#showControls()}
+         * Set whether to show controls for this layer
+         *
+         * <p>Default: {@code true}</p>
          *
          * @param showControls whether to show controls
          * @return this builder
+         * @see LayerProvider#showControls()
          */
         public @NonNull Builder showControls(final boolean showControls) {
             this.showControls = showControls;
@@ -165,10 +171,13 @@ public final class SimpleLayerProvider implements LayerProvider {
         }
 
         /**
-         * Set the priority for this layer (default 99 if unset), see {@link LayerProvider#layerPriority()}
+         * Set the priority for this layer
+         *
+         * <p>Default: {@code 99}</p>
          *
          * @param layerPriority layer priority
          * @return this builder
+         * @see LayerProvider#layerPriority()
          */
         public @NonNull Builder layerPriority(final int layerPriority) {
             this.layerPriority = layerPriority;
@@ -176,10 +185,13 @@ public final class SimpleLayerProvider implements LayerProvider {
         }
 
         /**
-         * Set the z-index for this layer (default 99 if unset), see {@link LayerProvider#zIndex()}
+         * Set the z-index for this layer
+         *
+         * <p>Default: {@code 99}</p>
          *
          * @param zIndex new z-index
          * @return this builder
+         * @see LayerProvider#zIndex()
          */
         public @NonNull Builder zIndex(final int zIndex) {
             this.zIndex = zIndex;
