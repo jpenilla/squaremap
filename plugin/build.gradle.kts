@@ -36,3 +36,8 @@ spigot {
     website = rootProject.ext["url"].toString()
     authors("BillyGalbreath", "jmp")
 }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
