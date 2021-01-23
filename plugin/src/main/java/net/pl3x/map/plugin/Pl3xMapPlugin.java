@@ -1,5 +1,6 @@
 package net.pl3x.map.plugin;
 
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.pl3x.map.api.Key;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
@@ -29,6 +30,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
+    private BukkitAudiences audiences;
 
     public Pl3xMapPlugin() {
         instance = this;
@@ -36,6 +38,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.audiences = BukkitAudiences.create(this);
         Config.reload();
         Lang.reload();
 
@@ -136,6 +139,10 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
     public @NonNull Pl3xMap getApi() {
         return this.pl3xMap;
+    }
+
+    public @NonNull BukkitAudiences audiences() {
+        return this.audiences;
     }
 
 }
