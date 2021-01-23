@@ -2,6 +2,7 @@ package net.pl3x.map.plugin.httpd;
 
 import io.undertow.Undertow;
 import io.undertow.UndertowLogger;
+import io.undertow.UndertowOptions;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.util.ETag;
@@ -46,6 +47,7 @@ public class IntegratedServer {
             });
 
             server = Undertow.builder()
+                    .setServerOption(UndertowOptions.ENABLE_HTTP2, true)
                     .addHttpListener(Config.HTTPD_PORT, Config.HTTPD_BIND)
                     .setHandler(handler)
                     .build();
