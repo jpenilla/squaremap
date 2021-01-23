@@ -23,7 +23,9 @@ public final class IconRegistry implements Registry<BufferedImage> {
     public IconRegistry() {
         this.directory = FileUtil.WEB_DIR.resolve("images/icon/registered/");
         try {
-            FileUtil.deleteDirectory(this.directory);
+            if (Files.exists(this.directory)) {
+                FileUtil.deleteDirectory(this.directory);
+            }
             Files.createDirectories(this.directory);
         } catch (IOException e) {
             throw failedToCreateRegistry(e);
