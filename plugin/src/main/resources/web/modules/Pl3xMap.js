@@ -132,7 +132,6 @@ class Pl3xMap {
         fetch(url, {cache: "no-store"})
             .then(async res => {
                 if (res.ok) {
-                    console.log(res.headers);
                     fn(await res.json());
                 }
             });

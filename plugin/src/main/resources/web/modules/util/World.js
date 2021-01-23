@@ -1,4 +1,4 @@
-import { Options, Rectangle, PolyLine, Polygon, Circle, Icon } from "./Markers.js";
+import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon } from "./Markers.js";
 import { P } from '../Pl3xMap.js';
 
 class World {
@@ -137,6 +137,7 @@ class World {
                     case "polyline": marker = new PolyLine(opts); break;
                     case "polygon": marker = new Polygon(opts); break;
                     case "circle": marker = new Circle(opts); break;
+                    case "ellipse": marker = new Ellipse(opts); break;
                     case "icon": marker = new Icon(opts); break;
                 }
                 if (marker != null) {

@@ -112,6 +112,21 @@ class Circle extends Marker {
     }
 }
 
+class Ellipse extends Marker {
+    constructor(opts) {
+        super(opts);
+        console.log(opts);
+        const center = this.opts.pop("center");
+        const radiusX = this.opts.pop("radiusX");
+        const radiusZ = this.opts.pop("radiusZ");
+        this.marker = L.ellipse(
+            P.toLatLng(center.x, center.z),
+            [radiusX, radiusZ], 0
+        );
+        super.init();
+    }
+}
+
 class Icon extends Marker {
     constructor(opts) {
         super(opts);
@@ -132,4 +147,4 @@ class Icon extends Marker {
     }
 }
 
-export { Marker, Options, Rectangle, PolyLine, Polygon, Circle, Icon };
+export { Marker, Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon };

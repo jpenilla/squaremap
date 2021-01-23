@@ -122,6 +122,21 @@ public abstract class Marker {
     }
     // End circle factory methods
 
+    // Begin ellipse factory methods
+
+    /**
+     * Create a new ellipse marker
+     *
+     * @param center  center point
+     * @param radiusX radiusX
+     * @param radiusZ radiusZ
+     * @return new ellipse
+     */
+    public static @NonNull Ellipse ellipse(final @NonNull Point center, final double radiusX, final double radiusZ) {
+        return new Ellipse(center, radiusX, radiusZ);
+    }
+    // End ellipse factory methods
+
     // Begin icon factory methods
 
     /**

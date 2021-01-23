@@ -7,6 +7,7 @@ import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Point;
 import net.pl3x.map.api.Registry;
 import net.pl3x.map.api.marker.Circle;
+import net.pl3x.map.api.marker.Ellipse;
 import net.pl3x.map.api.marker.Icon;
 import net.pl3x.map.api.marker.Marker;
 import net.pl3x.map.api.marker.MarkerOptions;
@@ -199,6 +200,13 @@ public final class UpdateMarkers extends BukkitRunnable {
             destination.put("type", "circle");
             destination.put("center", toMap(circle.center()));
             destination.put("radius", circle.radius());
+        });
+
+        register(Ellipse.class, (destination, ellipse) -> {
+            destination.put("type", "ellipse");
+            destination.put("center", toMap(ellipse.center()));
+            destination.put("radiusX", ellipse.radiusX());
+            destination.put("radiusZ", ellipse.radiusZ());
         });
 
         register(Polygon.class, (destination, polygon) -> {
