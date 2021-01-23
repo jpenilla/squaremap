@@ -34,7 +34,10 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
@@ -116,6 +119,11 @@ public class Config {
     private static float getFloat(String path, float def) {
         CONFIG.addDefault(path, def);
         return (float) CONFIG.getDouble(path, CONFIG.getDouble(path));
+    }
+
+    private static <T> List<?> getList(String path, T def) {
+        CONFIG.addDefault(path, def);
+        return CONFIG.getList(path, CONFIG.getList(path));
     }
 
     public static String LANGUAGE_FILE = "lang-en.yml";
@@ -209,4 +217,14 @@ public class Config {
     private static void specialEventSettings() {
         CHUNK_LOAD_EVENT_ONLY_NEW_CHUNKS = getBoolean("settings.event-listeners.ChunkLoadEvent.only-new-chunks", true);
     }
+
+    public static String MAIN_COMMAND_LABEL = "pl3xmap";
+    public static List<String> MAIN_COMMAND_ALIASES = new ArrayList<>(Collections.singletonList("map"));
+
+    @SuppressWarnings("unchecked")
+    private static void commandSettings() {
+        MAIN_COMMAND_LABEL = getString("settings.commands.main-command-label", MAIN_COMMAND_LABEL);
+        MAIN_COMMAND_ALIASES = (List<String>) getList("settings.commands.main-command-aliases", MAIN_COMMAND_ALIASES);
+    }
+
 }

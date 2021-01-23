@@ -3,6 +3,7 @@ package net.pl3x.map.plugin.command.commands;
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandHelpHandler;
 import cloud.commandframework.arguments.standard.StringArgument;
+import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -53,10 +54,14 @@ public final class HelpCommand extends Pl3xMapCommand {
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("help")
                         .argument(helpQueryArgument, ArgumentDescription.of("Help Query"))
-                        .handler(context -> this.minecraftHelp.queryCommands(
-                                context.getOptional(helpQueryArgument).orElse(""),
-                                context.getSender()
-                        )));
+                        .handler(this::executeHelp));
+    }
+
+    private void executeHelp(final @NonNull CommandContext<CommandSender> context) {
+        this.minecraftHelp.queryCommands(
+                context.<String>getOptional("query").orElse(""),
+                context.getSender()
+        );
     }
 
 }
