@@ -3,6 +3,7 @@ package net.pl3x.map.plugin.configuration;
 import net.minecraft.server.v1_16_R3.MathHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,10 @@ public class WorldConfig {
             final WorldConfig config = new WorldConfig(world);
             configs.put(world.getUID(), config);
         });
+    }
+
+    public static WorldConfig get(final @NonNull UUID uuid) {
+        return configs.get(uuid);
     }
 
     public static WorldConfig get(World world) {

@@ -11,10 +11,10 @@ import java.util.Objects;
  */
 public final class Point {
 
-    private final int x;
-    private final int z;
+    private final double x;
+    private final double z;
 
-    private Point(final int x, final int z) {
+    private Point(final double x, final double z) {
         this.x = x;
         this.z = z;
     }
@@ -24,7 +24,7 @@ public final class Point {
      *
      * @return x
      */
-    public int x() {
+    public double x() {
         return this.x;
     }
 
@@ -33,7 +33,7 @@ public final class Point {
      *
      * @return z
      */
-    public int z() {
+    public double z() {
         return this.z;
     }
 
@@ -44,7 +44,7 @@ public final class Point {
      * @param z z position
      * @return point
      */
-    public static @NonNull Point of(final int x, final int z) {
+    public static @NonNull Point of(final double x, final double z) {
         return new Point(x, z);
     }
 
@@ -55,7 +55,7 @@ public final class Point {
      * @param z z position
      * @return point
      */
-    public static @NonNull Point point(final int x, final int z) {
+    public static @NonNull Point point(final double x, final double z) {
         return new Point(x, z);
     }
 
@@ -72,9 +72,9 @@ public final class Point {
     @Override
     public boolean equals(final @Nullable Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Point that = (Point) o;
-        return that.x == this.x && that.z == this.z;
+        if (o == null || this.getClass() != o.getClass()) return false;
+        final Point point = (Point) o;
+        return Double.compare(point.x, this.x) == 0 && Double.compare(point.z, this.z) == 0;
     }
 
     @Override

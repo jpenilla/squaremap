@@ -4,6 +4,7 @@ import net.pl3x.map.api.MapWorld;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Registry;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -11,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 public final class Pl3xMapApiProvider implements Pl3xMap {
 
@@ -28,8 +30,17 @@ public final class Pl3xMapApiProvider implements Pl3xMap {
     }
 
     @Override
-    public @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull World world) {
+    public @NonNull Optional<MapWorld> getWorldIfEnabled(final @NonNull World world) {
         return this.plugin.worldManager().getWorldIfEnabled(world).map(w -> w);
+    }
+
+    @Override
+    public @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull UUID uuid) {
+        final World world = Bukkit.getWorld(uuid);
+        if (world == null) {
+            return Optional.empty();
+        }
+        return this.getWorldIfEnabled(world);
     }
 
     @Override

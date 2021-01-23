@@ -255,7 +255,7 @@ public final class UpdateMarkers extends BukkitRunnable {
     }
 
     private static @NonNull Map<String, Integer> toMap(final @NonNull Point point) {
-        return Map.of("x", point.x(), "z", point.z());
+        return Map.of("x", (int) point.x(), "z", (int) point.z());
     }
 
 }

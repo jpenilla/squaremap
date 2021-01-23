@@ -7,14 +7,14 @@ import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class WorldManager {
 
-    private final Map<UUID, MapWorld> worlds = new HashMap<>();
+    private final Map<UUID, MapWorld> worlds = new ConcurrentHashMap<>();
 
     public @NonNull Map<UUID, MapWorld> worlds() {
         return Collections.unmodifiableMap(this.worlds);

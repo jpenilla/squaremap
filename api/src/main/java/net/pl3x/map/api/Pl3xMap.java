@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Pl3xMap API
@@ -42,6 +43,18 @@ public interface Pl3xMap {
      * @return optional
      */
     @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull World world);
+
+    /**
+     * Get an optional which will either
+     * <ul>
+     *     <li>A) Be empty, if the world does not exist, or does not have Pl3xMap enabled</li>
+     *     <li>B) Contain the {@link MapWorld} instance for the World associated with the provided {@link UUID}, if the world exists and has Pl3xMap enabled</li>
+     * </ul>
+     *
+     * @param uuid world uuid
+     * @return optional
+     */
+    @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull UUID uuid);
 
     /**
      * Get the registry of images which can be used with icon markers
