@@ -11,6 +11,7 @@ class Pl3xMap {
             crs: L.CRS.Simple,
             center: [0, 0],
             attributionControl: false,
+            preferCanvas: true,
             noWrap: true
         })
         .on('overlayadd', (e) => {
