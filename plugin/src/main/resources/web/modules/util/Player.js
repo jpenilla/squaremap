@@ -35,7 +35,7 @@ class Player {
         this.x = player.x;
         this.z = player.z;
         if (P.worldList.curWorld.name == player.world) {
-            this.marker.addTo(P.playersLayer);
+            this.marker.addTo(P.layerControl.playersLayer);
             const latlng = P.toLatLng(player.x, player.z);
             if (!this.marker.getLatLng().equals(latlng)) {
                 this.marker.setLatLng(latlng);
