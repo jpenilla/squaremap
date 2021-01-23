@@ -267,6 +267,8 @@ public final class MarkerOptions {
         /**
          * Set whether to render the line stroke
          *
+         * <p>Default: {@code true}</p>
+         *
          * @param stroke new stroke
          * @return this builder
          */
@@ -277,6 +279,8 @@ public final class MarkerOptions {
 
         /**
          * Set the line stroke color
+         *
+         * <p>Default: {@link Color#BLUE}</p>
          *
          * @param color new color
          * @return this builder
@@ -289,6 +293,8 @@ public final class MarkerOptions {
         /**
          * Set the line stroke weight
          *
+         * <p>Default: {@code 3}</p>
+         *
          * @param weight new weight
          * @return this builder
          */
@@ -299,6 +305,8 @@ public final class MarkerOptions {
 
         /**
          * Set the line stroke opacity
+         *
+         * <p>Default: {@code 1.0}</p>
          *
          * @param opacity new opacity
          * @return this builder
@@ -311,6 +319,8 @@ public final class MarkerOptions {
         /**
          * Set whether to fill the marker
          *
+         * <p>Default: {@code true}</p>
+         *
          * @param fill new fill
          * @return this builder
          */
@@ -321,6 +331,8 @@ public final class MarkerOptions {
 
         /**
          * Set the fill color
+         *
+         * <p>Default: unset</p>
          *
          * @param color new color
          * @return this builder
@@ -333,6 +345,8 @@ public final class MarkerOptions {
         /**
          * Set the fill opacity
          *
+         * <p>Default: {@code 0.2}</p>
+         *
          * @param opacity new opacity
          * @return this builder
          */
@@ -343,6 +357,8 @@ public final class MarkerOptions {
 
         /**
          * Set the fill rule
+         *
+         * <p>Default: {@link FillRule#EVENODD}</p>
          *
          * @param fillRule new fill rule
          * @return this builder
@@ -355,6 +371,8 @@ public final class MarkerOptions {
         /**
          * Set the click tooltip, accepts HTML
          *
+         * <p>Default: unset</p>
+         *
          * @param tooltip new tooltip
          * @return this builder
          */
@@ -365,6 +383,8 @@ public final class MarkerOptions {
 
         /**
          * Set the hover tooltip, accepts HTML
+         *
+         * <p>Default: unset</p>
          *
          * @param tooltip new tooltip
          * @return this builder
