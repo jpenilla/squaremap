@@ -6,6 +6,7 @@ class Marker {
         this.id = this.opts.pop("id");
         this.popup = this.opts.pop("popup");
         this.tooltip = this.opts.pop("tooltip");
+        this.tooltip_sticky = true;
     }
     init() {
         if (this.popup != null) {
@@ -16,7 +17,7 @@ class Marker {
         if (this.tooltip != null) {
             this.marker.bindTooltip(() => this.tooltip, {
                 direction: this.opts.pop("tooltip_direction", "top"),
-                sticky: true
+                sticky: this.tooltip_sticky
             });
         }
         for (const key in this.opts) {
@@ -144,6 +145,7 @@ class Icon extends Marker {
                 tooltipAnchor: [tooltipAnchor.x, tooltipAnchor.z]
             })
         });
+        this.tooltip_sticky = false;
         super.init();
     }
 }
