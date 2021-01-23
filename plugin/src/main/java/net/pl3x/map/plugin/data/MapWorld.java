@@ -178,6 +178,9 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     }
 
     public void shutdown() {
+        if (this.layerRegistry().hasEntry(SpawnIconProvider.SPAWN_ICON_KEY)) {
+            this.layerRegistry().unregister(SpawnIconProvider.SPAWN_ICON_KEY);
+        }
         this.updateMarkersTask.cancel();
         if (this.isRendering()) {
             this.stopRender();
