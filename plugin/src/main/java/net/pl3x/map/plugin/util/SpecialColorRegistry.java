@@ -59,9 +59,10 @@ public final class SpecialColorRegistry {
         staticColorBuilder.put(Blocks.BIRCH_LEAVES, Colors.mix(Colors.leavesMapColor().rgb, 0x80A755, 0.5F));
 
         // Misc plants
+        staticColorBuilder.put(Blocks.JACK_O_LANTERN, Blocks.PUMPKIN.s().rgb);
         staticColorBuilder.put(Blocks.LILY_PAD, 0x208030);
-        staticColorBuilder.put(Blocks.ATTACHED_MELON_STEM, 0xE0C71C); // yellow?
-        staticColorBuilder.put(Blocks.ATTACHED_PUMPKIN_STEM, 0xE0C71C); // yellow ?
+        staticColorBuilder.put(Blocks.ATTACHED_MELON_STEM, 0xE0C71C);
+        staticColorBuilder.put(Blocks.ATTACHED_PUMPKIN_STEM, 0xE0C71C);
 
         // Lava
         staticColorBuilder.put(Blocks.LAVA, 0xEA5C0F); // red was so ugly. lets go with orange
