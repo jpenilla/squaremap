@@ -16,7 +16,7 @@ class LayerControl {
         this.controls = L.control.layers({}, {}, {
             position: 'topleft',
             sortLayers: true,
-            sortFunction: function (a, b) {
+            sortFunction: (a, b) => {
                 return a.order - b.order;
             }
         })
@@ -67,7 +67,7 @@ class LayerControl {
             tileSize: 512,
             minNativeZoom: 0,
             maxNativeZoom: world.zoom.max,
-            rand: function() { 
+            rand: () => { 
                 return Math.random(); 
             }
         }).addTo(P.map)

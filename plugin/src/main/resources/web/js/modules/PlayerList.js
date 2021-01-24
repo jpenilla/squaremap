@@ -17,7 +17,7 @@ class PlayerList {
         for (let i = 0; i < keys.length; i++) {
             const player = P.playerList.players.get(keys[i]);
             if (uuid == player.uuid && player.world != world) {
-                P.worldList.showWorld(player.world, function () {
+                P.worldList.showWorld(player.world, () => {
                     P.map.panTo(P.toLatLng(player.x, player.z));
                 });
             }

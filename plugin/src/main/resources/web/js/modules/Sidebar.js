@@ -19,14 +19,14 @@ class Sidebar {
         this.playerList = new Fieldset("players", "Players");
         this.sidebar.appendChild(this.playerList.element);
 
-        this.sidebar.onmouseleave = function () {
-            if (!this.parent.pin.pinned) {
-                this.parent.show(false);
+        this.sidebar.onmouseleave = () => {
+            if (!this.pin.pinned) {
+                this.show(false);
             }
         };
-        this.sidebar.onmouseenter = function () {
-            if (!this.parent.pin.pinned) {
-                this.parent.show(true);
+        this.sidebar.onmouseenter = () => {
+            if (!this.pin.pinned) {
+                this.show(true);
             }
         };
     }

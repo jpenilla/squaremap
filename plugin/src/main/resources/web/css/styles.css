@@ -41,7 +41,7 @@ div.leaflet-control-layers.link img {
   height: 34px;
   vertical-align: bottom;
   bottom: 0px;
-  background-image: url("images/link.png");
+  background-image: url("../images/link.png");
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: 50% 50%;
@@ -128,4 +128,8 @@ div.leaflet-control-layers.coordinates {
 #sidebar #pin.unpinned:hover {
   background: rgba(128,0,0,0.5);
   border: 1px solid rgba(128,0,0,0.75);
+}
+a .other-world {
+  filter: brightness(50%) !important;
+  font-style: italic;
 }

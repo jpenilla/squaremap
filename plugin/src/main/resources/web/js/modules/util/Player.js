@@ -34,6 +34,10 @@ class Player {
     update(player) {
         this.x = player.x;
         this.z = player.z;
+        this.world = player.world;
+        const link = document.getElementById(player.uuid);
+        const img = link.getElementsByTagName("img")[0];
+        const span = link.getElementsByTagName("span")[0];
         if (P.worldList.curWorld.name == player.world) {
             this.marker.addTo(P.layerControl.playersLayer);
             const latlng = P.toLatLng(player.x, player.z);
@@ -44,8 +48,12 @@ class Player {
             if (this.marker.options.rotationAngle != angle) {
                 this.marker.setRotationAngle(angle);
             }
+            img.classList.remove("other-world");
+            span.classList.remove("other-world");
         } else {
             this.marker.remove();
+            img.classList.add("other-world");
+            span.classList.add("other-world");
         }
     }
 }
