@@ -188,7 +188,7 @@ public abstract class AbstractRender implements Runnable {
             final BlockPosition.MutableBlockPosition pos = new BlockPosition.MutableBlockPosition();
             final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, x, 15) + 1;
             pos.setValues(chunk.getPos().getBlockX() + x, yDiff, chunk.getPos().getBlockZ() + 15);
-            iterateDown(chunk, pos);
+            iterateDown(chunk, pos, true);
             lastY[x] = pos.getY();
         }
         return lastY;
@@ -199,13 +199,18 @@ public abstract class AbstractRender implements Runnable {
         int blockZ = chunk.getPos().getBlockZ() + imgZ;
 
         IBlockData state;
+        int glass = 0x00000000;
         final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
 
         final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
         mutablePos.setValues(blockX, yDiff, blockZ);
 
         if (yDiff > 1) {
-            state = iterateDown(chunk, mutablePos);
+            state = iterateDown(chunk, mutablePos, false);
+            if (isGlass(state)) {
+                glass = glassColor(state);
+                state = iterateDown(chunk, mutablePos, true);
+            }
         } else {
             // no blocks found, show invisible/air
             return 0x00000000;
@@ -225,16 +230,60 @@ public abstract class AbstractRender implements Runnable {
         if (fluidPair != null) {
             final int fluidDepth = fluidPair.left();
             final IBlockData fluidState = fluidPair.right();
-            return getFluidColor(fluidDepth, color, state, fluidState, odd);
+            int fluid = getFluidColor(fluidDepth, color, state, fluidState, odd);
+            return mixGlass(fluid, glass);
         }
 
         double diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
         byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
         lastY[imgX] = curY;
-        return Colors.shade(color, colorOffset);
+        return Colors.shade(mixGlass(color, glass), colorOffset);
     }
 
-    private @NonNull IBlockData iterateDown(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
+    private int mixGlass(int color, int glass) {
+        if (glass != 0x00000000) {
+            float ratio = 0.5F;
+            if (glass == 0x88FFFFFF) {
+                ratio = 0.25F;
+            }
+            color = Colors.mix(color, glass, ratio);
+        }
+        return color;
+    }
+
+    private int glassColor(IBlockData state) {
+        if (!isGlass(state)) {
+            return 0x00000000;
+        }
+        Block block = state.getBlock();
+        if (block == Blocks.GLASS || block == Blocks.GLASS_PANE) {
+            return 0x88FFFFFF;
+        }
+        return Colors.getMapColor(state);
+    }
+
+    private boolean isGlass(IBlockData state) {
+        Block block = state.getBlock();
+        return block == Blocks.GLASS || block == Blocks.GLASS_PANE ||
+                block == Blocks.WHITE_STAINED_GLASS || block == Blocks.WHITE_STAINED_GLASS_PANE ||
+                block == Blocks.ORANGE_STAINED_GLASS || block == Blocks.ORANGE_STAINED_GLASS_PANE ||
+                block == Blocks.MAGENTA_STAINED_GLASS || block == Blocks.MAGENTA_STAINED_GLASS_PANE ||
+                block == Blocks.LIGHT_BLUE_STAINED_GLASS || block == Blocks.LIGHT_BLUE_STAINED_GLASS_PANE ||
+                block == Blocks.YELLOW_STAINED_GLASS || block == Blocks.YELLOW_STAINED_GLASS_PANE ||
+                block == Blocks.LIME_STAINED_GLASS || block == Blocks.LIME_STAINED_GLASS_PANE ||
+                block == Blocks.PINK_STAINED_GLASS || block == Blocks.PINK_STAINED_GLASS_PANE ||
+                block == Blocks.GRAY_STAINED_GLASS || block == Blocks.GRAY_STAINED_GLASS_PANE ||
+                block == Blocks.LIGHT_GRAY_STAINED_GLASS || block == Blocks.LIGHT_GRAY_STAINED_GLASS_PANE ||
+                block == Blocks.CYAN_STAINED_GLASS || block == Blocks.CYAN_STAINED_GLASS_PANE ||
+                block == Blocks.PURPLE_STAINED_GLASS || block == Blocks.PURPLE_STAINED_GLASS_PANE ||
+                block == Blocks.BLUE_STAINED_GLASS || block == Blocks.BLUE_STAINED_GLASS_PANE ||
+                block == Blocks.BROWN_STAINED_GLASS || block == Blocks.BROWN_STAINED_GLASS_PANE ||
+                block == Blocks.GREEN_STAINED_GLASS || block == Blocks.GREEN_STAINED_GLASS_PANE ||
+                block == Blocks.RED_STAINED_GLASS || block == Blocks.RED_STAINED_GLASS_PANE ||
+                block == Blocks.BLACK_STAINED_GLASS || block == Blocks.BLACK_STAINED_GLASS_PANE;
+    }
+
+    private @NonNull IBlockData iterateDown(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos, boolean ignoreGlass) {
         IBlockData state;
         if (chunk.getWorld().getDimensionManager().hasCeiling()) {
             do {
@@ -242,10 +291,14 @@ public abstract class AbstractRender implements Runnable {
                 state = chunk.getType(mutablePos);
             } while (!state.isAir());
         }
+        boolean skip = false;
         do {
             mutablePos.c(EnumDirection.DOWN);
             state = chunk.getType(mutablePos);
-        } while ((state.isAir() || invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+            if (ignoreGlass) {
+                skip = isGlass(state);
+            }
+        } while ((state.isAir() || invisibleBlocks.contains(state.getBlock()) || skip) && mutablePos.getY() > 0);
         return state;
     }
 
