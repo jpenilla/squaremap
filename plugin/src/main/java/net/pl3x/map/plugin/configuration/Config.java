@@ -1,6 +1,9 @@
 package net.pl3x.map.plugin.configuration;
 
 import com.google.common.collect.ImmutableSet;
+import net.minecraft.server.v1_16_R3.Block;
+import net.minecraft.server.v1_16_R3.IRegistry;
+import net.minecraft.server.v1_16_R3.MinecraftKey;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -225,6 +228,21 @@ public class Config {
     private static void commandSettings() {
         MAIN_COMMAND_LABEL = getString("settings.commands.main-command-label", MAIN_COMMAND_LABEL);
         MAIN_COMMAND_ALIASES = getList("settings.commands.main-command-aliases", MAIN_COMMAND_ALIASES);
+    }
+
+    public static final Map<Block, String> COLOR_OVERRIDES = new HashMap<>();
+
+    private static void colorOverrideSettings() {
+        COLOR_OVERRIDES.clear();
+        getString("settings.color-overrides.minecraft:mycelium", "#6F6265");
+        getString("settings.color-overrides.minecraft:dirt", "none");
+        IRegistry.BLOCK.forEach(block -> {
+            final MinecraftKey key = IRegistry.BLOCK.getKey(block);
+            final String string = CONFIG.getString("settings.color-overrides." + key.toString(), null);
+            if (string != null && !string.equalsIgnoreCase("none")) {
+                COLOR_OVERRIDES.put(block, string);
+            }
+        });
     }
 
 }

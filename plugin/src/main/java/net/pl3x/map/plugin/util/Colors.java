@@ -68,7 +68,7 @@ public final class Colors {
     }
 
     public static int getMapColor(final @NonNull IBlockData state) {
-        final int special = SpecialColorRegistry.getColor(state);
+        final int special = SpecialColorRegistry.get().getColor(state);
         if (special != -1) {
             return special;
         }

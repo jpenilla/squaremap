@@ -1,23 +1,38 @@
 package net.pl3x.map.plugin.util;
 
 import com.google.common.collect.ImmutableMap;
+import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockStem;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.server.v1_16_R3.IRegistry;
+import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.configuration.Config;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
 import java.util.function.Function;
 
 public final class SpecialColorRegistry {
-    private SpecialColorRegistry() {
+    private static SpecialColorRegistry instance;
+
+    public static synchronized @NonNull SpecialColorRegistry get() {
+        if (instance == null) {
+            instance = new SpecialColorRegistry();
+        }
+        return instance;
     }
 
-    private static final Map<Block, Integer> staticColorMap;
-    private static final Map<Block, Function<IBlockData, Integer>> dynamicColorMap;
+    private final Map<Block, Integer> staticColorMap;
+    private final Map<Block, Function<IBlockData, Integer>> dynamicColorMap;
 
-    static {
+    private SpecialColorRegistry() {
+        this.staticColorMap = this.loadStaticColors();
+        this.dynamicColorMap = this.loadDynamicColors();
+    }
+
+    private @NonNull Map<Block, Integer> loadStaticColors() {
         final ImmutableMap.Builder<Block, Integer> staticColorBuilder = ImmutableMap.builder();
 
         // Flowers
@@ -51,17 +66,26 @@ public final class SpecialColorRegistry {
         // Lava
         staticColorBuilder.put(Blocks.LAVA, 0xEA5C0F); // red was so ugly. lets go with orange
 
-        // Mycelium
-        staticColorBuilder.put(Blocks.MYCELIUM, 0x6F6265); // better mycelium color than purple
+        // Load overrides
+        Config.COLOR_OVERRIDES.forEach((block, hexString) -> {
+            final TextColor color = TextColor.fromHexString(hexString);
+            if (color == null) {
+                Logger.warn(String.format("Invalid hex string '%s' in color override for block '%s'", hexString, IRegistry.BLOCK.getKey(block).toString()));
+                return;
+            }
+            staticColorBuilder.put(block, color.value());
+        });
 
-        staticColorMap = staticColorBuilder.build();
+        return staticColorBuilder.build();
+    }
 
+    private @NonNull Map<Block, Function<IBlockData, Integer>> loadDynamicColors() {
         final ImmutableMap.Builder<Block, Function<IBlockData, Integer>> dynamicColorBuilder = ImmutableMap.builder();
 
         dynamicColorBuilder.put(Blocks.MELON_STEM, SpecialColorRegistry::melonAndPumpkinStem);
         dynamicColorBuilder.put(Blocks.PUMPKIN_STEM, SpecialColorRegistry::melonAndPumpkinStem);
 
-        dynamicColorMap = dynamicColorBuilder.build();
+        return dynamicColorBuilder.build();
     }
 
     /**
@@ -71,15 +95,15 @@ public final class SpecialColorRegistry {
      * @param state IBlockData to test
      * @return special color, or -1
      */
-    public static int getColor(final @NonNull IBlockData state) {
+    public int getColor(final @NonNull IBlockData state) {
         final Block block = state.getBlock();
 
-        final Integer staticColor = staticColorMap.get(block);
+        final Integer staticColor = this.staticColorMap.get(block);
         if (staticColor != null) {
             return staticColor;
         }
 
-        final Function<IBlockData, Integer> func = dynamicColorMap.get(block);
+        final Function<IBlockData, Integer> func = this.dynamicColorMap.get(block);
         if (func != null) {
             return func.apply(state);
         }
