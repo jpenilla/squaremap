@@ -14,16 +14,16 @@ class UICoordinates {
                 return coords;
             },
             update: function (point) {
-                const x = point == null ? "---" : Math.round(point.x);
-                const z = point == null ? "---" : Math.round(point.y);
-                this._coords.innerHTML = `Coordinates<br />${x}, ${z}`;
+                this.x = point == null ? "---" : Math.round(point.x);
+                this.z = point == null ? "---" : Math.round(point.y);
+                this._coords.innerHTML = `Coordinates<br />${this.x}, ${this.z}`;
             }
         });
-        const coords = new Coords();
-        P.map.addControl(coords)
+        this.coords = new Coords();
+        P.map.addControl(this.coords)
             .addEventListener('mousemove', (event) => {
                 if (P.worldList.curWorld != null) {
-                    coords.update(P.toPoint(event.latlng));
+                    this.coords.update(P.toPoint(event.latlng));
                 }
             });
     }

@@ -5,14 +5,26 @@ class Marker {
         this.opts = opts;
         this.id = this.opts.pop("id");
         this.popup = this.opts.pop("popup");
+        this.popup_sticky = true;
         this.tooltip = this.opts.pop("tooltip");
         this.tooltip_sticky = true;
     }
     init() {
         if (this.popup != null) {
-            this.marker.bindPopup(() => this.popup, {
-                direction: this.opts.pop("tooltip_direction", "top")
-            });
+            if (this.popup_sticky) {
+                this.marker.on('click', (e) => {
+                    L.popup({
+                        direction: this.opts.pop("tooltip_direction", "top")
+                    })
+                    .setLatLng(P.toLatLng(P.coordinates.coords.x, P.coordinates.coords.z))
+                    .setContent(this.popup)
+                    .openOn(P.map);
+                });
+            } else {
+                this.marker.bindPopup(() => this.popup, {
+                    direction: this.opts.pop("tooltip_direction", "top")
+                });
+            }
         }
         if (this.tooltip != null) {
             this.marker.bindTooltip(() => this.tooltip, {
@@ -142,6 +154,7 @@ class Icon extends Marker {
                 tooltipAnchor: [tooltipAnchor.x, tooltipAnchor.z]
             })
         });
+        this.popup_sticky = false;
         this.tooltip_sticky = false;
         super.init();
     }
