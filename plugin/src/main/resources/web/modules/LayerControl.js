@@ -30,15 +30,25 @@ class LayerControl {
             layer.addTo(P.map);
         }
     }
+    removeOverlay(layer) {
+        this.ignoreLayer = layer;
+        this.controls.removeLayer(layer);
+        layer.remove();
+        this.ignoreLayer = null;
+    }
     shouldHide(layer, def) {
         const value = window.localStorage.getItem(`hide_${layer.id}`);
         return value == null ? def : value === 'true';
     }
     hideLayer(layer) {
-        window.localStorage.setItem(`hide_${layer.id}`, 'true');
+        if (layer != this.ignoreLayer) {
+            window.localStorage.setItem(`hide_${layer.id}`, 'true');
+        }
     }
     showLayer(layer) {
-        window.localStorage.setItem(`hide_${layer.id}`, 'false');
+        if (layer != this.ignoreLayer) {
+            window.localStorage.setItem(`hide_${layer.id}`, 'false');
+        }
     }
     setupTileLayers(world) {
         // setup the map tile layers

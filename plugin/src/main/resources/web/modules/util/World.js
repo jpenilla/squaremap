@@ -84,7 +84,7 @@ class World {
                     continue; // skip
                 }
                 // clear existing layer to rebuild
-                layer.remove();
+                P.layerControl.removeOverlay(layer);
                 // TODO
                 // implement marker tracker instead of clearing
                 // to reduce possible client side lag
