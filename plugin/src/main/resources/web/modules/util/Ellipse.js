@@ -41,7 +41,8 @@ L.Canvas.include ({
             r = layer._radiusX,
             s = (layer._radiusY || r) / r;
 
-        this._drawnLayers[layer._leaflet_id] = layer;
+        // this breaks "preferCanvas: true"
+        //this._drawnLayers[layer._leaflet_id] = layer;
 
         ctx.save();
 
