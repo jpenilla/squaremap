@@ -2,6 +2,8 @@ package net.pl3x.map.plugin.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.server.v1_16_R3.World;
 import net.pl3x.map.api.LayerProvider;
@@ -14,7 +16,6 @@ import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
-import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -76,7 +77,11 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     }
 
     private void serializeDirtyChunks() {
-        FileUtil.write(gson.toJson(this.modifiedChunks), this.dataPath.resolve(dirtyChunksFileName));
+        try {
+            Files.writeString(this.dataPath.resolve(dirtyChunksFileName), gson.toJson(this.modifiedChunks));
+        } catch (IOException e) {
+            Logger.warn(String.format("Failed to serialize dirty chunks for world '%s'", this.name()), e);
+        }
     }
 
     private void deserializeDirtyChunks() {
@@ -88,7 +93,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
                         TypeToken.getParameterized(List.class, ChunkCoordinate.class).getType()
                 ));
             }
-        } catch (IOException e) {
+        } catch (JsonIOException | JsonSyntaxException | IOException e) {
             Logger.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.name()), e);
         }
     }
