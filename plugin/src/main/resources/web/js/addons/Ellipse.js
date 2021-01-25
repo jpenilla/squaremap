@@ -231,7 +231,7 @@ L.Ellipse = L.Path.extend({
         if (this.options.fill === false) {
             var x = this._radiusX - this.options.weight;
             var y = this._radiusY - this.options.weight;
-            if (sumA * sumA / (x * y) + sumB * sumB / (y * y) <= 1) {
+            if (sumA * sumA / (x * x) + sumB * sumB / (y * y) <= 1) {
                 return false;
             }
         }
