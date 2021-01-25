@@ -56,7 +56,7 @@ public final class CommandUtil {
 
         final Player targetPlayer = selector.getPlayer();
         if (targetPlayer == null) {
-            Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Template.of("player", selector.getSelector()));
+            Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Template.of("input", selector.getSelector()));
             throw new CompletedSuccessfullyException();
         }
 
