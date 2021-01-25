@@ -1,6 +1,7 @@
 package net.pl3x.map.plugin.task;
 
 import com.google.gson.Gson;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.Bukkit;
@@ -14,7 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 public class UpdatePlayers extends BukkitRunnable {
+    private final Pl3xMapPlugin plugin;
     private final Gson gson = new Gson();
+
+    public UpdatePlayers(Pl3xMapPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public void run() {
@@ -28,6 +34,9 @@ public class UpdatePlayers extends BukkitRunnable {
                     return;
                 }
                 if (worldConfig.PLAYER_TRACKER_HIDE_INVISIBLE && player.isInvisible()) {
+                    return;
+                }
+                if (plugin.visibilityManager().isHidden(player)) {
                     return;
                 }
                 Map<String, Object> playerEntry = new HashMap<>();

@@ -43,6 +43,16 @@ public class Lang {
     public static String OPTIONAL_CENTER_ARGUMENT_DESCRIPTION = "Defaults to (<white>0<gray>,</gray> 0</white>) if unspecified";
     public static String HELP_QUERY_ARGUMENT_DESCRIPTION = "Help Query";
 
+    public static String PLAYER_NOT_SPECIFIED = "<red>Must specify a target player";
+
+    public static String HIDE_COMMAND_DESCRIPTION = "Hide a player from the map view";
+    public static String PLAYER_ALREADY_HIDDEN = "<red><player> is already hidden from map";
+    public static String PLAYER_HIDDEN = "<green><player> is now hidden from map";
+
+    public static String SHOW_COMMAND_DESCRIPTION = "Show a player on the map view";
+    public static String PLAYER_NOT_HIDDEN = "<red><player> is not hidden from map";
+    public static String PLAYER_SHOWN = "<green><player> is no longer hidden from map";
+
     public static String PLUGIN_RELOADED = "<green><name> v<version> reloaded";
 
     public static String PLUGIN_VERSION = "<green><name> v<version>";
@@ -90,6 +100,16 @@ public class Lang {
         OPTIONAL_WORLD_ARGUMENT_DESCRIPTION = getString("command.argument.optional-world", OPTIONAL_WORLD_ARGUMENT_DESCRIPTION);
         OPTIONAL_CENTER_ARGUMENT_DESCRIPTION = getString("command.argument.optional-center", OPTIONAL_CENTER_ARGUMENT_DESCRIPTION);
         HELP_QUERY_ARGUMENT_DESCRIPTION = getString("command.argument.help-query", HELP_QUERY_ARGUMENT_DESCRIPTION);
+
+        PLAYER_NOT_SPECIFIED = getString("command.player-not-specified", PLAYER_NOT_SPECIFIED);
+
+        HIDE_COMMAND_DESCRIPTION = getString("command.description.hide", HIDE_COMMAND_DESCRIPTION);
+        PLAYER_ALREADY_HIDDEN = getString("command.hide.already-hidden", PLAYER_ALREADY_HIDDEN);
+        PLAYER_HIDDEN = getString("command.hide.hidden", PLAYER_HIDDEN);
+
+        SHOW_COMMAND_DESCRIPTION = getString("command.description.show", SHOW_COMMAND_DESCRIPTION);
+        PLAYER_NOT_HIDDEN = getString("command.show.not-hidden", PLAYER_NOT_HIDDEN);
+        PLAYER_SHOWN = getString("command.show.shown", PLAYER_SHOWN);
 
         PLUGIN_RELOADED = getString("plugin-reloaded", PLUGIN_RELOADED);
         PLUGIN_VERSION = getString("plugin-version", PLUGIN_VERSION);

@@ -17,9 +17,11 @@ import net.pl3x.map.plugin.command.commands.CancelRenderCommand;
 import net.pl3x.map.plugin.command.commands.ConfirmCommand;
 import net.pl3x.map.plugin.command.commands.FullRenderCommand;
 import net.pl3x.map.plugin.command.commands.HelpCommand;
+import net.pl3x.map.plugin.command.commands.HideCommand;
 import net.pl3x.map.plugin.command.commands.RadiusRenderCommand;
 import net.pl3x.map.plugin.command.commands.ReloadCommand;
 import net.pl3x.map.plugin.command.commands.ResetMapCommand;
+import net.pl3x.map.plugin.command.commands.ShowCommand;
 import net.pl3x.map.plugin.command.exception.CompletedSuccessfullyException;
 import net.pl3x.map.plugin.command.exception.ConsoleMustProvideWorldException;
 import net.pl3x.map.plugin.configuration.Config;
@@ -62,7 +64,9 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
                 new FullRenderCommand(plugin, this),
                 new CancelRenderCommand(plugin, this),
                 new RadiusRenderCommand(plugin, this),
-                new ResetMapCommand(plugin, this)
+                new ResetMapCommand(plugin, this),
+                new HideCommand(plugin, this),
+                new ShowCommand(plugin, this)
         ).forEach(Pl3xMapCommand::register);
 
     }

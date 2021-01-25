@@ -41,6 +41,19 @@ public final class CommandUtil {
         }
     }
 
+    public static @NonNull Player resolvePlayer(final @NonNull CommandContext<CommandSender> context) {
+        final CommandSender sender = context.getSender();
+        final Player target = context.getOrDefault("player", null);
+        if (target != null) {
+            return target;
+        }
+        if (!(sender instanceof Player)) {
+            Lang.send(sender, Lang.PLAYER_NOT_SPECIFIED);
+            throw new CompletedSuccessfullyException();
+        }
+        return (Player) sender;
+    }
+
     public static @NonNull RichDescription description(final @NonNull String miniMessage) {
         return RichDescription.of(MiniMessage.get().parse(miniMessage));
     }
