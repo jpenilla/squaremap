@@ -4,6 +4,7 @@ import { P } from './Pl3xMap.js';
 class PlayerList {
     constructor() {
         this.players = new Map();
+        this.following = null;
         P.map.createPane("nameplate").style.zIndex = 1000;
     }
     tick() {
@@ -28,8 +29,10 @@ class PlayerList {
         head.src = P.getHeadUrl(player);
         const span = P.createTextElement("span", player.name);
         const link = P.createElement("a", player.uuid, this);
-        link.onclick = function () {
+        link.onclick = function (e) {
             this.parent.showPlayer(this);
+            this.parent.follow(this.id);
+            e.stopPropagation();
         };
         link.appendChild(head);
         link.appendChild(span);
@@ -60,12 +63,31 @@ class PlayerList {
             this.players.delete(player.uuid);
             this.remove(player.uuid);
         }
+        if (this.following != null) {
+            const player = this.players.get(this.following);
+            if (player == null) {
+                this.follow(null);
+            } else {
+                P.map.panTo(P.toLatLng(player.x, player.z));
+            }
+        }
     }
     clearMarkers() {
         const keys = Array.from(this.players.keys());
         for (let i = 0; i < keys.length; i++) {
             const player = this.players.get(keys[i]);
             player.marker.remove();
+        }
+    }
+    follow(uuid) {
+        if (uuid != null) {
+            console.log("1");
+            document.getElementById(uuid).classList.add("following");
+            this.following = uuid;
+        } else if (this.following != null) {
+            console.log("2");
+            document.getElementById(this.following).classList.remove("following");
+            this.following = null;
         }
     }
 }

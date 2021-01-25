@@ -95,9 +95,17 @@ div.leaflet-control-layers.coordinates {
   padding: 5px 10px;
   transition: all 0.25s;
 }
-#sidebar fieldset a:hover {
+#sidebar fieldset a.following {
+  background-color: rgba(128, 128, 255, 0.25);
+}
+#sidebar fieldset a:hover,
+#sidebar fieldset a.following:hover {
   background-color: rgba(255, 255, 255,0.15);
   cursor: pointer;
+}
+#sidebar fieldset a .other-world {
+  filter: brightness(50%) !important;
+  font-style: italic;
 }
 #sidebar fieldset a img {
   vertical-align: middle;
@@ -128,8 +136,4 @@ div.leaflet-control-layers.coordinates {
 #sidebar #pin.unpinned:hover {
   background: rgba(128,0,0,0.5);
   border: 1px solid rgba(128,0,0,0.75);
-}
-a .other-world {
-  filter: brightness(50%) !important;
-  font-style: italic;
 }

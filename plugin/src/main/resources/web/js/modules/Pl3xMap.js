@@ -19,6 +19,9 @@ class Pl3xMap {
         })
         .on('overlayremove', (e) => {
             this.layerControl.hideLayer(e.layer);
+        })
+        .on('click', (e) => {
+            this.playerList.follow(null);
         });
 
         this.layerControl = new LayerControl();
