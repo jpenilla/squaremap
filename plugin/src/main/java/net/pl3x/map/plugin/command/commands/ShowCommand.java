@@ -1,6 +1,5 @@
 package net.pl3x.map.plugin.command.commands;
 
-import cloud.commandframework.bukkit.parsers.PlayerArgument;
 import cloud.commandframework.bukkit.parsers.selector.SinglePlayerSelectorArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
@@ -14,7 +13,6 @@ import net.pl3x.map.plugin.util.CommandUtil;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class ShowCommand extends Pl3xMapCommand {
 
@@ -35,12 +33,12 @@ public final class ShowCommand extends Pl3xMapCommand {
     private void executeShow(final @NonNull CommandContext<CommandSender> context) {
         final Player target = CommandUtil.resolvePlayer(context);
         final CommandSender sender = context.getSender();
-        if (!plugin.visibilityManager().isHidden(target.getUniqueId())) {
+        if (!plugin.playerManager().isHidden(target.getUniqueId())) {
             Lang.send(sender, Lang.PLAYER_NOT_HIDDEN, Template.of("player", target.getName()));
             return;
         }
 
-        plugin.visibilityManager().show(target.getUniqueId());
+        plugin.playerManager().show(target.getUniqueId());
         Lang.send(sender, Lang.PLAYER_SHOWN, Template.of("player", target.getName()));
     }
 

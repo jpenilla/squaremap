@@ -36,7 +36,7 @@ public class UpdatePlayers extends BukkitRunnable {
                 if (worldConfig.PLAYER_TRACKER_HIDE_INVISIBLE && player.isInvisible()) {
                     return;
                 }
-                if (plugin.visibilityManager().isHidden(player)) {
+                if (plugin.playerManager().isHidden(player.getUniqueId())) {
                     return;
                 }
                 Map<String, Object> playerEntry = new HashMap<>();

@@ -33,12 +33,12 @@ public final class HideCommand extends Pl3xMapCommand {
     private void executeHide(final @NonNull CommandContext<CommandSender> context) {
         final Player target = CommandUtil.resolvePlayer(context);
         final CommandSender sender = context.getSender();
-        if (plugin.visibilityManager().isHidden(target.getUniqueId())) {
+        if (plugin.playerManager().isHidden(target.getUniqueId())) {
             Lang.send(sender, Lang.PLAYER_ALREADY_HIDDEN, Template.of("player", target.getName()));
             return;
         }
 
-        plugin.visibilityManager().hide(target.getUniqueId());
+        plugin.playerManager().hide(target.getUniqueId());
         Lang.send(sender, Lang.PLAYER_HIDDEN, Template.of("player", target.getName()));
     }
 

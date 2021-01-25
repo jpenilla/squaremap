@@ -3,7 +3,7 @@ package net.pl3x.map.plugin.api;
 import net.pl3x.map.api.MapWorld;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Registry;
-import net.pl3x.map.api.VisibilityManager;
+import net.pl3x.map.api.PlayerManager;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -50,8 +50,8 @@ public final class Pl3xMapApiProvider implements Pl3xMap {
     }
 
     @Override
-    public @NonNull VisibilityManager visibilityManager() {
-        return this.plugin.visibilityManager();
+    public @NonNull PlayerManager playerManager() {
+        return this.plugin.playerManager();
     }
 
 }

@@ -15,7 +15,7 @@ import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.ReflectionUtil;
-import net.pl3x.map.plugin.util.VisibilityManager;
+import net.pl3x.map.plugin.util.PlayerManager;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +30,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private static Pl3xMapPlugin instance;
     private Pl3xMap pl3xMap;
     private WorldManager worldManager;
-    private VisibilityManager visibilityManager;
+    private PlayerManager playerManager;
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
@@ -86,7 +86,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         this.worldManager = new WorldManager();
         this.worldManager.start();
 
-        this.visibilityManager = new VisibilityManager();
+        this.playerManager = new PlayerManager();
 
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();
@@ -129,8 +129,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         return this.worldManager;
     }
 
-    public @NonNull VisibilityManager visibilityManager() {
-        return this.visibilityManager;
+    public @NonNull PlayerManager playerManager() {
+        return this.playerManager;
     }
 
     private void setupApi() {

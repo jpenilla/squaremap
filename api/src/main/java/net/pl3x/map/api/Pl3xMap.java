@@ -64,10 +64,10 @@ public interface Pl3xMap {
     @NonNull Registry<BufferedImage> iconRegistry();
 
     /**
-     * Get the visibility manager which controls player visibility on the map
+     * Get the player manager
      *
-     * @return visibility manager
+     * @return player manager
      */
-    @NonNull VisibilityManager visibilityManager();
+    @NonNull PlayerManager playerManager();
 
 }

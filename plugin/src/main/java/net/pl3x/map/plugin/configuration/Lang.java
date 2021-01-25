@@ -24,6 +24,8 @@ public class Lang {
     public static String SUCCESSFULLY_RESET_MAP = "<green>Successfully reset map for <world>";
 
     public static String CONSOLE_MUST_SPECIFY_WORLD = "<red>You must specify the world when running this command from console";
+    public static String CONSOLE_MUST_SPECIFY_PLAYER = "<red>Must specify a target player";
+    public static String PLAYER_NOT_FOUND = "<red>Player not found '<player>'";
     public static String NO_SUCH_WORLD = "<red>No such world '<world>'";
     public static String MAP_NOT_ENABLED_FOR_WORLD = "<red>Map is not enabled for world '<world>'";
     public static String CONFIRMATION_REQUIRED_MESSAGE = "<red>Confirmation required. Confirm using /<command> confirm.";
@@ -42,8 +44,6 @@ public class Lang {
     public static String RADIUSRENDER_COMMAND_DESCRIPTION = "Starts a radius render";
     public static String OPTIONAL_CENTER_ARGUMENT_DESCRIPTION = "Defaults to (<white>0<gray>,</gray> 0</white>) if unspecified";
     public static String HELP_QUERY_ARGUMENT_DESCRIPTION = "Help Query";
-
-    public static String PLAYER_NOT_SPECIFIED = "<red>Must specify a target player";
 
     public static String HIDE_COMMAND_DESCRIPTION = "Hide a player from the map view";
     public static String PLAYER_ALREADY_HIDDEN = "<red><player> is already hidden from map";
@@ -82,6 +82,8 @@ public class Lang {
         SUCCESSFULLY_RESET_MAP = getString("successfully-reset-map", SUCCESSFULLY_RESET_MAP);
 
         CONSOLE_MUST_SPECIFY_WORLD = getString("command.message.console-must-specify-world", CONSOLE_MUST_SPECIFY_WORLD);
+        CONSOLE_MUST_SPECIFY_PLAYER = getString("command.message.console-must-specify-player", CONSOLE_MUST_SPECIFY_PLAYER);
+        PLAYER_NOT_FOUND = getString("command.message.player-not-found", PLAYER_NOT_FOUND);
         NO_SUCH_WORLD = getString("command.message.no-such-world", NO_SUCH_WORLD);
         MAP_NOT_ENABLED_FOR_WORLD = getString("command.message.map-not-enabled-for-world", MAP_NOT_ENABLED_FOR_WORLD);
         CONFIRMATION_REQUIRED_MESSAGE = getString("command.message.confirmation-required", CONFIRMATION_REQUIRED_MESSAGE);
@@ -100,8 +102,6 @@ public class Lang {
         OPTIONAL_WORLD_ARGUMENT_DESCRIPTION = getString("command.argument.optional-world", OPTIONAL_WORLD_ARGUMENT_DESCRIPTION);
         OPTIONAL_CENTER_ARGUMENT_DESCRIPTION = getString("command.argument.optional-center", OPTIONAL_CENTER_ARGUMENT_DESCRIPTION);
         HELP_QUERY_ARGUMENT_DESCRIPTION = getString("command.argument.help-query", HELP_QUERY_ARGUMENT_DESCRIPTION);
-
-        PLAYER_NOT_SPECIFIED = getString("command.player-not-specified", PLAYER_NOT_SPECIFIED);
 
         HIDE_COMMAND_DESCRIPTION = getString("command.description.hide", HIDE_COMMAND_DESCRIPTION);
         PLAYER_ALREADY_HIDDEN = getString("command.hide.already-hidden", PLAYER_ALREADY_HIDDEN);
