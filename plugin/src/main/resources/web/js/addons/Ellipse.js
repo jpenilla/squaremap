@@ -228,6 +228,13 @@ L.Ellipse = L.Path.extend({
         var dy = p.y - this._point.y;
         var sumA = cos * dx + sin * dy;
         var sumB = sin * dx - cos * dy;
+        if (this.options.fill === false) {
+            var x = this._radiusX - this.options.weight;
+            var y = this._radiusY - this.options.weight;
+            if (sumA * sumA / (x * y) + sumB * sumB / (y * y) <= 1) {
+                return false;
+            }
+        }
         return sumA * sumA / (this._radiusX * this._radiusX)  + sumB * sumB / (this._radiusY * this._radiusY) <= 1;
     }
 });
