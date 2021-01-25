@@ -23,9 +23,9 @@ public class Lang {
     public static String CANCELLED_RENDER = "<green>Render cancelled for <world>";
     public static String SUCCESSFULLY_RESET_MAP = "<green>Successfully reset map for <world>";
 
+    public static String CONSOLE_MUST_SPECIFY_PLAYER = "<red>You must specify a target player when running this command from console";
+    public static String PLAYER_NOT_FOUND_FOR_INPUT = "<red>No player found for input '<input>'";
     public static String CONSOLE_MUST_SPECIFY_WORLD = "<red>You must specify the world when running this command from console";
-    public static String CONSOLE_MUST_SPECIFY_PLAYER = "<red>Must specify a target player";
-    public static String PLAYER_NOT_FOUND = "<red>Player not found '<player>'";
     public static String NO_SUCH_WORLD = "<red>No such world '<world>'";
     public static String MAP_NOT_ENABLED_FOR_WORLD = "<red>Map is not enabled for world '<world>'";
     public static String CONFIRMATION_REQUIRED_MESSAGE = "<red>Confirmation required. Confirm using /<command> confirm.";
@@ -81,9 +81,9 @@ public class Lang {
         CANCELLED_RENDER = getString("cancelled-render", CANCELLED_RENDER);
         SUCCESSFULLY_RESET_MAP = getString("successfully-reset-map", SUCCESSFULLY_RESET_MAP);
 
-        CONSOLE_MUST_SPECIFY_WORLD = getString("command.message.console-must-specify-world", CONSOLE_MUST_SPECIFY_WORLD);
         CONSOLE_MUST_SPECIFY_PLAYER = getString("command.message.console-must-specify-player", CONSOLE_MUST_SPECIFY_PLAYER);
-        PLAYER_NOT_FOUND = getString("command.message.player-not-found", PLAYER_NOT_FOUND);
+        CONSOLE_MUST_SPECIFY_WORLD = getString("command.message.console-must-specify-world", CONSOLE_MUST_SPECIFY_WORLD);
+        PLAYER_NOT_FOUND_FOR_INPUT = getString("command.message.player-not-found-for-input", PLAYER_NOT_FOUND_FOR_INPUT);
         NO_SUCH_WORLD = getString("command.message.no-such-world", NO_SUCH_WORLD);
         MAP_NOT_ENABLED_FOR_WORLD = getString("command.message.map-not-enabled-for-world", MAP_NOT_ENABLED_FOR_WORLD);
         CONFIRMATION_REQUIRED_MESSAGE = getString("command.message.confirmation-required", CONFIRMATION_REQUIRED_MESSAGE);

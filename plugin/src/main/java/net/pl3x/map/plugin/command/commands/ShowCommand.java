@@ -33,12 +33,12 @@ public final class ShowCommand extends Pl3xMapCommand {
     private void executeShow(final @NonNull CommandContext<CommandSender> context) {
         final Player target = CommandUtil.resolvePlayer(context);
         final CommandSender sender = context.getSender();
-        if (!plugin.playerManager().isHidden(target.getUniqueId())) {
+        if (!this.plugin.api().playerManager().hidden(target.getUniqueId())) {
             Lang.send(sender, Lang.PLAYER_NOT_HIDDEN, Template.of("player", target.getName()));
             return;
         }
 
-        plugin.playerManager().show(target.getUniqueId());
+        this.plugin.api().playerManager().show(target.getUniqueId());
         Lang.send(sender, Lang.PLAYER_SHOWN, Template.of("player", target.getName()));
     }
 

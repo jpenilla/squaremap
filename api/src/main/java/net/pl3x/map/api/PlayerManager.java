@@ -1,29 +1,42 @@
 package net.pl3x.map.api;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 import java.util.UUID;
 
+/**
+ * Interface for interacting with players on the map
+ */
 public interface PlayerManager {
 
     /**
-     * Hide player on map
+     * Set a player to be hidden on the map
      *
-     * @param uuid UUID of player to hide
+     * @param uuid player UUID
      */
-    void hide(UUID uuid);
+    void hide(@NonNull UUID uuid);
 
     /**
-     * Show player on map
+     * Set a player to not be hidden on the map
      *
-     * @param uuid UUID of player to show
+     * @param uuid player UUID
      */
-    void show(UUID uuid);
+    void show(@NonNull UUID uuid);
 
     /**
-     * Check if player is hidden on map
+     * Set whether a player is hidden on the map
      *
-     * @param uuid UUID of player to check
-     * @return true if player is hidden
+     * @param uuid player UUID
+     * @param hide whether to hide the player
      */
-    boolean isHidden(UUID uuid);
+    void hidden(@NonNull UUID uuid, boolean hide);
+
+    /**
+     * Get whether a player is hidden on the map
+     *
+     * @param uuid player UUID
+     * @return whether the player is hidden
+     */
+    boolean hidden(@NonNull UUID uuid);
 
 }

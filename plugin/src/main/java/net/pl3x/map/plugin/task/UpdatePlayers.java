@@ -36,7 +36,7 @@ public class UpdatePlayers extends BukkitRunnable {
                 if (worldConfig.PLAYER_TRACKER_HIDE_INVISIBLE && player.isInvisible()) {
                     return;
                 }
-                if (plugin.playerManager().isHidden(player.getUniqueId())) {
+                if (this.plugin.api().playerManager().hidden(player.getUniqueId())) {
                     return;
                 }
                 Map<String, Object> playerEntry = new HashMap<>();
@@ -54,6 +54,6 @@ public class UpdatePlayers extends BukkitRunnable {
         Map<String, Object> map = new HashMap<>();
         map.put("players", players);
 
-        FileUtil.write(gson.toJson(map), FileUtil.TILES_DIR.resolve("players.json"));
+        FileUtil.write(this.gson.toJson(map), FileUtil.TILES_DIR.resolve("players.json"));
     }
 }

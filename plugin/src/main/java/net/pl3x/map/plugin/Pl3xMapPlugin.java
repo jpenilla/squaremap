@@ -15,7 +15,6 @@ import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.ReflectionUtil;
-import net.pl3x.map.plugin.util.PlayerManager;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +29,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private static Pl3xMapPlugin instance;
     private Pl3xMap pl3xMap;
     private WorldManager worldManager;
-    private PlayerManager playerManager;
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
@@ -59,7 +57,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         this.setupApi();
 
         try {
-            this.getApi().iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
+            this.api().iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
         } catch (IOException e) {
             Logger.log().log(Level.WARNING, "Failed to register spawn icon", e);
         }
@@ -85,8 +83,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         this.worldManager = new WorldManager();
         this.worldManager.start();
-
-        this.playerManager = new PlayerManager();
 
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();
@@ -129,10 +125,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         return this.worldManager;
     }
 
-    public @NonNull PlayerManager playerManager() {
-        return this.playerManager;
-    }
-
     private void setupApi() {
         this.pl3xMap = new Pl3xMapApiProvider(this);
         this.getServer().getServicesManager().register(Pl3xMap.class, this.pl3xMap, this, ServicePriority.Normal);
@@ -147,7 +139,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         this.pl3xMap = null;
     }
 
-    public @NonNull Pl3xMap getApi() {
+    public @NonNull Pl3xMap api() {
         return this.pl3xMap;
     }
 

@@ -3,7 +3,6 @@ package net.pl3x.map.plugin.api;
 import net.pl3x.map.api.MapWorld;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Registry;
-import net.pl3x.map.api.PlayerManager;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -19,10 +18,12 @@ public final class Pl3xMapApiProvider implements Pl3xMap {
 
     private final Pl3xMapPlugin plugin;
     private final IconRegistry iconRegistry;
+    private final PlayerManager playerManager;
 
     public Pl3xMapApiProvider(final @NonNull Pl3xMapPlugin plugin) {
         this.plugin = plugin;
         this.iconRegistry = new IconRegistry();
+        this.playerManager = new PlayerManager();
     }
 
     @Override
@@ -51,7 +52,7 @@ public final class Pl3xMapApiProvider implements Pl3xMap {
 
     @Override
     public @NonNull PlayerManager playerManager() {
-        return this.plugin.playerManager();
+        return this.playerManager;
     }
 
 }

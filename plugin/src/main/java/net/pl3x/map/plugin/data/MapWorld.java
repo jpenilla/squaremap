@@ -69,6 +69,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         this.updateMarkersTask = new UpdateMarkers(this);
         this.updateMarkersTask.runTaskTimer(Pl3xMapPlugin.getInstance(), 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
 
+        this.layerRegistry(); // init the layer registry
         if (this.config().SPAWN_MARKER_ICON_ENABLED) {
             this.layerRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, new SpawnIconProvider(this));
         }
