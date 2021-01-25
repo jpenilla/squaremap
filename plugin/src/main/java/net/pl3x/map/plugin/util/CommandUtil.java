@@ -1,5 +1,6 @@
 package net.pl3x.map.plugin.util;
 
+import cloud.commandframework.bukkit.arguments.selector.SinglePlayerSelector;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -43,15 +44,23 @@ public final class CommandUtil {
 
     public static @NonNull Player resolvePlayer(final @NonNull CommandContext<CommandSender> context) {
         final CommandSender sender = context.getSender();
-        final Player target = context.getOrDefault("player", null);
-        if (target != null) {
-            return target;
-        }
-        if (!(sender instanceof Player)) {
-            Lang.send(sender, Lang.PLAYER_NOT_SPECIFIED);
+        final SinglePlayerSelector selector = context.getOrDefault("player", null);
+
+        if (selector == null) {
+            if (sender instanceof Player) {
+                return (Player) sender;
+            }
+            Lang.send(sender, Lang.CONSOLE_MUST_SPECIFY_PLAYER);
             throw new CompletedSuccessfullyException();
         }
-        return (Player) sender;
+
+        final Player targetPlayer = selector.getPlayer();
+        if (targetPlayer == null) {
+            Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Template.of("input", selector.getSelector()));
+            throw new CompletedSuccessfullyException();
+        }
+
+        return targetPlayer;
     }
 
     public static @NonNull RichDescription description(final @NonNull String miniMessage) {
