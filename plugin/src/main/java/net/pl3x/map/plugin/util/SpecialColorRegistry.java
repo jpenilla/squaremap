@@ -66,6 +66,9 @@ public final class SpecialColorRegistry {
         // Lava
         staticColorBuilder.put(Blocks.LAVA, 0xEA5C0F); // red was so ugly. lets go with orange
 
+        // Glass
+        staticColorBuilder.put(Blocks.GLASS, 0x88FFFFFF);
+
         // Load overrides
         Config.COLOR_OVERRIDES.forEach((block, hexString) -> {
             final TextColor color = TextColor.fromHexString(hexString);

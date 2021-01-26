@@ -63,12 +63,12 @@ class LayerControl {
         this.tileLayer2 = this.createTileLayer(world);
     }
     createTileLayer(world) {
-        return L.tileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
+        return L.tileLayer(`tiles/${world.name}/{z}/{x}_{y}.png?{rand}`, {
             tileSize: 512,
             minNativeZoom: 0,
             maxNativeZoom: world.zoom.max,
-            rand: () => { 
-                return Math.random(); 
+            rand: () => {
+                return Math.random();
             }
         }).addTo(P.map)
         .addEventListener("load", () => {

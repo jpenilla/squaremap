@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
+import net.minecraft.server.v1_16_R3.BlockStainedGlass;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.Chunk;
 import net.minecraft.server.v1_16_R3.ChunkProviderServer;
@@ -208,7 +209,7 @@ public abstract class AbstractRender implements Runnable {
         if (yDiff > 1) {
             state = iterateDown(chunk, mutablePos, false);
             if (isGlass(state)) {
-                glass = glassColor(state);
+                glass = Colors.getMapColor(state);
                 state = iterateDown(chunk, mutablePos, true);
             }
         } else {
@@ -251,36 +252,8 @@ public abstract class AbstractRender implements Runnable {
         return color;
     }
 
-    private int glassColor(IBlockData state) {
-        if (!isGlass(state)) {
-            return 0x00000000;
-        }
-        Block block = state.getBlock();
-        if (block == Blocks.GLASS || block == Blocks.GLASS_PANE) {
-            return 0x88FFFFFF;
-        }
-        return Colors.getMapColor(state);
-    }
-
     private boolean isGlass(IBlockData state) {
-        Block block = state.getBlock();
-        return block == Blocks.GLASS || block == Blocks.GLASS_PANE ||
-                block == Blocks.WHITE_STAINED_GLASS || block == Blocks.WHITE_STAINED_GLASS_PANE ||
-                block == Blocks.ORANGE_STAINED_GLASS || block == Blocks.ORANGE_STAINED_GLASS_PANE ||
-                block == Blocks.MAGENTA_STAINED_GLASS || block == Blocks.MAGENTA_STAINED_GLASS_PANE ||
-                block == Blocks.LIGHT_BLUE_STAINED_GLASS || block == Blocks.LIGHT_BLUE_STAINED_GLASS_PANE ||
-                block == Blocks.YELLOW_STAINED_GLASS || block == Blocks.YELLOW_STAINED_GLASS_PANE ||
-                block == Blocks.LIME_STAINED_GLASS || block == Blocks.LIME_STAINED_GLASS_PANE ||
-                block == Blocks.PINK_STAINED_GLASS || block == Blocks.PINK_STAINED_GLASS_PANE ||
-                block == Blocks.GRAY_STAINED_GLASS || block == Blocks.GRAY_STAINED_GLASS_PANE ||
-                block == Blocks.LIGHT_GRAY_STAINED_GLASS || block == Blocks.LIGHT_GRAY_STAINED_GLASS_PANE ||
-                block == Blocks.CYAN_STAINED_GLASS || block == Blocks.CYAN_STAINED_GLASS_PANE ||
-                block == Blocks.PURPLE_STAINED_GLASS || block == Blocks.PURPLE_STAINED_GLASS_PANE ||
-                block == Blocks.BLUE_STAINED_GLASS || block == Blocks.BLUE_STAINED_GLASS_PANE ||
-                block == Blocks.BROWN_STAINED_GLASS || block == Blocks.BROWN_STAINED_GLASS_PANE ||
-                block == Blocks.GREEN_STAINED_GLASS || block == Blocks.GREEN_STAINED_GLASS_PANE ||
-                block == Blocks.RED_STAINED_GLASS || block == Blocks.RED_STAINED_GLASS_PANE ||
-                block == Blocks.BLACK_STAINED_GLASS || block == Blocks.BLACK_STAINED_GLASS_PANE;
+        return state.getBlock() == Blocks.GLASS || state.getBlock() instanceof BlockStainedGlass;
     }
 
     private @NonNull IBlockData iterateDown(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos, boolean ignoreGlass) {
@@ -291,14 +264,10 @@ public abstract class AbstractRender implements Runnable {
                 state = chunk.getType(mutablePos);
             } while (!state.isAir());
         }
-        boolean skip = false;
         do {
             mutablePos.c(EnumDirection.DOWN);
             state = chunk.getType(mutablePos);
-            if (ignoreGlass) {
-                skip = isGlass(state);
-            }
-        } while ((state.isAir() || invisibleBlocks.contains(state.getBlock()) || skip) && mutablePos.getY() > 0);
+        } while ((state.isAir() || invisibleBlocks.contains(state.getBlock()) || (ignoreGlass && isGlass(state)) || Colors.getMapColor(state) == 0) && mutablePos.getY() > 0);
         return state;
     }
 
