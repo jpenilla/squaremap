@@ -15,6 +15,7 @@ import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.ReflectionUtil;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -61,6 +62,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         } catch (IOException e) {
             Logger.log().log(Level.WARNING, "Failed to register spawn icon", e);
         }
+
+        new Metrics(this, 10133); // https://bstats.org/plugin/bukkit/Pl3xMap/10133
     }
 
     @Override

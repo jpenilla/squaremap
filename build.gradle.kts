@@ -17,6 +17,7 @@ subprojects {
         mavenCentral()
         maven("https://repo.pl3x.net/")
         maven("https://repo.jpenilla.xyz/snapshots/")
+        maven("https://repo.codemc.org/repository/maven-public/")
         mavenLocal()
     }
 
