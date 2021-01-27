@@ -87,7 +87,9 @@ class Pl3xMap {
         return num / this.scale;
     }
     setScale(zoom) {
-        this.scale = (1 / Math.pow(2, zoom))
+        this.scale = (1 / Math.pow(2, zoom));
+        // store this on map for ellipse
+        this.map.options.scale = this.scale;
     }
     createElement(tag, id, parent) {
         const element = document.createElement(tag);
