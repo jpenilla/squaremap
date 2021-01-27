@@ -73,6 +73,8 @@ public class WorldConfig {
 
     public boolean MAP_LAVA_CHECKERBOARD = true;
 
+    public boolean MAP_CLEAR_GLASS = true;
+
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
         MAP_DISPLAY_NAME = getString("map.display-name", MAP_DISPLAY_NAME);
@@ -91,6 +93,10 @@ public class WorldConfig {
 
     private void lavaSettings() {
         MAP_LAVA_CHECKERBOARD = getBoolean("map.lava.checkerboard", MAP_LAVA_CHECKERBOARD);
+    }
+
+    private void glassSettings() {
+        MAP_CLEAR_GLASS = getBoolean("map.clear-glass", MAP_CLEAR_GLASS);
     }
 
     public int ZOOM_MAX = 3;

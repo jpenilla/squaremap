@@ -1,13 +1,11 @@
 package net.pl3x.map.plugin.util;
 
 import com.google.common.collect.ImmutableMap;
-import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.Block;
+import net.minecraft.server.v1_16_R3.BlockCrops;
 import net.minecraft.server.v1_16_R3.BlockStem;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.IBlockData;
-import net.minecraft.server.v1_16_R3.IRegistry;
-import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Config;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -15,6 +13,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 public final class SpecialColorRegistry {
+    public static final int CLEAR_GLASS_COLOR = 0x88FFFFFF;
+
     private static SpecialColorRegistry instance;
 
     public static synchronized @NonNull SpecialColorRegistry get() {
@@ -34,6 +34,9 @@ public final class SpecialColorRegistry {
 
     private @NonNull Map<Block, Integer> loadStaticColors() {
         final ImmutableMap.Builder<Block, Integer> staticColorBuilder = ImmutableMap.builder();
+
+        // Glass
+        staticColorBuilder.put(Blocks.GLASS, CLEAR_GLASS_COLOR);
 
         // Flowers
         staticColorBuilder.put(Blocks.DANDELION, 0xFFEC4F);
@@ -66,18 +69,8 @@ public final class SpecialColorRegistry {
         // Lava
         staticColorBuilder.put(Blocks.LAVA, 0xEA5C0F); // red was so ugly. lets go with orange
 
-        // Glass
-        staticColorBuilder.put(Blocks.GLASS, 0x88FFFFFF);
-
         // Load overrides
-        Config.COLOR_OVERRIDES.forEach((block, hexString) -> {
-            final TextColor color = TextColor.fromHexString(hexString);
-            if (color == null) {
-                Logger.warn(String.format("Invalid hex string '%s' in color override for block '%s'", hexString, IRegistry.BLOCK.getKey(block).toString()));
-                return;
-            }
-            staticColorBuilder.put(block, color.value());
-        });
+        staticColorBuilder.putAll(Config.COLOR_OVERRIDES);
 
         return staticColorBuilder.build();
     }
@@ -87,6 +80,7 @@ public final class SpecialColorRegistry {
 
         dynamicColorBuilder.put(Blocks.MELON_STEM, SpecialColorRegistry::melonAndPumpkinStem);
         dynamicColorBuilder.put(Blocks.PUMPKIN_STEM, SpecialColorRegistry::melonAndPumpkinStem);
+        dynamicColorBuilder.put(Blocks.WHEAT, SpecialColorRegistry::wheat);
 
         return dynamicColorBuilder.build();
     }
@@ -115,10 +109,16 @@ public final class SpecialColorRegistry {
     }
 
     private static int melonAndPumpkinStem(final @NonNull IBlockData state) {
-        int j = state.get(BlockStem.AGE);
-        int k = j * 32;
-        int l = 255 - j * 8;
-        int m = j * 4;
+        int age = state.get(BlockStem.AGE);
+        int k = age * 32;
+        int l = 255 - age * 8;
+        int m = age * 4;
         return k << 16 | l << 8 | m;
     }
+
+    private static int wheat(final @NonNull IBlockData state) {
+        float factor = (state.get(BlockCrops.AGE) + 1) / 8F;
+        return Colors.mix(Colors.plantsMapColor().rgb, 0xDCBB65, factor);
+    }
+
 }

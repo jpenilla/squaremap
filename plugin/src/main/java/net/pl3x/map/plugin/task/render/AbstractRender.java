@@ -44,13 +44,7 @@ public abstract class AbstractRender implements Runnable {
             Blocks.TALL_GRASS,
             Blocks.FERN,
             Blocks.GRASS,
-            Blocks.LARGE_FERN,
-            Blocks.TORCH,
-            Blocks.WALL_TORCH,
-            Blocks.SOUL_TORCH,
-            Blocks.SOUL_WALL_TORCH,
-            Blocks.REDSTONE_TORCH,
-            Blocks.REDSTONE_WALL_TORCH
+            Blocks.LARGE_FERN
     );
 
     private final ExecutorService executor;
@@ -189,7 +183,10 @@ public abstract class AbstractRender implements Runnable {
             final BlockPosition.MutableBlockPosition pos = new BlockPosition.MutableBlockPosition();
             final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, x, 15) + 1;
             pos.setValues(chunk.getPos().getBlockX() + x, yDiff, chunk.getPos().getBlockZ() + 15);
-            iterateDown(chunk, pos, true);
+            final IBlockData state = iterateDown(chunk, pos);
+            if (this.worldConfig.MAP_CLEAR_GLASS && isGlass(state)) {
+                handleGlass(chunk, pos);
+            }
             lastY[x] = pos.getY();
         }
         return lastY;
@@ -200,25 +197,29 @@ public abstract class AbstractRender implements Runnable {
         int blockZ = chunk.getPos().getBlockZ() + imgZ;
 
         IBlockData state;
-        int glass = 0x00000000;
         final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
 
         final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
         mutablePos.setValues(blockX, yDiff, blockZ);
 
         if (yDiff > 1) {
-            state = iterateDown(chunk, mutablePos, false);
-            if (isGlass(state)) {
-                glass = Colors.getMapColor(state);
-                state = iterateDown(chunk, mutablePos, true);
-            }
+            state = iterateDown(chunk, mutablePos);
         } else {
             // no blocks found, show invisible/air
             return 0x00000000;
         }
 
-        final int curY = mutablePos.getY();
+        if (this.worldConfig.MAP_CLEAR_GLASS && isGlass(state)) {
+            final int glassColor = Colors.getMapColor(state);
+            state = handleGlass(chunk, mutablePos);
+            final int color = getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
+            return Colors.mixGlass(color, glassColor);
+        }
 
+        return getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
+    }
+
+    private int getColor(final @NonNull Chunk chunk, final int imgX, final int imgZ, final int[] lastY, final @NonNull IBlockData state, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
         int color = Colors.getMapColor(state);
 
         if (this.biomeColors != null) {
@@ -227,36 +228,21 @@ public abstract class AbstractRender implements Runnable {
 
         int odd = (imgX + imgZ & 1);
 
-        final Pair<Integer, IBlockData> fluidPair = this.findDepthIfFluid(mutablePos, state, chunk);
+        final Pair<Integer, IBlockData> fluidPair = findDepthIfFluid(mutablePos, state, chunk);
         if (fluidPair != null) {
             final int fluidDepth = fluidPair.left();
-            final IBlockData fluidState = fluidPair.right();
-            int fluid = getFluidColor(fluidDepth, color, state, fluidState, odd);
-            return mixGlass(fluid, glass);
+            final IBlockData blockUnder = fluidPair.right();
+            return this.getFluidColor(fluidDepth, color, state, blockUnder, odd);
         }
 
+        final int curY = mutablePos.getY();
         double diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
         byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
         lastY[imgX] = curY;
-        return Colors.shade(mixGlass(color, glass), colorOffset);
+        return Colors.shade(color, colorOffset);
     }
 
-    private int mixGlass(int color, int glass) {
-        if (glass != 0x00000000) {
-            float ratio = 0.5F;
-            if (glass == 0x88FFFFFF) {
-                ratio = 0.25F;
-            }
-            color = Colors.mix(color, glass, ratio);
-        }
-        return color;
-    }
-
-    private boolean isGlass(IBlockData state) {
-        return state.getBlock() == Blocks.GLASS || state.getBlock() instanceof BlockStainedGlass;
-    }
-
-    private @NonNull IBlockData iterateDown(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos, boolean ignoreGlass) {
+    private static @NonNull IBlockData iterateDown(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
         IBlockData state;
         if (chunk.getWorld().getDimensionManager().hasCeiling()) {
             do {
@@ -267,11 +253,24 @@ public abstract class AbstractRender implements Runnable {
         do {
             mutablePos.c(EnumDirection.DOWN);
             state = chunk.getType(mutablePos);
-        } while ((state.isAir() || invisibleBlocks.contains(state.getBlock()) || (ignoreGlass && isGlass(state)) || Colors.getMapColor(state) == 0) && mutablePos.getY() > 0);
+        } while ((Colors.getMapColor(state) == Colors.blackMapColor().rgb || invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
         return state;
     }
 
-    private @Nullable Pair<Integer, IBlockData> findDepthIfFluid(final @NonNull BlockPosition blockPos, final @NonNull IBlockData state, final @NonNull Chunk chunk) {
+    private static boolean isGlass(final @NonNull IBlockData state) {
+        final Block block = state.getBlock();
+        return block == Blocks.GLASS || block instanceof BlockStainedGlass;
+    }
+
+    private static @NonNull IBlockData handleGlass(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
+        IBlockData state = chunk.getType(mutablePos);
+        while (isGlass(state)) {
+            state = iterateDown(chunk, mutablePos);
+        }
+        return state;
+    }
+
+    private static @Nullable Pair<Integer, IBlockData> findDepthIfFluid(final @NonNull BlockPosition blockPos, final @NonNull IBlockData state, final @NonNull Chunk chunk) {
         if (blockPos.getY() > 0 && !state.getFluid().isEmpty()) {
             IBlockData fluidState;
             int fluidDepth = 0;
@@ -290,8 +289,8 @@ public abstract class AbstractRender implements Runnable {
         return null;
     }
 
-    private int getFluidColor(final int fluidCountY, int color, final @NonNull IBlockData state, final @NonNull IBlockData fluidState, final int odd) {
-        final FluidType fluid = state.getFluid().getType();
+    private int getFluidColor(final int fluidCountY, int color, final @NonNull IBlockData fluidState, final @NonNull IBlockData underBlock, final int odd) {
+        final FluidType fluid = fluidState.getFluid().getType();
         boolean shaded = false;
         if (fluid == FluidTypes.WATER || fluid == FluidTypes.FLOWING_WATER) {
             if (this.worldConfig.MAP_WATER_CHECKERBOARD) {
@@ -302,7 +301,7 @@ public abstract class AbstractRender implements Runnable {
                 if (!this.worldConfig.MAP_WATER_CHECKERBOARD) {
                     color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
                 }
-                color = Colors.mix(color, Colors.getMapColor(fluidState), 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
+                color = Colors.mix(color, Colors.getMapColor(underBlock), 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
                 shaded = true;
             }
         } else if (fluid == FluidTypes.LAVA || fluid == FluidTypes.FLOWING_LAVA) {
@@ -314,7 +313,7 @@ public abstract class AbstractRender implements Runnable {
         return shaded ? color : Colors.removeAlpha(color);
     }
 
-    private int applyDepthCheckerboard(final double fluidCountY, final int color, final double odd) {
+    private static int applyDepthCheckerboard(final double fluidCountY, final int color, final double odd) {
         double diffY = fluidCountY * 0.1D + odd * 0.2D;
         byte colorOffset = (byte) (diffY < 0.5D ? 2 : (diffY > 0.9D ? 0 : 1));
         return Colors.shade(color, colorOffset);

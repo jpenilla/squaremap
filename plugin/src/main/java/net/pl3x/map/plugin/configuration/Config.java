@@ -1,6 +1,8 @@
 package net.pl3x.map.plugin.configuration;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.MinecraftKey;
@@ -230,19 +232,26 @@ public class Config {
         MAIN_COMMAND_ALIASES = getList("settings.commands.main-command-aliases", MAIN_COMMAND_ALIASES);
     }
 
-    public static final Map<Block, String> COLOR_OVERRIDES = new HashMap<>();
+    public static Map<Block, Integer> COLOR_OVERRIDES;
 
     private static void colorOverrideSettings() {
-        COLOR_OVERRIDES.clear();
+        final var mapBuilder = ImmutableMap.<Block, Integer>builder();
         getString("settings.color-overrides.minecraft:mycelium", "#6F6265");
+        getString("settings.color-overrides.minecraft:terracotta", "#9E6246");
         getString("settings.color-overrides.minecraft:dirt", "none");
         IRegistry.BLOCK.forEach(block -> {
             final MinecraftKey key = IRegistry.BLOCK.getKey(block);
             final String string = CONFIG.getString("settings.color-overrides." + key.toString(), null);
             if (string != null && !string.equalsIgnoreCase("none")) {
-                COLOR_OVERRIDES.put(block, string);
+                final TextColor color = TextColor.fromHexString(string);
+                if (color == null) {
+                    Logger.warn(String.format("Invalid hex string '%s' in color override for block '%s'", string, key.toString()));
+                    return;
+                }
+                mapBuilder.put(block, color.value());
             }
         });
+        COLOR_OVERRIDES = mapBuilder.build();
     }
 
 }
