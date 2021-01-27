@@ -63,8 +63,8 @@ public final class CommandUtil {
         return targetPlayer;
     }
 
-    public static @NonNull RichDescription description(final @NonNull String miniMessage) {
-        return RichDescription.of(MiniMessage.get().parse(miniMessage));
+    public static @NonNull RichDescription description(final @NonNull String miniMessage, @NonNull Template @NonNull ... placeholders) {
+        return RichDescription.of(MiniMessage.get().parse(miniMessage, placeholders));
     }
 
 }

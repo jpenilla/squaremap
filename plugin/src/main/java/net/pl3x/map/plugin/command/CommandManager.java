@@ -78,7 +78,6 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
                         .append(MiniMessage.get().parse(Lang.COMMAND_PREFIX)
                                 .hoverEvent(MiniMessage.get().parse(Lang.CLICK_FOR_HELP))
                                 .clickEvent(ClickEvent.runCommand(String.format("/%s help", Config.MAIN_COMMAND_LABEL))))
-                        .append(Component.space())
                         .append(component)
                         .build())
                 .apply(this, plugin.audiences()::sender);

@@ -15,11 +15,15 @@ import java.util.function.Function;
 public final class SpecialColorRegistry {
     public static final int CLEAR_GLASS_COLOR = 0x88FFFFFF;
 
-    private static SpecialColorRegistry instance;
+    private static volatile SpecialColorRegistry instance;
 
-    public static synchronized @NonNull SpecialColorRegistry get() {
+    public static @NonNull SpecialColorRegistry get() {
         if (instance == null) {
-            instance = new SpecialColorRegistry();
+            synchronized (SpecialColorRegistry.class) {
+                if (instance == null) {
+                    instance = new SpecialColorRegistry();
+                }
+            }
         }
         return instance;
     }
