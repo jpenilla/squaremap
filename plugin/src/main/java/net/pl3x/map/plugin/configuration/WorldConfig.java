@@ -77,7 +77,7 @@ public class WorldConfig {
 
     public boolean MAP_ENABLED = true;
     public String MAP_DISPLAY_NAME = "{world}";
-    public int MAX_RENDER_THREADS = 8;
+    public int MAX_RENDER_THREADS = -1;
     public boolean MAP_ITERATE_UP = false;
     public int MAP_MAX_HEIGHT = -1;
 
@@ -130,7 +130,7 @@ public class WorldConfig {
     public boolean BACKGROUND_RENDER_ENABLED = true;
     public int BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = 1024;
     public int BACKGROUND_RENDER_INTERVAL_SECONDS = 15;
-    public int BACKGROUND_RENDER_MAX_THREADS = 8;
+    public int BACKGROUND_RENDER_MAX_THREADS = -1;
 
     private void backgroundRenderSettings() {
         BACKGROUND_RENDER_ENABLED = getBoolean("map.background-render.enabled", BACKGROUND_RENDER_ENABLED);

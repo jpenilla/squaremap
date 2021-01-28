@@ -53,7 +53,7 @@ public abstract class AbstractRender implements Runnable {
     protected final AtomicInteger curChunks = new AtomicInteger(0);
 
     public AbstractRender(final @NonNull MapWorld mapWorld) {
-        this(mapWorld, Executors.newFixedThreadPool(mapWorld.config().MAX_RENDER_THREADS));
+        this(mapWorld, Executors.newFixedThreadPool(getThreads(mapWorld.config().MAX_RENDER_THREADS)));
     }
 
     public AbstractRender(final @NonNull MapWorld mapWorld, final @NonNull ExecutorService executor) {
@@ -67,6 +67,13 @@ public abstract class AbstractRender implements Runnable {
         this.biomeColors = this.worldConfig.MAP_BIOMES
                 ? ThreadLocal.withInitial(() -> BiomeColors.forWorld(nmsWorld))
                 : null; // this should be null if we are not mapping biomes
+    }
+
+    public static int getThreads(int threads) {
+        if (threads == -1) {
+            return Runtime.getRuntime().availableProcessors() / 2;
+        }
+        return threads;
     }
 
     public synchronized void cancel() {

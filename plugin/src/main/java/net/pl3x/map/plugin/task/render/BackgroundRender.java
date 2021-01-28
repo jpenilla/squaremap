@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public final class BackgroundRender extends AbstractRender {
 
     public BackgroundRender(final @NonNull MapWorld world) {
-        super(world, Executors.newFixedThreadPool(world.config().BACKGROUND_RENDER_MAX_THREADS));
+        super(world, Executors.newFixedThreadPool(getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS)));
     }
 
     @Override
