@@ -30,7 +30,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -196,7 +196,8 @@ public class Config {
                 FluidLevelChangeEvent.class,
                 EntityExplodeEvent.class,
                 EntityChangeBlockEvent.class,
-                StructureGrowEvent.class
+                StructureGrowEvent.class,
+                ChunkPopulateEvent.class
         ).forEach(clazz -> eventListenerToggles.put(clazz, getBoolean("settings.event-listeners." + clazz.getSimpleName() + ".enabled", true)));
 
         ImmutableSet.of(
@@ -206,15 +207,8 @@ public class Config {
                 PlayerMoveEvent.class,
                 BlockPhysicsEvent.class,
                 BlockPistonExtendEvent.class,
-                BlockPistonRetractEvent.class,
-                ChunkLoadEvent.class
+                BlockPistonRetractEvent.class
         ).forEach(clazz -> eventListenerToggles.put(clazz, getBoolean("settings.event-listeners." + clazz.getSimpleName() + ".enabled", false)));
-    }
-
-    public static boolean CHUNK_LOAD_EVENT_ONLY_NEW_CHUNKS = true;
-
-    private static void specialEventSettings() {
-        CHUNK_LOAD_EVENT_ONLY_NEW_CHUNKS = getBoolean("settings.event-listeners.ChunkLoadEvent.only-new-chunks", true);
     }
 
     public static String MAIN_COMMAND_LABEL = "pl3xmap";
