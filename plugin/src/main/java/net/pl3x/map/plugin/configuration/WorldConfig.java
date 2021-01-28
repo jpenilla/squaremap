@@ -1,15 +1,20 @@
 package net.pl3x.map.plugin.configuration;
 
+import net.minecraft.server.v1_16_R3.Block;
+import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.MathHelper;
+import net.minecraft.server.v1_16_R3.MinecraftKey;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused"})
 public class WorldConfig {
     private static final Map<UUID, WorldConfig> configs = new HashMap<>();
 
@@ -48,55 +53,68 @@ public class WorldConfig {
 
     private boolean getBoolean(String path, boolean def) {
         Config.CONFIG.addDefault("world-settings.default." + path, def);
-        return Config.CONFIG.getBoolean("world-settings." + worldName + "." + path, Config.CONFIG.getBoolean("world-settings.default." + path));
+        return Config.CONFIG.getBoolean("world-settings." + worldName + "." + path,
+                Config.CONFIG.getBoolean("world-settings.default." + path));
     }
 
     private int getInt(String path, int def) {
         Config.CONFIG.addDefault("world-settings.default." + path, def);
-        return Config.CONFIG.getInt("world-settings." + worldName + "." + path, Config.CONFIG.getInt("world-settings.default." + path));
+        return Config.CONFIG.getInt("world-settings." + worldName + "." + path,
+                Config.CONFIG.getInt("world-settings.default." + path));
     }
 
     private String getString(String path, String def) {
         Config.CONFIG.addDefault("world-settings.default." + path, def);
-        return Config.CONFIG.getString("world-settings." + worldName + "." + path, Config.CONFIG.getString("world-settings.default." + path));
+        return Config.CONFIG.getString("world-settings." + worldName + "." + path,
+                Config.CONFIG.getString("world-settings.default." + path));
+    }
+
+    private <T> List<?> getList(String path, T def) {
+        Config.CONFIG.addDefault("world-settings.default." + path, def);
+        return Config.CONFIG.getList("world-settings." + worldName + "." + path,
+                Config.CONFIG.getList("world-settings.default." + path));
     }
 
     public boolean MAP_ENABLED = true;
     public String MAP_DISPLAY_NAME = "{world}";
     public int MAX_RENDER_THREADS = 8;
-
-    public boolean MAP_BIOMES = true;
-    public int MAP_BIOMES_BLEND = 4;
-
-    public boolean MAP_WATER_CLEAR = true;
-    public boolean MAP_WATER_CHECKERBOARD = false;
-
-    public boolean MAP_LAVA_CHECKERBOARD = true;
-
-    public boolean MAP_CLEAR_GLASS = true;
+    public boolean MAP_ITERATE_UP = false;
+    public int MAP_MAX_HEIGHT = -1;
 
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
         MAP_DISPLAY_NAME = getString("map.display-name", MAP_DISPLAY_NAME);
         MAX_RENDER_THREADS = getInt("map.max-render-threads", MAX_RENDER_THREADS);
+        MAP_ITERATE_UP = getBoolean("map.iterate-up", MAP_ITERATE_UP);
+        MAP_MAX_HEIGHT = getInt("map.max-height", MAP_MAX_HEIGHT);
     }
+
+    public boolean MAP_BIOMES = true;
+    public int MAP_BIOMES_BLEND = 4;
 
     private void biomeSettings() {
         MAP_BIOMES = getBoolean("map.biomes.enabled", MAP_BIOMES);
         MAP_BIOMES_BLEND = MathHelper.clamp(getInt("map.biomes.blend-biomes", MAP_BIOMES_BLEND), 0, 15);
     }
 
-    private void waterSettings() {
-        MAP_WATER_CLEAR = getBoolean("map.water.clear-depth", MAP_WATER_CLEAR);
-        MAP_WATER_CHECKERBOARD = getBoolean("map.water.checkerboard", MAP_WATER_CHECKERBOARD);
+    public boolean MAP_GLASS_CLEAR = true;
+
+    private void glassSettings() {
+        MAP_GLASS_CLEAR = getBoolean("map.glass.clear", MAP_GLASS_CLEAR);
     }
+
+    public boolean MAP_LAVA_CHECKERBOARD = true;
 
     private void lavaSettings() {
         MAP_LAVA_CHECKERBOARD = getBoolean("map.lava.checkerboard", MAP_LAVA_CHECKERBOARD);
     }
 
-    private void glassSettings() {
-        MAP_CLEAR_GLASS = getBoolean("map.clear-glass", MAP_CLEAR_GLASS);
+    public boolean MAP_WATER_CLEAR = true;
+    public boolean MAP_WATER_CHECKERBOARD = false;
+
+    private void waterSettings() {
+        MAP_WATER_CLEAR = getBoolean("map.water.clear-depth", MAP_WATER_CLEAR);
+        MAP_WATER_CHECKERBOARD = getBoolean("map.water.checkerboard", MAP_WATER_CHECKERBOARD);
     }
 
     public int ZOOM_MAX = 3;
@@ -157,5 +175,37 @@ public class WorldConfig {
         SPAWN_MARKER_ICON_LAYER_PRIORITY = getInt("map.markers.spawn-icon.layer-priority", SPAWN_MARKER_ICON_LAYER_PRIORITY);
         SPAWN_MARKER_ICON_Z_INDEX = getInt("map.markers.spawn-icon.z-index", SPAWN_MARKER_ICON_Z_INDEX);
         SPAWN_MARKER_ICON_LABEL = getString("map.markers.spawn-icon.label", SPAWN_MARKER_ICON_LABEL);
+    }
+
+    public List<Block> invisibleBlocks = new ArrayList<>();
+
+    private void invisibleBlocks() {
+        invisibleBlocks.clear();
+        getList("map.invisible-blocks", List.of(
+                "minecraft:tall_grass",
+                "minecraft:fern",
+                "minecraft:grass",
+                "minecraft:large_fern"
+        )).forEach(block -> invisibleBlocks.add(IRegistry.BLOCK.get(new MinecraftKey(block.toString()))));
+    }
+
+    public List<Block> iterateUpBaseBlocks = new ArrayList<>();
+
+    private void iterateUpBaseBlocks() {
+        iterateUpBaseBlocks.clear();
+        getList("map.iterate-up-base-blocks", List.of(
+                "minecraft:netherrack",
+                "minecraft:glowstone",
+                "minecraft:soul_sand",
+                "minecraft:soul_soil",
+                "minecraft:gravel",
+                "minecraft:warped_nylium",
+                "minecraft:crimson_nylium",
+                "minecraft:nether_gold_ore",
+                "minecraft:ancient_debris",
+                "minecraft:nether_quartz_ore",
+                "minecraft:magma_block",
+                "minecraft:basalt"
+        )).forEach(block -> iterateUpBaseBlocks.add(IRegistry.BLOCK.get(new MinecraftKey(block.toString()))));
     }
 }

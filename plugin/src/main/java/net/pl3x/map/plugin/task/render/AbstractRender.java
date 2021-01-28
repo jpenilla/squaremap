@@ -1,6 +1,5 @@
 package net.pl3x.map.plugin.task.render;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
@@ -32,7 +31,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,13 +38,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractRender implements Runnable {
-    private static final Set<Block> invisibleBlocks = ImmutableSet.of(
-            Blocks.TALL_GRASS,
-            Blocks.FERN,
-            Blocks.GRASS,
-            Blocks.LARGE_FERN
-    );
-
     private final ExecutorService executor;
     private final FutureTask<Void> futureTask;
     protected volatile boolean cancelled = false;
@@ -178,21 +169,22 @@ public abstract class AbstractRender implements Runnable {
 
     private int @NonNull [] scanBottomRow(final @NonNull Chunk chunk) {
         final int[] lastY = new int[16];
+        final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
         for (int x = 0; x < 16; x++) {
             if (cancelled) return lastY;
-            final BlockPosition.MutableBlockPosition pos = new BlockPosition.MutableBlockPosition();
             final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, x, 15) + 1;
-            pos.setValues(chunk.getPos().getBlockX() + x, yDiff, chunk.getPos().getBlockZ() + 15);
-            final IBlockData state = iterateDown(chunk, pos);
-            if (this.worldConfig.MAP_CLEAR_GLASS && isGlass(state)) {
-                handleGlass(chunk, pos);
+            int height = worldConfig.MAP_MAX_HEIGHT == -1 ? chunk.getWorld().getBuildHeight() : worldConfig.MAP_MAX_HEIGHT;
+            mutablePos.setValues(chunk.getPos().getBlockX() + x, Math.min(yDiff, height), chunk.getPos().getBlockZ() + 15);
+            final IBlockData state = worldConfig.MAP_ITERATE_UP ? iterateUp(chunk, mutablePos) : iterateDown(chunk, mutablePos);
+            if (this.worldConfig.MAP_GLASS_CLEAR && isGlass(state)) {
+                handleGlass(chunk, mutablePos);
             }
-            lastY[x] = pos.getY();
+            lastY[x] = mutablePos.getY();
         }
         return lastY;
     }
 
-    private int scanBlock(net.minecraft.server.v1_16_R3.Chunk chunk, int imgX, int imgZ, int[] lastY) {
+    private int scanBlock(Chunk chunk, int imgX, int imgZ, int[] lastY) {
         int blockX = chunk.getPos().getBlockX() + imgX;
         int blockZ = chunk.getPos().getBlockZ() + imgZ;
 
@@ -200,16 +192,17 @@ public abstract class AbstractRender implements Runnable {
         final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
 
         final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
-        mutablePos.setValues(blockX, yDiff, blockZ);
+        int height = worldConfig.MAP_MAX_HEIGHT == -1 ? chunk.getWorld().getBuildHeight() : worldConfig.MAP_MAX_HEIGHT;
+        mutablePos.setValues(blockX, Math.min(yDiff, height), blockZ);
 
         if (yDiff > 1) {
-            state = iterateDown(chunk, mutablePos);
+            state = worldConfig.MAP_ITERATE_UP ? iterateUp(chunk, mutablePos) : iterateDown(chunk, mutablePos);
         } else {
             // no blocks found, show invisible/air
-            return 0x00000000;
+            return Colors.clearMapColor().rgb;
         }
 
-        if (this.worldConfig.MAP_CLEAR_GLASS && isGlass(state)) {
+        if (this.worldConfig.MAP_GLASS_CLEAR && isGlass(state)) {
             final int glassColor = Colors.getMapColor(state);
             state = handleGlass(chunk, mutablePos);
             final int color = getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
@@ -242,18 +235,39 @@ public abstract class AbstractRender implements Runnable {
         return Colors.shade(color, colorOffset);
     }
 
-    private static @NonNull IBlockData iterateDown(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
+    private @NonNull IBlockData iterateDown(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
         IBlockData state;
         if (chunk.getWorld().getDimensionManager().hasCeiling()) {
             do {
                 mutablePos.c(EnumDirection.DOWN);
                 state = chunk.getType(mutablePos);
-            } while (!state.isAir());
+            } while (!state.isAir() && mutablePos.getY() > 0);
         }
         do {
             mutablePos.c(EnumDirection.DOWN);
             state = chunk.getType(mutablePos);
-        } while ((Colors.getMapColor(state) == Colors.blackMapColor().rgb || invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        } while ((Colors.getMapColor(state) == Colors.clearMapColor().rgb || mapWorld.config().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        return state;
+    }
+
+    private @NonNull IBlockData iterateUp(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
+        IBlockData state;
+        int height = mutablePos.getY();
+        mutablePos.setY(0);
+        if (chunk.getWorld().getDimensionManager().hasCeiling()) {
+            do {
+                mutablePos.c(EnumDirection.UP);
+                state = chunk.getType(mutablePos);
+            } while (!state.isAir() && mutablePos.getY() < height);
+            do {
+                mutablePos.c(EnumDirection.UP);
+                state = chunk.getType(mutablePos);
+            } while (!worldConfig.iterateUpBaseBlocks.contains(state.getBlock()) && mutablePos.getY() < height);
+        }
+        do {
+            mutablePos.c(EnumDirection.DOWN);
+            state = chunk.getType(mutablePos);
+        } while ((Colors.getMapColor(state) == Colors.clearMapColor().rgb || mapWorld.config().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
         return state;
     }
 
@@ -262,7 +276,7 @@ public abstract class AbstractRender implements Runnable {
         return block == Blocks.GLASS || block instanceof BlockStainedGlass;
     }
 
-    private static @NonNull IBlockData handleGlass(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
+    private @NonNull IBlockData handleGlass(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
         IBlockData state = chunk.getType(mutablePos);
         while (isGlass(state)) {
             state = iterateDown(chunk, mutablePos);

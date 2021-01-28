@@ -40,12 +40,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "SameParameterValue"})
 public class Config {
     private static File CONFIG_FILE;
     static YamlConfiguration CONFIG;
@@ -121,15 +120,9 @@ public class Config {
         return CONFIG.getDouble(path, CONFIG.getDouble(path));
     }
 
-    private static float getFloat(String path, float def) {
+    private static <T> List<?> getList(String path, T def) {
         CONFIG.addDefault(path, def);
-        return (float) CONFIG.getDouble(path, CONFIG.getDouble(path));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> List<T> getList(String path, List<T> def) {
-        CONFIG.addDefault(path, def);
-        return (List<T>) CONFIG.getList(path, CONFIG.getList(path));
+        return CONFIG.getList(path, CONFIG.getList(path));
     }
 
     public static String LANGUAGE_FILE = "lang-en.yml";
@@ -153,7 +146,7 @@ public class Config {
 
     private static void imageQualitySettings() {
         COMPRESS_IMAGES = getBoolean("settings.image-quality.compress-images", COMPRESS_IMAGES);
-        COMPRESSION_RATIO = getFloat("settings.image-quality.compress-images", COMPRESSION_RATIO);
+        COMPRESSION_RATIO = (float) getDouble("settings.image-quality.compress-images", COMPRESSION_RATIO);
     }
 
     public static boolean HTTPD_ENABLED = true;
@@ -225,11 +218,14 @@ public class Config {
     }
 
     public static String MAIN_COMMAND_LABEL = "pl3xmap";
-    public static List<String> MAIN_COMMAND_ALIASES = new ArrayList<>(Collections.singletonList("map"));
+    public static List<String> MAIN_COMMAND_ALIASES = new ArrayList<>();
 
     private static void commandSettings() {
         MAIN_COMMAND_LABEL = getString("settings.commands.main-command-label", MAIN_COMMAND_LABEL);
-        MAIN_COMMAND_ALIASES = getList("settings.commands.main-command-aliases", MAIN_COMMAND_ALIASES);
+        MAIN_COMMAND_ALIASES.clear();
+        getList("settings.commands.main-command-aliases", List.of(
+                "map"
+        )).forEach(entry -> MAIN_COMMAND_ALIASES.add(entry.toString()));
     }
 
     public static Map<Block, Integer> COLOR_OVERRIDES;

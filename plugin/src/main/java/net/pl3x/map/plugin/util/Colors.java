@@ -32,12 +32,12 @@ public final class Colors {
         else if (ratio <= 0F) return c1;
         float iRatio = 1.0F - ratio;
 
-        int r1 = (c1 & 0xFF0000) >> 16;
-        int g1 = (c1 & 0xFF00) >> 8;
+        int r1 = c1 >> 16 & 0xFF;
+        int g1 = c1 >> 8 & 0xFF;
         int b1 = c1 & 0xFF;
 
-        int r2 = (c2 & 0xFF0000) >> 16;
-        int g2 = (c2 & 0xFF00) >> 8;
+        int r2 = c2 >> 16 & 0xFF;
+        int g2 = c2 >> 8 & 0xFF;
         int b2 = c2 & 0xFF;
 
         int r = (int) ((r1 * iRatio) + (r2 * ratio));
@@ -70,7 +70,7 @@ public final class Colors {
         return Material.WATER.h();
     }
 
-    public static @NonNull MaterialMapColor blackMapColor() {
+    public static @NonNull MaterialMapColor clearMapColor() {
         return MaterialMapColor.b;
     }
 
