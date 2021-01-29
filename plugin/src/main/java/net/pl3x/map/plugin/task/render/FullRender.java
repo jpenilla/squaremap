@@ -39,7 +39,7 @@ public final class FullRender extends AbstractRender {
         Location spawn = world.getSpawnLocation();
         RegionSpiralIterator spiral = new RegionSpiralIterator(
                 Numbers.blockToRegion(spawn.getBlockX()),
-                Numbers.blockToRegion(spawn.getBlockX()),
+                Numbers.blockToRegion(spawn.getBlockZ()),
                 maxRadius);
         while (spiral.hasNext()) {
             if (this.cancelled) break;
