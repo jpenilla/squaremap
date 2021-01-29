@@ -17,6 +17,12 @@ public final class SpecialColorRegistry {
 
     private static volatile SpecialColorRegistry instance;
 
+    public static void reset() {
+        synchronized (SpecialColorRegistry.class) {
+            instance = null;
+        }
+    }
+
     public static @NonNull SpecialColorRegistry get() {
         if (instance == null) {
             synchronized (SpecialColorRegistry.class) {

@@ -11,6 +11,7 @@ import net.pl3x.map.plugin.configuration.Advanced;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.util.FileUtil;
+import net.pl3x.map.plugin.util.SpecialColorRegistry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -38,6 +39,8 @@ public final class ReloadCommand extends Pl3xMapCommand {
         Advanced.reload();
         Lang.reload();
         FileUtil.reload();
+
+        SpecialColorRegistry.reset();
 
         plugin.start();
 
