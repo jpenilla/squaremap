@@ -7,6 +7,7 @@ import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
+import net.pl3x.map.plugin.configuration.Advanced;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.util.FileUtil;
@@ -34,6 +35,7 @@ public final class ReloadCommand extends Pl3xMapCommand {
         plugin.stop();
 
         Config.reload();
+        Advanced.reload();
         Lang.reload();
         FileUtil.reload();
 

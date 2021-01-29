@@ -54,7 +54,7 @@ public final class RadiusRender extends AbstractRender {
 
             Image image = images.get(region);
             if (image == null) {
-                image = new Image(region, worldTilesDir, worldConfig.ZOOM_MAX);
+                image = new Image(region, worldTilesDir, mapWorld.config().ZOOM_MAX);
                 images.put(region, image);
             }
 

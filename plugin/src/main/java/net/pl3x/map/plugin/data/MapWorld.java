@@ -12,6 +12,7 @@ import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.api.LayerRegistry;
 import net.pl3x.map.plugin.api.SpawnIconProvider;
+import net.pl3x.map.plugin.configuration.WorldAdvanced;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.render.AbstractRender;
@@ -153,6 +154,10 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     public @NonNull WorldConfig config() {
         return WorldConfig.get(this.bukkitWorld);
+    }
+
+    public @NonNull WorldAdvanced advanced() {
+        return WorldAdvanced.get(this.bukkitWorld);
     }
 
     public org.bukkit.@NonNull World bukkit() {

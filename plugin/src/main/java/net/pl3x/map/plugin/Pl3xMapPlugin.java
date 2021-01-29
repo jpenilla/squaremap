@@ -6,6 +6,7 @@ import net.pl3x.map.api.Pl3xMapProvider;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
 import net.pl3x.map.plugin.api.SpawnIconProvider;
 import net.pl3x.map.plugin.command.CommandManager;
+import net.pl3x.map.plugin.configuration.Advanced;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.httpd.IntegratedServer;
@@ -44,6 +45,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     public void onEnable() {
         this.audiences = BukkitAudiences.create(this);
         Config.reload();
+        Advanced.reload();
         Lang.reload();
 
         try {
@@ -100,26 +102,37 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     }
 
     public void stop() {
-        this.mapUpdateListeners.unregister();
-        this.mapUpdateListeners = null;
-        HandlerList.unregisterAll(this.worldEventListener);
-        this.worldEventListener = null;
+        if (this.mapUpdateListeners != null) {
+            this.mapUpdateListeners.unregister();
+            this.mapUpdateListeners = null;
+        }
+
+        if (this.worldEventListener != null) {
+            HandlerList.unregisterAll(this.worldEventListener);
+            this.worldEventListener = null;
+        }
 
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.stopServer();
         }
 
-        if (this.updatePlayers != null && !this.updatePlayers.isCancelled()) {
-            this.updatePlayers.cancel();
+        if (this.updatePlayers != null) {
+            if (!this.updatePlayers.isCancelled()) {
+                this.updatePlayers.cancel();
+            }
             this.updatePlayers = null;
         }
-        if (this.updateWorldData != null && !this.updateWorldData.isCancelled()) {
-            this.updateWorldData.cancel();
+        if (this.updateWorldData != null) {
+            if (!this.updateWorldData.isCancelled()) {
+                this.updateWorldData.cancel();
+            }
             this.updateWorldData = null;
         }
 
-        this.worldManager.shutdown();
-        this.worldManager = null;
+        if (this.worldManager != null) {
+            this.worldManager.shutdown();
+            this.worldManager = null;
+        }
 
         this.getServer().getScheduler().cancelTasks(this);
     }

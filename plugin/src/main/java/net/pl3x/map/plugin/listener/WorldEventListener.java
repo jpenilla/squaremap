@@ -18,7 +18,7 @@ public final class WorldEventListener implements Listener {
 
     @EventHandler
     public void handleWorldLoad(final @NonNull WorldLoadEvent event) {
-        WorldConfig.load(event.getWorld());
+        WorldConfig.get(event.getWorld());
         this.plugin.worldManager().getWorldIfEnabled(event.getWorld());
     }
 

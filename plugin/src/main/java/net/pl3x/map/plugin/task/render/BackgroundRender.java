@@ -29,13 +29,13 @@ public final class BackgroundRender extends AbstractRender {
     protected void render() {
 
         final Set<ChunkCoordinate> chunks = new HashSet<>();
-        while (mapWorld.hasModifiedChunks() && chunks.size() < this.worldConfig.BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL) {
+        while (mapWorld.hasModifiedChunks() && chunks.size() < mapWorld.config().BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL) {
             chunks.add(mapWorld.nextModifiedChunk());
         }
         final Map<Region, List<ChunkCoordinate>> coordMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
 
         coordMap.forEach((region, chunkCoords) -> {
-            final Image img = new Image(region, worldTilesDir, worldConfig.ZOOM_MAX);
+            final Image img = new Image(region, worldTilesDir, mapWorld.config().ZOOM_MAX);
 
             final CompletableFuture<Void> future = CompletableFuture.allOf(chunkCoords.stream().map(coord ->
                     mapSingleChunk(img, coord.getX(), coord.getZ())).toArray(CompletableFuture[]::new));

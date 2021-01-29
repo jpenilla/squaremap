@@ -1,78 +1,39 @@
 package net.pl3x.map.plugin.configuration;
 
-import net.minecraft.server.v1_16_R3.Block;
-import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.MathHelper;
-import net.minecraft.server.v1_16_R3.MinecraftKey;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@SuppressWarnings({"unused"})
-public class WorldConfig {
+@SuppressWarnings("unused")
+public class WorldConfig extends AbstractWorldConfig {
     private static final Map<UUID, WorldConfig> configs = new HashMap<>();
 
     public static void reload() {
         configs.clear();
-        Bukkit.getWorlds().forEach(WorldConfig::load);
+        Bukkit.getWorlds().forEach(WorldConfig::get);
     }
 
-    public static WorldConfig get(World world) {
-        return configs.get(world.getUID());
+    public static WorldConfig get(final @NonNull World world) {
+        WorldConfig config = configs.get(world.getUID());
+        if (config == null) {
+            config = new WorldConfig(world, Config.config);
+            configs.put(world.getUID(), config);
+        }
+        return config;
     }
 
-    public static void load(final @NonNull World world) {
-        configs.put(world.getUID(), new WorldConfig(world));
-    }
-
-    private final String worldName;
-
-    public WorldConfig(World world) {
-        this.worldName = world.getName();
+    WorldConfig(World world, AbstractConfig parent) {
+        super(world, parent);
         init();
     }
 
-    public void init() {
-        Config.readConfig(WorldConfig.class, this);
-    }
-
-    private void set(String path, Object val) {
-        Config.CONFIG.addDefault("world-settings.default." + path, val);
-        Config.CONFIG.set("world-settings.default." + path, val);
-        if (Config.CONFIG.get("world-settings." + worldName + "." + path) != null) {
-            Config.CONFIG.addDefault("world-settings." + worldName + "." + path, val);
-            Config.CONFIG.set("world-settings." + worldName + "." + path, val);
-        }
-    }
-
-    private boolean getBoolean(String path, boolean def) {
-        Config.CONFIG.addDefault("world-settings.default." + path, def);
-        return Config.CONFIG.getBoolean("world-settings." + worldName + "." + path,
-                Config.CONFIG.getBoolean("world-settings.default." + path));
-    }
-
-    private int getInt(String path, int def) {
-        Config.CONFIG.addDefault("world-settings.default." + path, def);
-        return Config.CONFIG.getInt("world-settings." + worldName + "." + path,
-                Config.CONFIG.getInt("world-settings.default." + path));
-    }
-
-    private String getString(String path, String def) {
-        Config.CONFIG.addDefault("world-settings.default." + path, def);
-        return Config.CONFIG.getString("world-settings." + worldName + "." + path,
-                Config.CONFIG.getString("world-settings.default." + path));
-    }
-
-    private <T> List<?> getList(String path, T def) {
-        Config.CONFIG.addDefault("world-settings.default." + path, def);
-        return Config.CONFIG.getList("world-settings." + worldName + "." + path,
-                Config.CONFIG.getList("world-settings.default." + path));
+    void init() {
+        this.config.readConfig(WorldConfig.class, this);
     }
 
     public boolean MAP_ENABLED = true;
@@ -177,35 +138,4 @@ public class WorldConfig {
         SPAWN_MARKER_ICON_LABEL = getString("map.markers.spawn-icon.label", SPAWN_MARKER_ICON_LABEL);
     }
 
-    public List<Block> invisibleBlocks = new ArrayList<>();
-
-    private void invisibleBlocks() {
-        invisibleBlocks.clear();
-        getList("map.invisible-blocks", List.of(
-                "minecraft:tall_grass",
-                "minecraft:fern",
-                "minecraft:grass",
-                "minecraft:large_fern"
-        )).forEach(block -> invisibleBlocks.add(IRegistry.BLOCK.get(new MinecraftKey(block.toString()))));
-    }
-
-    public List<Block> iterateUpBaseBlocks = new ArrayList<>();
-
-    private void iterateUpBaseBlocks() {
-        iterateUpBaseBlocks.clear();
-        getList("map.iterate-up-base-blocks", List.of(
-                "minecraft:netherrack",
-                "minecraft:glowstone",
-                "minecraft:soul_sand",
-                "minecraft:soul_soil",
-                "minecraft:gravel",
-                "minecraft:warped_nylium",
-                "minecraft:crimson_nylium",
-                "minecraft:nether_gold_ore",
-                "minecraft:ancient_debris",
-                "minecraft:nether_quartz_ore",
-                "minecraft:magma_block",
-                "minecraft:basalt"
-        )).forEach(block -> iterateUpBaseBlocks.add(IRegistry.BLOCK.get(new MinecraftKey(block.toString()))));
-    }
 }

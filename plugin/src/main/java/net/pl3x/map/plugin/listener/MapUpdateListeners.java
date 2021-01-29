@@ -1,7 +1,7 @@
 package net.pl3x.map.plugin.listener;
 
 import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.configuration.Config;
+import net.pl3x.map.plugin.configuration.Advanced;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.util.Numbers;
 import org.bukkit.Bukkit;
@@ -85,7 +85,7 @@ public final class MapUpdateListeners {
     }
 
     private <E extends Event> void registerListener(final @NonNull Class<E> eventClass, final @NonNull Consumer<E> eventConsumer) {
-        if (!Config.listenerEnabled(eventClass)) {
+        if (!Advanced.listenerEnabled(eventClass)) {
             return;
         }
         final Listener listener = new Listener() {

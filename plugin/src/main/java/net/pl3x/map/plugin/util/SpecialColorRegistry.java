@@ -6,7 +6,7 @@ import net.minecraft.server.v1_16_R3.BlockCrops;
 import net.minecraft.server.v1_16_R3.BlockStem;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.IBlockData;
-import net.pl3x.map.plugin.configuration.Config;
+import net.pl3x.map.plugin.configuration.Advanced;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
@@ -74,7 +74,7 @@ public final class SpecialColorRegistry {
         staticColorBuilder.put(Blocks.LAVA, 0xEA5C0F); // red was so ugly. lets go with orange
 
         // Load overrides
-        staticColorBuilder.putAll(Config.COLOR_OVERRIDES);
+        staticColorBuilder.putAll(Advanced.COLOR_OVERRIDES);
 
         return staticColorBuilder.build();
     }
