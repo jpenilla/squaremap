@@ -18,11 +18,17 @@ class PlayerList {
         for (let i = 0; i < keys.length; i++) {
             const player = P.playerList.players.get(keys[i]);
             if (uuid == player.uuid && player.world != world) {
-                P.worldList.showWorld(player.world, () => {
-                    P.map.panTo(P.toLatLng(player.x, player.z));
-                });
+                if (P.worldList.worlds.has(player.world)) {
+                    P.worldList.showWorld(player.world, () => {
+                        P.map.panTo(P.toLatLng(player.x, player.z));
+                    });
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
+        return false;
     }
     add(player) {
         const head = document.createElement("img");
@@ -30,9 +36,10 @@ class PlayerList {
         const span = P.createTextElement("span", player.name);
         const link = P.createElement("a", player.uuid, this);
         link.onclick = function (e) {
-            this.parent.showPlayer(this);
-            this.parent.follow(this.id);
-            e.stopPropagation();
+            if (this.parent.showPlayer(this)) {
+                this.parent.follow(this.id);
+                e.stopPropagation();
+            }
         };
         link.appendChild(head);
         link.appendChild(span);
