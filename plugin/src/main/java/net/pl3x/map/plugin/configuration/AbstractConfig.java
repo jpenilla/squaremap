@@ -1,9 +1,13 @@
 package net.pl3x.map.plugin.configuration;
 
+import com.google.common.collect.ImmutableMap;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings({"unused", "SameParameterValue"})
 abstract class AbstractConfig {
@@ -83,6 +88,25 @@ abstract class AbstractConfig {
     <T> List<?> getList(String path, T def) {
         yaml.addDefault(path, def);
         return yaml.getList(path, yaml.getList(path));
+    }
+
+    @NonNull
+    <T> Map<String, T> getMap(final @NonNull String path, final @Nullable Map<String, T> def) {
+        final ImmutableMap.Builder<String, T> builder = ImmutableMap.builder();
+        if (def != null && yaml.getConfigurationSection(path) == null) {
+            def.forEach((key, value) -> yaml.addDefault(path + "." + key, value));
+        }
+        final ConfigurationSection section = yaml.getConfigurationSection(path);
+        if (section != null) {
+            for (String key : section.getKeys(false)) {
+                @SuppressWarnings("unchecked")
+                final T val = (T) section.get(key);
+                if (val != null) {
+                    builder.put(key, val);
+                }
+            }
+        }
+        return builder.build();
     }
 
 }

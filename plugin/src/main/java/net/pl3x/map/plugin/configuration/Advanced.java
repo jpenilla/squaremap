@@ -1,9 +1,8 @@
 package net.pl3x.map.plugin.configuration;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.v1_16_R3.Block;
+import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.MinecraftKey;
 import net.pl3x.map.plugin.Logger;
@@ -31,6 +30,7 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,26 +94,19 @@ public class Advanced extends AbstractConfig {
         ).forEach(clazz -> eventListenerToggles.put(clazz, config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), false)));
     }
 
-    public static Map<Block, Integer> COLOR_OVERRIDES;
+    public static final Map<Block, Integer> COLOR_OVERRIDES = new HashMap<>();
 
     private static void colorOverrideSettings() {
-        final var mapBuilder = ImmutableMap.<Block, Integer>builder();
-        config.getString("settings.color-overrides.minecraft:mycelium", "#6F6265");
-        config.getString("settings.color-overrides.minecraft:terracotta", "#9E6246");
-        config.getString("settings.color-overrides.minecraft:dirt", "none");
-        IRegistry.BLOCK.forEach(block -> {
-            final MinecraftKey key = IRegistry.BLOCK.getKey(block);
-            final String string = config.yaml.getString("settings.color-overrides." + key.toString(), null);
-            if (string != null && !string.equalsIgnoreCase("none")) {
-                final TextColor color = TextColor.fromHexString(string);
-                if (color == null) {
-                    Logger.warn(String.format("Invalid hex string '%s' in color override for block '%s'", string, key.toString()));
-                    return;
-                }
-                mapBuilder.put(block, color.value());
+        COLOR_OVERRIDES.clear();
+        config.getMap("settings.color-overrides", Map.ofEntries(
+                Map.entry("minecraft:mycelium", "#6F6265"),
+                Map.entry("minecraft:terracotta", "#9E6246")
+        )).forEach((key, color) -> {
+            final Block block = IRegistry.BLOCK.get(new MinecraftKey(key));
+            if (block != Blocks.AIR) {
+                COLOR_OVERRIDES.put(block, Color.decode(color).getRGB());
             }
         });
-        COLOR_OVERRIDES = mapBuilder.build();
     }
 
 }
