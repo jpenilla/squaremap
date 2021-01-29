@@ -40,7 +40,7 @@ class World {
 
             // update page title
             document.title = P.title
-                .replaceAll(/{world}/g, this.display_name);
+                .replace(/{world}/g, this.display_name);
 
             // setup background
             document.getElementById("map").style.background = this.getBackground();
