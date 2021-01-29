@@ -43,6 +43,14 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        try {
+            Class.forName("com.destroystokyo.paper.PaperConfig");
+        } catch (ClassNotFoundException e) {
+            Logger.severe("This plugin requires Paper or one of its forks to run");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         this.audiences = BukkitAudiences.create(this);
         Config.reload();
         Advanced.reload();
