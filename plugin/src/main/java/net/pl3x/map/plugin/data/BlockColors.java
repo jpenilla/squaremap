@@ -1,4 +1,4 @@
-package net.pl3x.map.plugin.util;
+package net.pl3x.map.plugin.data;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.v1_16_R3.Block;
@@ -6,46 +6,27 @@ import net.minecraft.server.v1_16_R3.BlockCrops;
 import net.minecraft.server.v1_16_R3.BlockStem;
 import net.minecraft.server.v1_16_R3.Blocks;
 import net.minecraft.server.v1_16_R3.IBlockData;
-import net.pl3x.map.plugin.configuration.Advanced;
+import net.pl3x.map.plugin.util.Colors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
 import java.util.function.Function;
 
-public final class SpecialColorRegistry {
-    private static volatile SpecialColorRegistry instance;
-
-    public static void reset() {
-        synchronized (SpecialColorRegistry.class) {
-            instance = null;
-        }
-    }
-
-    public static @NonNull SpecialColorRegistry get() {
-        if (instance == null) {
-            synchronized (SpecialColorRegistry.class) {
-                if (instance == null) {
-                    instance = new SpecialColorRegistry();
-                }
-            }
-        }
-        return instance;
-    }
-
+public final class BlockColors {
     private final Map<Block, Integer> staticColorMap;
     private final Map<Block, Function<IBlockData, Integer>> dynamicColorMap;
 
-    private SpecialColorRegistry() {
-        this.staticColorMap = ImmutableMap.copyOf(Advanced.COLOR_OVERRIDES);
+    public BlockColors(MapWorld world) {
+        this.staticColorMap = ImmutableMap.copyOf(world.advanced().COLOR_OVERRIDES_BLOCKS);
         this.dynamicColorMap = this.loadDynamicColors();
     }
 
     private @NonNull Map<Block, Function<IBlockData, Integer>> loadDynamicColors() {
         final ImmutableMap.Builder<Block, Function<IBlockData, Integer>> dynamicColorBuilder = ImmutableMap.builder();
 
-        dynamicColorBuilder.put(Blocks.MELON_STEM, SpecialColorRegistry::melonAndPumpkinStem);
-        dynamicColorBuilder.put(Blocks.PUMPKIN_STEM, SpecialColorRegistry::melonAndPumpkinStem);
-        dynamicColorBuilder.put(Blocks.WHEAT, SpecialColorRegistry::wheat);
+        dynamicColorBuilder.put(Blocks.MELON_STEM, BlockColors::melonAndPumpkinStem);
+        dynamicColorBuilder.put(Blocks.PUMPKIN_STEM, BlockColors::melonAndPumpkinStem);
+        dynamicColorBuilder.put(Blocks.WHEAT, BlockColors::wheat);
 
         return dynamicColorBuilder.build();
     }

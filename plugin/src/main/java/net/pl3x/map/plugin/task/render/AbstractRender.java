@@ -16,10 +16,10 @@ import net.minecraft.server.v1_16_R3.IChunkAccess;
 import net.minecraft.server.v1_16_R3.PlayerChunk;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.api.Pair;
+import net.pl3x.map.plugin.data.BiomeColors;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.data.Region;
-import net.pl3x.map.plugin.util.BiomeColors;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.World;
@@ -62,7 +62,7 @@ public abstract class AbstractRender implements Runnable {
         this.nmsWorld = ((CraftWorld) this.world).getHandle();
         this.worldTilesDir = FileUtil.getWorldFolder(world);
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
-                ? ThreadLocal.withInitial(() -> BiomeColors.forWorld(nmsWorld))
+                ? ThreadLocal.withInitial(() -> new BiomeColors(mapWorld))
                 : null; // this should be null if we are not mapping biomes
     }
 
@@ -207,7 +207,7 @@ public abstract class AbstractRender implements Runnable {
         }
 
         if (mapWorld.config().MAP_GLASS_CLEAR && isGlass(state)) {
-            final int glassColor = Colors.getMapColor(state);
+            final int glassColor = mapWorld.getMapColor(state);
             final float glassAlpha = state.getBlock() == Blocks.GLASS ? 0.25F : 0.5F;
             state = handleGlass(chunk, mutablePos);
             final int color = getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
@@ -218,7 +218,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private int getColor(final @NonNull Chunk chunk, final int imgX, final int imgZ, final int[] lastY, final @NonNull IBlockData state, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
-        int color = Colors.getMapColor(state);
+        int color = mapWorld.getMapColor(state);
 
         if (this.biomeColors != null) {
             color = this.biomeColors.get().modifyColorFromBiome(color, chunk, mutablePos);
@@ -251,7 +251,7 @@ public abstract class AbstractRender implements Runnable {
         do {
             mutablePos.c(EnumDirection.DOWN);
             state = chunk.getType(mutablePos);
-        } while ((Colors.getMapColor(state) == Colors.clearMapColor().rgb || mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        } while ((mapWorld.getMapColor(state) == Colors.clearMapColor().rgb || mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
         return state;
     }
 
@@ -272,7 +272,7 @@ public abstract class AbstractRender implements Runnable {
         do {
             mutablePos.c(EnumDirection.DOWN);
             state = chunk.getType(mutablePos);
-        } while ((Colors.getMapColor(state) == Colors.clearMapColor().rgb || mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        } while ((mapWorld.getMapColor(state) == Colors.clearMapColor().rgb || mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
         return state;
     }
 
@@ -320,7 +320,7 @@ public abstract class AbstractRender implements Runnable {
                 if (!mapWorld.config().MAP_WATER_CHECKERBOARD) {
                     color = Colors.shade(color, 0.85F - (fluidCountY * 0.01F)); // darken water color
                 }
-                color = Colors.mix(color, Colors.getMapColor(underBlock), 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
+                color = Colors.mix(color, mapWorld.getMapColor(underBlock), 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
                 shaded = true;
             }
         } else if (fluid == FluidTypes.LAVA || fluid == FluidTypes.FLOWING_LAVA) {

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +95,9 @@ abstract class AbstractConfig {
     <T> Map<String, T> getMap(final @NonNull String path, final @Nullable Map<String, T> def) {
         final ImmutableMap.Builder<String, T> builder = ImmutableMap.builder();
         if (def != null && yaml.getConfigurationSection(path) == null) {
-            def.forEach((key, value) -> yaml.addDefault(path + "." + key, value));
+            //def.forEach((key, value) -> yaml.addDefault(path + "." + key, value));
+            yaml.addDefault(path, def.isEmpty() ? new HashMap<>() : def);
+            return def;
         }
         final ConfigurationSection section = yaml.getConfigurationSection(path);
         if (section != null) {

@@ -52,6 +52,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         }
 
         this.audiences = BukkitAudiences.create(this);
+
         Config.reload();
         Advanced.reload();
         Lang.reload();

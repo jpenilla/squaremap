@@ -1,6 +1,5 @@
 package net.pl3x.map.plugin.util;
 
-import net.minecraft.server.v1_16_R3.IBlockData;
 import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.MaterialMapColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -65,14 +64,6 @@ public final class Colors {
 
     public static @NonNull MaterialMapColor clearMapColor() {
         return MaterialMapColor.b;
-    }
-
-    public static int getMapColor(final @NonNull IBlockData state) {
-        final int special = SpecialColorRegistry.get().getColor(state);
-        if (special != -1) {
-            return special;
-        }
-        return state.d(null, null).rgb;
     }
 
     public static Integer parseHex(final @NonNull String color) {

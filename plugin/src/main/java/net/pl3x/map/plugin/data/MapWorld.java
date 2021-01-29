@@ -5,7 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.server.v1_16_R3.World;
+import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Registry;
 import net.pl3x.map.plugin.Logger;
@@ -42,13 +43,14 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static final Map<UUID, LayerRegistry> layerRegistries = new HashMap<>();
 
-    private final World world;
+    private final WorldServer world;
     private final org.bukkit.World bukkitWorld;
     private final Path dataPath;
     private final ExecutorService imageIOexecutor = Executors.newSingleThreadExecutor();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final UpdateMarkers updateMarkersTask;
+    private final BlockColors blockColors;
 
     private AbstractRender activeRender = null;
     private ScheduledFuture<?> backgroundRender = null;
@@ -56,6 +58,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private MapWorld(final org.bukkit.@NonNull World world) {
         this.bukkitWorld = world;
         this.world = ((CraftWorld) world).getHandle();
+
+        this.blockColors = new BlockColors(this);
 
         this.dataPath = Pl3xMapPlugin.getInstance().getDataFolder().toPath().resolve("data").resolve(world.getName());
         try {
@@ -160,8 +164,20 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         return WorldAdvanced.get(this.bukkitWorld);
     }
 
+    public WorldServer nms() {
+        return world;
+    }
+
     public org.bukkit.@NonNull World bukkit() {
         return this.bukkitWorld;
+    }
+
+    public int getMapColor(final @NonNull IBlockData state) {
+        final int special = blockColors.getColor(state);
+        if (special != -1) {
+            return special;
+        }
+        return state.d(null, null).rgb;
     }
 
     public boolean isRendering() {

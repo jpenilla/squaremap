@@ -1,11 +1,10 @@
-package net.pl3x.map.plugin.util;
+package net.pl3x.map.plugin.data;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.server.v1_16_R3.BiomeBase;
 import net.minecraft.server.v1_16_R3.BiomeFog;
-import net.minecraft.server.v1_16_R3.Biomes;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.Blocks;
@@ -14,8 +13,10 @@ import net.minecraft.server.v1_16_R3.IBlockData;
 import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.Material;
 import net.minecraft.server.v1_16_R3.MathHelper;
-import net.minecraft.server.v1_16_R3.World;
-import net.pl3x.map.plugin.configuration.WorldConfig;
+import net.minecraft.server.v1_16_R3.WorldServer;
+import net.pl3x.map.plugin.util.Colors;
+import net.pl3x.map.plugin.util.FileUtil;
+import net.pl3x.map.plugin.util.ReflectionUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import javax.imageio.ImageIO;
@@ -80,8 +81,7 @@ public final class BiomeColors {
 
     private final Cache<Long, BiomeBase> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
 
-    private final World world;
-    private final WorldConfig worldConfig;
+    private final MapWorld world;
 
     private final Map<BiomeBase, Integer> grassColors = new HashMap<>();
     private final Map<BiomeBase, Integer> foliageColors = new HashMap<>();
@@ -89,11 +89,10 @@ public final class BiomeColors {
 
     private final BlockPosition.MutableBlockPosition sharedBlockPos = new BlockPosition.MutableBlockPosition();
 
-    private BiomeColors(final @NonNull World world) {
+    public BiomeColors(final @NonNull MapWorld world) {
         this.world = world;
-        this.worldConfig = WorldConfig.get(world.getWorld());
 
-        final IRegistry<BiomeBase> biomeRegistry = this.getBiomeRegistry();
+        final IRegistry<BiomeBase> biomeRegistry = getBiomeRegistry(world.nms());
         for (final BiomeBase biome : biomeRegistry) {
             float temperature = MathHelper.a(biome.k(), 0.0F, 1.0F);
             float humidity = MathHelper.a(biome.getHumidity(), 0.0F, 1.0F);
@@ -104,15 +103,9 @@ public final class BiomeColors {
             waterColors.put(biome, BiomeEffectsReflection.waterColor(biome));
         }
 
-        final int darkForestColor = (Colors.leavesMapColor().rgb & 0xFEFEFE) + 2634762 >> 1;
-        final BiomeBase DARK_FOREST = biomeRegistry.get(Biomes.DARK_FOREST.a());
-        final BiomeBase DARK_FOREST_HILLS = biomeRegistry.get(Biomes.DARK_FOREST_HILLS.a());
-        foliageColors.put(DARK_FOREST, BiomeEffectsReflection.foliageColor(DARK_FOREST).orElse(darkForestColor));
-        foliageColors.put(DARK_FOREST_HILLS, BiomeEffectsReflection.foliageColor(DARK_FOREST_HILLS).orElse(darkForestColor));
-    }
-
-    public static @NonNull BiomeColors forWorld(final @NonNull World world) {
-        return new BiomeColors(world);
+        world.advanced().COLOR_OVERRIDES_BIOME_FOLIAGE.forEach(foliageColors::put);
+        world.advanced().COLOR_OVERRIDES_BIOME_GRASS.forEach(grassColors::put);
+        world.advanced().COLOR_OVERRIDES_BIOME_WATER.forEach(waterColors::put);
     }
 
     public int modifyColorFromBiome(int color, final @NonNull Chunk chunk, final @NonNull BlockPosition pos) {
@@ -163,8 +156,8 @@ public final class BiomeColors {
     }
 
     private int grass(final @NonNull BlockPosition pos) {
-        if (this.worldConfig.MAP_BIOMES_BLEND > 0) {
-            return this.sampleNeighbors(pos, this.worldConfig.MAP_BIOMES_BLEND, this::grassColorSampler);
+        if (world.config().MAP_BIOMES_BLEND > 0) {
+            return this.sampleNeighbors(pos, world.config().MAP_BIOMES_BLEND, this::grassColorSampler);
         }
         return this.grassColorSampler(this.getBiomeWithCaching(pos), pos);
     }
@@ -174,15 +167,15 @@ public final class BiomeColors {
     }
 
     private int foliage(final @NonNull BlockPosition pos) {
-        if (this.worldConfig.MAP_BIOMES_BLEND > 0) {
-            return this.sampleNeighbors(pos, this.worldConfig.MAP_BIOMES_BLEND, (biome, b) -> this.foliageColors.get(biome));
+        if (world.config().MAP_BIOMES_BLEND > 0) {
+            return this.sampleNeighbors(pos, world.config().MAP_BIOMES_BLEND, (biome, b) -> this.foliageColors.get(biome));
         }
         return this.foliageColors.get(this.getBiomeWithCaching(pos));
     }
 
     private int water(final @NonNull BlockPosition pos) {
-        if (this.worldConfig.MAP_BIOMES_BLEND > 0) {
-            return this.sampleNeighbors(pos, this.worldConfig.MAP_BIOMES_BLEND, (biome, b) -> this.waterColors.get(biome));
+        if (world.config().MAP_BIOMES_BLEND > 0) {
+            return this.sampleNeighbors(pos, world.config().MAP_BIOMES_BLEND, (biome, b) -> this.waterColors.get(biome));
         }
         return this.waterColors.get(this.getBiomeWithCaching(pos));
     }
@@ -210,13 +203,13 @@ public final class BiomeColors {
         long xz = (long) pos.getX() << 32 | pos.getZ() & 0xffffffffL;
         BiomeBase biome = blockPosBiomeCache.getIfPresent(xz);
         if (biome == null) {
-            biome = world.getBiome(pos);
+            biome = world.nms().getBiome(pos);
             blockPosBiomeCache.put(xz, biome);
         }
         return biome;
     }
 
-    private IRegistry<BiomeBase> getBiomeRegistry() {
+    public static IRegistry<BiomeBase> getBiomeRegistry(WorldServer world) {
         return world.r().b(IRegistry.ay);
     }
 

@@ -1,12 +1,7 @@
 package net.pl3x.map.plugin.configuration;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.server.v1_16_R3.Block;
-import net.minecraft.server.v1_16_R3.Blocks;
-import net.minecraft.server.v1_16_R3.IRegistry;
-import net.minecraft.server.v1_16_R3.MinecraftKey;
 import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.util.Colors;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -92,45 +87,6 @@ public class Advanced extends AbstractConfig {
                 BlockPistonExtendEvent.class,
                 BlockPistonRetractEvent.class
         ).forEach(clazz -> eventListenerToggles.put(clazz, config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), false)));
-    }
-
-    public static final Map<Block, Integer> COLOR_OVERRIDES = new HashMap<>();
-
-    private static void colorOverrideSettings() {
-        COLOR_OVERRIDES.clear();
-        config.getMap("settings.color-overrides", Map.ofEntries(
-                Map.entry("minecraft:mycelium", "#6F6265"),
-                Map.entry("minecraft:terracotta", "#9E6246"),
-                Map.entry("minecraft:dandelion", "#FFEC4F"),
-                Map.entry("minecraft:poppy", "#ED302C"),
-                Map.entry("minecraft:blue_orchid", "#2ABFFD"),
-                Map.entry("minecraft:allium", "#B878ED"),
-                Map.entry("minecraft:azure_bluet", "#F7F7F7"),
-                Map.entry("minecraft:red_tulip", "#9B221A"),
-                Map.entry("minecraft:orange_tulip", "#BD6A22"),
-                Map.entry("minecraft:pink_tulip", "#EBC5FD"),
-                Map.entry("minecraft:white_tulip", "#D6E8E8"),
-                Map.entry("minecraft:oxeye_daisy", "#D6E8E8"),
-                Map.entry("minecraft:cornflower", "#466AEB"),
-                Map.entry("minecraft:lily_of_the_valley", "#FFFFFF"),
-                Map.entry("minecraft:wither_rose", "#211A16"),
-                Map.entry("minecraft:sunflower", "#FFEC4F"),
-                Map.entry("minecraft:lilac", "#B66BB2"),
-                Map.entry("minecraft:rose_bush", "#9B221A"),
-                Map.entry("minecraft:peony", "#EBC5FD"),
-                Map.entry("minecraft:lily_pad", "#208030"),
-                Map.entry("minecraft:attached_melon_stem", "#E0C71C"),
-                Map.entry("minecraft:attached_pumpkin_stem", "#E0C71C"),
-                Map.entry("minecraft:spruce_leaves", "#619961"),
-                Map.entry("minecraft:birch_leaves", "#80A755"),
-                Map.entry("minecraft:lava", "#EA5C0F"),
-                Map.entry("minecraft:glass", "#FFFFFF")
-        )).forEach((key, color) -> {
-            final Block block = IRegistry.BLOCK.get(new MinecraftKey(key));
-            if (block != Blocks.AIR) {
-                COLOR_OVERRIDES.put(block, Colors.parseHex(color));
-            }
-        });
     }
 
 }
