@@ -6,7 +6,9 @@ import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.data.Region;
 import net.pl3x.map.plugin.util.FileUtil;
+import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.iterator.RegionSpiralIterator;
+import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.File;
@@ -34,7 +36,11 @@ public final class FullRender extends AbstractRender {
 
         final Timer timer = RenderProgress.printProgress(this);
 
-        RegionSpiralIterator spiral = new RegionSpiralIterator(0, 0, maxRadius);
+        Location spawn = world.getSpawnLocation();
+        RegionSpiralIterator spiral = new RegionSpiralIterator(
+                Numbers.blockToRegion(spawn.getBlockX()),
+                Numbers.blockToRegion(spawn.getBlockX()),
+                maxRadius);
         while (spiral.hasNext()) {
             if (this.cancelled) break;
             Region region = spiral.next();
