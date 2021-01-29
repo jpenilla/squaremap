@@ -47,13 +47,6 @@ public final class Colors {
         return (0xFF << 24 | r << 16 | g << 8 | b);
     }
 
-    public static int mixGlass(final int blockColor, final int glassColor) {
-        if (glassColor == SpecialColorRegistry.CLEAR_GLASS_COLOR) {
-            return Colors.mix(blockColor, glassColor, 0.25F);
-        }
-        return Colors.mix(blockColor, glassColor, 0.5F);
-    }
-
     public static @NonNull MaterialMapColor grassMapColor() {
         return Material.GRASS.h();
     }
@@ -80,5 +73,9 @@ public final class Colors {
             return special;
         }
         return state.d(null, null).rgb;
+    }
+
+    public static Integer parseHex(final @NonNull String color) {
+        return (int) Long.parseLong(color.replace("#", ""), 16);
     }
 }

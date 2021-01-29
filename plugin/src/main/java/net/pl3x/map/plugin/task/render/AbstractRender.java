@@ -208,9 +208,10 @@ public abstract class AbstractRender implements Runnable {
 
         if (mapWorld.config().MAP_GLASS_CLEAR && isGlass(state)) {
             final int glassColor = Colors.getMapColor(state);
+            final float glassAlpha = state.getBlock() == Blocks.GLASS ? 0.25F : 0.5F;
             state = handleGlass(chunk, mutablePos);
             final int color = getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
-            return Colors.mixGlass(color, glassColor);
+            return Colors.mix(color, glassColor, glassAlpha);
         }
 
         return getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
