@@ -104,8 +104,8 @@ class Pl3xMap {
     }
     getHeadUrl(player) {
         return this.worldList.curWorld.player_tracker.nameplates.heads_url
-            .replaceAll("{uuid}", player.uuid)
-            .replaceAll("{name}", player.name);
+            .replace(/{uuid}/g, player.uuid)
+            .replace(/{name}/g, player.name);
     }
     getJSON(url, fn) {
         fetch(url, {cache: "no-store"})
