@@ -40,6 +40,8 @@ public class UpdateWorldData extends BukkitRunnable {
             nameplates.put("enabled", worldConfig.PLAYER_TRACKER_NAMEPLATE_ENABLED);
             nameplates.put("show_heads", worldConfig.PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD);
             nameplates.put("heads_url", worldConfig.PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
+            nameplates.put("show_armor", worldConfig.PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR);
+            nameplates.put("show_health", worldConfig.PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH);
             playerTracker.put("nameplates", nameplates);
 
             Map<String, Object> zoom = new HashMap<>();

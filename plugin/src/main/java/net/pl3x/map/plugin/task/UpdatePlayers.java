@@ -7,9 +7,16 @@ import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +54,8 @@ public class UpdatePlayers extends BukkitRunnable {
                 playerEntry.put("z", playerLoc.getBlockZ());
                 playerEntry.put("yaw", playerLoc.getYaw());
                 playerEntry.put("world", playerLoc.getWorld().getName());
+                playerEntry.put("armor", getArmorPoints(player));
+                playerEntry.put("health", player.getHealth());
                 players.add(playerEntry);
             });
         });
@@ -55,5 +64,10 @@ public class UpdatePlayers extends BukkitRunnable {
         map.put("players", players);
 
         FileUtil.write(this.gson.toJson(map), FileUtil.TILES_DIR.resolve("players.json"));
+    }
+
+    private static int getArmorPoints(Player player) {
+        AttributeInstance attr = player.getAttribute(Attribute.GENERIC_ARMOR);
+        return attr == null ? 0 : (int) attr.getValue();
     }
 }

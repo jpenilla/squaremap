@@ -105,6 +105,8 @@ public class WorldConfig extends AbstractWorldConfig {
     public boolean PLAYER_TRACKER_NAMEPLATE_ENABLED = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = true;
     public String PLAYER_TRACKER_NAMEPLATE_HEADS_URL = "https://crafatar.com/avatars/{uuid}?size=16&default=MHF_Steve&overlay";
+    public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR = true;
+    public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH = true;
     public boolean PLAYER_TRACKER_HIDE_INVISIBLE = true;
     public boolean PLAYER_TRACKER_HIDE_SPECTATORS = true;
 
@@ -114,6 +116,8 @@ public class WorldConfig extends AbstractWorldConfig {
         PLAYER_TRACKER_NAMEPLATE_ENABLED = getBoolean("player-tracker.nameplate.enabled", PLAYER_TRACKER_NAMEPLATE_ENABLED);
         PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = getBoolean("player-tracker.nameplate.show-head", PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD);
         PLAYER_TRACKER_NAMEPLATE_HEADS_URL = getString("player-tracker.nameplate.heads-url", PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
+        PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR = getBoolean("player-tracker.nameplate.show-armor", PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR);
+        PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH = getBoolean("player-tracker.nameplate.show-health", PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH);
         PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", PLAYER_TRACKER_HIDE_INVISIBLE);
         PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", PLAYER_TRACKER_HIDE_SPECTATORS);
     }
