@@ -55,7 +55,7 @@ public class UpdatePlayers extends BukkitRunnable {
                 playerEntry.put("yaw", playerLoc.getYaw());
                 playerEntry.put("world", playerLoc.getWorld().getName());
                 playerEntry.put("armor", getArmorPoints(player));
-                playerEntry.put("health", player.getHealth());
+                playerEntry.put("health", (int) player.getHealth());
                 players.add(playerEntry);
             });
         });
