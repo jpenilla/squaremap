@@ -146,12 +146,22 @@ public abstract class AbstractRender implements Runnable {
             int[] lastY = new int[16];
 
             net.minecraft.server.v1_16_R3.Chunk chunk;
+
+            // try scanning south row of northern chunk to get proper yDiff
             chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
             if (chunk != null && !chunk.isEmpty()) {
                 lastY = scanBottomRow(chunk);
             }
 
+            // scan the chunk itself
             chunk = getChunkAt(nmsWorld, chunkX, chunkZ);
+            if (chunk != null && !chunk.isEmpty()) {
+                scanChunk(image, lastY, chunk);
+            }
+
+            // try scanning the southern chunk in case it was stored with improper yDiff
+            // https://github.com/pl3xgaming/Pl3xMap/issues/15
+            chunk = getChunkAt(nmsWorld, chunkX, chunkZ + 1);
             if (chunk != null && !chunk.isEmpty()) {
                 scanChunk(image, lastY, chunk);
             }
