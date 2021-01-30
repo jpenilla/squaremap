@@ -54,6 +54,11 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         this.audiences = BukkitAudiences.create(this);
 
         Config.reload();
+
+        // this has to load after config.yml in order to know if web dir should be overwritten
+        // but also before advanced.yml to ensure foliage.png and grass.png are already on disk
+        FileUtil.extractWebFolder();
+
         Advanced.reload();
         Lang.reload();
 
@@ -88,8 +93,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     }
 
     public void start() {
-        FileUtil.extractWebFolder();
-
         this.updatePlayers = new UpdatePlayers(this);
         this.updatePlayers.runTaskTimer(this, 20, 20);
         this.updateWorldData = new UpdateWorldData();
