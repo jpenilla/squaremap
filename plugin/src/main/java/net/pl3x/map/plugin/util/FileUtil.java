@@ -17,6 +17,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
@@ -175,8 +176,9 @@ public class FileUtil {
         } catch (AccessDeniedException | AtomicMoveNotSupportedException e) {
             try {
                 Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING);
-            } catch (AccessDeniedException ignore) {
+            } catch (NoSuchFileException | AccessDeniedException ignore) {
             }
+        } catch (NoSuchFileException ignore) {
         }
     }
 }
