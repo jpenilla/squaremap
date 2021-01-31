@@ -1,7 +1,7 @@
 import { P } from './Pl3xMap.js';
 
 class UICoordinates {
-    constructor() {
+    constructor(enabled) {
         const Coords = L.Control.extend({
             _container: null,
             options: {
@@ -26,6 +26,9 @@ class UICoordinates {
                     this.coords.update(P.toPoint(event.latlng));
                 }
             });
+        if (!enabled) {
+            this.coords._coords.style.display = "none";
+        }
     }
 }
 

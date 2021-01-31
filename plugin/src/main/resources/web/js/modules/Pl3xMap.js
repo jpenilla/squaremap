@@ -52,12 +52,9 @@ class Pl3xMap {
             this.sidebar = new Sidebar(json.ui.sidebar);
             this.playerList = new PlayerList();
             this.worldList = new WorldList(json.worlds);
-            if (json.ui.coordinates) {
-                this.coordinates = new UICoordinates();
-            }
-            if (json.ui.link) {
-                this.uiLink = new UILink();
-            }
+            this.coordinates = new UICoordinates(json.ui.coordinates);
+            this.uiLink = new UILink(json.ui.link);
+
             this.worldList.loadWorld(this.getUrlParam("world", json.worlds[0].name), (world) => {
                 this.tick();
                 this.centerOn(
