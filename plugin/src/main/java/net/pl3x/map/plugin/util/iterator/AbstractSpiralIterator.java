@@ -3,9 +3,8 @@ package net.pl3x.map.plugin.util.iterator;
 import java.util.Iterator;
 
 public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
-    private Direction direction = Direction.RIGHT;
-    private int x, z, stepCount, stepLeg, legAxis, layer;
-    private final int totalSteps;
+    Direction direction = Direction.RIGHT;
+    int x, z, stepCount, stepLeg, legAxis, layer, totalSteps;
 
     protected AbstractSpiralIterator(int x, int z, int radius) {
         this.x = x;
@@ -16,6 +15,10 @@ public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
     @Override
     public boolean hasNext() {
         return stepCount < totalSteps;
+    }
+
+    public int curStep() {
+        return stepCount;
     }
 
     protected abstract T fromCoordinatePair(final int x, final int z);
@@ -57,13 +60,17 @@ public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
         return t;
     }
 
-    private enum Direction {
+    public enum Direction {
         RIGHT, DOWN, LEFT, UP;
 
         private static final Direction[] values = values();
 
         public Direction next() {
             return values[(this.ordinal() + 1) % values.length];
+        }
+
+        public static Direction of(int ordinal) {
+            return values[ordinal];
         }
     }
 }

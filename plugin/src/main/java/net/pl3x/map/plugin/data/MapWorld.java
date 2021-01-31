@@ -18,6 +18,9 @@ import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
+import net.pl3x.map.plugin.task.render.FullRender;
+import net.pl3x.map.plugin.util.iterator.RegionSpiralIterator;
+import net.pl3x.map.plugin.util.iterator.RegionSpiralTypeAdapter;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -40,7 +43,10 @@ import java.util.concurrent.TimeUnit;
 
 public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private static final String dirtyChunksFileName = "dirty_chunks.json";
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final String renderProgressFileName = "render_progress.json";
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(RegionSpiralIterator.class, new RegionSpiralTypeAdapter())
+            .setPrettyPrinting().create();
     private static final Map<UUID, LayerRegistry> layerRegistries = new HashMap<>();
 
     private final WorldServer world;
@@ -80,6 +86,32 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         }
 
         this.deserializeDirtyChunks();
+
+        RegionSpiralIterator oldRender = getRenderProgress();
+        if (oldRender != null) {
+            startRender(new FullRender(this));
+        }
+    }
+
+    public RegionSpiralIterator getRenderProgress() {
+        try {
+            final Path file = this.dataPath.resolve(renderProgressFileName);
+            if (Files.exists(file)) {
+                String json = String.join("", Files.readAllLines(file));
+                return gson.fromJson(json, RegionSpiralIterator.class);
+            }
+        } catch (JsonIOException | JsonSyntaxException | IOException e) {
+            Logger.warn(String.format("Failed to deserialize render progress for world '%s'", this.name()), e);
+        }
+        return null;
+    }
+
+    public void saveRenderProgress(RegionSpiralIterator spiral) {
+        try {
+            Files.writeString(this.dataPath.resolve(renderProgressFileName), gson.toJson(spiral));
+        } catch (IOException e) {
+            Logger.warn(String.format("Failed to serialize render progress for world '%s'", this.name()), e);
+        }
     }
 
     private void serializeDirtyChunks() {
@@ -182,6 +214,14 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     public boolean isRendering() {
         return this.activeRender != null;
+    }
+
+    public void finishedRender() {
+        try {
+            Files.deleteIfExists(this.dataPath.resolve(renderProgressFileName));
+        } catch (IOException e) {
+            Logger.warn(String.format("Failed to delete render progress data for world '%s'", this.name()), e);
+        }
     }
 
     public void stopRender() {

@@ -8,6 +8,7 @@ import net.pl3x.map.plugin.data.Region;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.iterator.RegionSpiralIterator;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -17,41 +18,60 @@ import java.util.List;
 import java.util.Timer;
 
 public final class FullRender extends AbstractRender {
+    private int maxRadius = 0;
+    private int totalChunks;
+
     public FullRender(final @NonNull MapWorld world) {
         super(world);
     }
 
-    private int maxRadius = 0;
-    private int totalRegions = 0;
-    private int totalChunks;
-
     @Override
     protected void render() {
-        Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.getName()));
+        while (Bukkit.getCurrentTick() < 20) {
+            // server is not running yet
+            try {
+                //noinspection BusyWait
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+        }
+
+        RegionSpiralIterator spiral, oldSpiral = this.mapWorld.getRenderProgress();
+        if (oldSpiral != null) {
+            Logger.info(Lang.LOG_RESUMED_RENDERING, Template.of("world", world.getName()));
+        } else {
+            Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.getName()));
+        }
 
         final List<Region> regions = getRegions();
-        this.totalRegions = regions.size();
-        this.totalChunks = this.totalRegions * 32 * 32;
-        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.of("total", Integer.toString(this.totalRegions)));
+        final int totalRegions = regions.size();
+        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.of("total", Integer.toString(totalRegions)));
+
+        this.totalChunks = totalRegions * 32 * 32;
+
+        if (oldSpiral != null) {
+            spiral = oldSpiral;
+            this.curChunks.set(spiral.curStep() * 32 * 32);
+        } else {
+            Location spawn = world.getSpawnLocation();
+            spiral = new RegionSpiralIterator(
+                    Numbers.blockToRegion(spawn.getBlockX()),
+                    Numbers.blockToRegion(spawn.getBlockZ()),
+                    maxRadius);
+        }
 
         final Timer timer = RenderProgress.printProgress(this);
 
-        Location spawn = world.getSpawnLocation();
-        RegionSpiralIterator spiral = new RegionSpiralIterator(
-                Numbers.blockToRegion(spawn.getBlockX()),
-                Numbers.blockToRegion(spawn.getBlockZ()),
-                maxRadius);
         while (spiral.hasNext()) {
             if (this.cancelled) break;
             Region region = spiral.next();
             if (regions.contains(region)) {
                 mapRegion(region);
             }
+            this.mapWorld.saveRenderProgress(spiral);
         }
 
         timer.cancel();
-
-        Logger.info(Lang.LOG_FINISHED_RENDERING, Template.of("world", world.getName()));
 
     }
 

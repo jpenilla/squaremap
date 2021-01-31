@@ -23,11 +23,12 @@ public final class RenderProgress extends TimerTask {
     final int[] rollingAvgCps = new int[15];
     final List<Integer> totalAvgCps = new ArrayList<>();
     int index = 0;
-    int prevChunks = 0;
+    int prevChunks;
 
     private RenderProgress(final @NonNull AbstractRender render) {
         this.startTime = System.currentTimeMillis();
         this.render = render;
+        this.prevChunks = this.render.processedChunks();
     }
 
     public static Timer printProgress(final @NonNull AbstractRender render) {

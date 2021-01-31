@@ -76,7 +76,5 @@ public final class RadiusRender extends AbstractRender {
 
         timer.cancel();
 
-        Logger.info(Lang.LOG_FINISHED_RENDERING, Template.of("world", world.getName()));
-
     }
 }

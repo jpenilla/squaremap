@@ -1,6 +1,7 @@
 package net.pl3x.map.plugin.task.render;
 
 import com.mojang.datafixers.util.Either;
+import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.server.v1_16_R3.Block;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.BlockStainedGlass;
@@ -16,6 +17,8 @@ import net.minecraft.server.v1_16_R3.IChunkAccess;
 import net.minecraft.server.v1_16_R3.PlayerChunk;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import net.pl3x.map.api.Pair;
+import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.BiomeColors;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -85,6 +88,14 @@ public abstract class AbstractRender implements Runnable {
 
         if (!(this instanceof BackgroundRender)) {
             this.mapWorld.stopRender();
+
+            if (this.cancelled) {
+                Logger.info(Lang.LOG_CANCELLED_RENDERING, Template.of("world", world.getName()));
+                return;
+            }
+
+            this.mapWorld.finishedRender();
+            Logger.info(Lang.LOG_FINISHED_RENDERING, Template.of("world", world.getName()));
         }
     }
 

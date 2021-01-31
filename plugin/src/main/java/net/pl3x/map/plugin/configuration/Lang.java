@@ -106,6 +106,10 @@ public class Lang {
     public static String LOG_FOUND_TOTAL_REGION_FILES = "<green>Found <gray><total> <green>region files";
     @LangKey("log.finished-rendering")
     public static String LOG_FINISHED_RENDERING = "<dark_aqua>Finished rendering map for <yellow><world>";
+    @LangKey("log.cancelled-rendering")
+    public static String LOG_CANCELLED_RENDERING = "<dark_aqua>Rendering map for <yellow><world> <dark_aqua>has been interrupted";
+    @LangKey("log.resumed-rendering")
+    public static String LOG_RESUMED_RENDERING = "<dark_aqua>Rendering map for <yellow><world> <dark_aqua>has been resumed";
     @LangKey("log.scanning-region-progress")
     public static String LOG_RENDER_PROGRESS = "Render progress for world: <world>, <current_chunks>/<total_chunks> chunks (<percent>), Elapsed: <elapsed>, ETA: <eta>, Rate: <rate>cps";
 
