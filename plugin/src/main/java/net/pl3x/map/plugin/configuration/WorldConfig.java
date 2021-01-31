@@ -104,7 +104,7 @@ public class WorldConfig extends AbstractWorldConfig {
     public boolean PLAYER_TRACKER_SHOW_TOGGLE = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_ENABLED = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = true;
-    public String PLAYER_TRACKER_NAMEPLATE_HEADS_URL = "https://crafatar.com/avatars/{uuid}?size=16&default=MHF_Steve&overlay";
+    public String PLAYER_TRACKER_NAMEPLATE_HEADS_URL = "https://mc-heads.net/avatar/{uuid}/16";
     public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH = true;
     public boolean PLAYER_TRACKER_HIDE_INVISIBLE = true;
