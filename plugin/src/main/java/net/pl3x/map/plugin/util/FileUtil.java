@@ -128,7 +128,16 @@ public class FileUtil {
         Files.walkFileTree(jarPath, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                Files.createDirectories(destination.resolve(jarPath.relativize(dir).toString()));
+                try {
+                    Files.createDirectories(destination.resolve(jarPath.relativize(dir).toString()));
+                } catch (IllegalArgumentException e) {
+                    Logger.severe("");
+                    Logger.severe("Unable to extract web directory to disk!");
+                    Logger.severe("This is caused by a bug in Java. Please update your Java installation and try again.");
+                    Logger.severe("For more information, see https://github.com/pl3xgaming/Pl3xMap/issues/4");
+                    Logger.severe("");
+                    e.printStackTrace();
+                }
                 return FileVisitResult.CONTINUE;
             }
 
