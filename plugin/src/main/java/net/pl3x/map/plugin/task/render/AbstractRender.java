@@ -20,11 +20,13 @@ import net.pl3x.map.api.Pair;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.BiomeColors;
+import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.data.Region;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
+import net.pl3x.map.plugin.util.Numbers;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -140,7 +142,7 @@ public abstract class AbstractRender implements Runnable {
                     // in order to get the correct lastY for shading
                     chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
                     if (chunk != null && !chunk.isEmpty()) {
-                        lastY = scanBottomRow(chunk);
+                        lastY = getLastYFromBottomRow(chunk);
                     }
                 }
                 chunk = getChunkAt(nmsWorld, chunkX, chunkZ);
@@ -161,7 +163,7 @@ public abstract class AbstractRender implements Runnable {
             // try scanning south row of northern chunk to get proper yDiff
             chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
             if (chunk != null && !chunk.isEmpty()) {
-                lastY = scanBottomRow(chunk);
+                lastY = getLastYFromBottomRow(chunk);
             }
 
             // scan the chunk itself
@@ -170,11 +172,17 @@ public abstract class AbstractRender implements Runnable {
                 scanChunk(image, lastY, chunk);
             }
 
-            // try scanning the southern chunk in case it was stored with improper yDiff
+            // queue up the southern chunk in case it was stored with improper yDiff
             // https://github.com/pl3xgaming/Pl3xMap/issues/15
-            chunk = getChunkAt(nmsWorld, chunkX, chunkZ + 1);
+            final int down = chunkZ + 1;
+            chunk = getChunkAt(nmsWorld, chunkX, down);
             if (chunk != null && !chunk.isEmpty()) {
-                scanChunk(image, lastY, chunk);
+                if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
+                    scanTopRow(image, lastY, chunk);
+                } else {
+                    // chunk belongs to a different region, add to queue
+                    mapWorld.chunkModified(new ChunkCoordinate(chunkX, down));
+                }
             }
 
             curChunks.incrementAndGet();
@@ -192,7 +200,16 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    private int @NonNull [] scanBottomRow(final @NonNull Chunk chunk) {
+    private void scanTopRow(Image image, int[] lastY, Chunk chunk) {
+        final int blockX = chunk.getPos().getBlockX();
+        final int blockZ = chunk.getPos().getBlockZ();
+        for (int x = 0; x < 16; x++) {
+            if (cancelled) return;
+            image.setPixel(blockX + x, blockZ, scanBlock(chunk, x, 0, lastY));
+        }
+    }
+
+    private int @NonNull [] getLastYFromBottomRow(final @NonNull Chunk chunk) {
         final int[] lastY = new int[16];
         final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
         for (int x = 0; x < 16; x++) {
