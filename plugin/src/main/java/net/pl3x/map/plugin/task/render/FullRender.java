@@ -29,11 +29,7 @@ public final class FullRender extends AbstractRender {
     protected void render() {
         while (Bukkit.getCurrentTick() < 20) {
             // server is not running yet
-            try {
-                //noinspection BusyWait
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
+            sleep(1000);
         }
 
         RegionSpiralIterator spiral, oldSpiral = this.mapWorld.getRenderProgress();

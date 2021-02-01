@@ -89,15 +89,16 @@ public abstract class AbstractRender implements Runnable {
         this.render();
 
         if (!(this instanceof BackgroundRender)) {
+            final boolean finished = !cancelled;
+
             this.mapWorld.stopRender();
 
-            if (this.cancelled) {
+            if (finished) {
+                this.mapWorld.finishedRender();
+                Logger.info(Lang.LOG_FINISHED_RENDERING, Template.of("world", world.getName()));
+            } else {
                 Logger.info(Lang.LOG_CANCELLED_RENDERING, Template.of("world", world.getName()));
-                return;
             }
-
-            this.mapWorld.finishedRender();
-            Logger.info(Lang.LOG_FINISHED_RENDERING, Template.of("world", world.getName()));
         }
     }
 
@@ -190,6 +191,9 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private void scanChunk(Image image, int[] lastY, Chunk chunk) {
+        while (mapWorld.rendersPaused()) {
+            sleep(500);
+        }
         final int blockX = chunk.getPos().getBlockX();
         final int blockZ = chunk.getPos().getBlockZ();
         for (int x = 0; x < 16; x++) {
@@ -387,5 +391,12 @@ public abstract class AbstractRender implements Runnable {
             if (cancelled) return null;
         }
         return (Chunk) future.join().left().orElse(null);
+    }
+
+    void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException ignore) {
+        }
     }
 }

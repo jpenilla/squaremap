@@ -32,6 +32,10 @@ public class Lang {
     public static String CANCELLED_RENDER = "<green>Render cancelled for <world>";
     @LangKey("successfully-reset-map")
     public static String SUCCESSFULLY_RESET_MAP = "<green>Successfully reset map for <world>";
+    @LangKey("paused-renders")
+    public static String PAUSED_RENDER = "<green>Paused renders for <world>";
+    @LangKey("unpaused-renders")
+    public static String UNPAUSED_RENDER = "<green>Unpaused renders for <world>";
 
     @LangKey("command.message.console-must-specify-player")
     public static String CONSOLE_MUST_SPECIFY_PLAYER = "<red>You must specify a target player when running this command from console";
@@ -65,6 +69,8 @@ public class Lang {
     public static String FULLRENDER_COMMAND_DESCRIPTION = "Starts a full render for the specified world";
     @LangKey("command.description.cancel-render")
     public static String CANCEL_RENDER_COMMAND_DESCRIPTION = "Cancels a render for the specified world";
+    @LangKey("command.description.pause-render")
+    public static String PAUSE_RENDER_COMMAND_DESCRIPTION = "Pauses all renders for the specified world";
     @LangKey("command.argument.optional-world")
     public static String OPTIONAL_WORLD_ARGUMENT_DESCRIPTION = "Defaults to the players current world if not provided";
     @LangKey("command.description.radius-render")
@@ -92,9 +98,6 @@ public class Lang {
 
     @LangKey("plugin-reloaded")
     public static String PLUGIN_RELOADED = "<green><name> v<version> reloaded";
-
-    @LangKey("plugin-version")
-    public static String PLUGIN_VERSION = "<green><name> v<version>";
 
     @LangKey("log.started-full-render")
     public static String LOG_STARTED_FULLRENDER = "<dark_aqua>Started full map render for <yellow><world>";
@@ -127,8 +130,6 @@ public class Lang {
     public static String LOG_COULD_NOT_CREATE_DIR = "Could not create directory! {path}";
     @LangKey("log.could-not-save-region")
     public static String LOG_COULD_NOT_SAVE_REGION = "Could not save map for region {x},{z}";
-    @LangKey("log.unable-to-write-to-file")
-    public static String LOG_UNABLE_TO_WRITE_TO_FILE = "Unable to write to {path}";
     @LangKey("log.internal-web-not-running")
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "An error occurred with the internal webserver";
 

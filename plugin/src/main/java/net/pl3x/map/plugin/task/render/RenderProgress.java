@@ -40,6 +40,10 @@ public final class RenderProgress extends TimerTask {
 
     @Override
     public void run() {
+        if (render.mapWorld.rendersPaused()) {
+            return;
+        }
+
         final int curChunks = this.render.processedChunks();
         final int diff = curChunks - prevChunks;
         prevChunks = curChunks;

@@ -60,6 +60,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     private AbstractRender activeRender = null;
     private ScheduledFuture<?> backgroundRender = null;
+    private boolean pauseRenders = false;
 
     private MapWorld(final org.bukkit.@NonNull World world) {
         this.bukkitWorld = world;
@@ -214,6 +215,14 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     public boolean isRendering() {
         return this.activeRender != null;
+    }
+
+    public boolean rendersPaused() {
+        return pauseRenders;
+    }
+
+    public void pauseRenders(boolean pauseRenders) {
+        this.pauseRenders = pauseRenders;
     }
 
     public void finishedRender() {
