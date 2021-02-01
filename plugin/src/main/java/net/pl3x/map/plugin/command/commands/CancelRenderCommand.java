@@ -40,6 +40,7 @@ public final class CancelRenderCommand extends Pl3xMapCommand {
 
         Lang.send(sender, Lang.CANCELLED_RENDER, Template.of("world", world.name()));
         world.stopRender();
+        world.finishedRender();
     }
 
 }

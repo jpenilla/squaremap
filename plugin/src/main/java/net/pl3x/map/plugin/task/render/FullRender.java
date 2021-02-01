@@ -64,11 +64,11 @@ public final class FullRender extends AbstractRender {
 
         while (spiral.hasNext()) {
             if (this.cancelled) break;
+            this.mapWorld.saveRenderProgress(spiral);
             Region region = spiral.next();
             if (regions.contains(region)) {
                 mapRegion(region);
             }
-            this.mapWorld.saveRenderProgress(spiral);
         }
 
         timer.cancel();
