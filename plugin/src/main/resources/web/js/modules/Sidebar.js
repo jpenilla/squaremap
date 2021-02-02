@@ -5,7 +5,7 @@ import { P } from './Pl3xMap.js';
 class Sidebar {
     constructor(pinned) {
         this.sidebar = P.createElement("div", "sidebar", this);
-        document.getElementById("map").appendChild(this.sidebar);
+        document.body.appendChild(this.sidebar);
 
         if (pinned != "hide") {
             this.pin = new Pin(pinned == "pinned");

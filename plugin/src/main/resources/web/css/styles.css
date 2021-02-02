@@ -3,11 +3,11 @@ body {
   padding: 0;
   background: #000000;
 }
-ul,li {
+ul, li {
   list-style-type: none;
   display: inline-block;
-  margin: 0px;
-  padding: 0px;
+  margin: 0;
+  padding: 0;
   vertical-align: middle;
 }
 #map {
@@ -20,12 +20,12 @@ img.leaflet-tile {
   image-rendering: -moz-crisp-edges
 }
 div.leaflet-nameplate-pane div {
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   color: #ffffff;
   font-weight: 700;
   padding: 2px 5px 1px 5px;
   margin: 0;
-  border-color: rgba(0,0,0,0.75);
+  border-color: rgba(0, 0, 0, 0.75);
 }
 div.leaflet-nameplate-pane div:before {
   border-color: transparent;
@@ -51,7 +51,7 @@ div.leaflet-control-layers.link img {
   width: 34px;
   height: 34px;
   vertical-align: bottom;
-  bottom: 0px;
+  bottom: 0;
   background-image: url("../images/link.png");
   background-size: 20px 20px;
   background-repeat: no-repeat;
@@ -64,35 +64,54 @@ div.leaflet-control-layers.coordinates {
   height: 30px;
 }
 #sidebar {
+  display: flex;
+  flex-flow: column;
   position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 0px;
+  top: 0;
+  right: 0;
+  width: 0;
   height: 100vh;
   padding-left: 15px;
   z-index: 10000;
+  font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
   border-left: 1px solid #000000;
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0, 0, 0, 0.6);
   color: #ffffff;
   text-align: right;
   transition: all 0.25s;
 }
 #sidebar.show {
   width: 200px;
-  padding-left: 0px;
+  padding-left: 0;
 }
 #sidebar fieldset {
   clear: right;
-  margin: -20px 0px;
+  margin: 30px 0;
   border: none;
-  border-top: 1px solid rgba(196,196,196,0.4);
+  border-top: 1px solid rgba(196, 196, 196, 0.4);
   text-align: left;
   transition: all 0.25s;
   white-space: nowrap;
-  word-wrap: none;
 }
 #sidebar fieldset#players {
-  margin: 30px 0px;
+  margin: -20px 0 0 0;
+  overflow-y: auto;
+}
+#sidebar fieldset#players::-webkit-scrollbar {
+  width: 6px;
+}
+#sidebar fieldset#players::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 0;
+}
+#sidebar fieldset#players::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0);
+  border-right: 2px solid rgba(112, 128, 144, 0.75);
+  border-radius: 1px;
+}
+#sidebar fieldset#players::-webkit-scrollbar-thumb:hover {
+  border-radius: 3px;
+  border: 0;
+  background-color: rgba(112, 128, 144, 0.75);
 }
 #sidebar legend {
   display: block;
@@ -111,7 +130,7 @@ div.leaflet-control-layers.coordinates {
 }
 #sidebar fieldset a:hover,
 #sidebar fieldset a.following:hover {
-  background-color: rgba(255, 255, 255,0.15);
+  background-color: rgba(255, 255, 255, 0.15);
   cursor: pointer;
 }
 #sidebar fieldset a .other-world {
@@ -131,20 +150,23 @@ div.leaflet-control-layers.coordinates {
   padding-right: 10px;
 }
 #sidebar #pin {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 23px;
   height: 23px;
   margin: 5px 5px 10px 5px;
   padding: 2px 2px;
-  border: 1px solid rgba(255,255,255,0);
+  border: 1px solid rgba(255, 255, 255, 0);
   filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
   -webkit-filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
   cursor: pointer;
 }
 #sidebar #pin.pinned:hover {
-  background: rgba(0,128,0,0.5);
-  border: 1px solid rgba(0,128,0,0.75);
+  background: rgba(0, 128, 0, 0.5);
+  border: 1px solid rgba(0, 128, 0, 0.75);
 }
 #sidebar #pin.unpinned:hover {
-  background: rgba(128,0,0,0.5);
-  border: 1px solid rgba(128,0,0,0.75);
+  background: rgba(128, 0, 0, 0.5);
+  border: 1px solid rgba(128, 0, 0, 0.75);
 }
