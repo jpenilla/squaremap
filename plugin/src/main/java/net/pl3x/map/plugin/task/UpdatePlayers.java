@@ -45,7 +45,7 @@ public class UpdatePlayers extends BukkitRunnable {
                 Map<String, Object> playerEntry = new HashMap<>();
                 Location playerLoc = player.getLocation();
                 playerEntry.put("name", player.getName());
-                playerEntry.put("uuid", player.getUniqueId());
+                playerEntry.put("uuid", player.getUniqueId().toString().replace("-", ""));
                 playerEntry.put("x", playerLoc.getBlockX());
                 playerEntry.put("z", playerLoc.getBlockZ());
                 playerEntry.put("yaw", playerLoc.getYaw());
