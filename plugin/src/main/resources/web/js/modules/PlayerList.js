@@ -10,6 +10,11 @@ class PlayerList {
     tick() {
         P.getJSON("tiles/players.json", (json) => {
             this.update(json.players);
+            const max = json.max == null ? "???" : json.max;
+            const title = `Players (${json.players.length}/${max})`;
+            if (P.sidebar.playerList.legend.innerHTML !== title) {
+                P.sidebar.playerList.legend.innerHTML = title;
+            }
         });
     }
     showPlayer(link) {
