@@ -11,7 +11,7 @@ class LayerControl {
         this.playersLayer = new L.LayerGroup()
             .setZIndex(1000);
         this.playersLayer.id = "players_layer";
-        this.playersLayer.order = 1;
+        this.playersLayer.order = 2;
 
         this.controls = L.control.layers({}, {}, {
             position: 'topleft',
