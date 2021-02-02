@@ -124,6 +124,10 @@ public class WorldConfig extends AbstractWorldConfig {
 
     public int MARKER_API_UPDATE_INTERVAL_SECONDS = 15;
 
+    private void markerSettings() {
+        MARKER_API_UPDATE_INTERVAL_SECONDS = getInt("map.markers.update-interval-seconds", MARKER_API_UPDATE_INTERVAL_SECONDS);
+    }
+
     public boolean SPAWN_MARKER_ICON_ENABLED = true;
     public boolean SPAWN_MARKER_ICON_SHOW_CONTROLS = true;
     public boolean SPAWN_MARKER_ICON_DEFAULT_HIDDEN = false;
@@ -131,15 +135,29 @@ public class WorldConfig extends AbstractWorldConfig {
     public int SPAWN_MARKER_ICON_Z_INDEX = 0;
     public String SPAWN_MARKER_ICON_LABEL = "Spawn";
 
-    private void markerSettings() {
-        MARKER_API_UPDATE_INTERVAL_SECONDS = getInt("map.markers.update-interval-seconds", MARKER_API_UPDATE_INTERVAL_SECONDS);
-
+    private void spawnMarkerSettings() {
         SPAWN_MARKER_ICON_ENABLED = getBoolean("map.markers.spawn-icon.enabled", SPAWN_MARKER_ICON_ENABLED);
         SPAWN_MARKER_ICON_SHOW_CONTROLS = getBoolean("map.markers.spawn-icon.show-controls", SPAWN_MARKER_ICON_SHOW_CONTROLS);
         SPAWN_MARKER_ICON_DEFAULT_HIDDEN = getBoolean("map.markers.spawn-icon.default-hidden", SPAWN_MARKER_ICON_DEFAULT_HIDDEN);
         SPAWN_MARKER_ICON_LAYER_PRIORITY = getInt("map.markers.spawn-icon.layer-priority", SPAWN_MARKER_ICON_LAYER_PRIORITY);
         SPAWN_MARKER_ICON_Z_INDEX = getInt("map.markers.spawn-icon.z-index", SPAWN_MARKER_ICON_Z_INDEX);
         SPAWN_MARKER_ICON_LABEL = getString("map.markers.spawn-icon.label", SPAWN_MARKER_ICON_LABEL);
+    }
+
+    public boolean WORLDBORDER_MARKER_ENABLED = true;
+    public boolean WORLDBORDER_MARKER_SHOW_CONTROLS = true;
+    public boolean WORLDBORDER_MARKER_DEFAULT_HIDDEN = false;
+    public int WORLDBORDER_MARKER_LAYER_PRIORITY = 1;
+    public int WORLDBORDER_MARKER_Z_INDEX = 1;
+    public String WORLDBORDER_MARKER_LABEL = "World Border";
+
+    private void worldborderMarkerSettings() {
+        WORLDBORDER_MARKER_ENABLED = getBoolean("map.markers.world-border.enabled", WORLDBORDER_MARKER_ENABLED);
+        WORLDBORDER_MARKER_SHOW_CONTROLS = getBoolean("map.markers.world-border.show-controls", WORLDBORDER_MARKER_SHOW_CONTROLS);
+        WORLDBORDER_MARKER_DEFAULT_HIDDEN = getBoolean("map.markers.world-border.default-hidden", WORLDBORDER_MARKER_DEFAULT_HIDDEN);
+        WORLDBORDER_MARKER_LAYER_PRIORITY = getInt("map.markers.world-border.layer-priority", WORLDBORDER_MARKER_LAYER_PRIORITY);
+        WORLDBORDER_MARKER_Z_INDEX = getInt("map.markers.world-border.z-index", WORLDBORDER_MARKER_Z_INDEX);
+        WORLDBORDER_MARKER_LABEL = getString("map.markers.world-border.label", WORLDBORDER_MARKER_LABEL);
     }
 
 }

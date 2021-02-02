@@ -13,6 +13,7 @@ import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.api.LayerRegistry;
 import net.pl3x.map.plugin.api.SpawnIconProvider;
+import net.pl3x.map.plugin.api.WorldBorderProvider;
 import net.pl3x.map.plugin.configuration.WorldAdvanced;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.task.UpdateMarkers;
@@ -84,6 +85,9 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         this.layerRegistry(); // init the layer registry
         if (this.config().SPAWN_MARKER_ICON_ENABLED) {
             this.layerRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, new SpawnIconProvider(this));
+        }
+        if (this.config().WORLDBORDER_MARKER_ENABLED) {
+            this.layerRegistry().register(WorldBorderProvider.WORLDBORDER_KEY, new WorldBorderProvider(this));
         }
 
         this.deserializeDirtyChunks();
@@ -256,6 +260,9 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     public void shutdown() {
         if (this.layerRegistry().hasEntry(SpawnIconProvider.SPAWN_ICON_KEY)) {
             this.layerRegistry().unregister(SpawnIconProvider.SPAWN_ICON_KEY);
+        }
+        if (this.layerRegistry().hasEntry(WorldBorderProvider.WORLDBORDER_KEY)) {
+            this.layerRegistry().unregister(WorldBorderProvider.WORLDBORDER_KEY);
         }
         this.updateMarkersTask.cancel();
         if (this.isRendering()) {
