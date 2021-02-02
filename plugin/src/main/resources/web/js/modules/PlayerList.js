@@ -2,16 +2,18 @@ import { Player } from "./util/Player.js";
 import { P } from './Pl3xMap.js';
 
 class PlayerList {
-    constructor() {
+    constructor(json) {
         this.players = new Map();
         this.following = null;
+        this.label = json.player_list_label;
         P.map.createPane("nameplate").style.zIndex = 1000;
     }
     tick() {
         P.getJSON("tiles/players.json", (json) => {
             this.update(json.players);
-            const max = json.max == null ? "???" : json.max;
-            const title = `Players (${json.players.length}/${max})`;
+            const title = `${this.label}`
+                .replace(/{cur}/g, json.players.length)
+                .replace(/{max}/g, json.max == null ? "???" : json.max)
             if (P.sidebar.playerList.legend.innerHTML !== title) {
                 P.sidebar.playerList.legend.innerHTML = title;
             }

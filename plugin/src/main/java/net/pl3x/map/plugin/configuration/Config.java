@@ -58,15 +58,21 @@ public class Config extends AbstractConfig {
     }
 
     public static String UI_TITLE = "Pl3xMap - {world}";
-    public static boolean UI_COORDINATES = true;
-    public static boolean UI_LINK = true;
-    public static String UI_SIDEBAR = "pinned";
+    public static boolean UI_COORDINATES_ENABLED = true;
+    public static String UI_COORDINATES_HTML = "Coordinates<br/>{x}, {z}";
+    public static boolean UI_LINK_ENABLED = true;
+    public static String UI_SIDEBAR_PINNED = "pinned";
+    public static String UI_SIDEBAR_PLAYER_LIST_LABEL = "Players ({cur}/{max})";
+    public static String UI_SIDEBAR_WORLD_LIST_LABEL = "Worlds";
 
     private static void uiSettings() {
         UI_TITLE = config.getString("settings.ui.title", UI_TITLE);
-        UI_COORDINATES = config.getBoolean("settings.ui.coordinates", UI_COORDINATES);
-        UI_LINK = config.getBoolean("settings.ui.link", UI_LINK);
-        UI_SIDEBAR = config.getString("settings.ui.sidebar", UI_SIDEBAR);
+        UI_COORDINATES_ENABLED = config.getBoolean("settings.ui.coordinates.enabled", UI_COORDINATES_ENABLED);
+        UI_COORDINATES_HTML = config.getString("settings.ui.coordinates.label", UI_COORDINATES_HTML);
+        UI_LINK_ENABLED = config.getBoolean("settings.ui.link.enabled", UI_LINK_ENABLED);
+        UI_SIDEBAR_PINNED = config.getString("settings.ui.sidebar.pinned", UI_SIDEBAR_PINNED);
+        UI_SIDEBAR_PLAYER_LIST_LABEL = config.getString("settings.ui.sidebar.player-list-label", UI_SIDEBAR_PLAYER_LIST_LABEL);
+        UI_SIDEBAR_WORLD_LIST_LABEL = config.getString("settings.ui.sidebar.world-list-label", UI_SIDEBAR_WORLD_LIST_LABEL);
     }
 
     public static String MAIN_COMMAND_LABEL = "pl3xmap";

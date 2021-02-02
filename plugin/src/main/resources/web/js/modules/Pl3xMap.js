@@ -58,7 +58,7 @@ class Pl3xMap {
 
             this.title = json.ui.title;
             this.sidebar = new Sidebar(json.ui.sidebar);
-            this.playerList = new PlayerList();
+            this.playerList = new PlayerList(json.ui.sidebar);
             this.worldList = new WorldList(json.worlds);
             this.coordinates = new UICoordinates(json.ui.coordinates);
             this.uiLink = new UILink(json.ui.link);

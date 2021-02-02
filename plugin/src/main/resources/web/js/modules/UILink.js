@@ -1,7 +1,7 @@
 import { P } from './Pl3xMap.js';
 
 class UILink {
-    constructor(enabled) {
+    constructor(json) {
         const Link = L.Control.extend({
             _container: null,
             options: {
@@ -23,7 +23,7 @@ class UILink {
         P.map.addControl(this.link)
             .addEventListener('move', () => this.update())
             .addEventListener('zoom', () => this.update());
-        if (!enabled) {
+        if (!json.enabled) {
             this.link._link.style.display = "none";
         }
     }

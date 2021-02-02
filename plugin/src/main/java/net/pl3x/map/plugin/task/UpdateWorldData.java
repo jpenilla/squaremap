@@ -85,9 +85,21 @@ public class UpdateWorldData extends BukkitRunnable {
 
         Map<String, Object> ui = new HashMap<>();
         ui.put("title", Config.UI_TITLE);
-        ui.put("coordinates", Config.UI_COORDINATES);
-        ui.put("link", Config.UI_LINK);
-        ui.put("sidebar", Config.UI_SIDEBAR);
+
+        Map<String, Object> coordinates = new HashMap<>();
+        coordinates.put("enabled", Config.UI_COORDINATES_ENABLED);
+        coordinates.put("html", Config.UI_COORDINATES_HTML);
+        ui.put("coordinates", coordinates);
+
+        Map<String, Object> link = new HashMap<>();
+        link.put("enabled", Config.UI_LINK_ENABLED);
+        ui.put("link", link);
+
+        Map<String, Object> sidebar = new HashMap<>();
+        sidebar.put("pinned", Config.UI_SIDEBAR_PINNED);
+        sidebar.put("player_list_label", Config.UI_SIDEBAR_PLAYER_LIST_LABEL);
+        sidebar.put("world_list_label", Config.UI_SIDEBAR_WORLD_LIST_LABEL);
+        ui.put("sidebar", sidebar);
 
         Map<String, Object> map = new HashMap<>();
         map.put("worlds", worlds);
