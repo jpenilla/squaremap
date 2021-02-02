@@ -8,10 +8,8 @@ class LayerControl {
         this.currentLayer = 1;
         this.updateInterval = 60;
 
-        this.playersLayer = new L.LayerGroup()
-            .setZIndex(1000);
+        this.playersLayer = new L.LayerGroup();
         this.playersLayer.id = "players_layer";
-        this.playersLayer.order = 2;
 
         this.controls = L.control.layers({}, {}, {
             position: 'topleft',
@@ -21,8 +19,6 @@ class LayerControl {
             }
         })
         .addTo(P.map);
-
-        this.addOverlay("Players", this.playersLayer, false);
     }
     addOverlay(name, layer, hide) {
         this.controls.addOverlay(layer, name);
@@ -61,6 +57,15 @@ class LayerControl {
         }
         this.tileLayer1 = this.createTileLayer(world);
         this.tileLayer2 = this.createTileLayer(world);
+        // refresh player's control
+        this.removeOverlay(this.playersLayer);
+        if (world.player_tracker.show_controls) {
+            this.addOverlay(world.player_tracker.label,
+                this.playersLayer,
+                world.player_tracker.default_hidden);
+        }
+        this.playersLayer.order = world.player_tracker.priority;
+        this.playersLayer.setZIndex(world.player_tracker.z_index);
     }
     createTileLayer(world) {
         return L.tileLayer(`tiles/${world.name}/{z}/{x}_{y}.png?{rand}`, {

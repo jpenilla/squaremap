@@ -34,7 +34,12 @@ public class UpdateWorldData extends BukkitRunnable {
 
             Map<String, Object> playerTracker = new HashMap<>();
             playerTracker.put("enabled", worldConfig.PLAYER_TRACKER_ENABLED);
-            playerTracker.put("show_toggle", worldConfig.PLAYER_TRACKER_SHOW_TOGGLE);
+            playerTracker.put("update_interval", worldConfig.PLAYER_TRACKER_UPDATE_INTERVAL);
+            playerTracker.put("label", worldConfig.PLAYER_TRACKER_LABEL);
+            playerTracker.put("show_controls", worldConfig.PLAYER_TRACKER_SHOW_CONTROLS);
+            playerTracker.put("default_hidden", worldConfig.PLAYER_TRACKER_DEFAULT_HIDDEN);
+            playerTracker.put("priority", worldConfig.PLAYER_TRACKER_PRIORITY);
+            playerTracker.put("z_index", worldConfig.PLAYER_TRACKER_Z_INDEX);
 
             Map<String, Object> nameplates = new HashMap<>();
             nameplates.put("enabled", worldConfig.PLAYER_TRACKER_NAMEPLATE_ENABLED);

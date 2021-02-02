@@ -24,25 +24,33 @@ class Pl3xMap {
             this.playerList.follow(null);
         });
 
+        this.tick_count = 0;
+
         this.layerControl = new LayerControl();
 
         this.init();
     }
-    tick(count) {
-        if (count === undefined) {
-            count = 0;
+    loop() {
+        ++this.tick_count;
+        this.tick();
+        setTimeout(() => this.loop(), 1000);
+    }
+    tick() {
+        if (this.tick_count === undefined) {
+            this.tick_count = 0;
         }
-        // tick players every 1 second
-        this.playerList.tick();
-        // tick world every 10 seconds
-        if (count % 5 == 0) {
+        // tick player tracker
+        if (this.tick_count % this.worldList.curWorld.player_tracker.update_interval == 0) {
+            this.playerList.tick();
+        }
+        // tick world
+        if (this.tick_count % this.worldList.curWorld.update_interval == 0) {
             this.worldList.curWorld.tick();
         }
         // refresh map tile layer
-        if (count % this.updateInterval == 0) {
+        if (this.tick_count % this.updateInterval == 0) {
             this.layerControl.updateTileLayer();
         }
-        setTimeout(() => this.tick(++count), 1000);
     }
     init() {
         this.getJSON("tiles/settings.json", (json) => {
@@ -56,7 +64,7 @@ class Pl3xMap {
             this.uiLink = new UILink(json.ui.link);
 
             this.worldList.loadWorld(this.getUrlParam("world", json.worlds[0].name), (world) => {
-                this.tick();
+                this.loop();
                 this.centerOn(
                     this.getUrlParam("x", world.spawn.x),
                     this.getUrlParam("z", world.spawn.z),

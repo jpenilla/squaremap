@@ -7,6 +7,7 @@ class World {
         this.type = world.type;
         this.display_name = world.display_name;
         this.markerLayers = new Map();
+        this.player_tracker = {};
     }
     tick() {
         // load and draw markers
@@ -51,7 +52,8 @@ class World {
             // force self update with existing player list
             P.playerList.update(Array.from(P.playerList.players.values()));
 
-            // tick now, dont wait for counter
+            // tick now, reset counter
+            this.tick_count = 0;
             this.tick();
 
             if (callback != null) {

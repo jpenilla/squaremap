@@ -101,7 +101,12 @@ public class WorldConfig extends AbstractWorldConfig {
     }
 
     public boolean PLAYER_TRACKER_ENABLED = true;
-    public boolean PLAYER_TRACKER_SHOW_TOGGLE = true;
+    public int PLAYER_TRACKER_UPDATE_INTERVAL = 1;
+    public String PLAYER_TRACKER_LABEL = "Players";
+    public boolean PLAYER_TRACKER_SHOW_CONTROLS = true;
+    public boolean PLAYER_TRACKER_DEFAULT_HIDDEN = false;
+    public int PLAYER_TRACKER_PRIORITY = 2;
+    public int PLAYER_TRACKER_Z_INDEX = 2;
     public boolean PLAYER_TRACKER_NAMEPLATE_ENABLED = true;
     public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = true;
     public String PLAYER_TRACKER_NAMEPLATE_HEADS_URL = "https://mc-heads.net/avatar/{uuid}/16";
@@ -112,7 +117,12 @@ public class WorldConfig extends AbstractWorldConfig {
 
     private void playerTrackerSettings() {
         PLAYER_TRACKER_ENABLED = getBoolean("player-tracker.enabled", PLAYER_TRACKER_ENABLED);
-        PLAYER_TRACKER_SHOW_TOGGLE = getBoolean("player-tracker.show-toggle", PLAYER_TRACKER_SHOW_TOGGLE);
+        PLAYER_TRACKER_UPDATE_INTERVAL = getInt("player-tracker.update-interval-seconds", PLAYER_TRACKER_UPDATE_INTERVAL);
+        PLAYER_TRACKER_LABEL = getString("player-tracker.label", PLAYER_TRACKER_LABEL);
+        PLAYER_TRACKER_SHOW_CONTROLS = getBoolean("player-tracker.show-controls", PLAYER_TRACKER_SHOW_CONTROLS);
+        PLAYER_TRACKER_DEFAULT_HIDDEN = getBoolean("player-tracker.default-hidden", PLAYER_TRACKER_DEFAULT_HIDDEN);
+        PLAYER_TRACKER_PRIORITY = getInt("player-tracker.layer-priority", PLAYER_TRACKER_PRIORITY);
+        PLAYER_TRACKER_Z_INDEX = getInt("player-tracker.z-index", PLAYER_TRACKER_Z_INDEX);
         PLAYER_TRACKER_NAMEPLATE_ENABLED = getBoolean("player-tracker.nameplate.enabled", PLAYER_TRACKER_NAMEPLATE_ENABLED);
         PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = getBoolean("player-tracker.nameplate.show-head", PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD);
         PLAYER_TRACKER_NAMEPLATE_HEADS_URL = getString("player-tracker.nameplate.heads-url", PLAYER_TRACKER_NAMEPLATE_HEADS_URL);

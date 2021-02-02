@@ -93,11 +93,9 @@ class PlayerList {
     }
     follow(uuid) {
         if (uuid != null) {
-            console.log("1");
             document.getElementById(uuid).classList.add("following");
             this.following = uuid;
         } else if (this.following != null) {
-            console.log("2");
             document.getElementById(this.following).classList.remove("following");
             this.following = null;
         }
