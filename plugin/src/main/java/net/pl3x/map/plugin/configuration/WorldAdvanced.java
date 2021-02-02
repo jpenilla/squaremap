@@ -44,7 +44,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         this.config.readConfig(WorldAdvanced.class, this);
     }
 
-    public List<Block> invisibleBlocks = new ArrayList<>();
+    public final List<Block> invisibleBlocks = new ArrayList<>();
 
     private void invisibleBlocks() {
         invisibleBlocks.clear();
@@ -56,7 +56,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         )).forEach(block -> invisibleBlocks.add(IRegistry.BLOCK.get(new MinecraftKey(block.toString()))));
     }
 
-    public List<Block> iterateUpBaseBlocks = new ArrayList<>();
+    public final List<Block> iterateUpBaseBlocks = new ArrayList<>();
 
     private void iterateUpBaseBlocks() {
         iterateUpBaseBlocks.clear();

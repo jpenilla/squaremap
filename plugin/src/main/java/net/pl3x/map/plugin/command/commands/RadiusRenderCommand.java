@@ -39,8 +39,12 @@ public final class RadiusRenderCommand extends Pl3xMapCommand {
     private void executeRadiusRender(final @NonNull CommandContext<CommandSender> context) {
         final CommandSender sender = context.getSender();
         final MapWorld world = context.get("world");
-        final Location2D center = context.getOrDefault("center", Location2D.from(world.bukkit(), 0, 0));
         final int radius = context.get("radius");
+
+        Location2D center = context.getOrDefault("center", null);
+        if (center == null) {
+            center = Location2D.from(world.bukkit(), 0, 0);
+        }
 
         if (world.isRendering()) {
             Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.of("world", world.name()));

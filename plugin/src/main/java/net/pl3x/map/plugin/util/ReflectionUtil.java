@@ -45,9 +45,9 @@ public final class ReflectionUtil {
         }
     }
 
-    public static @Nullable Object invokeOrThrow(final @NonNull Method method, final @Nullable Object instance, final Object @NonNull ... args) {
+    public static void invokeOrThrow(final @NonNull Method method, final @Nullable Object instance, final Object @NonNull ... args) {
         try {
-            return method.invoke(instance, args);
+            method.invoke(instance, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Failed to invoke method, e");
         }

@@ -20,8 +20,8 @@ import java.util.Map;
 
 @SuppressWarnings({"unused", "SameParameterValue"})
 abstract class AbstractConfig {
-    File file;
-    YamlConfiguration yaml;
+    final File file;
+    final YamlConfiguration yaml;
 
     AbstractConfig(String filename) {
         this.file = new File(Pl3xMapPlugin.getInstance().getDataFolder(), filename);

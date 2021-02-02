@@ -177,7 +177,7 @@ public abstract class Marker {
             final int sizeX,
             final int sizeZ
     ) {
-        return icon(point, Point.of(0, -sizeZ / 2), Point.of(sizeX / 2, sizeZ / 2), image, sizeX, sizeZ);
+        return icon(point, Point.of(0, -sizeZ / 2D), Point.of(sizeX / 2D, sizeZ / 2D), image, sizeX, sizeZ);
     }
 
     /**
@@ -193,7 +193,7 @@ public abstract class Marker {
             final @NonNull Key image,
             final int size
     ) {
-        return icon(point, Point.of(0, -size / 2), Point.of(size / 2, size / 2), image, size, size);
+        return icon(point, Point.of(0, -size / 2D), Point.of(size / 2D, size / 2D), image, size, size);
     }
     // End icon factory methods
 

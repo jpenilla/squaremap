@@ -62,6 +62,7 @@ public final class Colors {
         return Material.WATER.h();
     }
 
+    @SuppressWarnings("SameReturnValue")
     public static @NonNull MaterialMapColor clearMapColor() {
         return MaterialMapColor.b;
     }

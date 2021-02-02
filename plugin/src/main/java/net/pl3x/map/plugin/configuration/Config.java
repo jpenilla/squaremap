@@ -70,7 +70,7 @@ public class Config extends AbstractConfig {
     }
 
     public static String MAIN_COMMAND_LABEL = "pl3xmap";
-    public static List<String> MAIN_COMMAND_ALIASES = new ArrayList<>();
+    public static final List<String> MAIN_COMMAND_ALIASES = new ArrayList<>();
 
     private static void commandSettings() {
         MAIN_COMMAND_LABEL = config.getString("settings.commands.main-command-label", MAIN_COMMAND_LABEL);

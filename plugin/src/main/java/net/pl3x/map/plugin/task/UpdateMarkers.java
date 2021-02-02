@@ -55,13 +55,7 @@ public final class UpdateMarkers extends BukkitRunnable {
             final Key key = registeredLayer.left();
             final List<Marker> markers = ImmutableList.copyOf(provider.getMarkers());
 
-            final Map<String, Object> current = new HashMap<>();
-            current.put("id", key.getKey());
-            current.put("name", provider.getLabel());
-            current.put("control", provider.showControls());
-            current.put("hide", provider.defaultHidden());
-            current.put("order", provider.layerPriority());
-            current.put("z_index", provider.zIndex());
+            final Map<String, Object> current = createMap(key, provider);
             current.put("markers", markers.hashCode());
 
             final Map<String, Object> previous = this.layerCache.get(key);
@@ -75,16 +69,16 @@ public final class UpdateMarkers extends BukkitRunnable {
                 final long time = System.currentTimeMillis();
                 this.lastUpdatedTime.put(key, System.currentTimeMillis());
 
-                final Map<String, Object> timeStamptedLayer = new HashMap<>(serializedLayer);
-                timeStamptedLayer.put("timestamp", time);
-                layers.add(timeStamptedLayer);
+                final Map<String, Object> timeStampedLayer = new HashMap<>(serializedLayer);
+                timeStampedLayer.put("timestamp", time);
+                layers.add(timeStampedLayer);
             } else {
                 final Map<String, Object> serializedLayer = this.serializedLayerCache.get(key);
                 final long lastUpdate = this.lastUpdatedTime.get(key);
 
-                final Map<String, Object> timeStamptedLayer = new HashMap<>(serializedLayer);
-                timeStamptedLayer.put("timestamp", lastUpdate);
-                layers.add(timeStamptedLayer);
+                final Map<String, Object> timeStampedLayer = new HashMap<>(serializedLayer);
+                timeStampedLayer.put("timestamp", lastUpdate);
+                layers.add(timeStampedLayer);
             }
         });
 
@@ -93,6 +87,12 @@ public final class UpdateMarkers extends BukkitRunnable {
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {
+        final Map<String, Object> map = createMap(key, provider);
+        map.put("markers", this.serializeMarkers(markers));
+        return map;
+    }
+
+    private Map<String, Object> createMap(Key key, LayerProvider provider) {
         final Map<String, Object> map = new HashMap<>();
         map.put("id", key.getKey());
         map.put("name", provider.getLabel());
@@ -100,7 +100,6 @@ public final class UpdateMarkers extends BukkitRunnable {
         map.put("hide", provider.defaultHidden());
         map.put("order", provider.layerPriority());
         map.put("z_index", provider.zIndex());
-        map.put("markers", this.serializeMarkers(markers));
         return map;
     }
 
@@ -180,7 +179,7 @@ public final class UpdateMarkers extends BukkitRunnable {
             final Object points;
             if (line.points().size() == 1) {
                 points = line.points().get(0).stream()
-                        .map(point -> toMap(point))
+                        .map(UpdateMarkers::toMap)
                         .collect(Collectors.toList());
             } else {
                 points = serializePoints(line.points().stream());
@@ -244,7 +243,7 @@ public final class UpdateMarkers extends BukkitRunnable {
     private static @NonNull List<List<Map<String, Integer>>> serializePoints(final @NonNull Stream<List<Point>> stream) {
         return stream.map(points ->
                 points.stream()
-                        .map(point -> toMap(point))
+                        .map(UpdateMarkers::toMap)
                         .collect(Collectors.toList())
         ).collect(Collectors.toList());
     }

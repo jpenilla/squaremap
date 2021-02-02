@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.logging.Level;
 
+@SuppressWarnings("CanBeFinal")
 public class Lang {
 
     // MiniMessage formatted strings, to be sent using Logger.info(String, Template...) or Lang.send(CommandSender, String, Template...)
@@ -165,7 +166,7 @@ public class Lang {
         }
         config.options().copyDefaults(true);
 
-        Lang.init();
+        init();
 
         try {
             config.save(configFile);
