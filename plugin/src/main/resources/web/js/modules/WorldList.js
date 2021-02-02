@@ -24,7 +24,7 @@ class WorldList {
             };
 
             const img = document.createElement("img");
-            img.src = this.getIcon(world.type);
+            img.src = this.getIcon(world);
 
             link.appendChild(img);
             link.appendChild(P.createTextElement("span", world.display_name));
@@ -32,8 +32,11 @@ class WorldList {
             P.sidebar.worldList.element.appendChild(link);
         }
     }
-    getIcon(type) {
-        switch (type) {
+    getIcon(world) {
+        if (world.icon != null && world.icon != "") {
+            return `images/icon/${world.icon}.png`;
+        }
+        switch (world.type) {
             case "nether":
                 return "images/icon/red-cube-smol.png";
             case "the_end":

@@ -63,17 +63,20 @@ public class UpdateWorldData extends BukkitRunnable {
             String name = world.getName();
             String displayName = worldConfig.MAP_DISPLAY_NAME
                     .replace("{world}", name);
+            String icon = worldConfig.MAP_ICON;
             String type = world.getEnvironment().name().toLowerCase();
 
             Map<String, Object> map = new HashMap<>();
             map.put("name", name);
             map.put("display_name", displayName);
+            map.put("icon", icon);
             map.put("type", type);
             map.put("settings", settings);
 
             Map<String, Object> worldsList = new HashMap<>();
             worldsList.put("name", name);
             worldsList.put("display_name", displayName);
+            worldsList.put("icon", icon);
             worldsList.put("type", type);
             worlds.add(worldsList);
 

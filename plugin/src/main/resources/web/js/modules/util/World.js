@@ -4,6 +4,7 @@ import { P } from '../Pl3xMap.js';
 class World {
     constructor(world) {
         this.name = world.name;
+        this.icon = world.icon;
         this.type = world.type;
         this.display_name = world.display_name;
         this.markerLayers = new Map();
@@ -49,8 +50,8 @@ class World {
             // setup tile layers
             P.layerControl.setupTileLayers(this);
 
-            // force self update with existing player list
-            P.playerList.update(Array.from(P.playerList.players.values()));
+            // force clear player markers
+            P.playerList.clearMarkers();
 
             // tick now, reset counter
             this.tick_count = 0;
