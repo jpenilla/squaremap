@@ -74,14 +74,14 @@ public class WorldBorderProvider implements LayerProvider {
         Location center = border.getCenter();
         int x = center.getBlockX();
         int z = center.getBlockZ();
-        double size = border.getSize();
+        double radius = border.getSize() / 2;
         return Collections.singletonList(Marker
                 .polyline(
-                        Point.of(x - size, z - size),
-                        Point.of(x + size, z - size),
-                        Point.of(x + size, z + size),
-                        Point.of(x - size, z + size),
-                        Point.of(x - size, z - size)
+                        Point.of(x - radius, z - radius),
+                        Point.of(x + radius, z - radius),
+                        Point.of(x + radius, z + radius),
+                        Point.of(x - radius, z + radius),
+                        Point.of(x - radius, z - radius)
                 )
                 .markerOptions(this.options)
         );
