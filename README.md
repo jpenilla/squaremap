@@ -49,7 +49,7 @@ Downloads can be obtained from the [jenkins server](https://ci.pl3x.net/job/Pl3x
 
 This project is licensed under the [MIT license](https://github.com/pl3xgaming/Pl3xMap/blob/master/LICENSE)
 
-Leaflet (the web ui frontend) is licensed under [All rights reserved](https://github.com/Leaflet/Leaflet/blob/master/LICENSE)
+Leaflet (the web ui frontend) is licensed under [2-clause BSD License](https://github.com/Leaflet/Leaflet/blob/master/LICENSE)
 
 ## bStats
 
