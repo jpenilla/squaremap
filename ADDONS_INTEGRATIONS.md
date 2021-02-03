@@ -9,6 +9,7 @@ These plugins have direct integrations with Pl3xMap.
 
 These plugins are add-ons for Pl3xMap.
 
+* Pl3xMap-ClaimChunk - Shows ClaimChunk claimed chunks - [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-ClaimChunk) [Source](https://github.com/pl3xgaming/Pl3xMap-ClaimChunk)
 * Pl3xMap-DeathSpot - Shows player death spots - [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-DeathSpot) [Source](https://github.com/pl3xgaming/Pl3xMap-DeathSpot)
 * Pl3xMap-GriefPrevention - Shows GriefPrevention claims [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-GriefPrevention) [Source](https://github.com/pl3xgaming/Pl3xMap-GriefPrevention)
 * Pl3xMap-Signs - Shows signs - [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-Signs) [Source](https://github.com/pl3xgaming/Pl3xMap-Signs)
