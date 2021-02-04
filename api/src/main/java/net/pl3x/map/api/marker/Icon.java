@@ -46,12 +46,30 @@ public final class Icon extends Marker {
     }
 
     /**
+     * Set a new location for this icon marker
+     *
+     * @param point new point
+     */
+    public void point(final @NonNull Point point) {
+        this.point = point;
+    }
+
+    /**
      * Get the coordinates of the point from which popups will "open", relative to the icon anchor.
      *
      * @return point
      */
     public @NonNull Point tooltipAnchor() {
         return this.tooltipAnchor;
+    }
+
+    /**
+     * Set the coordinates of the point from which popups will "open", relative to the icon anchor.
+     *
+     * @param tooltipAnchor new point
+     */
+    public void tooltipAnchor(final @NonNull Point tooltipAnchor) {
+        this.tooltipAnchor = tooltipAnchor;
     }
 
     /**
@@ -63,6 +81,17 @@ public final class Icon extends Marker {
      */
     public @NonNull Point anchor() {
         return this.anchor;
+    }
+
+    /**
+     * Set the coordinates of the "tip" of the icon (relative to its top left corner).
+     * The icon will be aligned so that this point is at the marker's geographical location.
+     * Centered by default if size is specified.
+     *
+     * @param anchor new point
+     */
+    public void anchor(final @NonNull Point anchor) {
+        this.anchor = anchor;
     }
 
     /**
@@ -84,6 +113,15 @@ public final class Icon extends Marker {
     }
 
     /**
+     * Set the x size
+     *
+     * @param size new size
+     */
+    public void sizeX(final int size) {
+        this.sizeX = size;
+    }
+
+    /**
      * Get the z size
      *
      * @return z size
@@ -93,32 +131,12 @@ public final class Icon extends Marker {
     }
 
     /**
-     * Set a new location for this icon marker
+     * Set the z size
      *
-     * @param point new point
+     * @param size new size
      */
-    public void point(final @NonNull Point point) {
-        this.point = point;
-    }
-
-    /**
-     * Set the coordinates of the point from which popups will "open", relative to the icon anchor.
-     *
-     * @param tooltipAnchor new point
-     */
-    public void tooltipAnchor(final @NonNull Point tooltipAnchor) {
-        this.tooltipAnchor = tooltipAnchor;
-    }
-
-    /**
-     * Set the coordinates of the "tip" of the icon (relative to its top left corner).
-     * The icon will be aligned so that this point is at the marker's geographical location.
-     * Centered by default if size is specified.
-     *
-     * @param anchor new point
-     */
-    public void anchor(final @NonNull Point anchor) {
-        this.anchor = anchor;
+    public void sizeZ(final int size) {
+        this.sizeZ = size;
     }
 
     /**
@@ -129,24 +147,6 @@ public final class Icon extends Marker {
      */
     public void image(final @NonNull Key image) {
         this.image = image;
-    }
-
-    /**
-     * Set the x size
-     *
-     * @param size new size
-     */
-    public void sizeX(final int size) {
-        this.sizeX = size;
-    }
-
-    /**
-     * Set the z size
-     *
-     * @param size new size
-     */
-    public void sizeZ(final int size) {
-        this.sizeZ = size;
     }
 
     @Override

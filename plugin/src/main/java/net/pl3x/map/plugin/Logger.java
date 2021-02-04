@@ -22,12 +22,12 @@ public class Logger {
         log().warning(msg);
     }
 
-    public static void severe(String msg) {
-        log().severe(msg);
-    }
-
     public static void warn(String msg, Throwable t) {
         log().log(Level.WARNING, msg, t);
+    }
+
+    public static void severe(String msg) {
+        log().severe(msg);
     }
 
     public static void severe(String msg, Throwable t) {

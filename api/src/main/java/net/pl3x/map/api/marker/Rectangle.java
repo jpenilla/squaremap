@@ -34,21 +34,21 @@ public final class Rectangle extends Marker {
     }
 
     /**
-     * Get the second corner point for this rectangle
-     *
-     * @return point2
-     */
-    public @NonNull Point point2() {
-        return this.point2;
-    }
-
-    /**
      * Set the first corner point for this rectangle
      *
      * @param point new point
      */
     public void point1(final @NonNull Point point) {
         this.point1 = point;
+    }
+
+    /**
+     * Get the second corner point for this rectangle
+     *
+     * @return point2
+     */
+    public @NonNull Point point2() {
+        return this.point2;
     }
 
     /**

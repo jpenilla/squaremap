@@ -18,8 +18,7 @@
 
 L.SVG.include ({
     _updateEllipse: function (layer) {
-        var c = layer._point,
-            rx = layer._radiusX,
+        var rx = layer._radiusX,
             ry = layer._radiusY,
             phi = layer._tiltDeg,
             endPoint = layer._endPointParams;
