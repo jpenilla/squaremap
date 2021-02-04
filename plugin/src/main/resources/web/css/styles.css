@@ -24,7 +24,7 @@ div.leaflet-nameplate-pane div {
   background: rgba(0, 0, 0, 0.5);
   color: #ffffff;
   font-weight: 700;
-  padding: 2px 5px 1px 5px;
+  padding: 2px 5px 1px;
   margin: 0;
   border-color: rgba(0, 0, 0, 0.75);
 }
@@ -95,10 +95,10 @@ div.leaflet-control-layers.coordinates {
   white-space: nowrap;
 }
 #sidebar fieldset#worlds {
-  margin: -15px 0 0 0;
+  margin: -15px 0 0;
 }
 #sidebar fieldset#players {
-  margin: 10px 0 0 0;
+  margin: 10px 0 0;
   overflow-y: auto;
 }
 #sidebar fieldset#players::-webkit-scrollbar {
@@ -143,26 +143,23 @@ div.leaflet-control-layers.coordinates {
 }
 #sidebar fieldset a img {
   vertical-align: middle;
-  padding-right: 15px;
-  filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
-  -webkit-filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
+  padding-right: 10px;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+  -webkit-filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 #sidebar fieldset#players a {
-  padding: 10px 10px;
-}
-#sidebar fieldset a img {
-  padding-right: 10px;
+  padding: 10px;
 }
 #sidebar #pin {
   position: relative;
   right: -160px;
   width: 23px;
   height: 23px;
-  margin: 5px 5px 10px 5px;
-  padding: 2px 2px;
+  margin: 5px 5px 10px;
+  padding: 2px;
   border: 1px solid rgba(255, 255, 255, 0);
-  filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
-  -webkit-filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.5));
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+  -webkit-filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
   cursor: pointer;
 }
 #sidebar #pin.pinned:hover {
