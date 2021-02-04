@@ -31,10 +31,6 @@ public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
         }
 
         switch (direction) {
-            default:
-            case RIGHT:
-                x += 1;
-                break;
             case DOWN:
                 z += 1;
                 break;
@@ -43,6 +39,10 @@ public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
                 break;
             case UP:
                 z -= 1;
+                break;
+            case RIGHT:
+            default:
+                x += 1;
                 break;
         }
 

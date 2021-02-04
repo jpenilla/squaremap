@@ -104,6 +104,16 @@ public final class Icon extends Marker {
     }
 
     /**
+     * Set the image to use for this icon. Must be registered with the icon registry
+     *
+     * @param image new image
+     * @see Pl3xMap#iconRegistry()
+     */
+    public void image(final @NonNull Key image) {
+        this.image = image;
+    }
+
+    /**
      * Get the x size
      *
      * @return x size
@@ -137,16 +147,6 @@ public final class Icon extends Marker {
      */
     public void sizeZ(final int size) {
         this.sizeZ = size;
-    }
-
-    /**
-     * Set the image to use for this icon. Must be registered with the icon registry
-     *
-     * @param image new image
-     * @see Pl3xMap#iconRegistry()
-     */
-    public void image(final @NonNull Key image) {
-        this.image = image;
     }
 
     @Override
