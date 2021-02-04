@@ -22,6 +22,12 @@ class Pl3xMap {
         })
         .on('click', (e) => {
             this.playerList.follow(null);
+        })
+        .on('dblclick', (e) => {
+            this.playerList.follow(null);
+        })
+        .on('contextmenu', (e) => {
+            this.playerList.follow(null);
         });
 
         this.tick_count = 0;

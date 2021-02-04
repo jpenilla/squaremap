@@ -5,6 +5,9 @@ import { P } from './Pl3xMap.js';
 class Sidebar {
     constructor(json) {
         this.sidebar = P.createElement("div", "sidebar", this);
+        this.sidebar.addEventListener("click", (e) => {
+            P.playerList.follow(null);
+        });
         document.body.appendChild(this.sidebar);
 
         if (json.pinned != "hide") {

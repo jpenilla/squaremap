@@ -94,12 +94,13 @@ class PlayerList {
         }
     }
     follow(uuid) {
-        if (uuid != null) {
-            document.getElementById(uuid).classList.add("following");
-            this.following = uuid;
-        } else if (this.following != null) {
+        if (this.following != null) {
             document.getElementById(this.following).classList.remove("following");
             this.following = null;
+        }
+        if (uuid != null) {
+            this.following = uuid;
+            document.getElementById(this.following).classList.add("following");
         }
     }
 }
