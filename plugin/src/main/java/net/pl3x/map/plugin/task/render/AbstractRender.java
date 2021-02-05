@@ -54,6 +54,7 @@ public abstract class AbstractRender implements Runnable {
     private final ThreadLocal<BiomeColors> biomeColors;
 
     protected final AtomicInteger curChunks = new AtomicInteger(0);
+    protected final AtomicInteger curRegions = new AtomicInteger(0);
 
     public AbstractRender(final @NonNull MapWorld mapWorld) {
         this(mapWorld, Executors.newFixedThreadPool(getThreads(mapWorld.config().MAX_RENDER_THREADS)));
@@ -106,6 +107,12 @@ public abstract class AbstractRender implements Runnable {
 
     public final int processedChunks() {
         return this.curChunks.get();
+    }
+
+    public abstract int totalRegions();
+
+    public final int processedRegions() {
+        return this.curRegions.get();
     }
 
     protected abstract void render();

@@ -20,10 +20,10 @@ import java.util.Timer;
 import java.util.concurrent.CompletableFuture;
 
 public final class RadiusRender extends AbstractRender {
-    final int centerX;
-    final int centerZ;
-    final int radius;
-    final int totalChunks;
+    private final int centerX;
+    private final int centerZ;
+    private final int radius;
+    private final int totalChunks;
 
     public RadiusRender(final @NonNull Location center, int radius) {
         super(Pl3xMapPlugin.getInstance().worldManager().getWorld(center.getWorld()));
@@ -36,6 +36,11 @@ public final class RadiusRender extends AbstractRender {
     @Override
     public int totalChunks() {
         return this.totalChunks;
+    }
+
+    @Override
+    public int totalRegions() {
+        return -1; // we only count chunks for radius render
     }
 
     @Override

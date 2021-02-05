@@ -116,6 +116,8 @@ public class Lang {
     public static String LOG_RESUMED_RENDERING = "<dark_aqua>Rendering map for <yellow><world> <dark_aqua>has been resumed";
     @LangKey("log.scanning-region-progress")
     public static String LOG_RENDER_PROGRESS = "Render progress for world: <world>, <current_chunks>/<total_chunks> chunks (<percent>), Elapsed: <elapsed>, ETA: <eta>, Rate: <rate>cps";
+    @LangKey("log.scanning-region-progress-with-regions")
+    public static String LOG_RENDER_PROGRESS_WITH_REGIONS = "Render progress for world: <world>, <current_regions>/<total_regions> regions, <current_chunks>/<total_chunks> chunks (<percent>), Elapsed: <elapsed>, ETA: <eta>, Rate: <rate>cps";
 
     @LangKey("log.internal-web-disabled")
     public static String LOG_INTERNAL_WEB_DISABLED = "<green>Internal webserver is disabled in config.yml";

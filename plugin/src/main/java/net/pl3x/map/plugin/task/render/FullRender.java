@@ -20,6 +20,7 @@ import java.util.Timer;
 public final class FullRender extends AbstractRender {
     private int maxRadius = 0;
     private int totalChunks;
+    private int totalRegions;
 
     public FullRender(final @NonNull MapWorld world) {
         super(world);
@@ -40,7 +41,7 @@ public final class FullRender extends AbstractRender {
         }
 
         final List<Region> regions = getRegions();
-        final int totalRegions = regions.size();
+        this.totalRegions = regions.size();
         Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.of("total", Integer.toString(totalRegions)));
 
         this.totalChunks = totalRegions * 32 * 32;
@@ -65,6 +66,7 @@ public final class FullRender extends AbstractRender {
             if (regions.contains(region)) {
                 mapRegion(region);
             }
+            curRegions.incrementAndGet();
         }
 
         timer.cancel();
@@ -74,6 +76,11 @@ public final class FullRender extends AbstractRender {
     @Override
     public int totalChunks() {
         return this.totalChunks;
+    }
+
+    @Override
+    public int totalRegions() {
+        return this.totalRegions;
     }
 
     private List<Region> getRegions() {

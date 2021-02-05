@@ -67,9 +67,14 @@ public final class RenderProgress extends TimerTask {
         String rateStr = dfRate.format(rollingAvg);
         String percentStr = dfPercent.format(percent);
 
+        int curRegions = this.render.processedRegions();
+        int totalRegions = this.render.totalRegions();
+
         Logger.info(
-                Lang.LOG_RENDER_PROGRESS,
+                (totalRegions > 0 ? Lang.LOG_RENDER_PROGRESS_WITH_REGIONS : Lang.LOG_RENDER_PROGRESS),
                 Template.of("world", render.world.getName()),
+                Template.of("current_regions", Integer.toString(curRegions)),
+                Template.of("total_regions", Integer.toString(totalRegions)),
                 Template.of("current_chunks", Integer.toString(curChunks)),
                 Template.of("total_chunks", Integer.toString(this.render.totalChunks())),
                 Template.of("percent", percentStr),

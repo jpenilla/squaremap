@@ -26,6 +26,11 @@ public final class BackgroundRender extends AbstractRender {
     }
 
     @Override
+    public int totalRegions() {
+        return -1; // We don't print progress for background renders
+    }
+
+    @Override
     protected void render() {
 
         final Set<ChunkCoordinate> chunks = new HashSet<>();
