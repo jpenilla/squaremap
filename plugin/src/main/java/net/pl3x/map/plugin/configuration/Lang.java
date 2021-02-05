@@ -97,6 +97,21 @@ public class Lang {
     @LangKey("command.show.shown")
     public static String PLAYER_SHOWN = "<green><player> is no longer hidden from map";
 
+    @LangKey("ui.page-title")
+    public static String UI_TITLE = "Pl3xMap - {world}";
+    @LangKey("ui.coordinates")
+    public static String UI_COORDINATES_HTML = "Coordinates<br/>{x}, {z}";
+    @LangKey("ui.sidebar.player-list")
+    public static String UI_SIDEBAR_PLAYER_LIST_LABEL = "Players ({cur}/{max})";
+    @LangKey("ui.sidebar.world-list")
+    public static String UI_SIDEBAR_WORLD_LIST_LABEL = "Worlds";
+    @LangKey("ui.layers.player-tracker")
+    public static String UI_PLAYER_TRACKER_LABEL = "Players";
+    @LangKey("ui.layers.world-spawn")
+    public static String UI_SPAWN_MARKER_ICON_LABEL = "Spawn";
+    @LangKey("ui.layers.world-border")
+    public static String UI_WORLDBORDER_MARKER_LABEL = "World Border";
+
     @LangKey("plugin-reloaded")
     public static String PLUGIN_RELOADED = "<green><name> v<version> reloaded";
 

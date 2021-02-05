@@ -106,7 +106,6 @@ public class WorldConfig extends AbstractWorldConfig {
 
     public boolean PLAYER_TRACKER_ENABLED = true;
     public int PLAYER_TRACKER_UPDATE_INTERVAL = 1;
-    public String PLAYER_TRACKER_LABEL = "Players";
     public boolean PLAYER_TRACKER_SHOW_CONTROLS = true;
     public boolean PLAYER_TRACKER_DEFAULT_HIDDEN = false;
     public int PLAYER_TRACKER_PRIORITY = 2;
@@ -122,7 +121,6 @@ public class WorldConfig extends AbstractWorldConfig {
     private void playerTrackerSettings() {
         PLAYER_TRACKER_ENABLED = getBoolean("player-tracker.enabled", PLAYER_TRACKER_ENABLED);
         PLAYER_TRACKER_UPDATE_INTERVAL = getInt("player-tracker.update-interval-seconds", PLAYER_TRACKER_UPDATE_INTERVAL);
-        PLAYER_TRACKER_LABEL = getString("player-tracker.label", PLAYER_TRACKER_LABEL);
         PLAYER_TRACKER_SHOW_CONTROLS = getBoolean("player-tracker.show-controls", PLAYER_TRACKER_SHOW_CONTROLS);
         PLAYER_TRACKER_DEFAULT_HIDDEN = getBoolean("player-tracker.default-hidden", PLAYER_TRACKER_DEFAULT_HIDDEN);
         PLAYER_TRACKER_PRIORITY = getInt("player-tracker.layer-priority", PLAYER_TRACKER_PRIORITY);
@@ -147,7 +145,6 @@ public class WorldConfig extends AbstractWorldConfig {
     public boolean SPAWN_MARKER_ICON_DEFAULT_HIDDEN = false;
     public int SPAWN_MARKER_ICON_LAYER_PRIORITY = 0;
     public int SPAWN_MARKER_ICON_Z_INDEX = 0;
-    public String SPAWN_MARKER_ICON_LABEL = "Spawn";
 
     private void spawnMarkerSettings() {
         SPAWN_MARKER_ICON_ENABLED = getBoolean("map.markers.spawn-icon.enabled", SPAWN_MARKER_ICON_ENABLED);
@@ -155,7 +152,6 @@ public class WorldConfig extends AbstractWorldConfig {
         SPAWN_MARKER_ICON_DEFAULT_HIDDEN = getBoolean("map.markers.spawn-icon.default-hidden", SPAWN_MARKER_ICON_DEFAULT_HIDDEN);
         SPAWN_MARKER_ICON_LAYER_PRIORITY = getInt("map.markers.spawn-icon.layer-priority", SPAWN_MARKER_ICON_LAYER_PRIORITY);
         SPAWN_MARKER_ICON_Z_INDEX = getInt("map.markers.spawn-icon.z-index", SPAWN_MARKER_ICON_Z_INDEX);
-        SPAWN_MARKER_ICON_LABEL = getString("map.markers.spawn-icon.label", SPAWN_MARKER_ICON_LABEL);
     }
 
     public boolean WORLDBORDER_MARKER_ENABLED = true;
@@ -163,7 +159,6 @@ public class WorldConfig extends AbstractWorldConfig {
     public boolean WORLDBORDER_MARKER_DEFAULT_HIDDEN = false;
     public int WORLDBORDER_MARKER_LAYER_PRIORITY = 1;
     public int WORLDBORDER_MARKER_Z_INDEX = 1;
-    public String WORLDBORDER_MARKER_LABEL = "World Border";
 
     private void worldborderMarkerSettings() {
         WORLDBORDER_MARKER_ENABLED = getBoolean("map.markers.world-border.enabled", WORLDBORDER_MARKER_ENABLED);
@@ -171,7 +166,6 @@ public class WorldConfig extends AbstractWorldConfig {
         WORLDBORDER_MARKER_DEFAULT_HIDDEN = getBoolean("map.markers.world-border.default-hidden", WORLDBORDER_MARKER_DEFAULT_HIDDEN);
         WORLDBORDER_MARKER_LAYER_PRIORITY = getInt("map.markers.world-border.layer-priority", WORLDBORDER_MARKER_LAYER_PRIORITY);
         WORLDBORDER_MARKER_Z_INDEX = getInt("map.markers.world-border.z-index", WORLDBORDER_MARKER_Z_INDEX);
-        WORLDBORDER_MARKER_LABEL = getString("map.markers.world-border.label", WORLDBORDER_MARKER_LABEL);
     }
 
 }

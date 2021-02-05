@@ -2,6 +2,7 @@ package net.pl3x.map.plugin.task;
 
 import com.google.gson.Gson;
 import net.pl3x.map.plugin.configuration.Config;
+import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.Bukkit;
@@ -35,7 +36,7 @@ public class UpdateWorldData extends BukkitRunnable {
             Map<String, Object> playerTracker = new HashMap<>();
             playerTracker.put("enabled", worldConfig.PLAYER_TRACKER_ENABLED);
             playerTracker.put("update_interval", worldConfig.PLAYER_TRACKER_UPDATE_INTERVAL);
-            playerTracker.put("label", worldConfig.PLAYER_TRACKER_LABEL);
+            playerTracker.put("label", Lang.UI_PLAYER_TRACKER_LABEL);
             playerTracker.put("show_controls", worldConfig.PLAYER_TRACKER_SHOW_CONTROLS);
             playerTracker.put("default_hidden", worldConfig.PLAYER_TRACKER_DEFAULT_HIDDEN);
             playerTracker.put("priority", worldConfig.PLAYER_TRACKER_PRIORITY);
@@ -84,11 +85,11 @@ public class UpdateWorldData extends BukkitRunnable {
         });
 
         Map<String, Object> ui = new HashMap<>();
-        ui.put("title", Config.UI_TITLE);
+        ui.put("title", Lang.UI_TITLE);
 
         Map<String, Object> coordinates = new HashMap<>();
         coordinates.put("enabled", Config.UI_COORDINATES_ENABLED);
-        coordinates.put("html", Config.UI_COORDINATES_HTML);
+        coordinates.put("html", Lang.UI_COORDINATES_HTML);
         ui.put("coordinates", coordinates);
 
         Map<String, Object> link = new HashMap<>();
@@ -97,8 +98,8 @@ public class UpdateWorldData extends BukkitRunnable {
 
         Map<String, Object> sidebar = new HashMap<>();
         sidebar.put("pinned", Config.UI_SIDEBAR_PINNED);
-        sidebar.put("player_list_label", Config.UI_SIDEBAR_PLAYER_LIST_LABEL);
-        sidebar.put("world_list_label", Config.UI_SIDEBAR_WORLD_LIST_LABEL);
+        sidebar.put("player_list_label", Lang.UI_SIDEBAR_PLAYER_LIST_LABEL);
+        sidebar.put("world_list_label", Lang.UI_SIDEBAR_WORLD_LIST_LABEL);
         ui.put("sidebar", sidebar);
 
         Map<String, Object> map = new HashMap<>();

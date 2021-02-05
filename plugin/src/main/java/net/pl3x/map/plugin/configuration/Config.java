@@ -57,22 +57,14 @@ public class Config extends AbstractConfig {
         HTTPD_PORT = config.getInt("settings.internal-webserver.port", HTTPD_PORT);
     }
 
-    public static String UI_TITLE = "Pl3xMap - {world}";
     public static boolean UI_COORDINATES_ENABLED = true;
-    public static String UI_COORDINATES_HTML = "Coordinates<br/>{x}, {z}";
     public static boolean UI_LINK_ENABLED = true;
     public static String UI_SIDEBAR_PINNED = "pinned";
-    public static String UI_SIDEBAR_PLAYER_LIST_LABEL = "Players ({cur}/{max})";
-    public static String UI_SIDEBAR_WORLD_LIST_LABEL = "Worlds";
 
     private static void uiSettings() {
-        UI_TITLE = config.getString("settings.ui.title", UI_TITLE);
         UI_COORDINATES_ENABLED = config.getBoolean("settings.ui.coordinates.enabled", UI_COORDINATES_ENABLED);
-        UI_COORDINATES_HTML = config.getString("settings.ui.coordinates.label", UI_COORDINATES_HTML);
         UI_LINK_ENABLED = config.getBoolean("settings.ui.link.enabled", UI_LINK_ENABLED);
         UI_SIDEBAR_PINNED = config.getString("settings.ui.sidebar.pinned", UI_SIDEBAR_PINNED);
-        UI_SIDEBAR_PLAYER_LIST_LABEL = config.getString("settings.ui.sidebar.player-list-label", UI_SIDEBAR_PLAYER_LIST_LABEL);
-        UI_SIDEBAR_WORLD_LIST_LABEL = config.getString("settings.ui.sidebar.world-list-label", UI_SIDEBAR_WORLD_LIST_LABEL);
     }
 
     public static String MAIN_COMMAND_LABEL = "pl3xmap";

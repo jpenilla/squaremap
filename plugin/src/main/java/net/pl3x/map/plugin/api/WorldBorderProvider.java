@@ -5,6 +5,7 @@ import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Point;
 import net.pl3x.map.api.marker.Marker;
 import net.pl3x.map.api.marker.MarkerOptions;
+import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.data.MapWorld;
 import org.bukkit.Location;
@@ -31,7 +32,7 @@ public class WorldBorderProvider implements LayerProvider {
     public WorldBorderProvider(final @NonNull MapWorld world) {
         this.world = world.bukkit();
         final WorldConfig config = world.config();
-        this.label = config.WORLDBORDER_MARKER_LABEL;
+        this.label = Lang.UI_WORLDBORDER_MARKER_LABEL;
         this.showControls = config.WORLDBORDER_MARKER_SHOW_CONTROLS;
         this.defaultHidden = config.WORLDBORDER_MARKER_DEFAULT_HIDDEN;
         this.layerPriority = config.WORLDBORDER_MARKER_LAYER_PRIORITY;
