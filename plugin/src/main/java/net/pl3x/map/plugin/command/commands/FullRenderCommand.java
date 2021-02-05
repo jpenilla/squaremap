@@ -13,6 +13,7 @@ import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.task.render.FullRender;
 import net.pl3x.map.plugin.util.CommandUtil;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class FullRenderCommand extends Pl3xMapCommand {
@@ -39,7 +40,9 @@ public final class FullRenderCommand extends Pl3xMapCommand {
             return;
         }
 
-        Lang.send(sender, Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.name()));
+        if (sender instanceof Player) {
+            Lang.send(sender, Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.name()));
+        }
         world.startRender(new FullRender(world));
     }
 

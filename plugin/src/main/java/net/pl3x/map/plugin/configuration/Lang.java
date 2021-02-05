@@ -100,6 +100,9 @@ public class Lang {
     @LangKey("plugin-reloaded")
     public static String PLUGIN_RELOADED = "<green><name> v<version> reloaded";
 
+    @LangKey("log.prefix")
+    public static String LOGGER_PREFIX = "<dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>";
+
     @LangKey("log.started-full-render")
     public static String LOG_STARTED_FULLRENDER = "<dark_aqua>Started full map render for <yellow><world>";
     @LangKey("log.started-radius-render")
@@ -115,9 +118,9 @@ public class Lang {
     @LangKey("log.resumed-rendering")
     public static String LOG_RESUMED_RENDERING = "<dark_aqua>Rendering map for <yellow><world> <dark_aqua>has been resumed";
     @LangKey("log.scanning-region-progress")
-    public static String LOG_RENDER_PROGRESS = "Render progress for world: <world>, <current_chunks>/<total_chunks> chunks (<percent>), Elapsed: <elapsed>, ETA: <eta>, Rate: <rate>cps";
+    public static String LOG_RENDER_PROGRESS = "<gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>World<gray>:</gray> <yellow><world></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Elapsed<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Rate<gray>:</gray> <yellow><rate></yellow> cps";
     @LangKey("log.scanning-region-progress-with-regions")
-    public static String LOG_RENDER_PROGRESS_WITH_REGIONS = "Render progress for world: <world>, <current_regions>/<total_regions> regions, <current_chunks>/<total_chunks> chunks (<percent>), Elapsed: <elapsed>, ETA: <eta>, Rate: <rate>cps";
+    public static String LOG_RENDER_PROGRESS_WITH_REGIONS = "<gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>World<gray>:</gray> <yellow><world></yellow> Regions<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Elapsed<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Rate<gray>:</gray> <yellow><rate></yellow> cps";
 
     @LangKey("log.internal-web-disabled")
     public static String LOG_INTERNAL_WEB_DISABLED = "<green>Internal webserver is disabled in config.yml";

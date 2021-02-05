@@ -3,6 +3,7 @@ package net.pl3x.map.plugin;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.configuration.Config;
+import net.pl3x.map.plugin.configuration.Lang;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.logging.Level;
@@ -36,7 +37,7 @@ public class Logger {
 
     public static void info(final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
         Pl3xMapPlugin.getInstance().audiences().console().sendMessage(MiniMessage.get().parse(
-                "<white>[<gray>Pl3xMap</gray>]</white> " + miniMessage,
+                Lang.LOGGER_PREFIX + " " + miniMessage,
                 placeholders
         ));
     }

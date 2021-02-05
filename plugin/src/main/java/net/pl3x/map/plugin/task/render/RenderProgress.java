@@ -34,7 +34,10 @@ public final class RenderProgress extends TimerTask {
     public static Timer printProgress(final @NonNull AbstractRender render) {
         final RenderProgress progress = new RenderProgress(render);
         final Timer timer = new Timer();
-        timer.scheduleAtFixedRate(progress, 1000L, 1000L);
+        final int interval = render.mapWorld.config().MAP_RENDER_PROGRESS_INTERVAL;
+        if (interval > 0) {
+            timer.scheduleAtFixedRate(progress, interval * 1000L, interval * 1000L);
+        }
         return timer;
     }
 
