@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -85,7 +86,8 @@ public class Advanced extends AbstractConfig {
                 PlayerMoveEvent.class,
                 BlockPhysicsEvent.class,
                 BlockPistonExtendEvent.class,
-                BlockPistonRetractEvent.class
+                BlockPistonRetractEvent.class,
+                ChunkLoadEvent.class
         ).forEach(clazz -> eventListenerToggles.put(clazz, config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), false)));
     }
 

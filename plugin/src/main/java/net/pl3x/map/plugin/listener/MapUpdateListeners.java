@@ -35,6 +35,7 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -77,6 +78,7 @@ public final class MapUpdateListeners {
         this.registerListener(EntityChangeBlockEvent.class, this::handleEntityChangeBlockEvent);
         this.registerListener(StructureGrowEvent.class, this::handleStructureGrowEvent);
         this.registerListener(ChunkPopulateEvent.class, this::handleChunkPopulateEvent);
+        this.registerListener(ChunkLoadEvent.class, this::handleChunkLoadEvent);
     }
 
     public void unregister() {
@@ -200,6 +202,11 @@ public final class MapUpdateListeners {
     }
 
     private void handleChunkPopulateEvent(final @NonNull ChunkPopulateEvent event) {
+        final Chunk chunk = event.getChunk();
+        this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())), true);
+    }
+
+    private void handleChunkLoadEvent(final @NonNull ChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
         this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())), true);
     }
