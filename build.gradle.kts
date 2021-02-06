@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = "net.pl3x.map"
-    version = "1.0.0-SNAPSHOT"
+    version = "1.0.0-BETA"
     description = "Minimalistic and lightweight world map viewer for Paper servers"
 }
 
