@@ -40,9 +40,9 @@ public class Lang {
 
     @LangKey("command.message.console-must-specify-player")
     public static String CONSOLE_MUST_SPECIFY_PLAYER = "<red>You must specify a target player when running this command from console";
-    @LangKey("command.message.console-must-specify-world")
-    public static String PLAYER_NOT_FOUND_FOR_INPUT = "<red>No player found for input '<input>'";
     @LangKey("command.message.player-not-found-for-input")
+    public static String PLAYER_NOT_FOUND_FOR_INPUT = "<red>No player found for input '<input>'";
+    @LangKey("command.message.console-must-specify-world")
     public static String CONSOLE_MUST_SPECIFY_WORLD = "<red>You must specify the world when running this command from console";
     @LangKey("command.message.no-such-world")
     public static String NO_SUCH_WORLD = "<red>No such world '<world>'";
