@@ -12,7 +12,7 @@ dependencies {
     implementation("net.kyori", "adventure-text-minimessage", "4.1.0-SNAPSHOT")
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
     implementation("org.bstats", "bstats-bukkit", "1.8")
-    compileOnly("net.pl3x.purpur", "purpur", "1.16.5-R0.1-SNAPSHOT")
+    compileOnly("com.destroystokyo.paper", "paper", "1.16.5-R0.1-SNAPSHOT")
 }
 
 tasks {
