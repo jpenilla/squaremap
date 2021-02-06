@@ -87,3 +87,19 @@ dependencies {
     compileOnly("net.pl3x.map", "pl3xmap-api", "1.0.0-SNAPSHOT")
 }
 ```
+
+### Building from source
+
+To compile Pl3xMap, you need to have the Paper server implementation installed to your local maven repository.
+
+Download Paper from [papermc.io/downloads](https://papermc.io/downloads). Run this Java command to install to local maven repository
+
+```
+java -jar -Dpaperclip.install=true paper-1.16.5-465.jar
+```
+
+Once that is complete you can compile Pl3xMap with this command
+
+```
+./gradlew build
+```
