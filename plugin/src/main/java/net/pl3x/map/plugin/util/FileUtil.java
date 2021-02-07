@@ -136,14 +136,19 @@ public class FileUtil {
                     Logger.severe("This is caused by a bug in Java. Please update your Java installation and try again.");
                     Logger.severe("For more information, see https://github.com/pl3xgaming/Pl3xMap/issues/4");
                     Logger.severe("");
-                    e.printStackTrace();
+                    return FileVisitResult.TERMINATE;
                 }
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Path target = destination.resolve(jarPath.relativize(file).toString());
+                Path target;
+                try {
+                    target = destination.resolve(jarPath.relativize(file).toString());
+                } catch (IllegalArgumentException ignore) {
+                    return FileVisitResult.TERMINATE;
+                }
                 if (Config.UPDATE_WEB_DIR) {
                     Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
                 } else {
