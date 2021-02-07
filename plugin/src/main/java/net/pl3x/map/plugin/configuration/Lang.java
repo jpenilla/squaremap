@@ -123,7 +123,7 @@ public class Lang {
     @LangKey("log.started-radius-render")
     public static String LOG_STARTED_RADIUSRENDER = "<dark_aqua>Started radius map render for <yellow><world>";
     @LangKey("log.scanning-region-files")
-    public static String LOG_SCANNING_REGION_FILES = "<yellow>Scanning region files...";
+    public static String LOG_SCANNING_REGION_FILES = "<yellow>Scanning region files... (this may take a moment)";
     @LangKey("log.found-total-region-files")
     public static String LOG_FOUND_TOTAL_REGION_FILES = "<green>Found <gray><total> <green>region files";
     @LangKey("log.finished-rendering")

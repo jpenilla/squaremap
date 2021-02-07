@@ -50,6 +50,7 @@ public final class FullRender extends AbstractRender {
             Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.getName()));
 
             // find all region files
+            Logger.info(Lang.LOG_SCANNING_REGION_FILES);
             final List<Region> regionFiles = getRegions();
 
             // setup a spiral iterator
@@ -60,15 +61,28 @@ public final class FullRender extends AbstractRender {
                     maxRadius);
 
             // iterate the spiral to get all regions needed
+            int failsafe = 0;
             regions = new LinkedHashMap<>();
             while (spiral.hasNext()) {
                 if (this.cancelled) break;
+                if (failsafe > 500000) {
+                    // we scanned over half a million non-existent regions straight
+                    // quit the prescan and add the remaining regions to the end
+                    regionFiles.forEach(region -> regions.put(region, false));
+                    break;
+                }
                 Region region = spiral.next();
                 if (regionFiles.contains(region)) {
                     regions.put(region, false);
+                    failsafe = 0;
+                } else {
+                    failsafe++;
                 }
             }
         }
+
+        // ensure task wasnt cancelled before we start
+        if (this.cancelled) return;
 
         this.totalRegions = regions.size();
         this.totalChunks = totalRegions * 32 * 32;
@@ -84,7 +98,8 @@ public final class FullRender extends AbstractRender {
             mapRegion(entry.getKey());
             entry.setValue(true);
             curRegions.incrementAndGet();
-            mapWorld.saveRenderProgress(regions);
+            // only save progress is task is not cancelled
+            if (!this.cancelled) mapWorld.saveRenderProgress(regions);
         }
 
         if (this.timer != null) {
@@ -104,7 +119,6 @@ public final class FullRender extends AbstractRender {
     }
 
     private List<Region> getRegions() {
-        Logger.info(Lang.LOG_SCANNING_REGION_FILES);
         List<Region> regions = new ArrayList<>();
         File[] files = FileUtil.getRegionFiles(world);
         for (File file : files) {
