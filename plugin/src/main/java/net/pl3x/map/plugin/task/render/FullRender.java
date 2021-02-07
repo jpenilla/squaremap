@@ -14,8 +14,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Timer;
+import java.util.Map;
 
 public final class FullRender extends AbstractRender {
     private int maxRadius = 0;
@@ -33,43 +34,62 @@ public final class FullRender extends AbstractRender {
             sleep(1000);
         }
 
-        RegionSpiralIterator spiral, oldSpiral = this.mapWorld.getRenderProgress();
-        if (oldSpiral != null) {
+        // order preserved map of regions with boolean to signify if it was already scanned
+        final Map<Region, Boolean> regions;
+
+        Map<Region, Boolean> resumedMap = mapWorld.getRenderProgress();
+        if (resumedMap != null) {
             Logger.info(Lang.LOG_RESUMED_RENDERING, Template.of("world", world.getName()));
+
+            regions = resumedMap;
+
+            final int count = (int) regions.values().stream().filter(bool -> bool).count();
+            this.curRegions.set(count);
+            this.curChunks.set(count * 32 * 32);
         } else {
             Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.getName()));
-        }
 
-        final List<Region> regions = getRegions();
-        this.totalRegions = regions.size();
-        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.of("total", Integer.toString(totalRegions)));
+            // find all region files
+            final List<Region> regionFiles = getRegions();
 
-        this.totalChunks = totalRegions * 32 * 32;
-
-        if (oldSpiral != null) {
-            spiral = oldSpiral;
-            this.curChunks.set(spiral.curStep() * 32 * 32);
-        } else {
+            // setup a spiral iterator
             Location spawn = world.getSpawnLocation();
-            spiral = new RegionSpiralIterator(
+            RegionSpiralIterator spiral = new RegionSpiralIterator(
                     Numbers.blockToRegion(spawn.getBlockX()),
                     Numbers.blockToRegion(spawn.getBlockZ()),
                     maxRadius);
-        }
 
-        final Timer timer = RenderProgress.printProgress(this);
-
-        while (spiral.hasNext()) {
-            if (this.cancelled) break;
-            this.mapWorld.saveRenderProgress(spiral);
-            Region region = spiral.next();
-            if (regions.contains(region)) {
-                mapRegion(region);
+            // iterate the spiral to get all regions needed
+            regions = new LinkedHashMap<>();
+            while (spiral.hasNext()) {
+                if (this.cancelled) break;
+                Region region = spiral.next();
+                if (regionFiles.contains(region)) {
+                    regions.put(region, false);
+                }
             }
-            curRegions.incrementAndGet();
         }
 
-        timer.cancel();
+        this.totalRegions = regions.size();
+        this.totalChunks = totalRegions * 32 * 32;
+
+        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.of("total", Integer.toString(regions.size())));
+
+        this.timer = RenderProgress.printProgress(this);
+
+        // finally, scan each region in the order provided by the spiral
+        for (Map.Entry<Region, Boolean> entry : regions.entrySet()) {
+            if (this.cancelled) break;
+            if (entry.getValue()) continue;
+            mapRegion(entry.getKey());
+            entry.setValue(true);
+            curRegions.incrementAndGet();
+            mapWorld.saveRenderProgress(regions);
+        }
+
+        if (this.timer != null) {
+            this.timer.cancel();
+        }
 
     }
 

@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.UUID;
 
 public class PlayerManager implements net.pl3x.map.api.PlayerManager {
-    public static NamespacedKey key = new NamespacedKey(Pl3xMapPlugin.getInstance(), "hidden");
+    public static final NamespacedKey key = new NamespacedKey(Pl3xMapPlugin.getInstance(), "hidden");
 
     @Override
     public void hide(final @NonNull UUID uuid) {

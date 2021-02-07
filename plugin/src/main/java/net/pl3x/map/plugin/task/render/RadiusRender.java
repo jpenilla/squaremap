@@ -16,7 +16,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
 import java.util.concurrent.CompletableFuture;
 
 public final class RadiusRender extends AbstractRender {
@@ -47,7 +46,7 @@ public final class RadiusRender extends AbstractRender {
     protected void render() {
         Logger.info(Lang.LOG_STARTED_RADIUSRENDER, Template.of("world", world.getName()));
 
-        final Timer timer = RenderProgress.printProgress(this);
+        this.timer = RenderProgress.printProgress(this);
 
         ChunkSpiralIterator spiral = new ChunkSpiralIterator(this.centerX, this.centerZ, this.radius);
         final Map<Region, Image> images = new HashMap<>();
@@ -79,7 +78,9 @@ public final class RadiusRender extends AbstractRender {
 
         CompletableFuture.allOf(regionFutureMap.values().toArray(CompletableFuture[]::new)).join();
 
-        timer.cancel();
+        if (this.timer != null) {
+            this.timer.cancel();
+        }
 
     }
 }

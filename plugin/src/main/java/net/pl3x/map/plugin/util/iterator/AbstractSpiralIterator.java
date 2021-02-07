@@ -4,7 +4,8 @@ import java.util.Iterator;
 
 public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
     Direction direction = Direction.RIGHT;
-    int x, z, stepCount, stepLeg, legAxis, layer, totalSteps;
+    int x, z, stepCount, stepLeg, legAxis, layer;
+    final int totalSteps;
 
     protected AbstractSpiralIterator(int x, int z, int radius) {
         this.x = x;
@@ -15,10 +16,6 @@ public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
     @Override
     public boolean hasNext() {
         return stepCount < totalSteps;
-    }
-
-    public int curStep() {
-        return stepCount;
     }
 
     protected abstract T fromCoordinatePair(final int x, final int z);
@@ -68,10 +65,6 @@ public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
 
         public Direction next() {
             return values[(this.ordinal() + 1) % values.length];
-        }
-
-        public static Direction of(int ordinal) {
-            return values[ordinal];
         }
     }
 }

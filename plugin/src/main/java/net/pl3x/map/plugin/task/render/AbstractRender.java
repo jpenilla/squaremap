@@ -35,6 +35,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,6 +56,8 @@ public abstract class AbstractRender implements Runnable {
 
     protected final AtomicInteger curChunks = new AtomicInteger(0);
     protected final AtomicInteger curRegions = new AtomicInteger(0);
+
+    protected Timer timer = null;
 
     public AbstractRender(final @NonNull MapWorld mapWorld) {
         this(mapWorld, Executors.newFixedThreadPool(getThreads(mapWorld.config().MAX_RENDER_THREADS)));
@@ -80,6 +83,9 @@ public abstract class AbstractRender implements Runnable {
     }
 
     public synchronized void cancel() {
+        if (this.timer != null) {
+            this.timer.cancel();
+        }
         this.executor.shutdown();
         this.cancelled = true;
         this.futureTask.cancel(false);

@@ -20,8 +20,6 @@ import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
 import net.pl3x.map.plugin.task.render.FullRender;
-import net.pl3x.map.plugin.util.iterator.RegionSpiralIterator;
-import net.pl3x.map.plugin.util.iterator.RegionSpiralTypeAdapter;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -31,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,10 +43,8 @@ import java.util.concurrent.TimeUnit;
 
 public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private static final String dirtyChunksFileName = "dirty_chunks.json";
-    private static final String renderProgressFileName = "render_progress.json";
-    private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(RegionSpiralIterator.class, new RegionSpiralTypeAdapter())
-            .setPrettyPrinting().create();
+    private static final String renderProgressFileName = "resume_render.json";
+    private static final Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
     private static final Map<UUID, LayerRegistry> layerRegistries = new HashMap<>();
 
     private final WorldServer world;
@@ -92,18 +89,19 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
         this.deserializeDirtyChunks();
 
-        RegionSpiralIterator oldRender = getRenderProgress();
-        if (oldRender != null) {
+        if (getRenderProgress() != null) {
             startRender(new FullRender(this));
         }
     }
 
-    public RegionSpiralIterator getRenderProgress() {
+    public Map<Region, Boolean> getRenderProgress() {
         try {
             final Path file = this.dataPath.resolve(renderProgressFileName);
             if (Files.exists(file)) {
                 String json = String.join("", Files.readAllLines(file));
-                return gson.fromJson(json, RegionSpiralIterator.class);
+                TypeToken<LinkedHashMap<Region, Boolean>> token = new TypeToken<>() {
+                };
+                return gson.fromJson(json, token.getType());
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             Logger.warn(String.format("Failed to deserialize render progress for world '%s'", this.name()), e);
@@ -111,9 +109,9 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         return null;
     }
 
-    public void saveRenderProgress(RegionSpiralIterator spiral) {
+    public void saveRenderProgress(Map<Region, Boolean> regions) {
         try {
-            Files.writeString(this.dataPath.resolve(renderProgressFileName), gson.toJson(spiral));
+            Files.writeString(this.dataPath.resolve(renderProgressFileName), gson.toJson(regions));
         } catch (IOException e) {
             Logger.warn(String.format("Failed to serialize render progress for world '%s'", this.name()), e);
         }
