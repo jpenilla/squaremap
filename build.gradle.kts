@@ -3,8 +3,9 @@ plugins {
 }
 
 allprojects {
+    val build = System.getenv("BUILD_NUMBER") ?: "SNAPSHOT"
     group = "net.pl3x.map"
-    version = "1.0.0-BETA"
+    version = "1.0.0-BETA-$build"
     description = "Minimalistic and lightweight world map viewer for Paper servers"
 }
 
