@@ -25,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 
 public final class Pl3xMapPlugin extends JavaPlugin {
@@ -63,7 +64,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         // this has to load after config.yml in order to know if web dir should be overwritten
         // but also before advanced.yml to ensure foliage.png and grass.png are already on disk
-        FileUtil.extractWebFolder();
+        FileUtil.extractDirFromJar("web", FileUtil.WEB_DIR, Config.UPDATE_WEB_DIR ? StandardCopyOption.REPLACE_EXISTING : null);
+        FileUtil.extractDirFromJar("locale", FileUtil.LOCALE_DIR, null);
 
         Advanced.reload();
         Lang.reload();

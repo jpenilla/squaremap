@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 public class FileUtil {
     public static Path PLUGIN_DIR = Pl3xMapPlugin.getInstance().getDataFolder().toPath();
     public static Path WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
+    public static Path LOCALE_DIR = PLUGIN_DIR.resolve("locale");
     public static Path TILES_DIR = WEB_DIR.resolve("tiles");
     public static final Map<UUID, Path> WORLD_DIRS = new HashMap<>();
     public static final Map<UUID, Path> REGION_DIRS = new HashMap<>();
@@ -112,15 +113,15 @@ public class FileUtil {
         return dir;
     }
 
-    public static void extractWebFolder() {
+    public static void extractDirFromJar(final String source, final Path destination, final StandardCopyOption copyOptions) {
         try {
-            copyFromJar("web", WEB_DIR);
+            copyFromJar(source, destination, copyOptions);
         } catch (URISyntaxException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void copyFromJar(String source, final Path destination) throws URISyntaxException, IOException {
+    public static void copyFromJar(String source, final Path destination, final StandardCopyOption copyOptions) throws URISyntaxException, IOException {
         if (fileSystem == null) {
             fileSystem = FileSystems.newFileSystem(Pl3xMapPlugin.getInstance().getClass().getResource("").toURI(), Collections.emptyMap());
         }
@@ -149,8 +150,8 @@ public class FileUtil {
                 } catch (IllegalArgumentException ignore) {
                     return FileVisitResult.TERMINATE;
                 }
-                if (Config.UPDATE_WEB_DIR) {
-                    Files.copy(file, target, StandardCopyOption.REPLACE_EXISTING);
+                if (copyOptions != null) {
+                    Files.copy(file, target, copyOptions);
                 } else {
                     try {
                         Files.copy(file, target);

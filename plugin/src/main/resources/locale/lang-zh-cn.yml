@@ -1,0 +1,70 @@
+# Translators: [thaumiel9]
+
+render-in-progress: <red>存在一个在世界 <world> 上进行的渲染
+render-not-in-progress: <red>没有在世界 <world> 上进行的渲染
+cancelled-render: <green>取消了世界 <world> 上进行的渲染
+successfully-reset-map: <green>成功重置了世界 <world> 渲染的地图
+paused-renders: <green>暂停了世界 <world> 上进行的渲染
+unpaused-renders: <green>恢复了世界 <world> 上进行的渲染
+click-for-help: 点击获取帮助
+plugin-reloaded: <green><name> v<version> 已重新加载
+command:
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  message:
+    console-must-specify-player: <red>从控制台执行此命令时必须指定一个玩家
+    console-must-specify-world: <red>没有找到玩家 '<input>'
+    player-not-found-for-input: <red>从控制台执行此命令时必须指定一个世界
+    no-such-world: <red>没有找到世界 '<world>'
+    map-not-enabled-for-world: <red>没有启用世界 '<world>' 的地图'
+    confirmation-required: <red>请输入 /<command> confirm 确认操作
+    no-pending-commands: <red>你没有任何待处理的命令
+  description:
+    help: 获取 Pl3xmap 的指令帮助
+    resetmap: 重置指定世界的地图
+    confirm: 确认待处理的命令
+    reload: 重新加载插件
+    full-render: 完整渲染指定世界
+    cancel-render: 取消指定世界的渲染
+    pause-render: 暂停指定世界的所有渲染
+    radius-render: 指定半径渲染
+    hide: 在地图中隐藏玩家
+    show: 在地图中显示玩家
+  argument:
+    optional-world: 如果未指定世界, 则默认为玩家所在世界
+    optional-center: 如果未指定圆心, 则默认为 (<white>0<gray>,</gray> 0</white>)
+    optional-player: 如果未指定玩家, 则默认为执行指令的玩家 (控制台执行必须指定一个玩家)
+    help-query: 查询帮助
+  hide:
+    already-hidden: <red><player> 已经在地图中处于隐藏状态了
+    hidden: <green><player> 已在地图中隐藏
+  show:
+    not-hidden: <red><player> 已经在地图中处于显示状态了
+    shown: <green><player> 已在地图中显示
+ui:
+  page-title: Pl3xMap - {world}
+  coordinates: 坐标<br/>{x}, {z}
+  sidebar:
+    player-list: 玩家列表 ({cur}/{max})
+    world-list: 世界列表
+  layers:
+    player-tracker: 玩家
+    world-spawn: 出生点
+    world-border: 世界边界
+log:
+  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
+  started-full-render: <dark_aqua>开始世界 <yellow><world></yellow> 的完整渲染
+  started-radius-render: <dark_aqua>开始世界 <yellow><world></yellow> 的半径渲染
+  scanning-region-files: <yellow>正在扫描区域文件... (这可能需要一点时间)
+  found-total-region-files: <green>共找到 <gray><total> <green>个区域文件
+  finished-rendering: <dark_aqua>已完成 <yellow><world></yellow> 的地图渲染
+  cancelled-rendering: <dark_aqua>世界 <yellow><world> <dark_aqua>进行的渲染已经取消
+  resumed-rendering: <dark_aqua>世界 <yellow><world> <dark_aqua>进行的渲染已经继续
+  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>世界<gray>:</gray> <yellow><world></yellow> 区块<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> 已用时<gray>:</gray> <yellow><elapsed></yellow> 剩余时间<gray>:</gray> <yellow><eta></yellow> 速度<gray>:</gray> <yellow><rate></yellow> cps
+  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>世界<gray>:</gray> <yellow><world></yellow> 区域<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> 区块<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> 已用时<gray>:</gray> <yellow><elapsed></yellow> 剩余时间<gray>:</gray> <yellow><eta></yellow> 速度<gray>:</gray> <yellow><rate></yellow> cps
+  internal-web-disabled: <green>内部Web服务器已在 config.yml 设置为关闭
+  internal-web-started: <green>内部Web服务器已启动于 <bind>:<port>
+  internal-web-stopped: <green>内部Web服务器已停止
+  internal-web-start-error: 内部Web服务器无法启动
+  could-not-create-directory: 无法创建目录! {path}
+  could-not-save-region: 无法保存 {x},{z} 区域的地图
+  internal-web-not-running: 内部Web服务器发生错误

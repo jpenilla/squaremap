@@ -175,7 +175,7 @@ public class Lang {
     }
 
     public static void reload() {
-        File configFile = FileUtil.PLUGIN_DIR.resolve(Config.LANGUAGE_FILE).toFile();
+        File configFile = FileUtil.LOCALE_DIR.resolve(Config.LANGUAGE_FILE).toFile();
         config = new YamlConfiguration();
         try {
             config.load(configFile);

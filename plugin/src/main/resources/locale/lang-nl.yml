@@ -1,0 +1,70 @@
+# Translators: [roan_v, EEstar]
+
+render-in-progress: <red>Een render is al bezig voor <world>
+render-not-in-progress: <red>Geen renders bezig voor <world>
+cancelled-render: <green>Render geannuleerd voor <world>
+successfully-reset-map: <green>Kaart succesvol gereset voor <world>
+paused-renders: <green> Renders voor <world> gepauzeerd
+unpaused-renders: <green> Renders voor <world> voortgezet
+click-for-help: Klik hier voor hulp
+plugin-reloaded: <green><name> v<version> herladen
+command:
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  message:
+    console-must-specify-player: <red>Je moet een speler opgeven bij het uitvoeren van dit commando vanuit de console
+    console-must-specify-world: <red>Geen speler gevonden voor invoer '<input>'
+    player-not-found-for-input: <red>Je moet een wereld opgeven bij het uitvoeren van dit commando vanuit de console
+    no-such-world: <red>Geen dergelijke wereld '<world>'
+    map-not-enabled-for-world: <red>Kaart is niet ingeschakeld voor wereld '<world>'
+    confirmation-required: <red>Bevestiging vereist. Bevestig met /<command> confirm.
+    no-pending-commands: <red>Je hebt geen openstaande commando's.
+  description:
+    help: Krijg hulp voor Pl3xmap commando's
+    resetmap: Reset de kaart van een bepaalde wereld
+    confirm: Bevestig een openstaand commando
+    reload: Herlaadt de plugin
+    full-render: Start een volledige render voor de opgegeven wereld
+    cancel-render: Annuleert een render voor de opgegeven wereld
+    pause-render: Pauzeert alle renders voor de opgegeven wereld
+    radius-render: Start een render met een straal
+    hide: Verberg een speler in de kaartweergave
+    show: Toon een speler op de kaartweergave
+  argument:
+    optional-world: Wordt standaard ingesteld op de huidige wereld van de speler als deze niet is opgegeven
+    optional-center: Wordt standaard ingesteld op (<white>0<gray>,</gray> 0</white>) als deze niet is opgegeven
+    optional-player: Wordt standaard ingesteld op de uitvoerende speler als deze niet gespecificeerd is (console moet een speler opgeven)
+    help-query: Help zoekopdracht
+  hide:
+    already-hidden: <red><player> is al verborgen van de kaart
+    hidden: <green><player> is nu verborgen van de kaart
+  show:
+    not-hidden: <red><player> is niet verborgen van de kaart
+    shown: <green><player> is niet langer verborgen van de kaart
+ui:
+  page-title: Pl3xMap - {world}
+  coordinates: Coördinaten<br/>{x}, {z}
+  sidebar:
+    player-list: Spelers ({cur}/{max})
+    world-list: Werelden
+  layers:
+    player-tracker: Spelers
+    world-spawn: Spawn
+    world-border: Wereld Grens
+log:
+  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
+  started-full-render: <dark_aqua>Volledige kaart render voor <yellow><world> gestart
+  started-radius-render: <dark_aqua>Straal kaart render voor <yellow><world> gestart
+  scanning-region-files: <yellow>Scannen van regiobestanden...
+  found-total-region-files: <gray><total> <green>regiobestanden gevonden
+  finished-rendering: <dark_aqua>Klaar met renderen van <yellow><world>
+  cancelled-rendering: <dark_aqua>Rendering kaart voor <yellow><world> <dark_aqua>is onderbroken
+  resumed-rendering: <dark_aqua>Rendering kaart voor <yellow><world> <dark_aqua>is hervat
+  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Wereld<gray>:</gray> <yellow><world></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Verstreken<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Snelheid<gray>:</gray> <yellow><rate></yellow> cps
+  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Wereld<gray>:</gray> <yellow><world></yellow> Regio's<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Verstreken<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Beoordeel<gray>:</gray> <yellow><rate></yellow> cps
+  internal-web-disabled: <green>Interne webserver is uitgeschakeld in config.yml
+  internal-web-started: '<green>Interne webserver draait op: <bind><port>'
+  internal-web-stopped: <green>Interne webserver gestopt
+  internal-web-start-error: Interne webserver kon niet starten
+  could-not-create-directory: Kon map niet aanmaken! {path}
+  could-not-save-region: Kan de kaart voor regio {x},{z} niet opslaan
+  internal-web-not-running: Er is een fout opgetreden met de interne webserver

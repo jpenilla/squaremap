@@ -1,0 +1,70 @@
+# Translators: [FreeMonoid]
+
+render-in-progress: <red>Создание карты для <world> уже в процессе
+render-not-in-progress: <red>Карта для <world> сейчас не создается
+cancelled-render: <green>Создание карты для <world> отменено
+successfully-reset-map: <green>Карта для <world> успешно сброшена
+paused-renders: <green>Создание карты для <world> приостановлено
+unpaused-renders: <green>Создание карты для <world> возобновлено
+click-for-help: Кликните для помощи
+plugin-reloaded: <green><name> v<version> перезагружен
+command:
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  message:
+    console-must-specify-player: <red>При исполнении этой команды из консоли нужно указать игрока
+    console-must-specify-world: <red>Игрок '<input>' не найден
+    player-not-found-for-input: <red>При выполнении этой команды из консоли необходимо указать мир
+    no-such-world: <red>Мир '<world>' не найден
+    map-not-enabled-for-world: <red>Карта для мира '<world>' не включена
+    confirmation-required: <red>Требуется подтверждение. Подтвердите с помощью /<command> confirm.
+    no-pending-commands: <red>У вас нет команд, ожидающих выполнения.
+  description:
+    help: Получить справку по командам Pl3xmap
+    resetmap: Сбросить карту указанного мира
+    confirm: Подтвердить команду, ожидающую выполнения
+    reload: Перезагрузить плагин
+    full-render: Начать создание карты всего указанного мира
+    cancel-render: Отменить создание карты для указанного мира
+    pause-render: Приостановить создание всех карт для указанного мира
+    radius-render: Запустить создание карты в радиусе
+    hide: Скрыть игрока на карте
+    show: Показать игрока на карте
+  argument:
+    optional-world: По умолчанию используется текущий мир игрока
+    optional-center: По умолчанию используется (<white>0<gray>,</gray> 0</white>)
+    optional-player: По умолчанию используется игрок, исполняющий команду (при использовании из консоли необходимо указать игрока)
+    help-query: Поисковый Запрос
+  hide:
+    already-hidden: <red><player> уже скрыт на карте
+    hidden: <green><player> теперь скрыт на карте
+  show:
+    not-hidden: <red><player> не скрыт на карте
+    shown: <green><player> больше не скрыт на карте
+ui:
+  page-title: Pl3xMap - {world}
+  coordinates: Координаты<br/>{x}, {z}
+  sidebar:
+    player-list: Игроки ({cur}/{max})
+    world-list: Миры
+  layers:
+    player-tracker: Игроки
+    world-spawn: Спавн
+    world-border: Граница мира
+log:
+  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
+  started-full-render: <dark_aqua>Начато создание карты всего мира <yellow><world>
+  started-radius-render: <dark_aqua>Начато создание карты в радиусе для мира <yellow><world>
+  scanning-region-files: <yellow>Сканирование файлов регионов...
+  found-total-region-files: <green>Найдено <gray><total> <green>файлов регионов
+  finished-rendering: <dark_aqua>Завершено создание карты для <yellow><world>
+  cancelled-rendering: <dark_aqua>Создание карты для <yellow><world> <dark_aqua>было прервано
+  resumed-rendering: <dark_aqua>Создание карты для <yellow><world> <dark_aqua>было возобновлено
+  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Мир<gray>:</gray> <yellow><world></yellow> Чанки<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Прошло<gray>:</gray> <yellow><elapsed></yellow> Осталось<gray>:</gray> <yellow><eta></yellow> Скорость<gray>:</gray> <yellow><rate></yellow> чанков/c
+  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Мир<gray>:</gray> <yellow><world></yellow> Регионы<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Чанки<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Прошло<gray>:</gray> <yellow><elapsed></yellow> Осталось<gray>:</gray> <yellow><eta></yellow> Скорость<gray>:</gray> <yellow><rate></yellow> чанков/c
+  internal-web-disabled: <green>Внутренний веб-сервер отключен в config.yml
+  internal-web-started: <green>Внутренний веб-сервер запущен на <bind>:<port>
+  internal-web-stopped: <green>Внутренний веб-сервер остановлен
+  internal-web-start-error: Не удалось запустить внутренний веб-сервер
+  could-not-create-directory: Не удалось создать папку! {path}
+  could-not-save-region: Не удалось сохранить карту для региона {x},{z}
+  internal-web-not-running: Ошибка внутреннего веб-сервера

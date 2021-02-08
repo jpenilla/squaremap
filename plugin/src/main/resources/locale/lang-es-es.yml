@@ -1,0 +1,70 @@
+# Translators: [Wrooar]
+
+render-in-progress: <red>Un renderizado ya está en proceso en <world>
+render-not-in-progress: <red>No hay renderizados en progreso para <world>
+cancelled-render: <green>Renderizado cancelado para <world>
+successfully-reset-map: <green>Se ha restablecido con éxito el mapa <world>
+paused-renders: <green>Se ha pausado el renderizado de <world>
+unpaused-renders: <green>Resumiendo renderizado de <world>
+click-for-help: Click para mostrar ayuda
+plugin-reloaded: <green><name> v<version> recargado
+command:
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  message:
+    console-must-specify-player: <red>Debes especificar un jugador como objetivo al usar este comando desde consola
+    console-must-specify-world: <red>No se ha encontrado a ningún jugador como '<input>'
+    player-not-found-for-input: <red>Debes especificar un mundo al usar este comando desde consola
+    no-such-world: <red>No existe el mundo '<world>'
+    map-not-enabled-for-world: <red>El mapa no está habilitado para el mundo '<world>'
+    confirmation-required: <red>Confirmación requerida. Confirma usando /<command> confirm.
+    no-pending-commands: <red>No tienes ninguna orden pendiente.
+  description:
+    help: Obtén ayuda para los comandos de Pl3xmap
+    resetmap: Restablece el mapa de un mundo
+    confirm: Confirma una orden pendiente
+    reload: Recarga el plugin
+    full-render: Empieza un renderizado completo del mundo especificado
+    cancel-render: Cancela un renderizado del mundo especificado
+    pause-render: Pausa todas las renderizaciones del mundo especificado
+    radius-render: Comienza un renderizado por radio
+    hide: Oculta a un jugador de la vista del mapa
+    show: Muestra a un jugador en la vista del mapa
+  argument:
+    optional-world: Selecciona por defecto el mundo actual del jugador si no se especifica un mundo
+    optional-center: Por defecto es (<white>0<gray>,</gray> 0</white>) si no se especifica
+    optional-player: Selecciona por defecto al jugador ejecutando el comando si no se especifica un jugador (se debe especificar un jugador en consola)
+    help-query: Help Query
+  hide:
+    already-hidden: <red><player> ya está oculto del mapa
+    hidden: <green><player> ahora está oculto en el mapa
+  show:
+    not-hidden: <red><player> no está oculto en el mapa
+    shown: <green><player> ya no está oculto en el mapa
+ui:
+  page-title: Pl3xMap - {world}
+  coordinates: Coordenadas<br/>{x}, {z}
+  sidebar:
+    player-list: Jugadores ({cur}/{max})
+    world-list: Mundos
+  layers:
+    player-tracker: Jugadores
+    world-spawn: Spawn
+    world-border: Borde del Mundo
+log:
+  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
+  started-full-render: <dark_aqua>Comenzó el renderizado completo del mapa <yellow><world>
+  started-radius-render: <dark_aqua>Comenzó el renderizado por radio del mapa <yellow><world>
+  scanning-region-files: <yellow>Escaneando archivos de regiones...
+  found-total-region-files: <green>Encontrados <gray><total> <green>archivos de regiones
+  finished-rendering: <dark_aqua>Ha finalizado el renderizado del mapa <yellow><world>
+  cancelled-rendering: <dark_aqua>Renderizando del mapa <yellow><world> <dark_aqua>ha sido interrumpido
+  resumed-rendering: <dark_aqua>Renderizando del mapa <yellow><world> <dark_aqua>ha sido reanudado
+  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Mundo<gray>:</gray> <yellow><world></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Tiempo transcurrido<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Velocidad<gray>:</gray> <yellow><rate></yellow> cps
+  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Mundo<gray>:</gray> <yellow><world></yellow> Regiones<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Tiempo transcurrido<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Velocidad<gray>:</gray> <yellow><rate></yellow> cps
+  internal-web-disabled: <green>El servidor web interno está desactivado en config.yml
+  internal-web-started: <green>Servidor web interno ejecutándose en <bind>:<port>
+  internal-web-stopped: <green>Servidor web interno detenido
+  internal-web-start-error: El servidor web interno no pudo iniciarse
+  could-not-create-directory: No se pudo crear el directorio {path}
+  could-not-save-region: No se pudo guardar el mapa para la región {x},{z}
+  internal-web-not-running: Se ha producido un error con el servidor web interno
