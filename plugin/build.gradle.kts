@@ -13,6 +13,7 @@ dependencies {
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
     implementation("org.bstats", "bstats-bukkit", "1.8")
     compileOnly("com.destroystokyo.paper", "paper", "1.16.5-R0.1-SNAPSHOT")
+    compileOnly("com.rylinaux", "PlugMan", "2.1.7")
 }
 
 tasks {
@@ -42,6 +43,7 @@ spigot {
     apiVersion = "1.16"
     website = rootProject.ext["url"].toString()
     authors("BillyGalbreath", "jmp")
+    softDepends("PlugMan")
 }
 
 java {
