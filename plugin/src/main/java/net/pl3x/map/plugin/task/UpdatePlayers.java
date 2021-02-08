@@ -46,12 +46,12 @@ public class UpdatePlayers extends BukkitRunnable {
                 Location playerLoc = player.getLocation();
                 playerEntry.put("name", player.getName());
                 playerEntry.put("uuid", player.getUniqueId().toString().replace("-", ""));
-                playerEntry.put("x", playerLoc.getBlockX());
-                playerEntry.put("z", playerLoc.getBlockZ());
-                playerEntry.put("yaw", playerLoc.getYaw());
+                playerEntry.put("x", worldConfig.PLAYER_TRACKER_ENABLED ? playerLoc.getBlockX() : 0);
+                playerEntry.put("z", worldConfig.PLAYER_TRACKER_ENABLED ? playerLoc.getBlockZ() : 0);
+                playerEntry.put("yaw", worldConfig.PLAYER_TRACKER_ENABLED ? playerLoc.getYaw() : 0);
                 playerEntry.put("world", playerLoc.getWorld().getName());
-                playerEntry.put("armor", getArmorPoints(player));
-                playerEntry.put("health", (int) player.getHealth());
+                playerEntry.put("armor", worldConfig.PLAYER_TRACKER_ENABLED ? getArmorPoints(player) : 0);
+                playerEntry.put("health", worldConfig.PLAYER_TRACKER_ENABLED ? (int) player.getHealth() : 0);
                 players.add(playerEntry);
             });
         });
