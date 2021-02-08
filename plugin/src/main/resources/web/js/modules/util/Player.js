@@ -54,7 +54,9 @@ class Player {
         const img = link.getElementsByTagName("img")[0];
         const span = link.getElementsByTagName("span")[0];
         if (P.worldList.curWorld.name == player.world) {
-            this.marker.addTo(P.layerControl.playersLayer);
+            if (P.worldList.curWorld.player_tracker.enabled) {
+                this.marker.addTo(P.layerControl.playersLayer);
+            }
             const latlng = P.toLatLng(player.x, player.z);
             if (!this.marker.getLatLng().equals(latlng)) {
                 this.marker.setLatLng(latlng);
