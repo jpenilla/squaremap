@@ -18,12 +18,10 @@ public final class Pl3xMapApiProvider implements Pl3xMap {
 
     private final Pl3xMapPlugin plugin;
     private final IconRegistry iconRegistry;
-    private final PlayerManager playerManager;
 
     public Pl3xMapApiProvider(final @NonNull Pl3xMapPlugin plugin) {
         this.plugin = plugin;
         this.iconRegistry = new IconRegistry();
-        this.playerManager = new PlayerManager();
     }
 
     @Override
@@ -52,7 +50,7 @@ public final class Pl3xMapApiProvider implements Pl3xMap {
 
     @Override
     public @NonNull PlayerManager playerManager() {
-        return this.playerManager;
+        return plugin.playerManager();
     }
 
 }

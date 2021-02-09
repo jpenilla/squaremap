@@ -4,6 +4,7 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
+import net.pl3x.map.plugin.api.PlayerManager;
 import net.pl3x.map.plugin.api.SpawnIconProvider;
 import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.configuration.Advanced;
@@ -32,6 +33,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private static Pl3xMapPlugin instance;
     private Pl3xMap pl3xMap;
     private WorldManager worldManager;
+    private PlayerManager playerManager;
     private UpdateWorldData updateWorldData;
     private UpdatePlayers updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
@@ -101,8 +103,11 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     }
 
     public void start() {
+        this.playerManager = new PlayerManager();
+
         this.updatePlayers = new UpdatePlayers(this);
         this.updatePlayers.runTaskTimer(this, 20, 20);
+
         this.updateWorldData = new UpdateWorldData();
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
@@ -154,6 +159,10 @@ public final class Pl3xMapPlugin extends JavaPlugin {
             this.worldManager = null;
         }
 
+        if (playerManager != null) {
+            this.playerManager = null;
+        }
+
         this.getServer().getScheduler().cancelTasks(this);
     }
 
@@ -183,4 +192,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         return this.audiences;
     }
 
+    public PlayerManager playerManager() {
+        return this.playerManager;
+    }
 }
