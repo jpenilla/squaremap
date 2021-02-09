@@ -4,6 +4,7 @@ import { P } from './Pl3xMap.js';
 class PlayerList {
     constructor(json) {
         this.players = new Map();
+        this.markers = new Map();
         this.following = null;
         this.label = json.player_list_label;
         P.map.createPane("nameplate").style.zIndex = 1000;
@@ -19,23 +20,15 @@ class PlayerList {
             }
         });
     }
-    showPlayer(link) {
-        const uuid = link.id;
-        const keys = Array.from(P.playerList.players.keys());
-        for (let i = 0; i < keys.length; i++) {
-            const player = P.playerList.players.get(keys[i]);
-            if (uuid == player.uuid && player.world != world) {
-                if (P.worldList.worlds.has(player.world)) {
-                    P.worldList.showWorld(player.world, () => {
-                        P.map.panTo(P.toLatLng(player.x, player.z));
-                    });
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+    showPlayer(uuid) {
+        const player = this.players.get(uuid);
+        if (!P.worldList.worlds.has(player.world)) {
+            return false;
         }
-        return false;
+        P.worldList.showWorld(player.world, () => {
+            P.map.panTo(P.toLatLng(player.x, player.z));
+        });
+        return true;
     }
     addToList(player) {
         const head = document.createElement("img");
@@ -43,8 +36,8 @@ class PlayerList {
         const span = P.createTextElement("span", player.name);
         const link = P.createElement("a", player.uuid, this);
         link.onclick = function (e) {
-            if (this.parent.showPlayer(this)) {
-                this.parent.follow(this.id);
+            if (this.parent.showPlayer(this.id)) {
+                this.parent.followPlayerMarker(this.id);
                 e.stopPropagation();
             }
         };
@@ -53,11 +46,13 @@ class PlayerList {
         const fieldset = P.sidebar.players.element;
         fieldset.appendChild(link);
     }
-    removeFromList(uuid) {
-        const player = document.getElementById(uuid);
-        if (player != null) {
-            player.remove();
+    removeFromList(player) {
+        const link = document.getElementById(player.uuid);
+        if (link != null) {
+            link.remove();
         }
+        this.players.delete(player.uuid);
+        player.removeMarker();
     }
     updatePlayerList(players) {
         const playersToRemove = Array.from(this.players.keys());
@@ -78,9 +73,7 @@ class PlayerList {
         // remove players not in json
         for (let i = 0; i < playersToRemove.length; i++) {
             const player = this.players.get(playersToRemove[i]);
-            player.marker.remove();
-            this.players.delete(player.uuid);
-            this.removeFromList(player.uuid);
+            this.removeFromList(player);
         }
 
         // follow highlighted player
@@ -94,12 +87,13 @@ class PlayerList {
         }
     }
     clearPlayerMarkers() {
-        const keys = Array.from(this.players.keys());
-        for (let i = 0; i < keys.length; i++) {
-            const player = this.players.get(keys[i]);
-            player.marker.remove();
+        const playersToRemove = Array.from(this.players.keys());
+        for (let i = 0; i < playersToRemove.length; i++) {
+            const player = this.players.get(playersToRemove[i]);
+            player.removeMarker();
         }
-        P.layerControl.playersLayer.clearLayers();
+        this.markers.clear();
+        //P.layerControl.playersLayer.clearLayers();
     }
     followPlayerMarker(uuid) {
         if (this.following != null) {

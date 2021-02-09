@@ -60,7 +60,7 @@ class Player {
         const span = link.getElementsByTagName("span")[0];
         if (P.worldList.curWorld.name == player.world) {
             if (P.worldList.curWorld.player_tracker.enabled) {
-                this.marker.addTo(P.layerControl.playersLayer);
+                this.addMarker();
             }
             const latlng = P.toLatLng(player.x, player.z);
             if (!this.marker.getLatLng().equals(latlng)) {
@@ -73,11 +73,27 @@ class Player {
             img.classList.remove("other-world");
             span.classList.remove("other-world");
         } else {
-            this.marker.remove();
+            this.removeMarker();
             img.classList.add("other-world");
             span.classList.add("other-world");
         }
         this.updateNameplate(player);
+    }
+    removeMarker() {
+        this.marker.remove();
+        P.playerList.markers.delete(this.uuid);
+        P.map.removeLayer(this.marker);
+        P.layerControl.playersLayer.removeLayer(this.marker);
+        console.log("removed marker");
+    }
+    addMarker() {
+        if (!P.playerList.markers.has(this.uuid)) {
+            this.marker.addTo(P.layerControl.playersLayer);
+            P.playerList.markers.set(this.uuid, this.marker);
+            console.log("added marker");
+        } else {
+            console.log("marker already present");
+        }
     }
 }
 
