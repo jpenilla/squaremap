@@ -84,15 +84,11 @@ class Player {
         P.playerList.markers.delete(this.uuid);
         P.map.removeLayer(this.marker);
         P.layerControl.playersLayer.removeLayer(this.marker);
-        console.log("removed marker");
     }
     addMarker() {
         if (!P.playerList.markers.has(this.uuid)) {
             this.marker.addTo(P.layerControl.playersLayer);
             P.playerList.markers.set(this.uuid, this.marker);
-            console.log("added marker");
-        } else {
-            console.log("marker already present");
         }
     }
 }
