@@ -10,12 +10,12 @@ class PlayerList {
     }
     tick() {
         P.getJSON("tiles/players.json", (json) => {
-            this.update(json.players);
+            this.updatePlayerList(json.players);
             const title = `${this.label}`
                 .replace(/{cur}/g, json.players.length)
                 .replace(/{max}/g, json.max == null ? "???" : json.max)
-            if (P.sidebar.playerList.legend.innerHTML !== title) {
-                P.sidebar.playerList.legend.innerHTML = title;
+            if (P.sidebar.players.legend.innerHTML !== title) {
+                P.sidebar.players.legend.innerHTML = title;
             }
         });
     }
@@ -37,9 +37,9 @@ class PlayerList {
         }
         return false;
     }
-    add(player) {
+    addToList(player) {
         const head = document.createElement("img");
-        head.src = P.getHeadUrl(player);
+        head.src = player.getHeadUrl();
         const span = P.createTextElement("span", player.name);
         const link = P.createElement("a", player.uuid, this);
         link.onclick = function (e) {
@@ -50,50 +50,58 @@ class PlayerList {
         };
         link.appendChild(head);
         link.appendChild(span);
-        const fieldset = P.sidebar.playerList.element;
+        const fieldset = P.sidebar.players.element;
         fieldset.appendChild(link);
     }
-    remove(uuid) {
+    removeFromList(uuid) {
         const player = document.getElementById(uuid);
         if (player != null) {
             player.remove();
         }
     }
-    update(players) {
+    updatePlayerList(players) {
         const playersToRemove = Array.from(this.players.keys());
+
+        // update players from json
         for (let i = 0; i < players.length; i++) {
             let player = this.players.get(players[i].uuid);
             if (player == null) {
+                // new player
                 player = new Player(players[i]);
                 this.players.set(player.uuid, player);
-                this.add(player);
+                this.addToList(player);
             }
             player.update(players[i]);
             playersToRemove.remove(players[i].uuid);
         }
+
+        // remove players not in json
         for (let i = 0; i < playersToRemove.length; i++) {
             const player = this.players.get(playersToRemove[i]);
             player.marker.remove();
             this.players.delete(player.uuid);
-            this.remove(player.uuid);
+            this.removeFromList(player.uuid);
         }
+
+        // follow highlighted player
         if (this.following != null) {
             const player = this.players.get(this.following);
             if (player == null) {
-                this.follow(null);
+                this.followPlayerMarker(null);
             } else {
                 P.map.panTo(P.toLatLng(player.x, player.z));
             }
         }
     }
-    clearMarkers() {
+    clearPlayerMarkers() {
         const keys = Array.from(this.players.keys());
         for (let i = 0; i < keys.length; i++) {
             const player = this.players.get(keys[i]);
             player.marker.remove();
         }
+        P.layerControl.playersLayer.clearLayers();
     }
-    follow(uuid) {
+    followPlayerMarker(uuid) {
         if (this.following != null) {
             document.getElementById(this.following).classList.remove("following");
             this.following = null;

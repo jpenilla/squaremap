@@ -17,7 +17,7 @@ class WorldList {
                     P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
                     return;
                 }
-                P.playerList.clearMarkers();
+                P.playerList.clearPlayerMarkers();
                 this.parent.loadWorld(name, (world) => {
                     P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
                 });
@@ -29,7 +29,7 @@ class WorldList {
             link.appendChild(img);
             link.appendChild(P.createTextElement("span", world.display_name));
 
-            P.sidebar.worldList.element.appendChild(link);
+            P.sidebar.worlds.element.appendChild(link);
         }
     }
     getIcon(world) {
@@ -64,7 +64,6 @@ class WorldList {
             }
             return;
         }
-        P.playerList.clearMarkers();
         this.loadWorld(world, callback);
         P.updateBrowserUrl(P.getUrlFromView());
     }

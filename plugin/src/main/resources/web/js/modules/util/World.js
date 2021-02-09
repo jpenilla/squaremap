@@ -9,6 +9,7 @@ class World {
         this.display_name = world.display_name;
         this.markerLayers = new Map();
         this.player_tracker = {};
+        this.update_interval = 1;
     }
     tick() {
         // load and draw markers
@@ -17,6 +18,7 @@ class World {
         });
     }
     unload() {
+        P.playerList.clearPlayerMarkers();
         const keys = Array.from(this.markerLayers.keys());
         for (let i = 0; i < keys.length; i++) {
             const layer = this.markerLayers.get(keys[i]);
@@ -30,7 +32,7 @@ class World {
             this.player_tracker = json.settings.player_tracker;
             this.zoom = json.settings.zoom;
             this.spawn = json.settings.spawn;
-            P.updateInterval = json.settings.update_interval;
+            this.update_interval = json.settings.update_interval;
 
             // set the scale for our projection calculations
             P.setScale(this.zoom.max);
@@ -51,11 +53,14 @@ class World {
             P.layerControl.setupTileLayers(this);
 
             // force clear player markers
-            P.playerList.clearMarkers();
+            P.playerList.clearPlayerMarkers();
 
             // tick now, reset counter
-            this.tick_count = 0;
-            this.tick();
+            P.tick_count = 0;
+            P.tick();
+
+            // force clear player markers
+            P.playerList.clearPlayerMarkers();
 
             if (callback != null) {
                 callback(this);

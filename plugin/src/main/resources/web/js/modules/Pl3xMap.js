@@ -21,10 +21,10 @@ class Pl3xMap {
             this.layerControl.hideLayer(e.layer);
         })
         .on('click', (e) => {
-            this.playerList.follow(null);
+            this.playerList.followPlayerMarker(null);
         })
         .on('dblclick', (e) => {
-            this.playerList.follow(null);
+            this.playerList.followPlayerMarker(null);
         });
 
         this.tick_count = 0;
@@ -34,9 +34,9 @@ class Pl3xMap {
         this.init();
     }
     loop() {
-        ++this.tick_count;
         this.tick();
         setTimeout(() => this.loop(), 1000);
+        ++this.tick_count;
     }
     tick() {
         if (this.tick_count === undefined) {
@@ -109,11 +109,6 @@ class Pl3xMap {
         const element = document.createElement(tag);
         element.appendChild(document.createTextNode(text));
         return element;
-    }
-    getHeadUrl(player) {
-        return this.worldList.curWorld.player_tracker.nameplates.heads_url
-            .replace(/{uuid}/g, player.uuid)
-            .replace(/{name}/g, player.name);
     }
     getJSON(url, fn) {
         fetch(url, {cache: "no-store"})

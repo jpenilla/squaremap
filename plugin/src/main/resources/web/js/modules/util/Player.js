@@ -29,12 +29,17 @@ class Player {
             this.marker.bindTooltip(this.tooltip);
         }
     }
+    getHeadUrl() {
+        return P.worldList.curWorld.player_tracker.nameplates.heads_url
+            .replace(/{uuid}/g, this.uuid)
+            .replace(/{name}/g, this.name);
+    }
     updateNameplate(player) {
         let headImg = "";
         let armorImg = "";
         let healthImg = "";
         if (P.worldList.curWorld.player_tracker.nameplates.show_heads) {
-            headImg = `<img src='${P.getHeadUrl(player)}' class="head" />`;
+            headImg = `<img src='${this.getHeadUrl()}' class="head" />`;
         }
         if (P.worldList.curWorld.player_tracker.nameplates.show_armor) {
             armorImg = `<img src="images/armor/${player.armor}.png" class="armor" />`;

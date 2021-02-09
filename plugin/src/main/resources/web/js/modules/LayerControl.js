@@ -57,6 +57,7 @@ class LayerControl {
         }
         this.tileLayer1 = this.createTileLayer(world);
         this.tileLayer2 = this.createTileLayer(world);
+
         // refresh player's control
         this.removeOverlay(this.playersLayer);
         if (world.player_tracker.show_controls) {
