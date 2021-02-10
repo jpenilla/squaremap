@@ -2,7 +2,7 @@
 
 These plugins have direct integrations with Pl3xMap.
 
-* Chunky v1.2.9+ [Download](https://www.spigotmc.org/resources/chunky.81534/)
+* ChunkyBorder 1.0.25+ [Download](https://www.spigotmc.org/resources/chunkyborder.84278/)
 * LandClaims v1.16.5+ [Source](https://github.com/pl3xgaming/LandClaims/blob/master/pom.xml)
 
 ## Addons
