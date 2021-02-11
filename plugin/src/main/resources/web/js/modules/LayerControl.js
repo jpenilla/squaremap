@@ -5,7 +5,7 @@ class LayerControl {
         this.layers = new Map();
     }
     init() {
-        this.currentLayer = 1;
+        this.currentLayer = 0;
         this.updateInterval = 60;
 
         this.playersLayer = new L.LayerGroup();

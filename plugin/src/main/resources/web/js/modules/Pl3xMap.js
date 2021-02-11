@@ -27,7 +27,7 @@ class Pl3xMap {
             this.playerList.followPlayerMarker(null);
         });
 
-        this.tick_count = 0;
+        this.tick_count = 1;
 
         this.layerControl = new LayerControl();
 
@@ -36,7 +36,7 @@ class Pl3xMap {
     loop() {
         this.tick();
         setTimeout(() => this.loop(), 1000);
-        ++this.tick_count;
+        this.tick_count++;
     }
     tick() {
         if (this.tick_count === undefined) {
@@ -49,10 +49,6 @@ class Pl3xMap {
         // tick world
         if (this.tick_count % this.worldList.curWorld.update_interval == 0) {
             this.worldList.curWorld.tick();
-        }
-        // refresh map tile layer
-        if (this.tick_count % this.updateInterval == 0) {
-            this.layerControl.updateTileLayer();
         }
     }
     init() {

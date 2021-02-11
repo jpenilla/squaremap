@@ -12,6 +12,8 @@ class World {
         this.update_interval = 1;
     }
     tick() {
+        // refresh map tile layer
+        P.layerControl.updateTileLayer();
         // load and draw markers
         P.getJSON(`tiles/${this.name}/markers.json`, (json) => {
             this.markers(json);
