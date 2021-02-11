@@ -8,47 +8,49 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class PlayerManager implements net.pl3x.map.api.PlayerManager {
     public static final NamespacedKey key = new NamespacedKey(Pl3xMapPlugin.getInstance(), "hidden");
 
-    @Override
-    public void hide(final @NonNull UUID uuid) {
-        hide(player(uuid));
-    }
-
-    public void hide(final @NonNull Player player) {
-        hide(pdc(player));
-    }
-
-    public void hide(final @NonNull PersistentDataContainer pdc) {
-        pdc.set(key, PersistentDataType.BYTE, (byte) 1);
-    }
+    private final Set<UUID> tempHidden = new HashSet<>();
 
     @Override
-    public void show(final @NonNull UUID uuid) {
-        show(player(uuid));
+    public void hide(final @NonNull UUID uuid, boolean persistent) {
+        hide(player(uuid), persistent);
     }
 
-    public void show(final @NonNull Player player) {
-        show(pdc(player));
-    }
-
-    public void show(final @NonNull PersistentDataContainer pdc) {
-        pdc.set(key, PersistentDataType.BYTE, (byte) 0);
+    public void hide(final @NonNull Player player, boolean persistent) {
+        if (persistent) {
+            pdc(player).set(key, PersistentDataType.BYTE, (byte) 1);
+        }
+        tempHidden.add(player.getUniqueId());
     }
 
     @Override
-    public void hidden(@NonNull UUID uuid, final boolean hide) {
-        hidden(player(uuid), hide);
+    public void show(final @NonNull UUID uuid, boolean persistent) {
+        show(player(uuid), persistent);
     }
 
-    public void hidden(@NonNull Player player, final boolean hide) {
+    public void show(final @NonNull Player player, boolean persistent) {
+        if (persistent) {
+            pdc(player).set(key, PersistentDataType.BYTE, (byte) 0);
+        }
+        tempHidden.remove(player.getUniqueId());
+    }
+
+    @Override
+    public void hidden(@NonNull UUID uuid, final boolean hide, boolean persistent) {
+        hidden(player(uuid), hide, persistent);
+    }
+
+    public void hidden(@NonNull Player player, final boolean hide, boolean persistent) {
         if (hide) {
-            this.hide(player);
+            this.hide(player, persistent);
         } else {
-            this.show(player);
+            this.show(player, persistent);
         }
     }
 
@@ -58,11 +60,8 @@ public class PlayerManager implements net.pl3x.map.api.PlayerManager {
     }
 
     public boolean hidden(final @NonNull Player player) {
-        return hidden(pdc(player));
-    }
-
-    public boolean hidden(final @NonNull PersistentDataContainer pdc) {
-        return pdc.getOrDefault(key, PersistentDataType.BYTE, (byte) 0) != (byte) 0;
+        return tempHidden.contains(player.getUniqueId()) ||
+                pdc(player).getOrDefault(key, PersistentDataType.BYTE, (byte) 0) != (byte) 0;
     }
 
     private static Player player(UUID uuid) {

@@ -38,7 +38,7 @@ public final class HideCommand extends Pl3xMapCommand {
             return;
         }
 
-        this.plugin.playerManager().hide(target);
+        this.plugin.playerManager().hide(target, true);
         Lang.send(sender, Lang.PLAYER_HIDDEN, Template.of("player", target.getName()));
     }
 

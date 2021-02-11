@@ -38,7 +38,7 @@ public final class ShowCommand extends Pl3xMapCommand {
             return;
         }
 
-        this.plugin.playerManager().show(target);
+        this.plugin.playerManager().show(target, true);
         Lang.send(sender, Lang.PLAYER_SHOWN, Template.of("player", target.getName()));
     }
 
