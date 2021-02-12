@@ -9,15 +9,20 @@ class World {
         this.display_name = world.display_name;
         this.markerLayers = new Map();
         this.player_tracker = {};
-        this.update_interval = 1;
+        this.marker_update_interval = 5;
+        this.tiles_update_interval = 15;
     }
     tick() {
         // refresh map tile layer
-        P.layerControl.updateTileLayer();
+        if (P.tick_count % this.tiles_update_interval == 0) {
+            P.layerControl.updateTileLayer();
+        }
         // load and draw markers
-        P.getJSON(`tiles/${this.name}/markers.json`, (json) => {
-            this.markers(json);
-        });
+        if (P.tick_count % this.marker_update_interval == 0) {
+            P.getJSON(`tiles/${this.name}/markers.json`, (json) => {
+                this.markers(json);
+            });
+        }
     }
     unload() {
         P.playerList.clearPlayerMarkers();
@@ -34,7 +39,8 @@ class World {
             this.player_tracker = json.settings.player_tracker;
             this.zoom = json.settings.zoom;
             this.spawn = json.settings.spawn;
-            this.update_interval = json.settings.update_interval;
+            this.marker_update_interval = json.settings.marker_update_interval;
+            this.tiles_update_interval = json.settings.tiles_update_interval;
 
             // set the scale for our projection calculations
             P.setScale(this.zoom.max);

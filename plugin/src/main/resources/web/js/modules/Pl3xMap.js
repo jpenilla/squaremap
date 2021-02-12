@@ -39,17 +39,10 @@ class Pl3xMap {
         this.tick_count++;
     }
     tick() {
-        if (this.tick_count === undefined) {
-            this.tick_count = 0;
-        }
         // tick player tracker
-        if (this.tick_count % this.worldList.curWorld.player_tracker.update_interval == 0) {
-            this.playerList.tick();
-        }
+        this.playerList.tick();
         // tick world
-        if (this.tick_count % this.worldList.curWorld.update_interval == 0) {
-            this.worldList.curWorld.tick();
-        }
+        this.worldList.curWorld.tick();
     }
     init() {
         this.getJSON("tiles/settings.json", (json) => {

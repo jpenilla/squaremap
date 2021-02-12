@@ -59,7 +59,8 @@ public class UpdateWorldData extends BukkitRunnable {
             settings.put("spawn", spawn);
             settings.put("player_tracker", playerTracker);
             settings.put("zoom", zoom);
-            settings.put("update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
+            settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
+            settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
 
             String name = world.getName();
             String displayName = worldConfig.MAP_DISPLAY_NAME

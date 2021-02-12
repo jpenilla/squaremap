@@ -134,7 +134,7 @@ public class WorldConfig extends AbstractWorldConfig {
         PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", PLAYER_TRACKER_HIDE_SPECTATORS);
     }
 
-    public int MARKER_API_UPDATE_INTERVAL_SECONDS = 15;
+    public int MARKER_API_UPDATE_INTERVAL_SECONDS = 5;
 
     private void markerSettings() {
         MARKER_API_UPDATE_INTERVAL_SECONDS = getInt("map.markers.update-interval-seconds", MARKER_API_UPDATE_INTERVAL_SECONDS);

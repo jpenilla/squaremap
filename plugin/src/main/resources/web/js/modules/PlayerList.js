@@ -10,15 +10,17 @@ class PlayerList {
         P.map.createPane("nameplate").style.zIndex = 1000;
     }
     tick() {
-        P.getJSON("tiles/players.json", (json) => {
-            this.updatePlayerList(json.players);
-            const title = `${this.label}`
-                .replace(/{cur}/g, json.players.length)
-                .replace(/{max}/g, json.max == null ? "???" : json.max)
-            if (P.sidebar.players.legend.innerHTML !== title) {
-                P.sidebar.players.legend.innerHTML = title;
-            }
-        });
+        if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
+            P.getJSON("tiles/players.json", (json) => {
+                this.updatePlayerList(json.players);
+                const title = `${this.label}`
+                    .replace(/{cur}/g, json.players.length)
+                    .replace(/{max}/g, json.max == null ? "???" : json.max)
+                if (P.sidebar.players.legend.innerHTML !== title) {
+                    P.sidebar.players.legend.innerHTML = title;
+                }
+            });
+        }
     }
     showPlayer(uuid) {
         const player = this.players.get(uuid);
