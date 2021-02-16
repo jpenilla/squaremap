@@ -4,6 +4,7 @@ import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,5 +70,12 @@ public interface Pl3xMap {
      * @return player manager
      */
     @NonNull PlayerManager playerManager();
+
+    /**
+     * Get the web directory
+     *
+     * @return web directory
+     */
+    @NonNull Path webDir();
 
 }
