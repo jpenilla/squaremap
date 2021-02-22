@@ -16,6 +16,6 @@ These plugins are add-ons for Pl3xMap.
 * Pl3xMap-Mobs - Shows mob entities - [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-Mobs) [Source](https://github.com/pl3xgaming/Pl3xMap-Mobs)
 * Pl3xMap-Signs - Shows signs - [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-Signs) [Source](https://github.com/pl3xgaming/Pl3xMap-Signs)
 * Pl3xMap-Skins - Store skins from in-game - [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-Skins) [Source](https://github.com/pl3xgaming/Pl3xMap-Skins)
-* Pl3xMap-SuperVanish - Hide vanished players - [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-SuperVanish) [Source](https://github.com/pl3xgaming/Pl3xMap-SuperVanish)
+* Pl3xMap-SuperVanish - Hide vanished players - [Download](https://ci.notom3ga.me/job/Pl3xMap-SuperVanish) [Source](https://github.com/notOM3GA/Pl3xMap-SuperVanish)
 * Pl3xMap-VanishNoPacket - Hide vanished players - [Download](https://ci.notom3ga.me/job/Pl3xMap-VanishNoPacket) [Source](https://github.com/notOM3GA/Pl3xMap-VanishNoPacket)
 * Pl3xMap-WorldGuard - Shows WorldGuard regions - [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-WorldGuard) [Source](https://github.com/pl3xgaming/Pl3xMap-WorldGuard)
