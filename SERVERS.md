@@ -7,5 +7,6 @@
 |[Piglin](https://www.piglin.org)|[https://map.piglin.org](https://map.piglin.org)|
 |[Hahota](https://hahota.net)|[https://map.hahota.net](https://map.hahota.net)|
 |[MAELK](https://maelk.net/)|[https://map.maelk.net](https://map.maelk.net)|
+|[Nether Depths](https://netherdepths.com)|[https://map.netherdepths.com](https://map.netherdepths.com)|
 
 If you'd like your server listed here, submit a PR or talk to BillyGalbreath in [Discord](https://discord.gg/mtAAnkk).
