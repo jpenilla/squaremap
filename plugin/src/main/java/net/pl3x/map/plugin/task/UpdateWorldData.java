@@ -62,27 +62,16 @@ public class UpdateWorldData extends BukkitRunnable {
             settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
             settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
 
-            String name = world.getName();
-            String displayName = worldConfig.MAP_DISPLAY_NAME
-                    .replace("{world}", name);
-            String icon = worldConfig.MAP_ICON;
-            String type = world.getEnvironment().name().toLowerCase();
-
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", name);
-            map.put("display_name", displayName);
-            map.put("icon", icon);
-            map.put("type", type);
-            map.put("settings", settings);
+            FileUtil.write(gson.toJson(settings), FileUtil.getWorldFolder(world).resolve("settings.json"));
 
             Map<String, Object> worldsList = new HashMap<>();
-            worldsList.put("name", name);
-            worldsList.put("display_name", displayName);
-            worldsList.put("icon", icon);
-            worldsList.put("type", type);
+            worldsList.put("name", world.getName());
+            worldsList.put("display_name", worldConfig.MAP_DISPLAY_NAME
+                    .replace("{world}", world.getName()));
+            worldsList.put("icon", worldConfig.MAP_ICON);
+            worldsList.put("type", world.getEnvironment().name().toLowerCase());
+            worldsList.put("order", worldConfig.MAP_ORDER);
             worlds.add(worldsList);
-
-            FileUtil.write(gson.toJson(map), FileUtil.getWorldFolder(world).resolve("settings.json"));
         });
 
         Map<String, Object> ui = new HashMap<>();

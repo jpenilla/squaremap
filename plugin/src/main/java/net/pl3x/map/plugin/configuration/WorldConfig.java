@@ -46,6 +46,7 @@ public class WorldConfig extends AbstractWorldConfig {
 
     public boolean MAP_ENABLED = true;
     public String MAP_DISPLAY_NAME = "{world}";
+    public int MAP_ORDER = 0;
     public String MAP_ICON = "";
     public int MAX_RENDER_THREADS = -1;
     public boolean MAP_ITERATE_UP = false;
@@ -55,6 +56,7 @@ public class WorldConfig extends AbstractWorldConfig {
     private void worldSettings() {
         MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
         MAP_DISPLAY_NAME = getString("map.display-name", MAP_DISPLAY_NAME);
+        MAP_ORDER = getInt("map.order", MAP_ORDER);
         MAP_ICON = getString("map.icon", MAP_ICON);
         MAX_RENDER_THREADS = getInt("map.max-render-threads", MAX_RENDER_THREADS);
         MAP_ITERATE_UP = getBoolean("map.iterate-up", MAP_ITERATE_UP);

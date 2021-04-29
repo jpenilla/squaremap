@@ -3,16 +3,21 @@ import { P } from './Pl3xMap.js';
 
 class WorldList {
     constructor(json) {
-        this.worlds = new Map();
-
+        // get worlds from json
+        const unorderedMap = new Map();
         for (let i = 0; i < json.length; i++) {
             const world = new World(json[i]);
-            this.worlds.set(world.name, world);
+            unorderedMap.set(world.name, world);
+        }
 
-            const link = P.createElement("a", world.name, this);
+        // sort worlds by order
+        this.worlds = new Map([...unorderedMap].sort((a, b) => a[1].order - b[1].order));
+
+        // set up world list link elements
+        for (const [name, world] of this.worlds) {
+            const link = P.createElement("a", name, this);
             link.onclick = function () {
                 const curWorld = this.parent.curWorld;
-                const name = this.id;
                 if (curWorld.name == name) {
                     P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
                     return;

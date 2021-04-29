@@ -2,11 +2,12 @@ import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon } from "./
 import { P } from '../Pl3xMap.js';
 
 class World {
-    constructor(world) {
-        this.name = world.name;
-        this.icon = world.icon;
-        this.type = world.type;
-        this.display_name = world.display_name;
+    constructor(json) {
+        this.name = json.name;
+        this.order = json.order;
+        this.icon = json.icon;
+        this.type = json.type;
+        this.display_name = json.display_name;
         this.markerLayers = new Map();
         this.player_tracker = {};
         this.marker_update_interval = 5;
@@ -36,11 +37,11 @@ class World {
     }
     load(callback) {
         P.getJSON(`tiles/${this.name}/settings.json`, (json) => {
-            this.player_tracker = json.settings.player_tracker;
-            this.zoom = json.settings.zoom;
-            this.spawn = json.settings.spawn;
-            this.marker_update_interval = json.settings.marker_update_interval;
-            this.tiles_update_interval = json.settings.tiles_update_interval;
+            this.player_tracker = json.player_tracker;
+            this.zoom = json.zoom;
+            this.spawn = json.spawn;
+            this.marker_update_interval = json.marker_update_interval;
+            this.tiles_update_interval = json.tiles_update_interval;
 
             // set the scale for our projection calculations
             P.setScale(this.zoom.max);
