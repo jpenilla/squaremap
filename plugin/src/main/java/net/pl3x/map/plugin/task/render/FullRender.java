@@ -8,6 +8,8 @@ import net.pl3x.map.plugin.data.Region;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.iterator.RegionSpiralIterator;
+import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -45,7 +47,7 @@ public final class FullRender extends AbstractRender {
 
             final int count = (int) regions.values().stream().filter(bool -> bool).count();
             this.curRegions.set(count);
-            this.curChunks.set(count * 32 * 32);
+            this.curChunks.set(countCompletedChunks(regions));
         } else {
             Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.getName()));
 
@@ -84,8 +86,9 @@ public final class FullRender extends AbstractRender {
         // ensure task wasnt cancelled before we start
         if (this.cancelled) return;
 
+        VisibilityLimit visibility = this.mapWorld.visibilityLimit();
         this.totalRegions = regions.size();
-        this.totalChunks = totalRegions * 32 * 32;
+        this.totalChunks = regions.keySet().stream().mapToInt(visibility::countChunksInRegion).sum();
 
         Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.of("total", Integer.toString(regions.size())));
 
@@ -106,6 +109,14 @@ public final class FullRender extends AbstractRender {
             this.timer.cancel();
         }
 
+    }
+
+    private int countCompletedChunks(Map<Region, Boolean> regions) {
+        VisibilityLimit visibility = this.mapWorld.visibilityLimit();
+        return (int) regions.entrySet().stream()
+                .filter(entry -> entry.getValue())
+                .mapToInt(entry -> visibility.countChunksInRegion(entry.getKey()))
+                .sum();
     }
 
     @Override
@@ -129,6 +140,12 @@ public final class FullRender extends AbstractRender {
                 int z = Integer.parseInt(split[2]);
 
                 Region region = new Region(x, z);
+
+                // ignore regions completely outside the visibility limit
+                if (!mapWorld.visibilityLimit().shouldRenderRegion(region)) {
+                    continue;
+                }
+
                 maxRadius = Math.max(Math.max(maxRadius, Math.abs(x)), Math.abs(z));
                 regions.add(region);
 

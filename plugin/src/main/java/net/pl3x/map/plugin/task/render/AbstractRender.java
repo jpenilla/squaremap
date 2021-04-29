@@ -27,6 +27,8 @@ import net.pl3x.map.plugin.data.Region;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
+import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
+
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -149,6 +151,12 @@ public abstract class AbstractRender implements Runnable {
             int[] lastY = new int[16];
             for (int chunkZ = startChunkZ; chunkZ < startChunkZ + 32; chunkZ++) {
                 if (this.cancelled) return;
+                if (!this.mapWorld.visibilityLimit().shouldRenderChunk(chunkX, chunkZ)) {
+                    // skip rendering this chunk in the chunk column - it's outside the visibility limit
+                    // (this chunk was already excluded from the chunk count, so not incrementing that is on purpose)
+                    continue;
+                }
+
                 net.minecraft.server.v1_16_R3.Chunk chunk;
                 if (chunkZ == startChunkZ) {
                     // this is the top line of the image, we need to
@@ -209,10 +217,14 @@ public abstract class AbstractRender implements Runnable {
         }
         final int blockX = chunk.getPos().getBlockX();
         final int blockZ = chunk.getPos().getBlockZ();
+        VisibilityLimit limit = mapWorld.visibilityLimit();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 if (cancelled) return;
-                image.setPixel(blockX + x, blockZ + z, scanBlock(chunk, x, z, lastY));
+
+                if (limit.shouldRenderColumn(blockX + x, blockZ + z)) {
+                    image.setPixel(blockX + x, blockZ + z, scanBlock(chunk, x, z, lastY));
+                }
             }
         }
     }

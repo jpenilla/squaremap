@@ -205,7 +205,7 @@ public abstract class Marker {
      * @param polygons parts
      * @return new multi polygon
      */
-    public static @NonNull MultiPolygon multiPolygon(final @NonNull MultiPolygon.MultiPolygonPart @NonNull ... polygons) {
+    public static @NonNull MultiPolygon multiPolygon(final MultiPolygon.@NonNull MultiPolygonPart @NonNull ... polygons) {
         return multiPolygon(Arrays.asList(polygons));
     }
 

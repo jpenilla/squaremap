@@ -20,6 +20,8 @@ import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
 import net.pl3x.map.plugin.task.render.FullRender;
+import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
+
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -55,6 +57,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final UpdateMarkers updateMarkersTask;
     private final BlockColors blockColors;
+    private final VisibilityLimit visibilityLimit;
 
     private AbstractRender activeRender = null;
     private ScheduledFuture<?> backgroundRender = null;
@@ -86,6 +89,9 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         if (this.config().WORLDBORDER_MARKER_ENABLED) {
             this.layerRegistry().register(WorldBorderProvider.WORLDBORDER_KEY, new WorldBorderProvider(this));
         }
+
+        this.visibilityLimit = new VisibilityLimit(world);
+        this.visibilityLimit.parse(this.config().VISIBILITY_LIMITS);
 
         this.deserializeDirtyChunks();
 
@@ -163,7 +169,9 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     }
 
     public void chunkModified(final @NonNull ChunkCoordinate coord) {
-        this.modifiedChunks.add(coord);
+        if (this.visibilityLimit().shouldRenderChunk(coord)) {
+            this.modifiedChunks.add(coord);
+        }
     }
 
     public boolean hasModifiedChunks() {
@@ -291,6 +299,11 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     private @NonNull IllegalStateException failedToCreateDataDirectory(final @NonNull Throwable cause) {
         return new IllegalStateException(String.format("Failed to create data directory for world '%s'", this.name()), cause);
+    }
+
+    @Override
+    public @NonNull VisibilityLimit visibilityLimit() {
+        return visibilityLimit;
     }
 
 }

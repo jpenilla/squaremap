@@ -1,11 +1,19 @@
 package net.pl3x.map.plugin.configuration;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.minecraft.server.v1_16_R3.MathHelper;
+import net.pl3x.map.api.visibilitylimit.VisibilityShape;
+import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -166,6 +174,14 @@ public class WorldConfig extends AbstractWorldConfig {
         WORLDBORDER_MARKER_DEFAULT_HIDDEN = getBoolean("map.markers.world-border.default-hidden", WORLDBORDER_MARKER_DEFAULT_HIDDEN);
         WORLDBORDER_MARKER_LAYER_PRIORITY = getInt("map.markers.world-border.layer-priority", WORLDBORDER_MARKER_LAYER_PRIORITY);
         WORLDBORDER_MARKER_Z_INDEX = getInt("map.markers.world-border.z-index", WORLDBORDER_MARKER_Z_INDEX);
+    }
+
+    public List<Map<String, Object>> VISIBILITY_LIMITS = new ArrayList<>();
+
+    @SuppressWarnings("unchecked") // Safe, as YAML can only store dicts of <String, object>
+    private void visibilityLimitSettings() {
+        VISIBILITY_LIMITS = (List<Map<String, Object>>) this.getList("map.visibility-limits", Arrays.asList(
+                ImmutableMap.of("type", "world-border", "enabled", false)));
     }
 
 }

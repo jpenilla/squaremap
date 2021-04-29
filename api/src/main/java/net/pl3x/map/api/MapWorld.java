@@ -1,5 +1,7 @@
 package net.pl3x.map.api;
 
+import net.pl3x.map.api.visibilitylimit.VisibilityLimit;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.UUID;
@@ -22,6 +24,13 @@ public interface MapWorld {
      * @return name
      */
     @NonNull String name();
+
+    /**
+     * Get the map visibility limit of the world. Only these regions are drawn,
+     * even if more chunks exist on disk.
+     * @return The visibility limit.
+     */
+    @NonNull VisibilityLimit visibilityLimit();
 
     /**
      * Get the UUID of this world
