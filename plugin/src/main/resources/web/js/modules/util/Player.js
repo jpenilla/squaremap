@@ -42,10 +42,10 @@ class Player {
             headImg = `<img src='${this.getHeadUrl()}' class="head" />`;
         }
         if (P.worldList.curWorld.player_tracker.nameplates.show_armor) {
-            armorImg = `<img src="images/armor/${player.armor}.png" class="armor" />`;
+            armorImg = `<img src="images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png" class="armor" />`;
         }
         if (P.worldList.curWorld.player_tracker.nameplates.show_health) {
-            healthImg = `<img src="images/health/${player.health}.png" class="health" />`;
+            healthImg = `<img src="images/health/${Math.min(Math.max(player.health, 0), 20)}.png" class="health" />`;
         }
         this.tooltip.setContent(`<ul><li>${headImg}</li><li>${player.name}${healthImg}${armorImg}</li>`);
     }
