@@ -47,6 +47,9 @@ class PlayerList {
         link.appendChild(span);
         const fieldset = P.sidebar.players.element;
         fieldset.appendChild(link);
+        Array.from(fieldset.getElementsByTagName("a"))
+            .sort((a, b) => a.getElementsByTagName("span")[0].textContent.localeCompare(b.getElementsByTagName("span")[0].textContent))
+            .forEach(link => fieldset.appendChild(link));
     }
     removeFromList(player) {
         const link = document.getElementById(player.uuid);
