@@ -1,10 +1,10 @@
 import { P } from '../Pl3xMap.js';
 
 class Player {
-    constructor(player) {
-        this.name = player.name;
-        this.uuid = player.uuid;
-        this.world = player.world;
+    constructor(json) {
+        this.name = json.name;
+        this.uuid = json.uuid;
+        this.world = json.world;
         this.x = 0;
         this.z = 0;
         this.armor = 0;
@@ -15,17 +15,17 @@ class Player {
             offset: [10, 0],
             pane: "nameplate"
         });
-        this.marker = L.marker(P.toLatLng(player.x, player.z), {
+        this.marker = L.marker(P.toLatLng(json.x, json.z), {
             icon: L.icon({
                 iconUrl: 'images/icon/player.png',
                 iconSize: [17, 16],
                 iconAnchor: [8, 9],
                 tooltipAnchor: [0, 0]
             }),
-            rotationAngle: (180 + player.yaw)
+            rotationAngle: (180 + json.yaw)
         });
         if (P.worldList.curWorld.player_tracker.nameplates.enabled) {
-            this.updateNameplate(player);
+            this.updateNameplate(json);
             this.marker.bindTooltip(this.tooltip);
         }
     }

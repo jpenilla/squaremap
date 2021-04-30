@@ -84,7 +84,7 @@ class PlayerList {
         // follow highlighted player
         if (this.following != null) {
             const player = this.players.get(this.following);
-            if (player == null) {
+            if (player == null || P.worldList.curWorld == null || player.world !== P.worldList.curWorld.name) {
                 this.followPlayerMarker(null);
             } else {
                 P.map.panTo(P.toLatLng(player.x, player.z));
