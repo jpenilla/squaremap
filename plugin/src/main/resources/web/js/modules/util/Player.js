@@ -41,10 +41,10 @@ class Player {
         if (P.worldList.curWorld.player_tracker.nameplates.show_heads) {
             headImg = `<img src='${this.getHeadUrl()}' class="head" />`;
         }
-        if (P.worldList.curWorld.player_tracker.nameplates.show_armor) {
+        if (P.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
             armorImg = `<img src="images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png" class="armor" />`;
         }
-        if (P.worldList.curWorld.player_tracker.nameplates.show_health) {
+        if (P.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
             healthImg = `<img src="images/health/${Math.min(Math.max(player.health, 0), 20)}.png" class="health" />`;
         }
         this.tooltip.setContent(`<ul><li>${headImg}</li><li>${player.name}${healthImg}${armorImg}</li>`);
