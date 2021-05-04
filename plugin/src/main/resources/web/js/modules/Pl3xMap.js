@@ -34,9 +34,11 @@ class Pl3xMap {
         this.init();
     }
     loop() {
-        this.tick();
+        if (document.visibilityState === 'visible') {
+            this.tick();
+            this.tick_count++;
+        }
         setTimeout(() => this.loop(), 1000);
-        this.tick_count++;
     }
     tick() {
         // tick player tracker
