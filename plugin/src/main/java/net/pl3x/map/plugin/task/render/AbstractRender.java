@@ -217,12 +217,10 @@ public abstract class AbstractRender implements Runnable {
         }
         final int blockX = chunk.getPos().getBlockX();
         final int blockZ = chunk.getPos().getBlockZ();
-        VisibilityLimit limit = mapWorld.visibilityLimit();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 if (cancelled) return;
-
-                if (limit.shouldRenderColumn(blockX + x, blockZ + z)) {
+                if (mapWorld.visibilityLimit().shouldRenderColumn(blockX + x, blockZ + z)) {
                     image.setPixel(blockX + x, blockZ + z, scanBlock(chunk, x, z, lastY));
                 }
             }
@@ -234,7 +232,9 @@ public abstract class AbstractRender implements Runnable {
         final int blockZ = chunk.getPos().getBlockZ();
         for (int x = 0; x < 16; x++) {
             if (cancelled) return;
-            image.setPixel(blockX + x, blockZ, scanBlock(chunk, x, 0, lastY));
+            if (mapWorld.visibilityLimit().shouldRenderColumn(blockX + x, blockZ)) {
+                image.setPixel(blockX + x, blockZ, scanBlock(chunk, x, 0, lastY));
+            }
         }
     }
 
