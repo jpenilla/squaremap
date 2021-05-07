@@ -6,30 +6,32 @@ import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import org.bukkit.World;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.JarURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class FileUtil {
     public static Path PLUGIN_DIR = Pl3xMapPlugin.getInstance().getDataFolder().toPath();
@@ -113,54 +115,61 @@ public class FileUtil {
         return dir;
     }
 
-    public static void extractDirFromJar(final String source, final Path destination, final StandardCopyOption copyOptions) {
-        try {
-            copyFromJar(source, destination, copyOptions);
-        } catch (URISyntaxException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void copyFromJar(String source, final Path destination, final StandardCopyOption copyOptions) throws URISyntaxException, IOException {
-        if (fileSystem == null) {
-            fileSystem = FileSystems.newFileSystem(Pl3xMapPlugin.getInstance().getClass().getResource("").toURI(), Collections.emptyMap());
-        }
-        final Path jarPath = fileSystem.getPath(source);
-        Files.walkFileTree(jarPath, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                try {
-                    Files.createDirectories(destination.resolve(jarPath.relativize(dir).toString()));
-                } catch (IllegalArgumentException e) {
-                    Logger.severe("");
-                    Logger.severe("Unable to extract web directory to disk!");
-                    Logger.severe("This is caused by a bug in Java. Please update your Java installation and try again.");
-                    Logger.severe("For more information, see https://github.com/pl3xgaming/Pl3xMap/issues/4");
-                    Logger.severe("");
-                    return FileVisitResult.TERMINATE;
-                }
-                return FileVisitResult.CONTINUE;
+    public static void extract(String inDir, File outDir, boolean replace) {
+        // https://coderanch.com/t/472574/java/extract-directory-current-jar
+        final URL dirURL = FileUtil.class.getResource(inDir);
+        final String path = inDir.substring(1);
+        if ((dirURL != null) && dirURL.getProtocol().equals("jar")) {
+            ZipFile jar;
+            try {
+                Logger.debug("Extracting " + inDir + " directory from jar...");
+                jar = ((JarURLConnection) dirURL.openConnection()).getJarFile();
+            } catch (IOException e) {
+                Logger.severe("Failed to extract directory from jar", e);
+                return;
             }
-
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Path target;
-                try {
-                    target = destination.resolve(jarPath.relativize(file).toString());
-                } catch (IllegalArgumentException ignore) {
-                    return FileVisitResult.TERMINATE;
+            final Enumeration<? extends ZipEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                final ZipEntry entry = entries.nextElement();
+                final String name = entry.getName();
+                if (!name.startsWith(path)) {
+                    continue;
                 }
-                if (copyOptions != null) {
-                    Files.copy(file, target, copyOptions);
+                final String filename = name.substring(path.length());
+                final File file = new File(outDir, filename);
+                if (!replace && file.exists()) {
+                    Logger.debug("  <yellow>exists</yellow>   " + name);
+                    continue;
+                }
+                if (entry.isDirectory()) {
+                    if (!file.exists()) {
+                        final boolean result = file.mkdir();
+                        Logger.debug((result ? "  <green>creating</green> " : "  <red>unable to create</red> ") + name);
+                    } else {
+                        Logger.debug("  <yellow>exists</yellow>   " + name);
+                    }
                 } else {
+                    Logger.debug("  <green>writing</green>  " + name);
                     try {
-                        Files.copy(file, target);
-                    } catch (FileAlreadyExistsException ignore) {
+                        final InputStream inputStream = jar.getInputStream(entry);
+                        final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
+                        final byte[] buffer = new byte[4096];
+                        int readCount;
+                        while ((readCount = inputStream.read(buffer)) > 0) {
+                            outputStream.write(buffer, 0, readCount);
+                        }
+                        outputStream.close();
+                        inputStream.close();
+                    } catch (IOException e) {
+                        Logger.severe("Failed to extract file (" + name + ") from jar!", e);
                     }
                 }
-                return FileVisitResult.CONTINUE;
             }
-        });
+        } else if (dirURL == null) {
+            throw new IllegalStateException("can't find " + inDir + " on the classpath");
+        } else {
+            throw new IllegalStateException("don't know how to handle extracting from " + dirURL);
+        }
     }
 
     public static void write(String str, Path file) {

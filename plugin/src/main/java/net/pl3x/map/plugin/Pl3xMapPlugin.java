@@ -66,8 +66,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         // this has to load after config.yml in order to know if web dir should be overwritten
         // but also before advanced.yml to ensure foliage.png and grass.png are already on disk
-        FileUtil.extractDirFromJar("web", FileUtil.WEB_DIR, Config.UPDATE_WEB_DIR ? StandardCopyOption.REPLACE_EXISTING : null);
-        FileUtil.extractDirFromJar("locale", FileUtil.LOCALE_DIR, null);
+        FileUtil.extract("/web/", FileUtil.WEB_DIR.toFile(), Config.UPDATE_WEB_DIR);
+        FileUtil.extract("/locale/", FileUtil.LOCALE_DIR.toFile(), false);
 
         Advanced.reload();
         Lang.reload();
