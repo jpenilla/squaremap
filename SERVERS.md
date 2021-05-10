@@ -11,4 +11,4 @@
 |Silver Springs|[https://map.silverspringsmc.org](https://map.silverspringsmc.org)|
 |[NMLMC](https://nmlmc.com)|[https://survival.nmlmc.com](https://survival.nmlmc.com)|
 
-If you'd like your server listed here, submit a PR or talk to BillyGalbreath in [Discord](https://discord.gg/mtAAnkk).
+If you'd like your server listed here, submit a PR or talk to BillyGalbreath in [Discord](https://discord.gg/B8WpDPXeBh).
