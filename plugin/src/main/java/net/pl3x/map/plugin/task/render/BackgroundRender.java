@@ -1,5 +1,7 @@
 package net.pl3x.map.plugin.task.render;
 
+import java.util.ArrayList;
+import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -32,13 +34,14 @@ public final class BackgroundRender extends AbstractRender {
 
     @Override
     protected void render() {
-
+        long time = System.currentTimeMillis();
         final Set<ChunkCoordinate> chunks = new HashSet<>();
         while (mapWorld.hasModifiedChunks() && chunks.size() < mapWorld.config().BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL) {
             chunks.add(mapWorld.nextModifiedChunk());
         }
         final Map<Region, List<ChunkCoordinate>> coordMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
 
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
         coordMap.forEach((region, chunkCoords) -> {
             final Image img = new Image(region, worldTilesDir, mapWorld.config().ZOOM_MAX);
 
@@ -46,7 +49,12 @@ public final class BackgroundRender extends AbstractRender {
                     mapSingleChunk(img, coord.getX(), coord.getZ())).toArray(CompletableFuture[]::new));
 
             future.whenComplete((result, throwable) -> mapWorld.saveImage(img));
+            futures.add(future);
         });
-
+        if (!futures.isEmpty()) {
+            CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
+            Logger.debug(String.format("Finished background render cycle in %.2f seconds",
+                    (double) (System.currentTimeMillis() - time) / 1000.0D));
+        }
     }
 }
