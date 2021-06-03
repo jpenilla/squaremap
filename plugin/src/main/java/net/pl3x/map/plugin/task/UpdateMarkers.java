@@ -15,8 +15,10 @@ import net.pl3x.map.api.marker.MultiPolygon;
 import net.pl3x.map.api.marker.Polygon;
 import net.pl3x.map.api.marker.Polyline;
 import net.pl3x.map.api.marker.Rectangle;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.util.FileUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -82,8 +84,10 @@ public final class UpdateMarkers extends BukkitRunnable {
             }
         });
 
-        final Path file = FileUtil.getWorldFolder(this.mapWorld.bukkit()).resolve("markers.json");
-        FileUtil.write(gson.toJson(layers), file);
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(Pl3xMapPlugin.getInstance(), () -> {
+            Path file = FileUtil.getWorldFolder(this.mapWorld.bukkit()).resolve("markers.json");
+            FileUtil.write(gson.toJson(layers), file);
+        });
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {
