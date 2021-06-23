@@ -12,8 +12,7 @@ dependencies {
     implementation("net.kyori", "adventure-text-minimessage", "4.1.0-SNAPSHOT")
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
     implementation("org.bstats", "bstats-bukkit", "1.8")
-    compileOnly("com.destroystokyo.paper", "paper", "1.16.5-R0.1-SNAPSHOT")
-    compileOnly("com.rylinaux", "PlugMan", "2.1.7")
+    compileOnly("io.papermc.paper", "paper", "1.17-R0.1-SNAPSHOT")
 }
 
 tasks {
@@ -40,13 +39,13 @@ tasks {
 
 spigot {
     name = rootProject.name
-    apiVersion = "1.16"
+    apiVersion = "1.17"
     website = rootProject.ext["url"].toString()
     authors("BillyGalbreath", "jmp")
     softDepends("PlugMan")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 }

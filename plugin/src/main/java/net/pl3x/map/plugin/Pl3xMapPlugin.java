@@ -54,12 +54,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
             return;
         }
 
-        if (getServer().getPluginManager().isPluginEnabled("PlugMan")) {
-            getLogger().warning("PlugMan is detected to be installed!");
-            com.rylinaux.plugman.PlugMan.getInstance().getIgnoredPlugins().add(getName());
-            getLogger().warning("Forcing PlugMan to ignore " + getName());
-        }
-
         this.audiences = BukkitAudiences.create(this);
 
         Config.reload();

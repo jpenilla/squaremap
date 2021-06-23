@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compileOnlyApi("com.destroystokyo.paper", "paper-api", "1.16.5-R0.1-SNAPSHOT")
+    compileOnlyApi("io.papermc.paper", "paper-api", "1.17-R0.1-SNAPSHOT")
     compileOnlyApi("org.checkerframework", "checker-qual", "3.9.0")
 }
 
@@ -26,6 +26,6 @@ publishing {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 }

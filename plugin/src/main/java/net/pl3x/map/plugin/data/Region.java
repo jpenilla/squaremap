@@ -45,10 +45,9 @@ public final class Region {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Region)) {
+        if (!(o instanceof Region other)) {
             return false;
         }
-        Region other = (Region) o;
         return this.x == other.x && this.z == other.z;
     }
 

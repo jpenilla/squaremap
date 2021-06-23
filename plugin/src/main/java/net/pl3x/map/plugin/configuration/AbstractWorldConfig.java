@@ -1,8 +1,8 @@
 package net.pl3x.map.plugin.configuration;
 
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.server.level.WorldServer;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -54,8 +54,7 @@ abstract class AbstractWorldConfig {
                 config.yaml.getList("world-settings.default." + path));
     }
 
-    @NonNull
-    <T> Map<String, T> getMap(final @NonNull String path, final @Nullable Map<String, T> def) {
+    @NonNull <T> Map<String, T> getMap(final @NonNull String path, final @Nullable Map<String, T> def) {
         final Map<String, T> fallback = config.getMap("world-settings.default." + path, def);
         final Map<String, T> value = config.getMap("world-settings." + worldName + "." + path, null);
         return value.isEmpty() ? fallback : value;

@@ -13,6 +13,7 @@ public interface VisibilityLimit {
      * <p>If the list is empty, the entire world is drawn.
      *
      * <p>This map is mutable, so you can add and remove visibility shapes.
+     *
      * @return The shapes.
      */
     @NonNull List<VisibilityShape> getShapes();
@@ -20,6 +21,7 @@ public interface VisibilityLimit {
     /**
      * Returns whether the given block is within any of the visibility limits (see {@link #getShapes()}).
      * If there are not visibility limits defined, this method always returns true.
+     *
      * @param blockX X coord of the block.
      * @param blockZ Z coord of the block.
      * @return True is the location is visible on the map, false otherwise.

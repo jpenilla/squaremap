@@ -1,10 +1,10 @@
 package net.pl3x.map.plugin.configuration;
 
-import net.minecraft.server.v1_16_R3.BiomeBase;
-import net.minecraft.server.v1_16_R3.Block;
-import net.minecraft.server.v1_16_R3.Blocks;
-import net.minecraft.server.v1_16_R3.IRegistry;
-import net.minecraft.server.v1_16_R3.MinecraftKey;
+import net.minecraft.core.IRegistry;
+import net.minecraft.resources.MinecraftKey;
+import net.minecraft.world.level.biome.BiomeBase;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.pl3x.map.plugin.data.BiomeColors;
 import net.pl3x.map.plugin.util.Colors;
 import org.bukkit.Bukkit;
@@ -53,7 +53,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
                 "minecraft:fern",
                 "minecraft:grass",
                 "minecraft:large_fern"
-        )).forEach(block -> invisibleBlocks.add(IRegistry.BLOCK.get(new MinecraftKey(block.toString()))));
+        )).forEach(block -> invisibleBlocks.add(IRegistry.W.get(new MinecraftKey(block.toString())))); // TODO Registry.BLOCK
     }
 
     public final List<Block> iterateUpBaseBlocks = new ArrayList<>();
@@ -73,7 +73,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
                 "minecraft:nether_quartz_ore",
                 "minecraft:magma_block",
                 "minecraft:basalt"
-        )).forEach(block -> iterateUpBaseBlocks.add(IRegistry.BLOCK.get(new MinecraftKey(block.toString()))));
+        )).forEach(block -> iterateUpBaseBlocks.add(IRegistry.W.get(new MinecraftKey(block.toString())))); // TODO Registry.BLOCK
     }
 
     public final Map<BiomeBase, Integer> COLOR_OVERRIDES_BIOME_FOLIAGE = new HashMap<>();
@@ -157,8 +157,8 @@ public class WorldAdvanced extends AbstractWorldConfig {
                 Map.entry("minecraft:lava", "#EA5C0F"),
                 Map.entry("minecraft:glass", "#FFFFFF")
         )).forEach((key, color) -> {
-            final Block block = IRegistry.BLOCK.get(new MinecraftKey(key));
-            if (block != Blocks.AIR) {
+            final Block block = IRegistry.W.get(new MinecraftKey(key)); // TODO Registry.BLOCK
+            if (block != Blocks.a) { // TODO Blocks.AIR
                 COLOR_OVERRIDES_BLOCKS.put(block, Colors.parseHex(color));
             }
         });
