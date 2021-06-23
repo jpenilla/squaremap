@@ -1,6 +1,5 @@
 package net.pl3x.map.plugin;
 
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
@@ -26,7 +25,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 
 public final class Pl3xMapPlugin extends JavaPlugin {
@@ -38,7 +36,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private UpdatePlayers updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
     private WorldEventListener worldEventListener;
-    private BukkitAudiences audiences;
 
     public Pl3xMapPlugin() {
         instance = this;
@@ -56,11 +53,9 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         if (getServer().getPluginManager().isPluginEnabled("PlugMan")) {
             getLogger().warning("PlugMan is detected to be installed!");
-            com.rylinaux.plugman.PlugMan.getInstance().getIgnoredPlugins().add(getName());
+            //com.rylinaux.plugman.PlugMan.getInstance().getIgnoredPlugins().add(getName());
             getLogger().warning("Forcing PlugMan to ignore " + getName());
         }
-
-        this.audiences = BukkitAudiences.create(this);
 
         Config.reload();
 
@@ -186,10 +181,6 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
     public @NonNull Pl3xMap api() {
         return this.pl3xMap;
-    }
-
-    public @NonNull BukkitAudiences audiences() {
-        return this.audiences;
     }
 
     public PlayerManager playerManager() {

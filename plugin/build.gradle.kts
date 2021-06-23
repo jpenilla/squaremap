@@ -1,26 +1,27 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "6.1.0"
-    id("kr.entree.spigradle") version "2.2.3"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("net.minecrell.plugin-yml.bukkit") version "0.4.0"
+    id("xyz.jpenilla.run-paper") version "1.0.3"
 }
 
 dependencies {
     implementation(project(":pl3xmap-api"))
-    val cloudVersion = "1.4.0"
+    val cloudVersion = "1.5.0-SNAPSHOT"
     implementation("cloud.commandframework", "cloud-paper", cloudVersion)
     implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
-    implementation("net.kyori", "adventure-platform-bukkit", "4.0.0-SNAPSHOT")
     implementation("net.kyori", "adventure-text-minimessage", "4.1.0-SNAPSHOT")
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
-    implementation("org.bstats", "bstats-bukkit", "1.8")
-    compileOnly("com.destroystokyo.paper", "paper", "1.16.5-R0.1-SNAPSHOT")
-    compileOnly("com.rylinaux", "PlugMan", "2.1.7")
+    implementation("org.bstats", "bstats-bukkit", "2.2.1")
+    compileOnly("io.papermc.paper", "paper", "1.17-R0.1-SNAPSHOT")
+    //compileOnly("com.rylinaux", "PlugMan", "2.1.7")
 }
 
 tasks {
+    jar {
+        archiveClassifier.set("unshaded")
+    }
     shadowJar {
-        archiveClassifier.set("")
-        archiveFileName.set("${rootProject.name}-${rootProject.version}.jar")
-        destinationDirectory.set(rootProject.rootDir.resolve("build").resolve("libs"))
+        archiveClassifier.set(null as String?)
         from(rootProject.projectDir.resolve("LICENSE"))
         minimize {
             exclude { it.moduleName == "pl3xmap-api" }
@@ -29,24 +30,28 @@ tasks {
         listOf(
             "cloud.commandframework",
             "io.leangen.geantyref",
-            "net.kyori",
+            "net.kyori.adventure.text.minimessage",
             "org.bstats"
         ).forEach { relocate(it, "${rootProject.group}.plugin.lib.$it") }
     }
     build {
         dependsOn(shadowJar)
     }
+    runServer {
+        minecraftVersion("1.17")
+    }
 }
 
-spigot {
+bukkit {
+    main = "net.pl3x.map.plugin.Pl3xMapPlugin"
     name = rootProject.name
-    apiVersion = "1.16"
-    website = rootProject.ext["url"].toString()
-    authors("BillyGalbreath", "jmp")
-    softDepends("PlugMan")
+    apiVersion = "1.17"
+    website = project.property("githubUrl") as String
+    authors = listOf("BillyGalbreath", "jmp")
+    softDepend = listOf("PlugMan")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 }

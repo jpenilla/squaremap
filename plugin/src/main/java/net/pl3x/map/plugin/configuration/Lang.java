@@ -203,13 +203,11 @@ public class Lang {
     }
 
     public static void send(final @NonNull CommandSender recipient, final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
-        final Audience audience = Pl3xMapPlugin.getInstance().audiences().sender(recipient);
-        audience.sendMessage(MiniMessage.get().parse(miniMessage, placeholders));
+        recipient.sendMessage(MiniMessage.get().parse(miniMessage, placeholders));
     }
 
     public static void send(final @NonNull CommandSender recipient, final @NonNull String miniMessage) {
-        final Audience audience = Pl3xMapPlugin.getInstance().audiences().sender(recipient);
-        audience.sendMessage(MiniMessage.get().parse(miniMessage));
+        recipient.sendMessage(MiniMessage.get().parse(miniMessage));
     }
 
     @Target(ElementType.FIELD)

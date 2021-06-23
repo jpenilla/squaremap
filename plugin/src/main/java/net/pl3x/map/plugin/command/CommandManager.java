@@ -6,6 +6,7 @@ import cloud.commandframework.bukkit.CloudBukkitCapabilities;
 import cloud.commandframework.exceptions.CommandExecutionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.meta.CommandMeta;
+import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.collect.ImmutableList;
@@ -82,7 +83,7 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
                                 .clickEvent(ClickEvent.runCommand(String.format("/%s help", Config.MAIN_COMMAND_LABEL))))
                         .append(component)
                         .build())
-                .apply(this, plugin.audiences()::sender);
+                .apply(this, AudienceProvider.nativeAudience());
 
         final var minecraftExtrasDefaultHandler = Objects.requireNonNull(this.getExceptionHandler(CommandExecutionException.class));
         this.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {

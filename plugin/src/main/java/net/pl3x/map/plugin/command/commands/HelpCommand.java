@@ -3,6 +3,7 @@ package net.pl3x.map.plugin.command.commands;
 import cloud.commandframework.CommandHelpHandler;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -27,7 +28,7 @@ public final class HelpCommand extends Pl3xMapCommand {
         super(plugin, commandManager);
         this.minecraftHelp = new MinecraftHelp<>(
                 String.format("/%s help", Config.MAIN_COMMAND_LABEL),
-                plugin.audiences()::sender,
+                AudienceProvider.nativeAudience(),
                 commandManager
         );
         this.minecraftHelp.setHelpColors(MinecraftHelp.HelpColors.of(
