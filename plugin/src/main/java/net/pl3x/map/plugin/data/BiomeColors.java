@@ -3,17 +3,17 @@ package net.pl3x.map.plugin.data;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.server.v1_16_R3.BiomeBase;
-import net.minecraft.server.v1_16_R3.BiomeFog;
-import net.minecraft.server.v1_16_R3.Block;
-import net.minecraft.server.v1_16_R3.BlockPosition;
-import net.minecraft.server.v1_16_R3.Blocks;
-import net.minecraft.server.v1_16_R3.Chunk;
-import net.minecraft.server.v1_16_R3.IBlockData;
-import net.minecraft.server.v1_16_R3.IRegistry;
-import net.minecraft.server.v1_16_R3.Material;
-import net.minecraft.server.v1_16_R3.MathHelper;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.world.level.biome.BiomeBase;
+import net.minecraft.world.level.biome.BiomeFog;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.core.BlockPosition;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.chunk.Chunk;
+import net.minecraft.world.level.block.state.IBlockData;
+import net.minecraft.core.IRegistry;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.util.MathHelper;
+import net.minecraft.server.level.WorldServer;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.ReflectionUtil;
@@ -33,32 +33,32 @@ import java.util.function.BiFunction;
 
 public final class BiomeColors {
     private static final Set<Block> grassColorBlocks = ImmutableSet.of(
-            Blocks.GRASS_BLOCK,
-            Blocks.GRASS,
-            Blocks.TALL_GRASS,
-            Blocks.FERN,
-            Blocks.LARGE_FERN,
-            Blocks.POTTED_FERN,
-            Blocks.SUGAR_CANE
+            Blocks.i, // TODO GRASS_BLOCK,
+            Blocks.ax, // TODO GRASS,
+            Blocks.hm, // TODO TALL_GRASS,
+            Blocks.aY, // TODO FERN,
+            Blocks.hn, // TODO LARGE_FERN,
+            Blocks.eP, // TODO POTTED_FERN,
+            Blocks.cP // TODO SUGAR_CANE
     );
 
     private static final Set<Block> foliageColorBlocks = ImmutableSet.of(
-            Blocks.VINE,
-            Blocks.OAK_LEAVES,
-            Blocks.JUNGLE_LEAVES,
-            Blocks.ACACIA_LEAVES,
-            Blocks.DARK_OAK_LEAVES
+            Blocks.dX, // TODO VINE,
+            Blocks.ak, // TODO OAK_LEAVES,
+            Blocks.an, // TODO JUNGLE_LEAVES,
+            Blocks.ao, // TODO ACACIA_LEAVES,
+            Blocks.ap // TODO DARK_OAK_LEAVES
     );
 
     private static final Set<Block> waterColorBlocks = ImmutableSet.of(
-            Blocks.WATER,
-            Blocks.BUBBLE_COLUMN,
-            Blocks.CAULDRON
+            Blocks.A, // TODO WATER,
+            Blocks.lq, // TODO BUBBLE_COLUMN,
+            Blocks.el // TODO WATER_CAULDRON
     );
 
     private static final Set<Material> waterColorMaterials = ImmutableSet.of(
-            Material.WATER_PLANT,
-            Material.REPLACEABLE_WATER_PLANT
+            Material.f, // TODO WATER_PLANT,
+            Material.g // TODO REPLACEABLE_WATER_PLANT
     );
 
     private static final int[] mapGrass;
@@ -99,7 +99,7 @@ public final class BiomeColors {
             grassColors.put(biome, BiomeEffectsReflection.grassColor(biome)
                     .orElse(getDefaultGrassColor(temperature, humidity)));
             foliageColors.put(biome, BiomeEffectsReflection.foliageColor(biome)
-                    .orElse(Colors.mix(Colors.leavesMapColor().rgb, getDefaultFoliageColor(temperature, humidity), 0.85f)));
+                    .orElse(Colors.mix(Colors.leavesMapColor(), getDefaultFoliageColor(temperature, humidity), 0.85f)));
             waterColors.put(biome, BiomeEffectsReflection.waterColor(biome));
         }
 
@@ -184,7 +184,7 @@ public final class BiomeColors {
         int rgb, r = 0, g = 0, b = 0, count = 0;
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
-                sharedBlockPos.setValues(x, pos.getY(), z);
+                sharedBlockPos.c(x, pos.getY(), z); // TODO set
                 final BiomeBase biome = this.getBiomeWithCaching(sharedBlockPos);
                 rgb = colorSampler.apply(biome, this.sharedBlockPos);
                 r += (rgb >> 16) & 0xFF;
@@ -210,22 +210,22 @@ public final class BiomeColors {
     }
 
     public static IRegistry<BiomeBase> getBiomeRegistry(WorldServer world) {
-        return world.r().b(IRegistry.ay);
+        return world.t().b(IRegistry.aO); // TODO ServerLevel.registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY)
     }
 
     private static int modifiedGrassColor(final @NonNull BiomeBase biome, final @NonNull BlockPosition pos, final int color) {
         BiomeFog.GrassColor modifier = BiomeEffectsReflection.grassColorModifier(biome);
         switch (modifier) {
-            case NONE:
+            case a: // TODO NONE:
                 return color;
-            case SWAMP:
+            case c: // TODO SWAMP:
                 // swamps have 2 grass colors, depends on sample from noise generator
                 double sample = BiomeBase.f.a(pos.getX() * 0.0225, pos.getZ() * 0.0225, false);
                 if (sample < -0.1) {
                     return 5011004;
                 }
                 return 6975545;
-            case DARK_FOREST:
+            case b: // TODO DARK_FOREST:
                 return (color & 0xFEFEFE) + 2634762 >> 1;
             default:
                 throw new IllegalArgumentException("Unknown or invalid grass color modifier: " + modifier.getName());
@@ -277,7 +277,7 @@ public final class BiomeColors {
         }
 
         private static BiomeFog biomeEffects(BiomeBase biome) {
-            return biome.l();
+            return biome.l(); // TODO BiomeBase.getSpecialEffects
         }
     }
 }

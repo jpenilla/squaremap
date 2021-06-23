@@ -1,17 +1,13 @@
 package net.pl3x.map.plugin.configuration;
 
 import com.google.common.collect.ImmutableMap;
-
-import net.minecraft.server.v1_16_R3.MathHelper;
-import net.pl3x.map.api.visibilitylimit.VisibilityShape;
-import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
-
+import net.minecraft.util.MathHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,7 +178,7 @@ public class WorldConfig extends AbstractWorldConfig {
 
     @SuppressWarnings("unchecked") // Safe, as YAML can only store dicts of <String, object>
     private void visibilityLimitSettings() {
-        VISIBILITY_LIMITS = (List<Map<String, Object>>) this.getList("map.visibility-limits", Arrays.asList(
+        VISIBILITY_LIMITS = (List<Map<String, Object>>) this.getList("map.visibility-limits", Collections.singletonList(
                 ImmutableMap.of("type", "world-border", "enabled", false)));
     }
 

@@ -13,7 +13,6 @@ dependencies {
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
     implementation("org.bstats", "bstats-bukkit", "2.2.1")
     compileOnly("io.papermc.paper", "paper", "1.17-R0.1-SNAPSHOT")
-    //compileOnly("com.rylinaux", "PlugMan", "2.1.7")
 }
 
 tasks {
@@ -22,6 +21,8 @@ tasks {
     }
     shadowJar {
         archiveClassifier.set(null as String?)
+        archiveFileName.set("${rootProject.name}-${rootProject.version}.jar")
+        destinationDirectory.set(rootProject.rootDir.resolve("build").resolve("libs"))
         from(rootProject.projectDir.resolve("LICENSE"))
         minimize {
             exclude { it.moduleName == "pl3xmap-api" }
@@ -48,10 +49,4 @@ bukkit {
     apiVersion = "1.17"
     website = project.property("githubUrl") as String
     authors = listOf("BillyGalbreath", "jmp")
-    softDepend = listOf("PlugMan")
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
 }

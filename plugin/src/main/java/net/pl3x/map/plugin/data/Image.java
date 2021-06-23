@@ -1,6 +1,6 @@
 package net.pl3x.map.plugin.data;
 
-import net.minecraft.server.v1_16_R3.MathHelper;
+import net.minecraft.util.MathHelper;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;

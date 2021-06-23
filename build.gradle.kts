@@ -12,9 +12,16 @@ allprojects {
 subprojects {
     apply<JavaLibraryPlugin>()
 
+    java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(16))
+        }
+    }
+
     tasks {
         withType<JavaCompile> {
             options.encoding = Charsets.UTF_8.name()
+            options.release.set(16)
         }
         withType<Javadoc> {
             options.encoding = Charsets.UTF_8.name()

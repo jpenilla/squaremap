@@ -1,11 +1,11 @@
 package net.pl3x.map.plugin.data;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.server.v1_16_R3.Block;
-import net.minecraft.server.v1_16_R3.BlockCrops;
-import net.minecraft.server.v1_16_R3.BlockStem;
-import net.minecraft.server.v1_16_R3.Blocks;
-import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BlockCrops;
+import net.minecraft.world.level.block.BlockStem;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.IBlockData;
 import net.pl3x.map.plugin.util.Colors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -24,9 +24,9 @@ public final class BlockColors {
     private @NonNull Map<Block, Function<IBlockData, Integer>> loadDynamicColors() {
         final ImmutableMap.Builder<Block, Function<IBlockData, Integer>> dynamicColorBuilder = ImmutableMap.builder();
 
-        dynamicColorBuilder.put(Blocks.MELON_STEM, BlockColors::melonAndPumpkinStem);
-        dynamicColorBuilder.put(Blocks.PUMPKIN_STEM, BlockColors::melonAndPumpkinStem);
-        dynamicColorBuilder.put(Blocks.WHEAT, BlockColors::wheat);
+        dynamicColorBuilder.put(Blocks.dW, BlockColors::melonAndPumpkinStem); // TODO MELON_STEM
+        dynamicColorBuilder.put(Blocks.dV, BlockColors::melonAndPumpkinStem); // TODO PUMPKIN_STEM
+        dynamicColorBuilder.put(Blocks.cd, BlockColors::wheat); // TODO WHEAT
 
         return dynamicColorBuilder.build();
     }
@@ -55,7 +55,7 @@ public final class BlockColors {
     }
 
     private static int melonAndPumpkinStem(final @NonNull IBlockData state) {
-        int age = state.get(BlockStem.AGE);
+        int age = state.get(BlockStem.b); // TODO StemBlock.AGE
         int k = age * 32;
         int l = 255 - age * 8;
         int m = age * 4;
@@ -63,8 +63,8 @@ public final class BlockColors {
     }
 
     private static int wheat(final @NonNull IBlockData state) {
-        float factor = (state.get(BlockCrops.AGE) + 1) / 8F;
-        return Colors.mix(Colors.plantsMapColor().rgb, 0xDCBB65, factor);
+        float factor = (state.get(BlockCrops.d) + 1) / 8F; // TODO CropBlock.AGE
+        return Colors.mix(Colors.plantsMapColor(), 0xDCBB65, factor);
     }
 
 }

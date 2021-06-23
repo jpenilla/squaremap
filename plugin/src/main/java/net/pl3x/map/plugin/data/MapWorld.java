@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.server.v1_16_R3.IBlockData;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.world.level.block.state.IBlockData;
+import net.minecraft.server.level.WorldServer;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Registry;
 import net.pl3x.map.plugin.Logger;
@@ -20,9 +20,10 @@ import net.pl3x.map.plugin.task.UpdateMarkers;
 import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
 import net.pl3x.map.plugin.task.render.FullRender;
+import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
 
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.FileReader;
@@ -220,7 +221,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         if (special != -1) {
             return special;
         }
-        return state.d(null, null).rgb;
+        return Colors.rgb(state.d(null, null)); // TODO BlockBehavior.getMapColor
     }
 
     public boolean isRendering() {

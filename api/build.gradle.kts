@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compileOnlyApi("com.destroystokyo.paper", "paper-api", "1.16.5-R0.1-SNAPSHOT")
+    compileOnlyApi("io.papermc.paper", "paper-api", "1.17-R0.1-SNAPSHOT")
     compileOnlyApi("org.checkerframework", "checker-qual", "3.15.0")
 }
 
@@ -23,9 +23,4 @@ publishing {
         url = uri("https://repo.pl3x.net/snapshots")
         credentials(PasswordCredentials::class)
     }
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }

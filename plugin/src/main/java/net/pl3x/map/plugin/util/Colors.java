@@ -1,7 +1,10 @@
 package net.pl3x.map.plugin.util;
 
-import net.minecraft.server.v1_16_R3.Material;
-import net.minecraft.server.v1_16_R3.MaterialMapColor;
+import io.undertow.io.BlockingSenderImpl;
+import net.minecraft.world.level.block.BlockGrass;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialMapColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class Colors {
@@ -46,28 +49,31 @@ public final class Colors {
         return (0xFF << 24 | r << 16 | g << 8 | b);
     }
 
-    public static @NonNull MaterialMapColor grassMapColor() {
-        return Material.GRASS.h();
+    public static int grassMapColor() {
+        return rgb(Material.u.h()); // TODO GRASS Material.getColor
     }
 
-    public static @NonNull MaterialMapColor leavesMapColor() {
-        return Material.LEAVES.h();
+    public static int leavesMapColor() {
+        return rgb(Material.F.h()); // TODO LEAVES Material.getColor
     }
 
-    public static @NonNull MaterialMapColor plantsMapColor() {
-        return Material.PLANT.h();
+    public static int plantsMapColor() {
+        return rgb(Material.o.h()); // TODO PLANT Material.getColor
     }
 
-    public static @NonNull MaterialMapColor waterMapColor() {
-        return Material.WATER.h();
+    public static int waterMapColor() {
+        return rgb(Material.f.h()); // TODO WATER Material.getColor
     }
 
-    @SuppressWarnings("SameReturnValue")
-    public static @NonNull MaterialMapColor clearMapColor() {
-        return MaterialMapColor.b;
+    public static int clearMapColor() {
+        return rgb(MaterialMapColor.b); // TODO MaterialColor.NONE
     }
 
     public static Integer parseHex(final @NonNull String color) {
         return (int) Long.parseLong(color.replace("#", ""), 16);
+    }
+
+    public static int rgb(MaterialMapColor color) {
+        return color.al; // rgb
     }
 }

@@ -2,20 +2,20 @@ package net.pl3x.map.plugin.task.render;
 
 import com.mojang.datafixers.util.Either;
 import net.kyori.adventure.text.minimessage.Template;
-import net.minecraft.server.v1_16_R3.Block;
-import net.minecraft.server.v1_16_R3.BlockPosition;
-import net.minecraft.server.v1_16_R3.BlockStainedGlass;
-import net.minecraft.server.v1_16_R3.Blocks;
-import net.minecraft.server.v1_16_R3.Chunk;
-import net.minecraft.server.v1_16_R3.ChunkProviderServer;
-import net.minecraft.server.v1_16_R3.EnumDirection;
-import net.minecraft.server.v1_16_R3.FluidType;
-import net.minecraft.server.v1_16_R3.FluidTypes;
-import net.minecraft.server.v1_16_R3.HeightMap;
-import net.minecraft.server.v1_16_R3.IBlockData;
-import net.minecraft.server.v1_16_R3.IChunkAccess;
-import net.minecraft.server.v1_16_R3.PlayerChunk;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.core.BlockPosition;
+import net.minecraft.core.EnumDirection;
+import net.minecraft.server.level.ChunkProviderServer;
+import net.minecraft.server.level.PlayerChunk;
+import net.minecraft.server.level.WorldServer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BlockStainedGlass;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.IBlockData;
+import net.minecraft.world.level.chunk.Chunk;
+import net.minecraft.world.level.chunk.IChunkAccess;
+import net.minecraft.world.level.levelgen.HeightMap;
+import net.minecraft.world.level.material.FluidType;
+import net.minecraft.world.level.material.FluidTypes;
 import net.pl3x.map.api.Pair;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -27,10 +27,8 @@ import net.pl3x.map.plugin.data.Region;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
-import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
-
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -157,7 +155,7 @@ public abstract class AbstractRender implements Runnable {
                     continue;
                 }
 
-                net.minecraft.server.v1_16_R3.Chunk chunk;
+                net.minecraft.world.level.chunk.Chunk chunk;
                 if (chunkZ == startChunkZ) {
                     // this is the top line of the image, we need to
                     // scan the bottom line of the region to the north
@@ -180,7 +178,7 @@ public abstract class AbstractRender implements Runnable {
         return CompletableFuture.runAsync(() -> {
             int[] lastY = new int[16];
 
-            net.minecraft.server.v1_16_R3.Chunk chunk;
+            net.minecraft.world.level.chunk.Chunk chunk;
 
             // try scanning south row of northern chunk to get proper yDiff
             chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
@@ -215,8 +213,8 @@ public abstract class AbstractRender implements Runnable {
         while (mapWorld.rendersPaused()) {
             sleep(500);
         }
-        final int blockX = chunk.getPos().getBlockX();
-        final int blockZ = chunk.getPos().getBlockZ();
+        final int blockX = chunk.getPos().d(); // TODO getMinBlockX()
+        final int blockZ = chunk.getPos().e(); // TODO getMinBlockZ()
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 if (cancelled) return;
@@ -228,8 +226,8 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private void scanTopRow(Image image, int[] lastY, Chunk chunk) {
-        final int blockX = chunk.getPos().getBlockX();
-        final int blockZ = chunk.getPos().getBlockZ();
+        final int blockX = chunk.getPos().d(); // TODO getMinBlockX()
+        final int blockZ = chunk.getPos().e(); // TODO getMinBlockZ()
         for (int x = 0; x < 16; x++) {
             if (cancelled) return;
             if (mapWorld.visibilityLimit().shouldRenderColumn(blockX + x, blockZ)) {
@@ -243,9 +241,13 @@ public abstract class AbstractRender implements Runnable {
         final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
         for (int x = 0; x < 16; x++) {
             if (cancelled) return lastY;
-            final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, x, 15) + 1;
-            int height = mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.getWorld().getBuildHeight() : mapWorld.config().MAP_MAX_HEIGHT;
-            mutablePos.setValues(chunk.getPos().getBlockX() + x, Math.min(yDiff, height), chunk.getPos().getBlockZ() + 15);
+            final int yDiff = chunk.getHighestBlock(HeightMap.Type.b, x, 15) + 1; // TODO WORLD_SURFACE
+            int height = mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.getWorld().getLogicalHeight() : mapWorld.config().MAP_MAX_HEIGHT;
+            mutablePos.c(// TODO set
+                    chunk.getPos().d() + x, // TODO getMinBlockX()
+                    Math.min(yDiff, height),
+                    chunk.getPos().e() + 15 // TODO getMinBlockZ()
+            );
             final IBlockData state = mapWorld.config().MAP_ITERATE_UP ? iterateUp(chunk, mutablePos) : iterateDown(chunk, mutablePos);
             if (mapWorld.config().MAP_GLASS_CLEAR && isGlass(state)) {
                 handleGlass(chunk, mutablePos);
@@ -256,26 +258,26 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private int scanBlock(Chunk chunk, int imgX, int imgZ, int[] lastY) {
-        int blockX = chunk.getPos().getBlockX() + imgX;
-        int blockZ = chunk.getPos().getBlockZ() + imgZ;
+        int blockX = chunk.getPos().d() + imgX; // TODO getMinBlockX()
+        int blockZ = chunk.getPos().e() + imgZ; // TODO getMinBlockZ()
 
         IBlockData state;
         final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
 
-        final int yDiff = chunk.getHighestBlock(HeightMap.Type.WORLD_SURFACE, imgX, imgZ) + 1;
-        int height = mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.getWorld().getBuildHeight() : mapWorld.config().MAP_MAX_HEIGHT;
-        mutablePos.setValues(blockX, Math.min(yDiff, height), blockZ);
+        final int yDiff = chunk.getHighestBlock(HeightMap.Type.b, imgX, imgZ) + 1; // TODO WORLD_SURFACE
+        int height = mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.getWorld().getLogicalHeight() : mapWorld.config().MAP_MAX_HEIGHT;
+        mutablePos.c(blockX, Math.min(yDiff, height), blockZ); // TODO set
 
         if (yDiff > 1) {
             state = mapWorld.config().MAP_ITERATE_UP ? iterateUp(chunk, mutablePos) : iterateDown(chunk, mutablePos);
         } else {
             // no blocks found, show invisible/air
-            return Colors.clearMapColor().rgb;
+            return Colors.clearMapColor();
         }
 
         if (mapWorld.config().MAP_GLASS_CLEAR && isGlass(state)) {
             final int glassColor = mapWorld.getMapColor(state);
-            final float glassAlpha = state.getBlock() == Blocks.GLASS ? 0.25F : 0.5F;
+            final float glassAlpha = state.getBlock() == Blocks.au ? 0.25F : 0.5F; // TODO GLASS
             state = handleGlass(chunk, mutablePos);
             final int color = getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
             return Colors.mix(color, glassColor, glassAlpha);
@@ -311,41 +313,41 @@ public abstract class AbstractRender implements Runnable {
         IBlockData state;
         if (chunk.getWorld().getDimensionManager().hasCeiling()) {
             do {
-                mutablePos.c(EnumDirection.DOWN);
+                mutablePos.c(EnumDirection.a); // TODO DOWN
                 state = chunk.getType(mutablePos);
             } while (!state.isAir() && mutablePos.getY() > 0);
         }
         do {
-            mutablePos.c(EnumDirection.DOWN);
+            mutablePos.c(EnumDirection.a); // TODO DOWN
             state = chunk.getType(mutablePos);
-        } while ((mapWorld.getMapColor(state) == Colors.clearMapColor().rgb || mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        } while ((mapWorld.getMapColor(state) == Colors.clearMapColor() || mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
         return state;
     }
 
     private @NonNull IBlockData iterateUp(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
         IBlockData state;
         int height = mutablePos.getY();
-        mutablePos.setY(0);
+        mutablePos.t(0); // TODO setY
         if (chunk.getWorld().getDimensionManager().hasCeiling()) {
             do {
-                mutablePos.c(EnumDirection.UP);
+                mutablePos.c(EnumDirection.b); // TODO UP
                 state = chunk.getType(mutablePos);
             } while (!state.isAir() && mutablePos.getY() < height);
             do {
-                mutablePos.c(EnumDirection.UP);
+                mutablePos.c(EnumDirection.b); // TODO UP
                 state = chunk.getType(mutablePos);
             } while (!mapWorld.advanced().iterateUpBaseBlocks.contains(state.getBlock()) && mutablePos.getY() < height);
         }
         do {
-            mutablePos.c(EnumDirection.DOWN);
+            mutablePos.c(EnumDirection.a); // TODO DOWN
             state = chunk.getType(mutablePos);
-        } while ((mapWorld.getMapColor(state) == Colors.clearMapColor().rgb || mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        } while ((mapWorld.getMapColor(state) == Colors.clearMapColor() || mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
         return state;
     }
 
     private static boolean isGlass(final @NonNull IBlockData state) {
         final Block block = state.getBlock();
-        return block == Blocks.GLASS || block instanceof BlockStainedGlass;
+        return block == Blocks.au || block instanceof BlockStainedGlass; // TODO GLASS
     }
 
     private @NonNull IBlockData handleGlass(final @NonNull Chunk chunk, final BlockPosition.@NonNull MutableBlockPosition mutablePos) {
@@ -363,9 +365,9 @@ public abstract class AbstractRender implements Runnable {
 
             int yBelowSurface = blockPos.getY() - 1;
             final BlockPosition.MutableBlockPosition mutablePos = new BlockPosition.MutableBlockPosition();
-            mutablePos.setValues(blockPos);
+            mutablePos.f(blockPos); // TODO set
             do {
-                mutablePos.setY(yBelowSurface--);
+                mutablePos.t(yBelowSurface--); // TODO setY
                 fluidState = chunk.getType(mutablePos);
                 ++fluidDepth;
             } while (yBelowSurface > 0 && fluidDepth <= 10 && !fluidState.getFluid().isEmpty());
@@ -378,7 +380,7 @@ public abstract class AbstractRender implements Runnable {
     private int getFluidColor(final int fluidCountY, int color, final @NonNull IBlockData fluidState, final @NonNull IBlockData underBlock, final int odd) {
         final FluidType fluid = fluidState.getFluid().getType();
         boolean shaded = false;
-        if (fluid == FluidTypes.WATER || fluid == FluidTypes.FLOWING_WATER) {
+        if (fluid == FluidTypes.c || fluid == FluidTypes.b) { // TODO WATER || FLOWING_WATER
             if (mapWorld.config().MAP_WATER_CHECKERBOARD) {
                 color = applyDepthCheckerboard(fluidCountY, color, odd);
                 shaded = true;
@@ -390,7 +392,7 @@ public abstract class AbstractRender implements Runnable {
                 color = Colors.mix(color, mapWorld.getMapColor(underBlock), 0.20F / (fluidCountY / 2.0F)); // mix block color with water color
                 shaded = true;
             }
-        } else if (fluid == FluidTypes.LAVA || fluid == FluidTypes.FLOWING_LAVA) {
+        } else if (fluid == FluidTypes.e || fluid == FluidTypes.d) { // TODO LAVA || FLOWING_LAVA
             if (mapWorld.config().MAP_LAVA_CHECKERBOARD) {
                 color = applyDepthCheckerboard(fluidCountY, color, odd);
                 shaded = true;
@@ -405,9 +407,9 @@ public abstract class AbstractRender implements Runnable {
         return Colors.shade(color, colorOffset);
     }
 
-    private net.minecraft.server.v1_16_R3.Chunk getChunkAt(net.minecraft.server.v1_16_R3.World world, int x, int z) {
+    private net.minecraft.world.level.chunk.Chunk getChunkAt(net.minecraft.world.level.World world, int x, int z) {
         ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
-        net.minecraft.server.v1_16_R3.Chunk ifLoaded = provider.getChunkAtIfLoadedImmediately(x, z);
+        net.minecraft.world.level.chunk.Chunk ifLoaded = provider.getChunkAtIfLoadedImmediately(x, z);
         if (ifLoaded != null) {
             return ifLoaded;
         }
