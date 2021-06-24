@@ -1,5 +1,6 @@
 package net.pl3x.map.plugin;
 
+import java.util.List;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
@@ -162,13 +163,13 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     private void setupApi() {
         this.pl3xMap = new Pl3xMapApiProvider(this);
         this.getServer().getServicesManager().register(Pl3xMap.class, this.pl3xMap, this, ServicePriority.Normal);
-        final Method register = ReflectionUtil.needMethod(Pl3xMapProvider.class, "register", Pl3xMap.class);
+        final Method register = ReflectionUtil.needMethod(Pl3xMapProvider.class, List.of("register"), Pl3xMap.class);
         ReflectionUtil.invokeOrThrow(register, null, this.pl3xMap);
     }
 
     private void shutdownApi() {
         this.getServer().getServicesManager().unregister(Pl3xMap.class, this.pl3xMap);
-        final Method unregister = ReflectionUtil.needMethod(Pl3xMapProvider.class, "unregister");
+        final Method unregister = ReflectionUtil.needMethod(Pl3xMapProvider.class, List.of("unregister"));
         ReflectionUtil.invokeOrThrow(unregister, null);
         this.pl3xMap = null;
     }

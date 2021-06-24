@@ -1,10 +1,7 @@
 package net.pl3x.map.plugin.util;
 
-import io.undertow.io.BlockingSenderImpl;
-import net.minecraft.world.level.block.BlockGrass;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialMapColor;
+import net.minecraft.world.level.material.MaterialColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class Colors {
@@ -50,30 +47,30 @@ public final class Colors {
     }
 
     public static int grassMapColor() {
-        return rgb(Material.u.h()); // TODO GRASS Material.getColor
+        return rgb(Material.GRASS.getColor());
     }
 
     public static int leavesMapColor() {
-        return rgb(Material.F.h()); // TODO LEAVES Material.getColor
+        return rgb(Material.LEAVES.getColor());
     }
 
     public static int plantsMapColor() {
-        return rgb(Material.o.h()); // TODO PLANT Material.getColor
+        return rgb(Material.PLANT.getColor());
     }
 
     public static int waterMapColor() {
-        return rgb(Material.f.h()); // TODO WATER Material.getColor
+        return rgb(Material.WATER.getColor());
     }
 
     public static int clearMapColor() {
-        return rgb(MaterialMapColor.b); // TODO MaterialColor.NONE
+        return rgb(MaterialColor.NONE);
     }
 
     public static Integer parseHex(final @NonNull String color) {
         return (int) Long.parseLong(color.replace("#", ""), 16);
     }
 
-    public static int rgb(MaterialMapColor color) {
-        return color.al; // rgb
+    public static int rgb(MaterialColor color) {
+        return color.col;
     }
 }

@@ -5,27 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.world.level.block.state.IBlockData;
-import net.minecraft.server.level.WorldServer;
-import net.pl3x.map.api.LayerProvider;
-import net.pl3x.map.api.Registry;
-import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.api.LayerRegistry;
-import net.pl3x.map.plugin.api.SpawnIconProvider;
-import net.pl3x.map.plugin.api.WorldBorderProvider;
-import net.pl3x.map.plugin.configuration.WorldAdvanced;
-import net.pl3x.map.plugin.configuration.WorldConfig;
-import net.pl3x.map.plugin.task.UpdateMarkers;
-import net.pl3x.map.plugin.task.render.AbstractRender;
-import net.pl3x.map.plugin.task.render.BackgroundRender;
-import net.pl3x.map.plugin.task.render.FullRender;
-import net.pl3x.map.plugin.util.Colors;
-import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
-
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,6 +22,25 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
+import net.pl3x.map.api.LayerProvider;
+import net.pl3x.map.api.Registry;
+import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
+import net.pl3x.map.plugin.api.LayerRegistry;
+import net.pl3x.map.plugin.api.SpawnIconProvider;
+import net.pl3x.map.plugin.api.WorldBorderProvider;
+import net.pl3x.map.plugin.configuration.WorldAdvanced;
+import net.pl3x.map.plugin.configuration.WorldConfig;
+import net.pl3x.map.plugin.task.UpdateMarkers;
+import net.pl3x.map.plugin.task.render.AbstractRender;
+import net.pl3x.map.plugin.task.render.BackgroundRender;
+import net.pl3x.map.plugin.task.render.FullRender;
+import net.pl3x.map.plugin.util.Colors;
+import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private static final String dirtyChunksFileName = "dirty_chunks.json";
@@ -50,7 +48,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private static final Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
     private static final Map<UUID, LayerRegistry> layerRegistries = new HashMap<>();
 
-    private final WorldServer world;
+    private final ServerLevel world;
     private final org.bukkit.World bukkitWorld;
     private final Path dataPath;
     private final ExecutorService imageIOexecutor = Executors.newSingleThreadExecutor();
@@ -208,7 +206,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         return WorldAdvanced.get(this.bukkitWorld);
     }
 
-    public WorldServer nms() {
+    public ServerLevel nms() {
         return world;
     }
 
@@ -216,12 +214,12 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         return this.bukkitWorld;
     }
 
-    public int getMapColor(final @NonNull IBlockData state) {
+    public int getMapColor(final @NonNull BlockState state) {
         final int special = blockColors.getColor(state);
         if (special != -1) {
             return special;
         }
-        return Colors.rgb(state.d(null, null)); // TODO BlockBehavior.getMapColor
+        return Colors.rgb(state.getMapColor(null, null));
     }
 
     public boolean isRendering() {

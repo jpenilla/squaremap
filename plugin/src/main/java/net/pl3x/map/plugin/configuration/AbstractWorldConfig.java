@@ -1,6 +1,6 @@
 package net.pl3x.map.plugin.configuration;
 
-import net.minecraft.server.level.WorldServer;
+import net.minecraft.server.level.ServerLevel;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 abstract class AbstractWorldConfig {
-    final WorldServer world;
+    final ServerLevel world;
     final String worldName;
     final AbstractConfig config;
 

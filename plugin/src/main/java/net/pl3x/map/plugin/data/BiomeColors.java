@@ -3,23 +3,6 @@ package net.pl3x.map.plugin.data;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.world.level.biome.BiomeBase;
-import net.minecraft.world.level.biome.BiomeFog;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.core.BlockPosition;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.chunk.Chunk;
-import net.minecraft.world.level.block.state.IBlockData;
-import net.minecraft.core.IRegistry;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.util.MathHelper;
-import net.minecraft.server.level.WorldServer;
-import net.pl3x.map.plugin.util.Colors;
-import net.pl3x.map.plugin.util.FileUtil;
-import net.pl3x.map.plugin.util.ReflectionUtil;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,35 +13,52 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
+import javax.imageio.ImageIO;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeSpecialEffects;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.material.Material;
+import net.pl3x.map.plugin.util.Colors;
+import net.pl3x.map.plugin.util.FileUtil;
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+import static net.pl3x.map.plugin.util.ReflectionUtil.needField;
 
 public final class BiomeColors {
     private static final Set<Block> grassColorBlocks = ImmutableSet.of(
-            Blocks.i, // TODO GRASS_BLOCK,
-            Blocks.ax, // TODO GRASS,
-            Blocks.hm, // TODO TALL_GRASS,
-            Blocks.aY, // TODO FERN,
-            Blocks.hn, // TODO LARGE_FERN,
-            Blocks.eP, // TODO POTTED_FERN,
-            Blocks.cP // TODO SUGAR_CANE
+            Blocks.GRASS_BLOCK,
+            Blocks.GRASS,
+            Blocks.TALL_GRASS,
+            Blocks.FERN,
+            Blocks.LARGE_FERN,
+            Blocks.POTTED_FERN,
+            Blocks.SUGAR_CANE
     );
 
     private static final Set<Block> foliageColorBlocks = ImmutableSet.of(
-            Blocks.dX, // TODO VINE,
-            Blocks.ak, // TODO OAK_LEAVES,
-            Blocks.an, // TODO JUNGLE_LEAVES,
-            Blocks.ao, // TODO ACACIA_LEAVES,
-            Blocks.ap // TODO DARK_OAK_LEAVES
+            Blocks.VINE,
+            Blocks.OAK_LEAVES,
+            Blocks.JUNGLE_LEAVES,
+            Blocks.ACACIA_LEAVES,
+            Blocks.DARK_OAK_LEAVES
     );
 
     private static final Set<Block> waterColorBlocks = ImmutableSet.of(
-            Blocks.A, // TODO WATER,
-            Blocks.lq, // TODO BUBBLE_COLUMN,
-            Blocks.el // TODO WATER_CAULDRON
+            Blocks.WATER,
+            Blocks.BUBBLE_COLUMN,
+            Blocks.WATER_CAULDRON
     );
 
     private static final Set<Material> waterColorMaterials = ImmutableSet.of(
-            Material.f, // TODO WATER_PLANT,
-            Material.g // TODO REPLACEABLE_WATER_PLANT
+            Material.WATER_PLANT,
+            Material.REPLACEABLE_WATER_PLANT
     );
 
     private static final int[] mapGrass;
@@ -79,23 +79,23 @@ public final class BiomeColors {
         mapFoliage = init(imgFoliage);
     }
 
-    private final Cache<Long, BiomeBase> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
+    private final Cache<Long, Biome> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
 
     private final MapWorld world;
 
-    private final Map<BiomeBase, Integer> grassColors = new HashMap<>();
-    private final Map<BiomeBase, Integer> foliageColors = new HashMap<>();
-    private final Map<BiomeBase, Integer> waterColors = new HashMap<>();
+    private final Map<Biome, Integer> grassColors = new HashMap<>();
+    private final Map<Biome, Integer> foliageColors = new HashMap<>();
+    private final Map<Biome, Integer> waterColors = new HashMap<>();
 
-    private final BlockPosition.MutableBlockPosition sharedBlockPos = new BlockPosition.MutableBlockPosition();
+    private final BlockPos.MutableBlockPos sharedBlockPos = new BlockPos.MutableBlockPos();
 
     public BiomeColors(final @NonNull MapWorld world) {
         this.world = world;
 
-        final IRegistry<BiomeBase> biomeRegistry = getBiomeRegistry(world.nms());
-        for (final BiomeBase biome : biomeRegistry) {
-            float temperature = MathHelper.a(biome.k(), 0.0F, 1.0F);
-            float humidity = MathHelper.a(biome.getHumidity(), 0.0F, 1.0F);
+        final Registry<Biome> biomeRegistry = getBiomeRegistry(world.nms());
+        for (final Biome biome : biomeRegistry) {
+            float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
+            float humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
             grassColors.put(biome, BiomeEffectsReflection.grassColor(biome)
                     .orElse(getDefaultGrassColor(temperature, humidity)));
             foliageColors.put(biome, BiomeEffectsReflection.foliageColor(biome)
@@ -108,8 +108,8 @@ public final class BiomeColors {
         world.advanced().COLOR_OVERRIDES_BIOME_WATER.forEach(waterColors::put);
     }
 
-    public int modifyColorFromBiome(int color, final @NonNull Chunk chunk, final @NonNull BlockPosition pos) {
-        final IBlockData data = chunk.getType(pos);
+    public int modifyColorFromBiome(int color, final @NonNull LevelChunk chunk, final @NonNull BlockPos pos) {
+        final BlockState data = chunk.getBlockState(pos);
         final Material mat = data.getMaterial();
         final Block block = data.getBlock();
 
@@ -155,37 +155,37 @@ public final class BiomeColors {
         return mapFoliage[(j << 8 | i)];
     }
 
-    private int grass(final @NonNull BlockPosition pos) {
+    private int grass(final @NonNull BlockPos pos) {
         if (world.config().MAP_BIOMES_BLEND > 0) {
             return this.sampleNeighbors(pos, world.config().MAP_BIOMES_BLEND, this::grassColorSampler);
         }
         return this.grassColorSampler(this.getBiomeWithCaching(pos), pos);
     }
 
-    private int grassColorSampler(final @NonNull BiomeBase biome, final @NonNull BlockPosition pos) {
+    private int grassColorSampler(final @NonNull Biome biome, final @NonNull BlockPos pos) {
         return modifiedGrassColor(biome, pos, this.grassColors.get(biome));
     }
 
-    private int foliage(final @NonNull BlockPosition pos) {
+    private int foliage(final @NonNull BlockPos pos) {
         if (world.config().MAP_BIOMES_BLEND > 0) {
             return this.sampleNeighbors(pos, world.config().MAP_BIOMES_BLEND, (biome, b) -> this.foliageColors.get(biome));
         }
         return this.foliageColors.get(this.getBiomeWithCaching(pos));
     }
 
-    private int water(final @NonNull BlockPosition pos) {
+    private int water(final @NonNull BlockPos pos) {
         if (world.config().MAP_BIOMES_BLEND > 0) {
             return this.sampleNeighbors(pos, world.config().MAP_BIOMES_BLEND, (biome, b) -> this.waterColors.get(biome));
         }
         return this.waterColors.get(this.getBiomeWithCaching(pos));
     }
 
-    private int sampleNeighbors(final @NonNull BlockPosition pos, final int radius, final @NonNull BiFunction<BiomeBase, BlockPosition, Integer> colorSampler) {
+    private int sampleNeighbors(final @NonNull BlockPos pos, final int radius, final @NonNull BiFunction<Biome, BlockPos, Integer> colorSampler) {
         int rgb, r = 0, g = 0, b = 0, count = 0;
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
-                sharedBlockPos.c(x, pos.getY(), z); // TODO set
-                final BiomeBase biome = this.getBiomeWithCaching(sharedBlockPos);
+                sharedBlockPos.set(x, pos.getY(), z);
+                final Biome biome = this.getBiomeWithCaching(sharedBlockPos);
                 rgb = colorSampler.apply(biome, this.sharedBlockPos);
                 r += (rgb >> 16) & 0xFF;
                 g += (rgb >> 8) & 0xFF;
@@ -199,9 +199,9 @@ public final class BiomeColors {
         return rgb;
     }
 
-    private BiomeBase getBiomeWithCaching(final @NonNull BlockPosition pos) {
+    private Biome getBiomeWithCaching(final @NonNull BlockPos pos) {
         long xz = (long) pos.getX() << 32 | pos.getZ() & 0xffffffffL;
-        BiomeBase biome = blockPosBiomeCache.getIfPresent(xz);
+        Biome biome = blockPosBiomeCache.getIfPresent(xz);
         if (biome == null) {
             biome = world.nms().getBiome(pos);
             blockPosBiomeCache.put(xz, biome);
@@ -209,23 +209,23 @@ public final class BiomeColors {
         return biome;
     }
 
-    public static IRegistry<BiomeBase> getBiomeRegistry(WorldServer world) {
-        return world.t().b(IRegistry.aO); // TODO ServerLevel.registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY)
+    public static Registry<Biome> getBiomeRegistry(ServerLevel world) {
+        return world.registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY);
     }
 
-    private static int modifiedGrassColor(final @NonNull BiomeBase biome, final @NonNull BlockPosition pos, final int color) {
-        BiomeFog.GrassColor modifier = BiomeEffectsReflection.grassColorModifier(biome);
+    private static int modifiedGrassColor(final @NonNull Biome biome, final @NonNull BlockPos pos, final int color) {
+        BiomeSpecialEffects.GrassColorModifier modifier = BiomeEffectsReflection.grassColorModifier(biome);
         switch (modifier) {
-            case a: // TODO NONE:
+            case NONE:
                 return color;
-            case c: // TODO SWAMP:
+            case SWAMP:
                 // swamps have 2 grass colors, depends on sample from noise generator
-                double sample = BiomeBase.f.a(pos.getX() * 0.0225, pos.getZ() * 0.0225, false);
+                double sample = Biome.BIOME_INFO_NOISE.getValue(pos.getX() * 0.0225, pos.getZ() * 0.0225, false);
                 if (sample < -0.1) {
                     return 5011004;
                 }
                 return 6975545;
-            case b: // TODO DARK_FOREST:
+            case DARK_FOREST:
                 return (color & 0xFEFEFE) + 2634762 >> 1;
             default:
                 throw new IllegalArgumentException("Unknown or invalid grass color modifier: " + modifier.getName());
@@ -237,13 +237,29 @@ public final class BiomeColors {
         private BiomeEffectsReflection() {
         }
 
-        private static final Field grass_color = ReflectionUtil.needField(BiomeFog.class, "g");
-        private static final Field foliage_color = ReflectionUtil.needField(BiomeFog.class, "f");
-        private static final Field water_color = ReflectionUtil.needField(BiomeFog.class, "c");
-        private static final Field grass_color_modifier = ReflectionUtil.needField(BiomeFog.class, "h");
+        private static final Field grass_color = needField(
+                BiomeSpecialEffects.class,
+                "g",
+                "grassColorOverride"
+        );
+        private static final Field foliage_color = needField(
+                BiomeSpecialEffects.class,
+                "f",
+                "foliageColorOverride"
+        );
+        private static final Field water_color = needField(
+                BiomeSpecialEffects.class,
+                "c",
+                "waterColor"
+        );
+        private static final Field grass_color_modifier = needField(
+                BiomeSpecialEffects.class,
+                "h",
+                "grassColorModifier"
+        );
 
         @SuppressWarnings("unchecked")
-        private static @NonNull Optional<Integer> grassColor(final @NonNull BiomeBase biome) {
+        private static @NonNull Optional<Integer> grassColor(final @NonNull Biome biome) {
             try {
                 return (Optional<Integer>) grass_color.get(biomeEffects(biome));
             } catch (final IllegalAccessException e) {
@@ -252,7 +268,7 @@ public final class BiomeColors {
         }
 
         @SuppressWarnings("unchecked")
-        private static Optional<Integer> foliageColor(final @NonNull BiomeBase biome) {
+        private static Optional<Integer> foliageColor(final @NonNull Biome biome) {
             try {
                 return (Optional<Integer>) foliage_color.get(biomeEffects(biome));
             } catch (final IllegalAccessException e) {
@@ -260,15 +276,15 @@ public final class BiomeColors {
             }
         }
 
-        private static BiomeFog.@NonNull GrassColor grassColorModifier(final @NonNull BiomeBase biome) {
+        private static BiomeSpecialEffects.@NonNull GrassColorModifier grassColorModifier(final @NonNull Biome biome) {
             try {
-                return (BiomeFog.GrassColor) grass_color_modifier.get(biomeEffects(biome));
+                return (BiomeSpecialEffects.GrassColorModifier) grass_color_modifier.get(biomeEffects(biome));
             } catch (final IllegalAccessException e) {
                 throw new IllegalStateException("Could not find grass color modifier", e);
             }
         }
 
-        private static int waterColor(final @NonNull BiomeBase biome) {
+        private static int waterColor(final @NonNull Biome biome) {
             try {
                 return water_color.getInt(biomeEffects(biome));
             } catch (final IllegalAccessException e) {
@@ -276,8 +292,8 @@ public final class BiomeColors {
             }
         }
 
-        private static BiomeFog biomeEffects(BiomeBase biome) {
-            return biome.l(); // TODO BiomeBase.getSpecialEffects
+        private static BiomeSpecialEffects biomeEffects(Biome biome) {
+            return biome.getSpecialEffects();
         }
     }
 }

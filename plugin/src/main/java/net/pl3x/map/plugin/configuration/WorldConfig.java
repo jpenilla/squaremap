@@ -1,7 +1,7 @@
 package net.pl3x.map.plugin.configuration;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.Mth;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -65,7 +65,7 @@ public class WorldConfig extends AbstractWorldConfig {
 
     private void biomeSettings() {
         MAP_BIOMES = getBoolean("map.biomes.enabled", MAP_BIOMES);
-        MAP_BIOMES_BLEND = MathHelper.clamp(getInt("map.biomes.blend-biomes", MAP_BIOMES_BLEND), 0, 15);
+        MAP_BIOMES_BLEND = Mth.clamp(getInt("map.biomes.blend-biomes", MAP_BIOMES_BLEND), 0, 15);
     }
 
     public boolean MAP_GLASS_CLEAR = true;

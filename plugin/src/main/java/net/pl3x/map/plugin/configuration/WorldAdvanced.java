@@ -1,8 +1,8 @@
 package net.pl3x.map.plugin.configuration;
 
-import net.minecraft.core.IRegistry;
-import net.minecraft.resources.MinecraftKey;
-import net.minecraft.world.level.biome.BiomeBase;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.pl3x.map.plugin.data.BiomeColors;
@@ -53,7 +53,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
                 "minecraft:fern",
                 "minecraft:grass",
                 "minecraft:large_fern"
-        )).forEach(block -> invisibleBlocks.add(IRegistry.W.get(new MinecraftKey(block.toString())))); // TODO Registry.BLOCK
+        )).forEach(block -> invisibleBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
     }
 
     public final List<Block> iterateUpBaseBlocks = new ArrayList<>();
@@ -73,13 +73,13 @@ public class WorldAdvanced extends AbstractWorldConfig {
                 "minecraft:nether_quartz_ore",
                 "minecraft:magma_block",
                 "minecraft:basalt"
-        )).forEach(block -> iterateUpBaseBlocks.add(IRegistry.W.get(new MinecraftKey(block.toString())))); // TODO Registry.BLOCK
+        )).forEach(block -> iterateUpBaseBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
     }
 
-    public final Map<BiomeBase, Integer> COLOR_OVERRIDES_BIOME_FOLIAGE = new HashMap<>();
+    public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_FOLIAGE = new HashMap<>();
 
     private void colorOverrideBiomeFoliageSettings() {
-        final IRegistry<BiomeBase> registry = BiomeColors.getBiomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.getBiomeRegistry(world);
         COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
         getMap("color-overrides.biomes.foliage", Map.ofEntries(
                 Map.entry("minecraft:dark_forest", "#1c7b07"),
@@ -90,35 +90,35 @@ public class WorldAdvanced extends AbstractWorldConfig {
                 Map.entry("minecraft:bamboo_jungle", "#1f8907"),
                 Map.entry("minecraft:bamboo_jungle_hills", "#1f8907")
         )).forEach((key, color) -> {
-            final BiomeBase biome = registry.get(new MinecraftKey(key));
+            final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
                 COLOR_OVERRIDES_BIOME_FOLIAGE.put(biome, Colors.parseHex(color));
             }
         });
     }
 
-    public final Map<BiomeBase, Integer> COLOR_OVERRIDES_BIOME_GRASS = new HashMap<>();
+    public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_GRASS = new HashMap<>();
 
     private void colorOverrideBiomeGrassSettings() {
-        final IRegistry<BiomeBase> registry = BiomeColors.getBiomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.getBiomeRegistry(world);
         COLOR_OVERRIDES_BIOME_GRASS.clear();
         getMap("color-overrides.biomes.grass", Map.<String, String>ofEntries(
         )).forEach((key, color) -> {
-            final BiomeBase biome = registry.get(new MinecraftKey(key));
+            final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
                 COLOR_OVERRIDES_BIOME_GRASS.put(biome, Colors.parseHex(color));
             }
         });
     }
 
-    public final Map<BiomeBase, Integer> COLOR_OVERRIDES_BIOME_WATER = new HashMap<>();
+    public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_WATER = new HashMap<>();
 
     private void colorOverrideBiomeWaterSettings() {
-        final IRegistry<BiomeBase> registry = BiomeColors.getBiomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.getBiomeRegistry(world);
         COLOR_OVERRIDES_BIOME_WATER.clear();
         getMap("color-overrides.biomes.water", Map.<String, String>ofEntries(
         )).forEach((key, color) -> {
-            final BiomeBase biome = registry.get(new MinecraftKey(key));
+            final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
                 COLOR_OVERRIDES_BIOME_WATER.put(biome, Colors.parseHex(color));
             }
@@ -157,8 +157,8 @@ public class WorldAdvanced extends AbstractWorldConfig {
                 Map.entry("minecraft:lava", "#EA5C0F"),
                 Map.entry("minecraft:glass", "#FFFFFF")
         )).forEach((key, color) -> {
-            final Block block = IRegistry.W.get(new MinecraftKey(key)); // TODO Registry.BLOCK
-            if (block != Blocks.a) { // TODO Blocks.AIR
+            final Block block = Registry.BLOCK.get(new ResourceLocation(key));
+            if (block != Blocks.AIR) {
                 COLOR_OVERRIDES_BLOCKS.put(block, Colors.parseHex(color));
             }
         });

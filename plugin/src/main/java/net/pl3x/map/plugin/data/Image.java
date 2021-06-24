@@ -1,20 +1,19 @@
 package net.pl3x.map.plugin.data;
 
-import net.minecraft.util.MathHelper;
-import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.configuration.Config;
-import net.pl3x.map.plugin.configuration.Lang;
-
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import net.minecraft.util.Mth;
+import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.configuration.Config;
+import net.pl3x.map.plugin.configuration.Lang;
 
 public class Image {
     public static final int SIZE = 512;
@@ -46,8 +45,8 @@ public class Image {
 
             int step = (int) Math.pow(2, zoom);
             int size = SIZE / step;
-            int scaledX = MathHelper.floor((double) region.getX() / step);
-            int scaledZ = MathHelper.floor((double) region.getZ() / step);
+            int scaledX = Mth.floor((double) region.getX() / step);
+            int scaledZ = Mth.floor((double) region.getZ() / step);
 
             String fileName = scaledX + "_" + scaledZ + ".png";
             File file = new File(dir.toString(), fileName);
