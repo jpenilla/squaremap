@@ -53,7 +53,7 @@ public final class Lang {
     @LangKey("click-for-help")
     public static String CLICK_FOR_HELP = "Click for help";
     @LangKey("click-to-confirm")
-    public static String CLICK_TO_CONFIRM;
+    public static String CLICK_TO_CONFIRM = "Click to confirm";
 
     @LangKey("command.prefix")
     public static String COMMAND_PREFIX = "<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> ";
