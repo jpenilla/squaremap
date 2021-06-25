@@ -1,16 +1,5 @@
 package net.pl3x.map.plugin.configuration;
 
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
-import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.util.FileUtil;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.ElementType;
@@ -20,9 +9,17 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.logging.Level;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.Template;
+import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.util.FileUtil;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-@SuppressWarnings("CanBeFinal")
-public class Lang {
+public final class Lang {
 
     // MiniMessage formatted strings, to be sent using Logger.info(String, Template...) or Lang.send(CommandSender, String, Template...)
     @LangKey("render-in-progress")
@@ -55,6 +52,8 @@ public class Lang {
 
     @LangKey("click-for-help")
     public static String CLICK_FOR_HELP = "Click for help";
+    @LangKey("click-to-confirm")
+    public static String CLICK_TO_CONFIRM;
 
     @LangKey("command.prefix")
     public static String COMMAND_PREFIX = "<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> ";
@@ -202,12 +201,20 @@ public class Lang {
         return config.getString(path, config.getString(path));
     }
 
-    public static void send(final @NonNull CommandSender recipient, final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
-        recipient.sendMessage(MiniMessage.get().parse(miniMessage, placeholders));
+    public static @NonNull Component parse(final @NonNull String miniMessage) {
+        return MiniMessage.get().parse(miniMessage);
     }
 
-    public static void send(final @NonNull CommandSender recipient, final @NonNull String miniMessage) {
-        recipient.sendMessage(MiniMessage.get().parse(miniMessage));
+    public static @NonNull Component parse(final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
+        return MiniMessage.get().parse(miniMessage, placeholders);
+    }
+
+    public static void send(final @NonNull Audience recipient, final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
+        recipient.sendMessage(parse(miniMessage, placeholders));
+    }
+
+    public static void send(final @NonNull Audience recipient, final @NonNull String miniMessage) {
+        recipient.sendMessage(parse(miniMessage));
     }
 
     @Target(ElementType.FIELD)
