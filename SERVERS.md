@@ -11,5 +11,6 @@
 |Silver Springs|[https://map.silverspringsmc.org](https://map.silverspringsmc.org)|
 |[NMLMC](https://nmlmc.com)|[https://survival.nmlmc.com](https://survival.nmlmc.com)|
 |[FREESERVER](https://freeserver.pro)|[https://pl3x.freeserver.pro](https://pl3x.freeserver.pro)|
+|Easy SMP|[https://map.2v1.me](https://map.2v1.me)|
 
 If you'd like your server listed here, submit a PR or talk to BillyGalbreath in [Discord](https://discord.gg/B8WpDPXeBh).
