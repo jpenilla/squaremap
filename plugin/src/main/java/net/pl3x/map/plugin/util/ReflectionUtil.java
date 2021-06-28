@@ -6,6 +6,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import net.minecraft.server.level.ServerLevel;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -43,6 +46,14 @@ public final class ReflectionUtil {
         }
     }
 
+    public static @NonNull Class<?> needClass(final @NonNull String className) {
+        try {
+            return Class.forName(className);
+        } catch (final ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static @NonNull Field needField(final @NonNull Class<?> clazz, final @NonNull String @NonNull ... names) {
         return firstNonNullOrThrow(
                 () -> String.format("Could not locate field in class '%s' with any of the following names: %s", clazz.getName(), Arrays.toString(names)),
@@ -66,6 +77,38 @@ public final class ReflectionUtil {
             return method.invoke(instance, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Failed to invoke method", e);
+        }
+    }
+
+    public static final class CraftBukkit {
+        private CraftBukkit() {
+        }
+
+        private static final String PREFIX_CRAFTBUKKIT = "org.bukkit.craftbukkit";
+        private static final String CRAFT_SERVER = "CraftServer";
+        private static final String CB_PKG_VERSION;
+
+        static {
+            final Class<?> serverClass = Bukkit.getServer().getClass();
+            String name = serverClass.getName();
+            name = name.substring(PREFIX_CRAFTBUKKIT.length());
+            name = name.substring(0, name.length() - CRAFT_SERVER.length());
+            CB_PKG_VERSION = name;
+        }
+
+        public static @NonNull Class<?> needOBCClass(final @NonNull String className) {
+            return needClass(PREFIX_CRAFTBUKKIT + CB_PKG_VERSION + className);
+        }
+
+        private static final Class<?> CRAFT_WORLD_CLASS = needOBCClass("CraftWorld");
+        private static final Method CRAFT_WORLD_GET_HANDLE = needMethod(CRAFT_WORLD_CLASS, List.of("getHandle"));
+
+        public static @NonNull ServerLevel serverLevel(final @NonNull World world) {
+            try {
+                return (ServerLevel) CRAFT_WORLD_GET_HANDLE.invoke(world);
+            } catch (final ReflectiveOperationException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 }

@@ -36,9 +36,9 @@ import net.pl3x.map.plugin.data.Region;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
+import net.pl3x.map.plugin.util.ReflectionUtil;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -70,7 +70,7 @@ public abstract class AbstractRender implements Runnable {
         this.mapWorld = mapWorld;
         this.executor = executor;
         this.world = mapWorld.bukkit();
-        this.nmsWorld = ((CraftWorld) this.world).getHandle();
+        this.nmsWorld = ReflectionUtil.CraftBukkit.serverLevel(this.world);
         this.worldTilesDir = FileUtil.getWorldFolder(world);
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
                 ? ThreadLocal.withInitial(() -> new BiomeColors(mapWorld))

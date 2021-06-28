@@ -38,8 +38,8 @@ import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
 import net.pl3x.map.plugin.task.render.FullRender;
 import net.pl3x.map.plugin.util.Colors;
+import net.pl3x.map.plugin.util.ReflectionUtil;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class MapWorld implements net.pl3x.map.api.MapWorld {
@@ -64,7 +64,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     private MapWorld(final org.bukkit.@NonNull World world) {
         this.bukkitWorld = world;
-        this.world = ((CraftWorld) world).getHandle();
+        this.world = ReflectionUtil.CraftBukkit.serverLevel(world);
 
         this.blockColors = new BlockColors(this);
 

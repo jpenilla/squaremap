@@ -1,13 +1,12 @@
 package net.pl3x.map.plugin.configuration;
 
-import net.minecraft.server.level.ServerLevel;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.List;
 import java.util.Map;
+import net.minecraft.server.level.ServerLevel;
+import net.pl3x.map.plugin.util.ReflectionUtil;
+import org.bukkit.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @SuppressWarnings("unused")
 abstract class AbstractWorldConfig {
@@ -16,7 +15,7 @@ abstract class AbstractWorldConfig {
     final AbstractConfig config;
 
     AbstractWorldConfig(World world, AbstractConfig parent) {
-        this.world = ((CraftWorld) world).getHandle();
+        this.world = ReflectionUtil.CraftBukkit.serverLevel(world);
         this.worldName = world.getName();
         this.config = parent;
     }
