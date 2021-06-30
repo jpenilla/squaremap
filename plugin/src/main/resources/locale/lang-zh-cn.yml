@@ -12,8 +12,8 @@ command:
   prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
   message:
     console-must-specify-player: <red>从控制台执行此命令时必须指定一个玩家
-    console-must-specify-world: <red>没有找到玩家 '<input>'
-    player-not-found-for-input: <red>从控制台执行此命令时必须指定一个世界
+    player-not-found-for-input: <red>没有找到玩家 '<input>'
+    console-must-specify-world: <red>从控制台执行此命令时必须指定一个世界
     no-such-world: <red>没有找到世界 '<world>'
     map-not-enabled-for-world: <red>没有启用世界 '<world>' 的地图'
     confirmation-required: <red>请输入 /<command> confirm 确认操作

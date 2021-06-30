@@ -12,8 +12,8 @@ command:
   prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
   message:
     console-must-specify-player: <red>Je moet een speler opgeven bij het uitvoeren van dit commando vanuit de console
-    console-must-specify-world: <red>Geen speler gevonden voor invoer '<input>'
-    player-not-found-for-input: <red>Je moet een wereld opgeven bij het uitvoeren van dit commando vanuit de console
+    player-not-found-for-input: <red>Geen speler gevonden voor invoer '<input>'
+    console-must-specify-world: <red>Je moet een wereld opgeven bij het uitvoeren van dit commando vanuit de console
     no-such-world: <red>Geen dergelijke wereld '<world>'
     map-not-enabled-for-world: <red>Kaart is niet ingeschakeld voor wereld '<world>'
     confirmation-required: <red>Bevestiging vereist. Bevestig met /<command> confirm.

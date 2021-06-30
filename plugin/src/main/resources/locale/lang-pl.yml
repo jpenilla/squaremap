@@ -12,8 +12,8 @@ command:
   prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
   message:
     console-must-specify-player: <red>Musisz określić docelowego gracza podczas uruchamiania tej komendy z konsoli
-    console-must-specify-world: <red>Nie znaleziono gracza o nazwie '<input>'
-    player-not-found-for-input: <red>Musisz określić świat podczas uruchamiania tej komendy z konsoli
+    player-not-found-for-input: <red>Nie znaleziono gracza o nazwie '<input>'
+    console-must-specify-world: <red>Musisz określić świat podczas uruchamiania tej komendy z konsoli
     no-such-world: <red>Nie ma takiego świata '<world>'
     map-not-enabled-for-world: <red>Mapa nie jest włączona dla świata '<world>'
     confirmation-required: <red>Wymagane potwierdzenie. Potwierdź używając /<command> confirm.
