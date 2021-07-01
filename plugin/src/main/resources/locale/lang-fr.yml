@@ -1,0 +1,71 @@
+# Translators: [DoctaEnkoda]
+
+
+render-in-progress: <red>Un rendu est déjà en cours sur le monde <world>
+render-not-in-progress: <red>Aucun rendu n'est en cours d'exécution pour le monde <world>
+cancelled-render: <green>Rendu annulé pour le monde <world>
+successfully-reset-map: <green>La carte a été réinitialisée avec succès pour le monde <world>
+paused-renders: <green>Rendu en pause pour le monde <world>
+unpaused-renders: <green>Reprise du rendu pour le monde <world>
+click-for-help: Cliquez pour demander l'aide
+plugin-reloaded: <green><name> v<version> rechargé
+command:
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  message:
+    console-must-specify-player: <red>Vous devez spécifier un joueur pour exécuter la commande par la console
+    player-not-found-for-input: <red>Aucun joueur n'a été trouvé avec les arguments '<input>'
+    console-must-specify-world: <red>Vous devez spécifier un monde pour exécuter la commande par la console
+    no-such-world: <red>Pas un tel monde '<world>'
+    map-not-enabled-for-world: <red>La map n'est pas activée pour le monde '<world>'
+    confirmation-required: <red>Une confirmation est demandée. Confirmer ceci avec /<command> confirm.
+    no-pending-commands: <red>Vous n'avez aucune commande en attente.
+  description:
+    help: Obtenir de l'aide pour les commandes Pl3xmap
+    resetmap: Réinitialiser la carte d'un monde spécifié
+    confirm: Confirmer une commande en attente
+    reload: Recharger le plugin
+    full-render: Démarrer un rendu complet pour le monde spécifié
+    cancel-render: Annuler un rendu pour le monde spécifié
+    pause-render: Suspendre tous les rendus pour le monde spécifié
+    radius-render: Démarrer un rendu de rayon
+    hide: Masquer un joueur sur la carte
+    show: Montrer un joueur sur la carte
+  argument:
+    optional-world: Par défaut le monde actuel des joueurs s'il n'est pas fourni
+    optional-center: Par défaut à (<white>0<gray>,</gray> 0</white>) si non spécifié
+    optional-player: Par défaut le joueur en cours d'exécution si non spécifié (par la console vous devez spécifier un joueur)
+    help-query: Aide Query
+  hide:
+    already-hidden: <red><player> est déjà caché sur la carte
+    hidden: <green><player> est maintenant caché sur la carte
+  show:
+    not-hidden: <red><player> n'est pas caché sur la map
+    shown: <green><player> n'est plus caché sur la map
+ui:
+  page-title: Pl3xMap - {world}
+  coordinates: Coordonnées<br/>{x}, {z}
+  sidebar:
+    player-list: Joueurs ({cur}/{max})
+    world-list: Mondes
+  layers:
+    player-tracker: Joueurs
+    world-spawn: Spawn
+    world-border: Bordure du Monde
+log:
+  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
+  started-full-render: <dark_aqua>Démarrage du rendu de la carte complète pour <yellow><world>
+  started-radius-render: <dark_aqua>Rendu de la carte de rayon démarré pour <yellow><world>
+  scanning-region-files: <yellow>Numérisation des fichiers de région... (cela peut prendre un moment)
+  found-total-region-files: <green>Fichiers Région <gray><total> <green>trouvé
+  finished-rendering: <dark_aqua>Carte de rendu terminée pour <yellow><world>
+  cancelled-rendering: <dark_aqua>Le rendu de la map <yellow><world> <dark_aqua>a été intérrompu
+  resumed-rendering: <dark_aqua>Le rendu de la map <yellow><world> <dark_aqua>a recontinuer
+  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Monde<gray>:</gray> <yellow><world></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Temps Ecoulé<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Vitesse<gray>:</gray> <yellow><rate></yellow> cps
+  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Monde<gray>:</gray> <yellow><world></yellow> Regions<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Temps Ecoulé<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Vitesse<gray>:</gray> <yellow><rate></yellow> cps
+  internal-web-disabled: <green>Le serveur Web interne est désactivé dans le fichier config.yml
+  internal-web-started: <green>Le serveur Web interne fonctionne sur l'adresse <bind>:<port>
+  internal-web-stopped: <green>Le serveur Web interne s'est arrêté
+  internal-web-start-error: Le serveur Web interne n'a pas démarré
+  could-not-create-directory: Impossible de crée le dossier ! {path}
+  could-not-save-region: Impossible d'enregistrer la carte pour la région {x},{z}
+  internal-web-not-running: Une erreur s'est produite avec le serveur Web interne
