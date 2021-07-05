@@ -16,7 +16,7 @@ configurations.compileOnly {
 
 dependencies {
     implementation(project(":pl3xmap-api"))
-    val cloudVersion = "1.5.0-SNAPSHOT"
+    val cloudVersion = "1.5.0"
     implementation("cloud.commandframework", "cloud-paper", cloudVersion)
     implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
     implementation("net.kyori", "adventure-text-minimessage", "4.1.0-SNAPSHOT")
