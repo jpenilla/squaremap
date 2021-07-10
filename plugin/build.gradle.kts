@@ -22,7 +22,7 @@ dependencies {
     implementation("net.kyori", "adventure-text-minimessage", "4.1.0-SNAPSHOT")
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
     implementation("org.bstats", "bstats-bukkit", "2.2.1")
-    mojangMappedServer("io.papermc.paper", "paper", "1.17-R0.1-SNAPSHOT", classifier = "mojang-mapped")
+    mojangMappedServer("io.papermc.paper", "paper", "1.17.1-R0.1-SNAPSHOT", classifier = "mojang-mapped")
     remapper("org.quiltmc", "tiny-remapper", "0.4.1")
 }
 
@@ -55,7 +55,7 @@ tasks {
         dependsOn(productionMappedJar)
     }
     runServer {
-        minecraftVersion("1.17")
+        minecraftVersion("1.17.1")
         pluginJars.from(productionMappedJar.flatMap { it.outputJar })
     }
 }

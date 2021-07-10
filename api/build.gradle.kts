@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    compileOnlyApi("io.papermc.paper", "paper-api", "1.17-R0.1-SNAPSHOT")
+    compileOnlyApi("io.papermc.paper", "paper-api", "1.17.1-R0.1-SNAPSHOT")
     compileOnlyApi("org.checkerframework", "checker-qual", "3.15.0")
 }
 
