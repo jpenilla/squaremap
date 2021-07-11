@@ -12,14 +12,18 @@ allprojects {
 subprojects {
     apply<JavaLibraryPlugin>()
 
-    java {
-        targetCompatibility = JavaVersion.toVersion(16)
-        sourceCompatibility = JavaVersion.toVersion(16)
+    repositories {
+        mavenCentral()
+        maven("https://repo.pl3x.net/")
+        maven("https://papermc.io/repo/repository/maven-public/")
+        maven("https://repo.incendo.org/content/repositories/snapshots/")
+        maven("https://repo.codemc.org/repository/maven-public/")
     }
 
     tasks {
         withType<JavaCompile> {
             options.encoding = Charsets.UTF_8.name()
+            options.release.set(16)
         }
         withType<Javadoc> {
             options.encoding = Charsets.UTF_8.name()
