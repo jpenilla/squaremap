@@ -25,10 +25,12 @@ public class Config extends AbstractConfig {
 
     public static String LANGUAGE_FILE = "lang-en.yml";
     public static boolean DEBUG_MODE = false;
+    public static String WEB_ADDRESS = "http://localhost:8080";
 
     private static void baseSettings() {
         LANGUAGE_FILE = config.getString("settings.language-file", LANGUAGE_FILE);
         DEBUG_MODE = config.getBoolean("settings.debug-mode", DEBUG_MODE);
+        WEB_ADDRESS = config.getString("settings.web-address", WEB_ADDRESS);
     }
 
     public static String WEB_DIR = "web";

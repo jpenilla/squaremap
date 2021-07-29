@@ -1,6 +1,5 @@
 package net.pl3x.map.plugin;
 
-import java.util.List;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
@@ -13,6 +12,7 @@ import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.httpd.IntegratedServer;
 import net.pl3x.map.plugin.listener.MapUpdateListeners;
 import net.pl3x.map.plugin.listener.WorldEventListener;
+import net.pl3x.map.plugin.network.Network;
 import net.pl3x.map.plugin.task.UpdatePlayers;
 import net.pl3x.map.plugin.task.UpdateWorldData;
 import net.pl3x.map.plugin.util.FileUtil;
@@ -26,6 +26,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.logging.Level;
 
 public final class Pl3xMapPlugin extends JavaPlugin {
@@ -79,11 +80,14 @@ public final class Pl3xMapPlugin extends JavaPlugin {
             Logger.log().log(Level.WARNING, "Failed to register spawn icon", e);
         }
 
+        Network.register();
+
         new Metrics(this, 10133); // https://bstats.org/plugin/bukkit/Pl3xMap/10133
     }
 
     @Override
     public void onDisable() {
+        Network.unregister();
         this.shutdownApi();
         this.stop();
     }
