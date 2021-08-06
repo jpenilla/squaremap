@@ -6,6 +6,7 @@ import io.undertow.UndertowOptions;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.util.ETag;
+import io.undertow.util.Headers;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Config;
@@ -22,7 +23,7 @@ public class IntegratedServer {
 
     public static void startServer() {
         try {
-            ResourceHandler handler = new ResourceHandler(PathResourceManager.builder()
+            ResourceHandler resourceHandler = new ResourceHandler(PathResourceManager.builder()
                     .setBase(Paths.get(FileUtil.WEB_DIR.toFile().getAbsolutePath()))
                     .setETagFunction((path) -> {
                         try {
@@ -49,7 +50,13 @@ public class IntegratedServer {
             server = Undertow.builder()
                     .setServerOption(UndertowOptions.ENABLE_HTTP2, true)
                     .addHttpListener(Config.HTTPD_PORT, Config.HTTPD_BIND)
-                    .setHandler(handler)
+                    .setHandler(exchange -> {
+                        if (exchange.getRelativePath().startsWith("/tiles")) {
+                            exchange.getResponseHeaders().put(Headers.CACHE_CONTROL,
+                                                              "max-age=0, must-revalidate, no-cache");
+                        }
+                        resourceHandler.handleRequest(exchange);
+                    })
                     .build();
             server.start();
 

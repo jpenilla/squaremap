@@ -1,4 +1,5 @@
 import { P } from './Pl3xMap.js';
+import { Pl3xmapTileLayer } from './Pl3xmapTileLayer.js';
 
 class LayerControl {
     constructor() {
@@ -69,13 +70,10 @@ class LayerControl {
         this.playersLayer.setZIndex(world.player_tracker.z_index);
     }
     createTileLayer(world) {
-        return L.tileLayer(`tiles/${world.name}/{z}/{x}_{y}.png?{rand}`, {
+        return new Pl3xmapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
             tileSize: 512,
             minNativeZoom: 0,
-            maxNativeZoom: world.zoom.max,
-            rand: () => {
-                return Math.random();
-            }
+            maxNativeZoom: world.zoom.max
         }).addTo(P.map)
         .addEventListener("load", () => {
             // when all tiles are loaded, switch to this layer
