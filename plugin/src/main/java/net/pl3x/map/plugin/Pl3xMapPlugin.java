@@ -11,6 +11,7 @@ import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.httpd.IntegratedServer;
 import net.pl3x.map.plugin.listener.MapUpdateListeners;
+import net.pl3x.map.plugin.listener.PlayerListener;
 import net.pl3x.map.plugin.listener.WorldEventListener;
 import net.pl3x.map.plugin.network.Network;
 import net.pl3x.map.plugin.task.UpdatePlayers;
@@ -81,6 +82,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         }
 
         Network.register();
+
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         new Metrics(this, 10133); // https://bstats.org/plugin/bukkit/Pl3xMap/10133
     }
