@@ -94,7 +94,7 @@ dependencies {
 
 To compile Pl3xMap, you need to have the Paper server implementation installed to your local maven repository.
 
-Download Paper from [papermc.io/downloads](https://papermc.io/downloads) then run this Java command (using the jar you downloaded)
+Download Paper from [papermc.io/downloads](https://papermc.io/downloads) then run this Java command (using the JAR you downloaded)
 
 ```
 java -jar -Dpaperclip.install=true paper-1.17-75.jar
