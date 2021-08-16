@@ -61,6 +61,8 @@ public class Network {
             out.writeUTF(uuid.toString());
             out.writeUTF(mapWorld.name());
             out.writeInt(mapWorld.config().ZOOM_MAX);
+            out.writeInt(mapWorld.config().ZOOM_DEFAULT);
+            out.writeInt(mapWorld.config().ZOOM_EXTRA);
         });
 
         out.writeUTF(player.getWorld().getUID().toString());

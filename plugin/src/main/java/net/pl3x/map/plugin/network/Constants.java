@@ -5,7 +5,7 @@ public class Constants {
     public static final int MAP_DATA = 1;
     public static final int UPDATE_WORLD = 2;
 
-    public static final int PROTOCOL = 1;
+    public static final int PROTOCOL = 2;
 
     public static final int RESPONSE_SUCCESS = 200;
 
