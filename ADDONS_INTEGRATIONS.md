@@ -7,6 +7,7 @@ These plugins have direct integrations with Pl3xMap.
 | Lands 5.3.2+         | [Download](https://www.spigotmc.org/resources/lands.53313/)        |
 | ChunkyBorder 1.0.25+ | [Download](https://www.spigotmc.org/resources/chunkyborder.84278/) |
 | LandClaims v1.16.5+  | [Source](https://github.com/pl3xgaming/LandClaims/)                |
+| Residence 5.0.0.2+  | [Download](https://www.spigotmc.org/resources/residence.11480/)     |
 
 ## Addons
 
