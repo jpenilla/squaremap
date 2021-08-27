@@ -11,5 +11,6 @@
 | [FREESERVER](https://freeserver.pro)              | [https://pl3x.freeserver.pro](https://pl3x.freeserver.pro)     |
 | Easy SMP                                          | [https://map.2v1.me](https://map.2v1.me)                       |
 | [PartyRealms](https://partyrealms.com/home)       | [https://partyrealms.com/map](https://partyrealms.com/map)     |
+| [SnowpiercerMC](http://map.snowpiercer.net/)      | [http://map.snowpiercer.net/](http://map.snowpiercer.net/)     |
 
 If you'd like your server listed here, submit a PR or talk to BillyGalbreath in [Discord](https://discord.gg/B8WpDPXeBh).
