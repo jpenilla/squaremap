@@ -12,5 +12,6 @@
 | Easy SMP                                          | [https://map.2v1.me](https://map.2v1.me)                       |
 | [PartyRealms](https://partyrealms.com/home)       | [https://partyrealms.com/map](https://partyrealms.com/map)     |
 | [SnowpiercerMC](http://map.snowpiercer.net/)      | [http://map.snowpiercer.net/](http://map.snowpiercer.net/)     |
+| [ADHDMC](https://adhdmc.enjin.com/)               | [http://mc.adhdmc.net:8089/](http://mc.adhdmc.net:8089/)       |
 
 If you'd like your server listed here, submit a PR or talk to BillyGalbreath in [Discord](https://discord.gg/B8WpDPXeBh).
