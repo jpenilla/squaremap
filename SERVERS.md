@@ -13,5 +13,6 @@
 | [PartyRealms](https://partyrealms.com/home)       | [https://partyrealms.com/map](https://partyrealms.com/map)     |
 | [SnowpiercerMC](http://map.snowpiercer.net/)      | [http://map.snowpiercer.net/](http://map.snowpiercer.net/)     |
 | [ADHDMC](https://adhdmc.enjin.com/)               | [http://mc.adhdmc.net:8089/](http://mc.adhdmc.net:8089/)       |
+| [MineBlock](https://www.mineblock.cc/)            | [https://map.mineblock.cc/](https://map.mineblock.cc/)         |
 
 If you'd like your server listed here, submit a PR or talk to BillyGalbreath in [Discord](https://discord.gg/B8WpDPXeBh).
