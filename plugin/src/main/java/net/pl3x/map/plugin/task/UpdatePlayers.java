@@ -42,6 +42,9 @@ public class UpdatePlayers extends BukkitRunnable {
                 if (this.plugin.playerManager().hidden(player)) {
                     return;
                 }
+                if (player.hasMetadata("NPC")) {
+                    return;
+                }
                 Map<String, Object> playerEntry = new HashMap<>();
                 Location playerLoc = player.getLocation();
                 playerEntry.put("name", player.getName());
