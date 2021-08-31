@@ -14,5 +14,6 @@
 | [SnowpiercerMC](http://map.snowpiercer.net/)      | [http://map.snowpiercer.net/](http://map.snowpiercer.net/)     |
 | [ADHDMC](https://adhdmc.enjin.com/)               | [http://mc.adhdmc.net:8089/](http://mc.adhdmc.net:8089/)       |
 | [MineBlock](https://www.mineblock.cc/)            | [https://map.mineblock.cc/](https://map.mineblock.cc/)         |
+| [Beacoland](https://beacoland.com/)            | [https://beacoland.com/map](https://beacoland.com/map)         |
 
 If you'd like your server listed here, submit a PR or talk to BillyGalbreath in [Discord](https://discord.gg/B8WpDPXeBh).
