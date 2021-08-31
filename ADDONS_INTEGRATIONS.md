@@ -29,5 +29,5 @@ These plugins are add-ons for Pl3xMap.
 | Pl3xMap-Skins           | Store skins from in-game                 | [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-Skins)           | [Source](https://github.com/pl3xgaming/Pl3xMap-Skins)           |
 | Pl3xMap-SuperVanish     | Hide vanished players                    | [Download](https://ci.notom3ga.me/job/Pl3xMap-SuperVanish)               | [Source](https://github.com/notOM3GA/Pl3xMap-SuperVanish)       |
 | Pl3xMap-Towny           | Shows Towny regions                      | [Download](https://github.com/silverwolfg11/Pl3xMap-Towny/releases)      | [Source](https://github.com/silverwolfg11/Pl3xMap-Towny)        |
-| Pl3xMap-VanishNoPacket  | Hide vanished players                    | [Download](https://ci.notom3ga.me/job/Pl3xMap-VanishNoPacket)            | [Source](https://github.com/notOM3GA/Pl3xMap-VanishNoPacket)    |
+| Pl3xMap-VanishNoPacket  | Hide vanished players                    | [Download](https://github.com/AAigars/Pl3xMap-VanishNoPacket/releases)   | [Source](https://github.com/AAigars/Pl3xMap-VanishNoPacket)     |
 | Pl3xMap-WorldGuard      | Shows WorldGuard regions                 | [Download](https://ci.pl3x.net/view/Pl3xMap/job/Pl3xMap-WorldGuard)      | [Source](https://github.com/pl3xgaming/Pl3xMap-WorldGuard)      |
