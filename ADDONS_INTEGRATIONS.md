@@ -31,3 +31,4 @@ These plugins are add-ons for Pl3xMap.
 | Pl3xMap-Towny           | Shows Towny regions                      | [Download](https://github.com/silverwolfg11/Pl3xMap-Towny/releases)      | [Source](https://github.com/silverwolfg11/Pl3xMap-Towny)        |
 | Pl3xMap-VanishNoPacket  | Hide vanished players                    | [Download](https://github.com/AAigars/Pl3xMap-VanishNoPacket/releases)   | [Source](https://github.com/AAigars/Pl3xMap-VanishNoPacket)     |
 | Pl3xMap-WorldGuard      | Shows WorldGuard regions                 |  | [Source](https://github.com/pl3xgaming/Pl3xMap-WorldGuard)      |
+| Pl3xMap-WorldTime       | Shows the ingame World time              |  | [Source](https://github.com/gbl/PL3xMapTime)                    |
