@@ -32,3 +32,4 @@ These plugins are add-ons for Pl3xMap.
 | Pl3xMap-VanishNoPacket  | Hide vanished players                    | [Download](https://github.com/AAigars/Pl3xMap-VanishNoPacket/releases)   | [Source](https://github.com/AAigars/Pl3xMap-VanishNoPacket)     |
 | Pl3xMap-WorldGuard      | Shows WorldGuard regions                 |  | [Source](https://github.com/pl3xgaming/Pl3xMap-WorldGuard)      |
 | Pl3xMap-WorldTime       | Shows the ingame World time              |  | [Source](https://github.com/gbl/PL3xMapTime)                    |
+| Pl3xMap-Marker          | Add markers to the map                   | [Download](https://www.spigotmc.org/resources/pl3xmap-marker.97262/)   | [Source](https://github.com/SentixDev/Pl3xMap-Marker)
