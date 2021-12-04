@@ -5,12 +5,12 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Pl3xMap"
+rootProject.name = "squaremap"
 
-setupSubproject("pl3xmap-api") {
+setupSubproject("squaremap-api") {
     projectDir = file("api")
 }
-setupSubproject("pl3xmap-plugin") {
+setupSubproject("squaremap-plugin") {
     projectDir = file("plugin")
 }
 

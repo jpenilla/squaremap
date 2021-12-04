@@ -57,9 +57,9 @@ public final class Lang {
     public static String CLICK_TO_CONFIRM = "Click to confirm";
 
     @LangKey("command.prefix")
-    public static String COMMAND_PREFIX = "<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> ";
+    public static String COMMAND_PREFIX = "<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> ";
     @LangKey("command.description.help")
-    public static String HELP_COMMAND_DESCRIPTION = "Get help for Pl3xmap commands";
+    public static String HELP_COMMAND_DESCRIPTION = "Get help for squaremap commands";
     @LangKey("command.description.resetmap")
     public static String RESETMAP_COMMAND_DESCRIPTION = "Resets the map of a specified world";
     @LangKey("command.description.confirm")
@@ -98,7 +98,7 @@ public final class Lang {
     public static String PLAYER_SHOWN = "<green><player> is no longer hidden from map";
 
     @LangKey("ui.page-title")
-    public static String UI_TITLE = "Pl3xMap - {world}";
+    public static String UI_TITLE = "squaremap - {world}";
     @LangKey("ui.coordinates")
     public static String UI_COORDINATES_HTML = "Coordinates<br/>{x}, {z}";
     @LangKey("ui.sidebar.player-list")
@@ -116,7 +116,7 @@ public final class Lang {
     public static String PLUGIN_RELOADED = "<green><name> v<version> reloaded";
 
     @LangKey("log.prefix")
-    public static String LOGGER_PREFIX = "<dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>";
+    public static String LOGGER_PREFIX = "<dark_aqua>[<light_purple>squaremap</light_purple>]</dark_aqua>";
 
     @LangKey("log.started-full-render")
     public static String LOG_STARTED_FULLRENDER = "<dark_aqua>Started full map render for <yellow><world>";

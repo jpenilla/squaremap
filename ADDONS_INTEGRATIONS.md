@@ -1,6 +1,6 @@
 ## Integrations
 
-These plugins have direct integrations with Pl3xMap.
+These plugins have direct integrations with squaremap.
 
 | Name                 | Download/Source                                                    |
 | -------------------- | ------------------------------------------------------------------ |
@@ -13,7 +13,7 @@ These plugins have direct integrations with Pl3xMap.
 
 ## Addons
 
-These plugins are add-ons for Pl3xMap.
+These plugins are add-ons for squaremap.
 
 | Name                    | Description                              | Download                                                                 | Source                                                          |
 | ----------------------- | ---------------------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------- |

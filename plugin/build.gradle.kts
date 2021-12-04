@@ -8,11 +8,15 @@ plugins {
 dependencies {
     paperDevBundle("1.18-R0.1-SNAPSHOT")
 
-    implementation(project(":pl3xmap-api"))
+    implementation(project(":squaremap-api"))
     implementation(platform("cloud.commandframework:cloud-bom:1.6.0"))
     implementation("cloud.commandframework", "cloud-paper")
-    implementation("cloud.commandframework", "cloud-minecraft-extras")
-    implementation("net.kyori", "adventure-text-minimessage", "4.2.0-SNAPSHOT")
+    implementation("cloud.commandframework", "cloud-minecraft-extras") {
+        isTransitive = false // Paper provides adventure
+    }
+    implementation("net.kyori", "adventure-text-minimessage", "4.2.0-SNAPSHOT") {
+        isTransitive = false // Paper provides adventure
+    }
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
     compileOnly("org.jboss.logging:jboss-logging-annotations:2.2.1.Final")
     implementation("org.bstats", "bstats-bukkit", "2.2.1")
@@ -24,7 +28,7 @@ tasks {
         archiveFileName.set("${rootProject.name}-${rootProject.version}-dev-all.jar")
         from(rootProject.projectDir.resolve("LICENSE"))
         minimize {
-            exclude { it.moduleName == "pl3xmap-api" }
+            exclude { it.moduleName == "squaremap-api" }
             exclude(dependency("io.undertow:.*:.*")) // does not like being minimized _or_ relocated (xnio errors)
         }
         listOf(
@@ -32,8 +36,9 @@ tasks {
             "io.leangen.geantyref",
             "net.kyori.adventure.text.minimessage",
             "org.bstats",
-            "xyz.jpenilla.reflectionremapper"
-        ).forEach { relocate(it, "${rootProject.group}.plugin.lib.$it") }
+            "xyz.jpenilla.reflectionremapper",
+            "net.fabricmc.mappingio",
+        ).forEach { relocate(it, "squaremap.libraries.$it") }
     }
     reobfJar {
         outputJar.set(project.layout.buildDirectory.file("libs/${rootProject.name}-${rootProject.version}.jar"))
