@@ -20,7 +20,7 @@ dependencies {
 
 tasks {
     shadowJar {
-        archiveFileName.set("${rootProject.name}-${rootProject.version}-mojang-mapped.jar")
+        archiveFileName.set("${rootProject.name}-${rootProject.version}-dev-all.jar")
         from(rootProject.projectDir.resolve("LICENSE"))
         minimize {
             exclude { it.moduleName == "pl3xmap-api" }

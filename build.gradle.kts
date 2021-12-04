@@ -1,7 +1,8 @@
+import net.kyori.indra.IndraExtension
+
 plugins {
-    `java-library`
     val indraVersion = "2.0.6"
-    id("net.kyori.indra") version indraVersion
+    id("net.kyori.indra") version indraVersion apply false
     id("net.kyori.indra.git") version indraVersion
 }
 
@@ -16,7 +17,7 @@ subprojects {
     apply(plugin = "net.kyori.indra")
     apply(plugin = "net.kyori.indra.git")
 
-    indra {
+    configure<IndraExtension> {
         javaVersions {
             target(17)
         }
