@@ -31,6 +31,9 @@ subprojects {
     repositories {
         mavenCentral()
         maven("https://papermc.io/repo/repository/maven-public/")
+        maven("https://maven.fabricmc.net/") {
+            mavenContent { includeGroup("net.fabricmc") }
+        }
         maven("https://repo.incendo.org/content/repositories/snapshots/") {
             mavenContent {
                 includeGroup("cloud.commandframework")
