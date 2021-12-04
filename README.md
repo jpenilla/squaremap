@@ -8,7 +8,6 @@
 [![Join us on Discord](https://img.shields.io/discord/838127837667131433.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/B8WpDPXeBh)
 
 [![Pl3xMap's Stargazers](https://img.shields.io/github/stars/jpenilla/Pl3xMap?label=stars&logo=github)](https://github.com/jpenilla/Pl3xMap/stargazers)
-[![BillyGalbreath's Followers](https://img.shields.io/github/followers/BillyGalbreath?label=followers&logo=github)](https://github.com/BillyGalbreath?tab=followers)
 [![Pl3xMap Forks](https://img.shields.io/github/forks/jpenilla/Pl3xMap?label=forks&logo=github)](https://github.com/jpenilla/Pl3xMap/network/members)
 [![Pl3xMap Watchers](https://img.shields.io/github/watchers/jpenilla/Pl3xMap?label=watchers&logo=github)](https://github.com/jpenilla/Pl3xMap/watchers)
 
