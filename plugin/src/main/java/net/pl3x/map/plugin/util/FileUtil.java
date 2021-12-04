@@ -1,11 +1,5 @@
 package net.pl3x.map.plugin.util;
 
-import net.pl3x.map.plugin.Logger;
-import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.configuration.Config;
-import net.pl3x.map.plugin.configuration.Lang;
-import org.bukkit.World;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,6 +26,13 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import net.minecraft.world.level.storage.LevelStorageSource;
+import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
+import net.pl3x.map.plugin.configuration.Config;
+import net.pl3x.map.plugin.configuration.Lang;
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 
 public class FileUtil {
     public static Path PLUGIN_DIR = Pl3xMapPlugin.getInstance().getDataFolder().toPath();
@@ -55,17 +56,8 @@ public class FileUtil {
     public static Path getRegionFolder(World world) {
         Path dir = REGION_DIRS.get(world.getUID());
         if (dir == null) {
-            switch (world.getEnvironment()) {
-                case NETHER:
-                    dir = Path.of(world.getWorldFolder().getAbsolutePath(), "DIM-1", "region");
-                    break;
-                case THE_END:
-                    dir = Path.of(world.getWorldFolder().getAbsolutePath(), "DIM1", "region");
-                    break;
-                case NORMAL:
-                default:
-                    dir = Path.of(world.getWorldFolder().getAbsolutePath(), "region");
-            }
+            dir = LevelStorageSource.getStorageFolder(world.getWorldFolder().toPath(), ((CraftWorld) world).getHandle().getTypeKey())
+                    .resolve("region");
             REGION_DIRS.put(world.getUID(), dir);
         }
         return dir;
