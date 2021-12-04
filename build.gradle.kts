@@ -27,7 +27,18 @@ subprojects {
     repositories {
         mavenCentral()
         maven("https://papermc.io/repo/repository/maven-public/")
-        maven("https://repo.incendo.org/content/repositories/snapshots/")
+        maven("https://repo.incendo.org/content/repositories/snapshots/") {
+            mavenContent {
+                includeGroup("cloud.commandframework")
+                snapshotsOnly()
+            }
+        }
+        maven("https://repo.jpenilla.xyz/snapshots/") {
+            mavenContent {
+                includeGroup("xyz.jpenilla")
+                snapshotsOnly()
+            }
+        }
     }
 }
 

@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -26,8 +25,9 @@ import net.minecraft.world.level.material.Material;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import static net.pl3x.map.plugin.util.ReflectionUtil.needField;
+import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
+import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
+import xyz.jpenilla.reflectionremapper.proxy.annotation.Proxies;
 
 public final class BiomeColors {
     private static final Set<Block> grassColorBlocks = Set.of(
@@ -94,11 +94,11 @@ public final class BiomeColors {
         for (final Biome biome : biomeRegistry) {
             float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
             float humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
-            this.grassColors.put(biome, BiomeEffectsReflection.grassColor(biome)
+            this.grassColors.put(biome, BiomeSpecialEffectsHelper.grassColor(biome)
                     .orElse(getDefaultGrassColor(temperature, humidity)).intValue());
-            this.foliageColors.put(biome, BiomeEffectsReflection.foliageColor(biome)
+            this.foliageColors.put(biome, BiomeSpecialEffectsHelper.foliageColor(biome)
                     .orElse(Colors.mix(Colors.leavesMapColor(), getDefaultFoliageColor(temperature, humidity), 0.85f)).intValue());
-            this.waterColors.put(biome, BiomeEffectsReflection.waterColor(biome));
+            this.waterColors.put(biome, BiomeSpecialEffectsHelper.waterColor(biome));
         }
 
         world.advanced().COLOR_OVERRIDES_BIOME_FOLIAGE.forEach((key, value) -> this.foliageColors.put(key, value.intValue()));
@@ -184,6 +184,7 @@ public final class BiomeColors {
 
     private int sampleNeighbors(final @NonNull BlockPos pos, final int radius, final @NonNull ColorSampler colorSampler) {
         int rgb, r = 0, g = 0, b = 0, count = 0;
+        // Sampling in the y direction as well would improve output, however would complicate caching (low priority, PRs accepted)
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
                 this.sharedBlockPos.set(x, pos.getY(), z);
@@ -216,7 +217,7 @@ public final class BiomeColors {
     }
 
     private static int modifiedGrassColor(final @NonNull Biome biome, final @NonNull BlockPos pos, final int color) {
-        BiomeSpecialEffects.GrassColorModifier modifier = BiomeEffectsReflection.grassColorModifier(biome);
+        BiomeSpecialEffects.GrassColorModifier modifier = BiomeSpecialEffectsHelper.grassColorModifier(biome);
         switch (modifier) {
             case NONE:
                 return color;
@@ -235,68 +236,44 @@ public final class BiomeColors {
     }
 
     // Utils for reflecting into BiomeFog/BiomeEffects
-    private static final class BiomeEffectsReflection {
-        private BiomeEffectsReflection() {
+    private static final class BiomeSpecialEffectsHelper {
+        private BiomeSpecialEffectsHelper() {
         }
 
-        // todo: use reflection-remapper
-        private static final Field grass_color = needField(
-                BiomeSpecialEffects.class,
-                "g",
-                "grassColorOverride"
-        );
-        private static final Field foliage_color = needField(
-                BiomeSpecialEffects.class,
-                "f",
-                "foliageColorOverride"
-        );
-        private static final Field water_color = needField(
-                BiomeSpecialEffects.class,
-                "c",
-                "waterColor"
-        );
-        private static final Field grass_color_modifier = needField(
-                BiomeSpecialEffects.class,
-                "h",
-                "grassColorModifier"
-        );
+        private static final BiomeSpecialEffectsProxy BIOME_SPECIAL_EFFECTS;
 
-        @SuppressWarnings("unchecked")
+        static {
+            final ReflectionRemapper reflectionRemapper = ReflectionRemapper.forReobfMappingsInPaperJar();
+            final ReflectionProxyFactory factory = ReflectionProxyFactory.create(reflectionRemapper, BiomeSpecialEffectsHelper.class.getClassLoader());
+
+            BIOME_SPECIAL_EFFECTS = factory.reflectionProxy(BiomeSpecialEffectsProxy.class);
+        }
+
+        @Proxies(BiomeSpecialEffects.class)
+        interface BiomeSpecialEffectsProxy {
+            Optional<Integer> grassColorOverride(BiomeSpecialEffects effects);
+
+            Optional<Integer> foliageColorOverride(BiomeSpecialEffects effects);
+
+            BiomeSpecialEffects.GrassColorModifier grassColorModifier(BiomeSpecialEffects effects);
+
+            int waterColor(BiomeSpecialEffects effects);
+        }
+
         private static @NonNull Optional<Integer> grassColor(final @NonNull Biome biome) {
-            try {
-                return (Optional<Integer>) grass_color.get(biomeEffects(biome));
-            } catch (final IllegalAccessException e) {
-                throw new IllegalStateException("Could not find grass color", e);
-            }
+            return BIOME_SPECIAL_EFFECTS.grassColorOverride(biome.getSpecialEffects());
         }
 
-        @SuppressWarnings("unchecked")
         private static Optional<Integer> foliageColor(final @NonNull Biome biome) {
-            try {
-                return (Optional<Integer>) foliage_color.get(biomeEffects(biome));
-            } catch (final IllegalAccessException e) {
-                throw new IllegalStateException("Could not find foliage color", e);
-            }
+            return BIOME_SPECIAL_EFFECTS.foliageColorOverride(biome.getSpecialEffects());
         }
 
         private static BiomeSpecialEffects.@NonNull GrassColorModifier grassColorModifier(final @NonNull Biome biome) {
-            try {
-                return (BiomeSpecialEffects.GrassColorModifier) grass_color_modifier.get(biomeEffects(biome));
-            } catch (final IllegalAccessException e) {
-                throw new IllegalStateException("Could not find grass color modifier", e);
-            }
+            return BIOME_SPECIAL_EFFECTS.grassColorModifier(biome.getSpecialEffects());
         }
 
         private static int waterColor(final @NonNull Biome biome) {
-            try {
-                return water_color.getInt(biomeEffects(biome));
-            } catch (final IllegalAccessException e) {
-                throw new IllegalStateException("Could not find water color", e);
-            }
-        }
-
-        private static BiomeSpecialEffects biomeEffects(Biome biome) {
-            return biome.getSpecialEffects();
+            return BIOME_SPECIAL_EFFECTS.waterColor(biome.getSpecialEffects());
         }
     }
 }

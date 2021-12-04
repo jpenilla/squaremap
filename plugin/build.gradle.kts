@@ -16,6 +16,7 @@ dependencies {
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
     compileOnly("org.jboss.logging:jboss-logging-annotations:2.2.1.Final")
     implementation("org.bstats", "bstats-bukkit", "2.2.1")
+    implementation("xyz.jpenilla:reflection-remapper:0.1.0-SNAPSHOT")
 }
 
 tasks {
@@ -30,7 +31,8 @@ tasks {
             "cloud.commandframework",
             "io.leangen.geantyref",
             "net.kyori.adventure.text.minimessage",
-            "org.bstats"
+            "org.bstats",
+            "xyz.jpenilla.reflectionremapper"
         ).forEach { relocate(it, "${rootProject.group}.plugin.lib.$it") }
     }
     reobfJar {
