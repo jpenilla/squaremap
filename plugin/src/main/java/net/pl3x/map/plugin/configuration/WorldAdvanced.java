@@ -79,7 +79,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
     public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_FOLIAGE = new HashMap<>();
 
     private void colorOverrideBiomeFoliageSettings() {
-        final Registry<Biome> registry = BiomeColors.getBiomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
         COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
         getMap("color-overrides.biomes.foliage", Map.ofEntries(
                 Map.entry("minecraft:dark_forest", "#1c7b07"),
@@ -100,7 +100,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
     public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_GRASS = new HashMap<>();
 
     private void colorOverrideBiomeGrassSettings() {
-        final Registry<Biome> registry = BiomeColors.getBiomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
         COLOR_OVERRIDES_BIOME_GRASS.clear();
         getMap("color-overrides.biomes.grass", Map.<String, String>ofEntries(
         )).forEach((key, color) -> {
@@ -114,7 +114,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
     public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_WATER = new HashMap<>();
 
     private void colorOverrideBiomeWaterSettings() {
-        final Registry<Biome> registry = BiomeColors.getBiomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
         COLOR_OVERRIDES_BIOME_WATER.clear();
         getMap("color-overrides.biomes.water", Map.<String, String>ofEntries(
         )).forEach((key, color) -> {
