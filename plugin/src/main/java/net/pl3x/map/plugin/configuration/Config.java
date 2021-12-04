@@ -69,7 +69,7 @@ public class Config extends AbstractConfig {
         UI_SIDEBAR_PINNED = config.getString("settings.ui.sidebar.pinned", UI_SIDEBAR_PINNED);
     }
 
-    public static String MAIN_COMMAND_LABEL = "pl3xmap";
+    public static String MAIN_COMMAND_LABEL = "squaremap";
     public static final List<String> MAIN_COMMAND_ALIASES = new ArrayList<>();
 
     private static void commandSettings() {

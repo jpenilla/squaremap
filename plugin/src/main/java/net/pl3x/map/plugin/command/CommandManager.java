@@ -57,7 +57,7 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
             this.registerAsynchronousCompletions();
         }
 
-        this.registerExceptionHandlers(plugin);
+        this.registerExceptionHandlers();
 
         ImmutableList.of(
                 new HelpCommand(plugin, this),
@@ -74,7 +74,7 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
 
     }
 
-    private void registerExceptionHandlers(final @NonNull Pl3xMapPlugin plugin) {
+    private void registerExceptionHandlers() {
         new MinecraftExceptionHandler<CommandSender>()
                 .withDefaultHandlers()
                 .withDecorator(component -> Component.text()
@@ -108,7 +108,7 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
         return this.commandBuilder(Config.MAIN_COMMAND_LABEL, Config.MAIN_COMMAND_ALIASES.toArray(String[]::new))
                 /* MinecraftHelp uses the MinecraftExtrasMetaKeys.DESCRIPTION meta, this is just so we give Bukkit a description
                  * for our commands in the Bukkit and EssentialsX '/help' command */
-                .meta(CommandMeta.DESCRIPTION, String.format("Pl3xMap command. '/%s help'", Config.MAIN_COMMAND_LABEL));
+                .meta(CommandMeta.DESCRIPTION, String.format("squaremap command. '/%s help'", Config.MAIN_COMMAND_LABEL));
     }
 
 }

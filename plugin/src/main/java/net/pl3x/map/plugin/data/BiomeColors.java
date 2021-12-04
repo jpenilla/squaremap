@@ -27,6 +27,7 @@ import net.pl3x.map.plugin.util.FileUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
+import xyz.jpenilla.reflectionremapper.proxy.annotation.FieldGetter;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.Proxies;
 
 public final class BiomeColors {
@@ -217,22 +218,20 @@ public final class BiomeColors {
     }
 
     private static int modifiedGrassColor(final @NonNull Biome biome, final @NonNull BlockPos pos, final int color) {
-        BiomeSpecialEffects.GrassColorModifier modifier = BiomeSpecialEffectsHelper.grassColorModifier(biome);
-        switch (modifier) {
-            case NONE:
-                return color;
-            case SWAMP:
-                // swamps have 2 grass colors, depends on sample from noise generator
-                double sample = Biome.BIOME_INFO_NOISE.getValue(pos.getX() * 0.0225, pos.getZ() * 0.0225, false);
-                if (sample < -0.1) {
-                    return 5011004;
-                }
-                return 6975545;
-            case DARK_FOREST:
-                return (color & 0xFEFEFE) + 2634762 >> 1;
-            default:
-                throw new IllegalArgumentException("Unknown or invalid grass color modifier: " + modifier.getName());
+        return switch (BiomeSpecialEffectsHelper.grassColorModifier(biome)) {
+            case NONE -> color;
+            case SWAMP -> modifiedSwampGrassColor(pos);
+            case DARK_FOREST -> (color & 0xFEFEFE) + 2634762 >> 1;
+        };
+    }
+
+    private static int modifiedSwampGrassColor(final @NonNull BlockPos pos) {
+        // swamps have 2 grass colors, depends on sample from noise generator
+        double sample = Biome.BIOME_INFO_NOISE.getValue(pos.getX() * 0.0225, pos.getZ() * 0.0225, false);
+        if (sample < -0.1) {
+            return 5011004;
         }
+        return 6975545;
     }
 
     // Utils for reflecting into BiomeFog/BiomeEffects
@@ -251,12 +250,16 @@ public final class BiomeColors {
 
         @Proxies(BiomeSpecialEffects.class)
         interface BiomeSpecialEffectsProxy {
+            @FieldGetter("grassColorOverride")
             Optional<Integer> grassColorOverride(BiomeSpecialEffects effects);
 
+            @FieldGetter("foliageColorOverride")
             Optional<Integer> foliageColorOverride(BiomeSpecialEffects effects);
 
+            @FieldGetter("grassColorModifier")
             BiomeSpecialEffects.GrassColorModifier grassColorModifier(BiomeSpecialEffects effects);
 
+            @FieldGetter("waterColor")
             int waterColor(BiomeSpecialEffects effects);
         }
 
