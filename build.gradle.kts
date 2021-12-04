@@ -3,6 +3,7 @@ import net.kyori.indra.IndraExtension
 plugins {
     val indraVersion = "2.0.6"
     id("net.kyori.indra") version indraVersion apply false
+    id("net.kyori.indra.publishing") version indraVersion apply false
     id("net.kyori.indra.git") version indraVersion
 }
 

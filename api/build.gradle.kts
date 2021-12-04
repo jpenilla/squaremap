@@ -1,5 +1,5 @@
 plugins {
-    `maven-publish`
+    id("net.kyori.indra.publishing")
 }
 
 dependencies {
@@ -12,14 +12,6 @@ java {
     withSourcesJar()
 }
 
-publishing {
-    publications {
-        register<MavenPublication>("maven") {
-            from(components["java"])
-        }
-    }
-
-    repositories.maven("https://repo.jpenilla.xyz/snapshots") {
-        credentials(PasswordCredentials::class)
-    }
+indra {
+    publishSnapshotsTo("jmp", "https://repo.jpenilla.xyz/snapshots")
 }
