@@ -10,8 +10,9 @@ rootProject.name = "Pl3xMap"
 setupSubproject("pl3xmap-api") {
     projectDir = file("api")
 }
-
-include(":plugin")
+setupSubproject("pl3xmap-plugin") {
+    projectDir = file("plugin")
+}
 
 inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {
     include(name)
