@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "xyz.jpenilla"
-    version = "1.1.0-SNAPSHOT".decorateVersion()
+    version = "1.1.0-SNAPSHOT"
     description = "Minimalistic and lightweight world map viewer for Paper servers"
 }
 
@@ -17,6 +17,10 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "net.kyori.indra")
     apply(plugin = "net.kyori.indra.git")
+
+    if (name.endsWith("-plugin")) {
+        version = (version as String).decorateVersion()
+    }
 
     configure<IndraExtension> {
         javaVersions {
