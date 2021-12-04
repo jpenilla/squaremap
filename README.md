@@ -4,7 +4,6 @@
 # Pl3xMap
 
 [![MIT License](https://img.shields.io/github/license/jpenilla/Pl3xMap?&logo=github)](License)
-[![CodeFactor](https://www.codefactor.io/repository/github/jpenilla/pl3xmap/badge)](https://www.codefactor.io/repository/github/jpenilla/pl3xmap)
 [![Join us on Discord](https://img.shields.io/discord/838127837667131433.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/B8WpDPXeBh)
 
 [![Pl3xMap's Stargazers](https://img.shields.io/github/stars/jpenilla/Pl3xMap?label=stars&logo=github)](https://github.com/jpenilla/Pl3xMap/stargazers)
