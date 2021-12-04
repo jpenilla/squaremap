@@ -38,15 +38,19 @@ import net.pl3x.map.plugin.task.render.AbstractRender;
 import net.pl3x.map.plugin.task.render.BackgroundRender;
 import net.pl3x.map.plugin.task.render.FullRender;
 import net.pl3x.map.plugin.util.Colors;
+import net.pl3x.map.plugin.util.RecordTypeAdapterFactory;
 import net.pl3x.map.plugin.util.ReflectionUtil;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class MapWorld implements net.pl3x.map.api.MapWorld {
-    private static final String dirtyChunksFileName = "dirty_chunks.json";
-    private static final String renderProgressFileName = "resume_render.json";
-    private static final Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
-    private static final Map<UUID, LayerRegistry> layerRegistries = new HashMap<>();
+    private static final String DIRTY_CHUNKS_FILE_NAME = "dirty_chunks.json";
+    private static final String RENDER_PROGRESS_FILE_NAME = "resume_render.json";
+    private static final Gson GSON = new GsonBuilder()
+        .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
+        .enableComplexMapKeySerialization()
+        .create();
+    private static final Map<UUID, LayerRegistry> LAYER_REGISTRIES = new HashMap<>();
 
     private final ServerLevel world;
     private final org.bukkit.World bukkitWorld;
@@ -101,12 +105,12 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     public Map<RegionCoordinate, Boolean> getRenderProgress() {
         try {
-            final Path file = this.dataPath.resolve(renderProgressFileName);
+            final Path file = this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME);
             if (Files.exists(file)) {
                 String json = String.join("", Files.readAllLines(file));
                 TypeToken<LinkedHashMap<RegionCoordinate, Boolean>> token = new TypeToken<>() {
                 };
-                return gson.fromJson(json, token.getType());
+                return GSON.fromJson(json, token.getType());
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             Logger.warn(String.format("Failed to deserialize render progress for world '%s'", this.name()), e);
@@ -116,7 +120,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     public void saveRenderProgress(Map<RegionCoordinate, Boolean> regions) {
         try {
-            Files.writeString(this.dataPath.resolve(renderProgressFileName), gson.toJson(regions));
+            Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
         } catch (IOException e) {
             Logger.warn(String.format("Failed to serialize render progress for world '%s'", this.name()), e);
         }
@@ -124,7 +128,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     private void serializeDirtyChunks() {
         try {
-            Files.writeString(this.dataPath.resolve(dirtyChunksFileName), gson.toJson(this.modifiedChunks));
+            Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
         } catch (IOException e) {
             Logger.warn(String.format("Failed to serialize dirty chunks for world '%s'", this.name()), e);
         }
@@ -132,9 +136,9 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     private void deserializeDirtyChunks() {
         try {
-            final Path file = this.dataPath.resolve(dirtyChunksFileName);
+            final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
             if (Files.exists(file)) {
-                this.modifiedChunks.addAll(gson.fromJson(
+                this.modifiedChunks.addAll(GSON.fromJson(
                         new FileReader(file.toFile()),
                         TypeToken.getParameterized(List.class, ChunkCoordinate.class).getType()
                 ));
@@ -236,7 +240,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     public void finishedRender() {
         try {
-            Files.deleteIfExists(this.dataPath.resolve(renderProgressFileName));
+            Files.deleteIfExists(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME));
         } catch (IOException e) {
             Logger.warn(String.format("Failed to delete render progress data for world '%s'", this.name()), e);
         }
@@ -287,10 +291,10 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     @Override
     public @NonNull Registry<LayerProvider> layerRegistry() {
-        final LayerRegistry registry = layerRegistries.get(this.uuid());
+        final LayerRegistry registry = LAYER_REGISTRIES.get(this.uuid());
         if (registry == null) {
             final LayerRegistry newRegistry = new LayerRegistry();
-            layerRegistries.put(this.uuid(), newRegistry);
+            LAYER_REGISTRIES.put(this.uuid(), newRegistry);
             return newRegistry;
         }
         return registry;

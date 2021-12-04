@@ -38,7 +38,7 @@ public final class HelpCommand extends Pl3xMapCommand {
                 NamedTextColor.GRAY,
                 NamedTextColor.DARK_GRAY
         ));
-        this.minecraftHelp.setMessage(MinecraftHelp.MESSAGE_HELP_TITLE, "Pl3xMap Help");
+        this.minecraftHelp.setMessage(MinecraftHelp.MESSAGE_HELP_TITLE, "squaremap command help");
     }
 
     @Override
