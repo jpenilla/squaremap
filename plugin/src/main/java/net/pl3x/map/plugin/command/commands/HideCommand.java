@@ -29,7 +29,7 @@ public final class HideCommand extends Pl3xMapCommand {
                         .handler(this::executeHide));
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("hide")
-                        .argument(SinglePlayerSelectorArgument.optional("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
+                        .argument(SinglePlayerSelectorArgument.of("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
                         .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.HIDE_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.hide.others")
                         .handler(this::executeHide));

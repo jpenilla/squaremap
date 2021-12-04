@@ -29,7 +29,7 @@ public final class ShowCommand extends Pl3xMapCommand {
                         .handler(this::executeShow));
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("show")
-                        .argument(SinglePlayerSelectorArgument.optional("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
+                        .argument(SinglePlayerSelectorArgument.of("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
                         .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.SHOW_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.show.others")
                         .handler(this::executeShow));
