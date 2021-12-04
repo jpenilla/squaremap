@@ -99,12 +99,12 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         }
     }
 
-    public Map<Region, Boolean> getRenderProgress() {
+    public Map<RegionCoordinate, Boolean> getRenderProgress() {
         try {
             final Path file = this.dataPath.resolve(renderProgressFileName);
             if (Files.exists(file)) {
                 String json = String.join("", Files.readAllLines(file));
-                TypeToken<LinkedHashMap<Region, Boolean>> token = new TypeToken<>() {
+                TypeToken<LinkedHashMap<RegionCoordinate, Boolean>> token = new TypeToken<>() {
                 };
                 return gson.fromJson(json, token.getType());
             }
@@ -114,7 +114,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         return null;
     }
 
-    public void saveRenderProgress(Map<Region, Boolean> regions) {
+    public void saveRenderProgress(Map<RegionCoordinate, Boolean> regions) {
         try {
             Files.writeString(this.dataPath.resolve(renderProgressFileName), gson.toJson(regions));
         } catch (IOException e) {

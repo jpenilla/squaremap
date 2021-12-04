@@ -19,10 +19,10 @@ public class Image {
     public static final int SIZE = 512;
     private final int[][] pixels = new int[SIZE][SIZE];
     private final int maxZoom;
-    private final Region region;
+    private final RegionCoordinate region;
     private final Path directory;
 
-    public Image(Region region, Path directory, int maxZoom) {
+    public Image(RegionCoordinate region, Path directory, int maxZoom) {
         this.region = region;
         this.directory = directory;
         this.maxZoom = maxZoom;

@@ -23,7 +23,7 @@ public record ChunkCoordinate(int x, int z) {
         return Numbers.chunkToBlock(this.z);
     }
 
-    public Region regionCoordinate() {
-        return new Region(this.getRegionX(), this.getRegionZ());
+    public RegionCoordinate regionCoordinate() {
+        return new RegionCoordinate(this.getRegionX(), this.getRegionZ());
     }
 }

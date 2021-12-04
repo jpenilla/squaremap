@@ -2,7 +2,7 @@ package net.pl3x.map.plugin.visibilitylimit;
 
 import net.pl3x.map.api.visibilitylimit.VisibilityShape;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
-import net.pl3x.map.plugin.data.Region;
+import net.pl3x.map.plugin.data.RegionCoordinate;
 import net.pl3x.map.plugin.util.Numbers;
 
 import org.bukkit.World;
@@ -37,7 +37,7 @@ public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.V
      * @return The amount of chunks, from 0 to {@link #REGION_SIZE_CHUNKS} *
      *         {@link #REGION_SIZE_CHUNKS}.
      */
-    public int countChunksInRegion(Region region) {
+    public int countChunksInRegion(RegionCoordinate region) {
         switch (this.shapes.size()) {
             case 0:
                 return REGION_SIZE_CHUNKS * REGION_SIZE_CHUNKS;
@@ -163,7 +163,7 @@ public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.V
         return false;
     }
 
-    public boolean shouldRenderRegion(Region region) {
+    public boolean shouldRenderRegion(RegionCoordinate region) {
         return shouldRenderRegion(region.x(), region.z());
     }
 

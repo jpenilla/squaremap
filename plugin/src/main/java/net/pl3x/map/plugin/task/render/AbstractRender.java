@@ -32,7 +32,7 @@ import net.pl3x.map.plugin.data.BiomeColors;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
-import net.pl3x.map.plugin.data.Region;
+import net.pl3x.map.plugin.data.RegionCoordinate;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
@@ -129,7 +129,7 @@ public abstract class AbstractRender implements Runnable {
         return this.futureTask;
     }
 
-    protected final void mapRegion(final @NonNull Region region) {
+    protected final void mapRegion(final @NonNull RegionCoordinate region) {
         Image image = new Image(region, worldTilesDir, mapWorld.config().ZOOM_MAX);
         int startX = region.getChunkX();
         int startZ = region.getChunkZ();

@@ -5,7 +5,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public record Region(int x, int z) {
+public record RegionCoordinate(int x, int z) {
 
     public int getChunkX() {
         return Numbers.regionToChunk(this.x);

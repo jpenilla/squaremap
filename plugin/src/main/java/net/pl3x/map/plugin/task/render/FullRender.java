@@ -4,7 +4,7 @@ import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.MapWorld;
-import net.pl3x.map.plugin.data.Region;
+import net.pl3x.map.plugin.data.RegionCoordinate;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.iterator.RegionSpiralIterator;
@@ -37,9 +37,9 @@ public final class FullRender extends AbstractRender {
         }
 
         // order preserved map of regions with boolean to signify if it was already scanned
-        final Map<Region, Boolean> regions;
+        final Map<RegionCoordinate, Boolean> regions;
 
-        Map<Region, Boolean> resumedMap = mapWorld.getRenderProgress();
+        Map<RegionCoordinate, Boolean> resumedMap = mapWorld.getRenderProgress();
         if (resumedMap != null) {
             Logger.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", world.getName()));
 
@@ -53,7 +53,7 @@ public final class FullRender extends AbstractRender {
 
             // find all region files
             Logger.info(Lang.LOG_SCANNING_REGION_FILES);
-            final List<Region> regionFiles = getRegions();
+            final List<RegionCoordinate> regionFiles = getRegions();
 
             // setup a spiral iterator
             Location spawn = world.getSpawnLocation();
@@ -73,7 +73,7 @@ public final class FullRender extends AbstractRender {
                     regionFiles.forEach(region -> regions.put(region, false));
                     break;
                 }
-                Region region = spiral.next();
+                RegionCoordinate region = spiral.next();
                 if (regionFiles.contains(region)) {
                     regions.put(region, false);
                     failsafe = 0;
@@ -95,7 +95,7 @@ public final class FullRender extends AbstractRender {
         this.timer = RenderProgress.printProgress(this);
 
         // finally, scan each region in the order provided by the spiral
-        for (Map.Entry<Region, Boolean> entry : regions.entrySet()) {
+        for (Map.Entry<RegionCoordinate, Boolean> entry : regions.entrySet()) {
             if (this.cancelled) break;
             if (entry.getValue()) continue;
             mapRegion(entry.getKey());
@@ -111,7 +111,7 @@ public final class FullRender extends AbstractRender {
 
     }
 
-    private int countCompletedChunks(Map<Region, Boolean> regions) {
+    private int countCompletedChunks(Map<RegionCoordinate, Boolean> regions) {
         VisibilityLimit visibility = this.mapWorld.visibilityLimit();
         return regions.entrySet().stream()
                 .filter(Map.Entry::getValue)
@@ -129,8 +129,8 @@ public final class FullRender extends AbstractRender {
         return this.totalRegions;
     }
 
-    private List<Region> getRegions() {
-        List<Region> regions = new ArrayList<>();
+    private List<RegionCoordinate> getRegions() {
+        List<RegionCoordinate> regions = new ArrayList<>();
         File[] files = FileUtil.getRegionFiles(world);
         for (File file : files) {
             if (file.length() == 0) continue;
@@ -139,7 +139,7 @@ public final class FullRender extends AbstractRender {
                 int x = Integer.parseInt(split[1]);
                 int z = Integer.parseInt(split[2]);
 
-                Region region = new Region(x, z);
+                RegionCoordinate region = new RegionCoordinate(x, z);
 
                 // ignore regions completely outside the visibility limit
                 if (!mapWorld.visibilityLimit().shouldRenderRegion(region)) {

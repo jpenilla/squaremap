@@ -5,7 +5,7 @@ import net.pl3x.map.plugin.Logger;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
-import net.pl3x.map.plugin.data.Region;
+import net.pl3x.map.plugin.data.RegionCoordinate;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.HashSet;
@@ -39,7 +39,7 @@ public final class BackgroundRender extends AbstractRender {
         while (mapWorld.hasModifiedChunks() && chunks.size() < mapWorld.config().BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL) {
             chunks.add(mapWorld.nextModifiedChunk());
         }
-        final Map<Region, List<ChunkCoordinate>> coordMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
+        final Map<RegionCoordinate, List<ChunkCoordinate>> coordMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         coordMap.forEach((region, chunkCoords) -> {

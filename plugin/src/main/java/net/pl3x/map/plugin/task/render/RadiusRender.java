@@ -8,7 +8,7 @@ import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
-import net.pl3x.map.plugin.data.Region;
+import net.pl3x.map.plugin.data.RegionCoordinate;
 import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.iterator.ChunkSpiralIterator;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
@@ -64,12 +64,12 @@ public final class RadiusRender extends AbstractRender {
         this.timer = RenderProgress.printProgress(this);
 
         ChunkSpiralIterator spiral = new ChunkSpiralIterator(this.centerX, this.centerZ, this.radius);
-        final Map<Region, Image> images = new HashMap<>();
-        final Multimap<Region, CompletableFuture<Void>> futures = ArrayListMultimap.create();
+        final Map<RegionCoordinate, Image> images = new HashMap<>();
+        final Multimap<RegionCoordinate, CompletableFuture<Void>> futures = ArrayListMultimap.create();
 
         while (spiral.hasNext()) {
             ChunkCoordinate chunkCoord = spiral.next();
-            final Region region = chunkCoord.regionCoordinate();
+            final RegionCoordinate region = chunkCoord.regionCoordinate();
 
             // ignore chunks within the radius that are outside the visibility limit
             if (!mapWorld.visibilityLimit().shouldRenderChunk(chunkCoord)) {
@@ -85,7 +85,7 @@ public final class RadiusRender extends AbstractRender {
             futures.put(region, this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));
         }
 
-        final Map<Region, CompletableFuture<Void>> regionFutureMap = new HashMap<>();
+        final Map<RegionCoordinate, CompletableFuture<Void>> regionFutureMap = new HashMap<>();
         futures.asMap().forEach((region, futureCollection) ->
                 regionFutureMap.put(region, CompletableFuture.allOf(futureCollection.toArray(CompletableFuture[]::new))));
 
