@@ -49,8 +49,8 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig");
         } catch (ClassNotFoundException e) {
-            Logger.severe("This plugin requires Paper or one of its forks to run");
-            getServer().getPluginManager().disablePlugin(this);
+            this.getLogger().severe("squaremap requires Paper or one of its forks to run. Get Paper from https://papermc.io/downloads");
+            this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 

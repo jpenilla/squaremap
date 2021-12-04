@@ -5,11 +5,14 @@ import cloud.commandframework.brigadier.CloudBrigadierManager;
 import cloud.commandframework.bukkit.CloudBukkitCapabilities;
 import cloud.commandframework.exceptions.CommandExecutionException;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.keys.CloudKey;
+import cloud.commandframework.keys.SimpleCloudKey;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.collect.ImmutableList;
+import io.leangen.geantyref.TypeToken;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -35,6 +38,7 @@ import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 public final class CommandManager extends PaperCommandManager<CommandSender> {
+    public static final CloudKey<Pl3xMapPlugin> PLUGIN_INSTANCE_KEY = SimpleCloudKey.of("plugin-instance", TypeToken.get(Pl3xMapPlugin.class));
 
     public CommandManager(final @NonNull Pl3xMapPlugin plugin) throws Exception {
 
@@ -44,6 +48,8 @@ public final class CommandManager extends PaperCommandManager<CommandSender> {
                 UnaryOperator.identity(),
                 UnaryOperator.identity()
         );
+
+        this.registerCommandPreProcessor(ctx -> ctx.getCommandContext().store(PLUGIN_INSTANCE_KEY, plugin));
 
         if (this.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
             this.registerBrigadier();

@@ -1,5 +1,6 @@
 package net.pl3x.map.plugin.api;
 
+import java.util.function.Function;
 import net.pl3x.map.api.MapWorld;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Registry;
@@ -33,7 +34,7 @@ public final class Pl3xMapApiProvider implements Pl3xMap {
 
     @Override
     public @NonNull Optional<MapWorld> getWorldIfEnabled(final @NonNull World world) {
-        return this.plugin.worldManager().getWorldIfEnabled(world).map(w -> w);
+        return this.plugin.worldManager().getWorldIfEnabled(world).map(Function.identity());
     }
 
     @Override

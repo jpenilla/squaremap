@@ -6,8 +6,11 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
+import java.util.List;
+import java.util.Queue;
+import java.util.function.BiFunction;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.pl3x.map.plugin.Pl3xMapPlugin;
+import net.pl3x.map.plugin.command.CommandManager;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -15,25 +18,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.List;
-import java.util.Queue;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
  * cloud argument type that parses {@link MapWorld}
  *
  * @param <C> Command sender type
  */
+@DefaultQualifier(NonNull.class)
 public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
 
     protected MapWorldArgument(
-            final boolean required,
-            final @NonNull String name,
-            final @NonNull String defaultValue,
-            final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
-            final @NonNull ArgumentDescription defaultDescription
+        final boolean required,
+        final String name,
+        final String defaultValue,
+        final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
+        final ArgumentDescription defaultDescription
     ) {
         super(required, name, new MapWorldParser<>(), defaultValue, MapWorld.class, suggestionsProvider, defaultDescription);
     }
@@ -45,7 +45,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @param <C>  Command sender type
      * @return Created builder
      */
-    public static <C> CommandArgument.@NonNull Builder<C, MapWorld> newBuilder(final @NonNull String name) {
+    public static <C> Builder<C> newBuilder(final String name) {
         return new MapWorldArgument.Builder<>(name);
     }
 
@@ -56,8 +56,8 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @param <C>  Command sender type
      * @return Created argument
      */
-    public static <C> @NonNull CommandArgument<C, MapWorld> of(final @NonNull String name) {
-        return MapWorldArgument.<C>newBuilder(name).asRequired().build();
+    public static <C> MapWorldArgument<C> of(final String name) {
+        return MapWorldArgument.<C>newBuilder(name).build();
     }
 
     /**
@@ -67,7 +67,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @param <C>  Command sender type
      * @return Created argument
      */
-    public static <C> @NonNull CommandArgument<C, MapWorld> optional(final @NonNull String name) {
+    public static <C> MapWorldArgument<C> optional(final String name) {
         return MapWorldArgument.<C>newBuilder(name).asOptional().build();
     }
 
@@ -79,28 +79,28 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @param <C>          Command sender type
      * @return Created argument
      */
-    public static <C> @NonNull CommandArgument<C, MapWorld> optional(
-            final @NonNull String name,
-            final @NonNull String defaultValue
+    public static <C> MapWorldArgument<C> optional(
+        final String name,
+        final String defaultValue
     ) {
         return MapWorldArgument.<C>newBuilder(name).asOptionalWithDefault(defaultValue).build();
     }
 
 
-    public static final class Builder<C> extends CommandArgument.Builder<C, MapWorld> {
+    public static final class Builder<C> extends CommandArgument.TypedBuilder<C, MapWorld, Builder<C>> {
 
-        private Builder(final @NonNull String name) {
+        private Builder(final String name) {
             super(MapWorld.class, name);
         }
 
         @Override
-        public @NonNull CommandArgument<C, MapWorld> build() {
+        public MapWorldArgument<C> build() {
             return new MapWorldArgument<>(
-                    this.isRequired(),
-                    this.getName(),
-                    this.getDefaultValue(),
-                    this.getSuggestionsProvider(),
-                    this.getDefaultDescription()
+                this.isRequired(),
+                this.getName(),
+                this.getDefaultValue(),
+                this.getSuggestionsProvider(),
+                this.getDefaultDescription()
             );
         }
 
@@ -110,19 +110,19 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
     public static final class MapWorldParser<C> implements ArgumentParser<C, MapWorld> {
 
         @Override
-        public @NonNull ArgumentParseResult<MapWorld> parse(
-                final @NonNull CommandContext<C> commandContext,
-                final @NonNull Queue<String> inputQueue
+        public ArgumentParseResult<MapWorld> parse(
+            final CommandContext<C> commandContext,
+            final Queue<String> inputQueue
         ) {
-            final String input = inputQueue.peek();
+            final @Nullable String input = inputQueue.peek();
             if (input == null) {
                 return ArgumentParseResult.failure(new NoInputProvidedException(
-                        MapWorldParser.class,
-                        commandContext
+                    MapWorldParser.class,
+                    commandContext
                 ));
             }
 
-            final World world = Bukkit.getWorld(input);
+            final @Nullable World world = Bukkit.getWorld(input);
             if (world == null) {
                 return ArgumentParseResult.failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
@@ -133,12 +133,14 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
             }
 
             inputQueue.remove();
-            return ArgumentParseResult.success(Pl3xMapPlugin.getInstance().worldManager().getWorld(world));
+            return ArgumentParseResult.success(commandContext.get(CommandManager.PLUGIN_INSTANCE_KEY).worldManager().getWorld(world));
         }
 
         @Override
-        public @NonNull List<String> suggestions(final @NonNull CommandContext<C> commandContext, final @NonNull String input) {
-            return Pl3xMapPlugin.getInstance().worldManager().worlds().values().stream().map(MapWorld::name).collect(Collectors.toList());
+        public List<String> suggestions(final CommandContext<C> commandContext, final String input) {
+            return commandContext.get(CommandManager.PLUGIN_INSTANCE_KEY).worldManager().worlds().values().stream()
+                .map(MapWorld::name)
+                .toList();
         }
 
     }
@@ -158,15 +160,15 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
          * @param reason Failure reason
          */
         public MapWorldParseException(
-                final @NonNull String input,
-                final @NonNull FailureReason reason
+            final String input,
+            final FailureReason reason
         ) {
             this.input = input;
             this.reason = reason;
         }
 
         @Override
-        public @NonNull String getMessage() {
+        public String getMessage() {
             return switch (this.reason) {
                 case NO_SUCH_WORLD -> MiniMessage.miniMessage().stripTokens(Lang.NO_SUCH_WORLD.replace("<world>", this.input));
                 case MAP_NOT_ENABLED -> MiniMessage.miniMessage().stripTokens(Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("<world>", this.input));

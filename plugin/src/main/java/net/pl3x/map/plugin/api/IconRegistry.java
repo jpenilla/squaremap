@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public final class IconRegistry implements Registry<BufferedImage> {
 
@@ -75,8 +74,8 @@ public final class IconRegistry implements Registry<BufferedImage> {
     @Override
     public @NonNull Iterable<Pair<Key, BufferedImage>> entries() {
         return this.images.entrySet().stream()
-                .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toUnmodifiableList());
+            .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
+            .toList();
     }
 
     private static @NonNull IllegalArgumentException failedToCreateRegistry(final @NonNull IOException e) {
