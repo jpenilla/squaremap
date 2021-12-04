@@ -1,5 +1,7 @@
 package net.pl3x.map.plugin.configuration;
 
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
@@ -76,7 +78,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         )).forEach(block -> iterateUpBaseBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
     }
 
-    public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_FOLIAGE = new HashMap<>();
+    public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_FOLIAGE = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeFoliageSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
@@ -97,7 +99,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         });
     }
 
-    public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_GRASS = new HashMap<>();
+    public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_GRASS = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeGrassSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
@@ -111,7 +113,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         });
     }
 
-    public final Map<Biome, Integer> COLOR_OVERRIDES_BIOME_WATER = new HashMap<>();
+    public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_WATER = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeWaterSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
@@ -125,7 +127,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         });
     }
 
-    public final Map<Block, Integer> COLOR_OVERRIDES_BLOCKS = new HashMap<>();
+    public final Reference2IntMap<Block> COLOR_OVERRIDES_BLOCKS = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBlocksSettings() {
         COLOR_OVERRIDES_BLOCKS.clear();

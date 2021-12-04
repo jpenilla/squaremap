@@ -66,7 +66,7 @@ public final class Colors {
         return rgb(MaterialColor.NONE);
     }
 
-    public static Integer parseHex(final @NonNull String color) {
+    public static int parseHex(final @NonNull String color) {
         return (int) Long.parseLong(color.replace("#", ""), 16);
     }
 
