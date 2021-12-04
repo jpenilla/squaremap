@@ -75,15 +75,15 @@ public final class RenderProgress extends TimerTask {
 
         Logger.info(
                 (totalRegions > 0 ? Lang.LOG_RENDER_PROGRESS_WITH_REGIONS : Lang.LOG_RENDER_PROGRESS),
-                Template.of("world", render.world.getName()),
-                Template.of("current_regions", Integer.toString(curRegions)),
-                Template.of("total_regions", Integer.toString(totalRegions)),
-                Template.of("current_chunks", Integer.toString(curChunks)),
-                Template.of("total_chunks", Integer.toString(this.render.totalChunks())),
-                Template.of("percent", percentStr),
-                Template.of("elapsed", elapsedStr),
-                Template.of("eta", etaStr),
-                Template.of("rate", rateStr)
+                Template.template("world", render.world.getName()),
+                Template.template("current_regions", Integer.toString(curRegions)),
+                Template.template("total_regions", Integer.toString(totalRegions)),
+                Template.template("current_chunks", Integer.toString(curChunks)),
+                Template.template("total_chunks", Integer.toString(this.render.totalChunks())),
+                Template.template("percent", percentStr),
+                Template.template("elapsed", elapsedStr),
+                Template.template("eta", etaStr),
+                Template.template("rate", rateStr)
         );
 
     }

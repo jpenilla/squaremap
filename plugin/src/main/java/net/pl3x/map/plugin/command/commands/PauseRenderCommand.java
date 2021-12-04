@@ -25,7 +25,7 @@ public final class PauseRenderCommand extends Pl3xMapCommand {
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("pauserender")
                         .argument(MapWorldArgument.optional("world"), CommandUtil.description(Lang.OPTIONAL_WORLD_ARGUMENT_DESCRIPTION))
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.PAUSE_RENDER_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.PAUSE_RENDER_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.pauserender")
                         .handler(this::executePauseRender));
     }
@@ -37,9 +37,9 @@ public final class PauseRenderCommand extends Pl3xMapCommand {
         world.pauseRenders(!world.rendersPaused());
 
         if (world.rendersPaused()) {
-            Lang.send(sender, Lang.PAUSED_RENDER, Template.of("world", world.name()));
+            Lang.send(sender, Lang.PAUSED_RENDER, Template.template("world", world.name()));
         } else {
-            Lang.send(sender, Lang.UNPAUSED_RENDER, Template.of("world", world.name()));
+            Lang.send(sender, Lang.UNPAUSED_RENDER, Template.template("world", world.name()));
         }
     }
 

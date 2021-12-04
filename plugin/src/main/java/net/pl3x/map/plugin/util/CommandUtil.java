@@ -5,6 +5,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.command.exception.CompletedSuccessfullyException;
 import net.pl3x.map.plugin.command.exception.ConsoleMustProvideWorldException;
@@ -32,7 +33,7 @@ public final class CommandUtil {
             final World bukkit = player.getWorld();
             Optional<MapWorld> optionalMapWorld = Pl3xMapPlugin.getInstance().worldManager().getWorldIfEnabled(bukkit);
             if (optionalMapWorld.isEmpty()) {
-                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Template.of("world", bukkit.getName()));
+                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Template.template("world", bukkit.getName()));
                 throw new CompletedSuccessfullyException();
             } else {
                 return optionalMapWorld.get();
@@ -56,7 +57,7 @@ public final class CommandUtil {
 
         final Player targetPlayer = selector.getPlayer();
         if (targetPlayer == null) {
-            Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Template.of("input", selector.getSelector()));
+            Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Template.template("input", selector.getSelector()));
             throw new CompletedSuccessfullyException();
         }
 
@@ -64,7 +65,7 @@ public final class CommandUtil {
     }
 
     public static @NonNull RichDescription description(final @NonNull String miniMessage, @NonNull Template @NonNull ... placeholders) {
-        return RichDescription.of(MiniMessage.get().parse(miniMessage, placeholders));
+        return RichDescription.of(MiniMessage.miniMessage().deserialize(miniMessage, TemplateResolver.templates(placeholders)));
     }
 
 }

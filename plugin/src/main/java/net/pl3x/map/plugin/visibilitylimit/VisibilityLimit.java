@@ -34,8 +34,8 @@ public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.V
      * 
      * @param region
      *            The region.
-     * @return The amount of chunks, from 0 to {@value #REGION_SIZE_CHUNKS} *
-     *         {@value #REGION_SIZE_CHUNKS}.
+     * @return The amount of chunks, from 0 to {@link #REGION_SIZE_CHUNKS} *
+     *         {@link #REGION_SIZE_CHUNKS}.
      */
     public int countChunksInRegion(Region region) {
         switch (this.shapes.size()) {

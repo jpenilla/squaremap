@@ -62,8 +62,8 @@ public class IntegratedServer {
 
             Logger.info(
                     Lang.LOG_INTERNAL_WEB_STARTED,
-                    Template.of("bind", Config.HTTPD_BIND),
-                    Template.of("port", Integer.toString(Config.HTTPD_PORT))
+                    Template.template("bind", Config.HTTPD_BIND),
+                    Template.template("port", Integer.toString(Config.HTTPD_PORT))
             );
         } catch (Exception e) {
             server = null;

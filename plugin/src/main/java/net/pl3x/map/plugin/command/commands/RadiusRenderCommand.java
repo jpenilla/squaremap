@@ -31,7 +31,7 @@ public final class RadiusRenderCommand extends Pl3xMapCommand {
                         .argument(MapWorldArgument.of("world"))
                         .argument(IntegerArgument.<CommandSender>newBuilder("radius").withMin(1).build())
                         .argument(Location2DArgument.optional("center"), CommandUtil.description(Lang.OPTIONAL_CENTER_ARGUMENT_DESCRIPTION))
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.RADIUSRENDER_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.RADIUSRENDER_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.radiusrender")
                         .handler(this::executeRadiusRender));
     }
@@ -47,11 +47,11 @@ public final class RadiusRenderCommand extends Pl3xMapCommand {
         }
 
         if (world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.of("world", world.name()));
+            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.template("world", world.name()));
             return;
         }
 
-        Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER, Template.of("world", world.name()));
+        Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER, Template.template("world", world.name()));
         world.startRender(new RadiusRender(center, radius));
     }
 }

@@ -59,7 +59,7 @@ public final class RadiusRender extends AbstractRender {
 
     @Override
     protected void render() {
-        Logger.info(Lang.LOG_STARTED_RADIUSRENDER, Template.of("world", world.getName()));
+        Logger.info(Lang.LOG_STARTED_RADIUSRENDER, Template.template("world", world.getName()));
 
         this.timer = RenderProgress.printProgress(this);
 

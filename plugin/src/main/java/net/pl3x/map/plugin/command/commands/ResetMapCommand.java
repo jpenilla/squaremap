@@ -29,7 +29,7 @@ public final class ResetMapCommand extends Pl3xMapCommand {
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("resetmap")
                         .argument(WorldArgument.of("world"))
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.RESETMAP_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.RESETMAP_COMMAND_DESCRIPTION))
                         .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
                         .permission("pl3xmap.command.resetmap")
                         .handler(this::executeResetMap));
@@ -44,6 +44,6 @@ public final class ResetMapCommand extends Pl3xMapCommand {
         } catch (IOException e) {
             throw new IllegalStateException("Could not reset map", e);
         }
-        Lang.send(sender, Lang.SUCCESSFULLY_RESET_MAP, Template.of("world", world.getName()));
+        Lang.send(sender, Lang.SUCCESSFULLY_RESET_MAP, Template.template("world", world.getName()));
     }
 }

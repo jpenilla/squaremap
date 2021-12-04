@@ -146,6 +146,8 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
 
     public static final class MapWorldParseException extends IllegalArgumentException {
 
+        private static final long serialVersionUID = 3072715326923004782L;
+
         private final String input;
         private final FailureReason reason;
 
@@ -165,14 +167,10 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
 
         @Override
         public @NonNull String getMessage() {
-            switch (this.reason) {
-                case NO_SUCH_WORLD:
-                    return MiniMessage.get().stripTokens(Lang.NO_SUCH_WORLD.replace("<world>", this.input));
-                case MAP_NOT_ENABLED:
-                    return MiniMessage.get().stripTokens(Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("<world>", this.input));
-                default:
-                    throw new IllegalArgumentException("Unknown MapWorld argument parse failure reason");
-            }
+            return switch (this.reason) {
+                case NO_SUCH_WORLD -> MiniMessage.miniMessage().stripTokens(Lang.NO_SUCH_WORLD.replace("<world>", this.input));
+                case MAP_NOT_ENABLED -> MiniMessage.miniMessage().stripTokens(Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("<world>", this.input));
+            };
         }
 
         public enum FailureReason {

@@ -2,6 +2,7 @@ package net.pl3x.map.plugin;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import org.bukkit.Bukkit;
@@ -37,9 +38,9 @@ public class Logger {
     }
 
     public static void info(final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
-        Bukkit.getConsoleSender().sendMessage(MiniMessage.get().parse(
+        Bukkit.getConsoleSender().sendMessage(MiniMessage.miniMessage().deserialize(
                 Lang.LOGGER_PREFIX + " " + miniMessage,
-                placeholders
+                TemplateResolver.templates(placeholders)
         ));
     }
 

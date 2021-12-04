@@ -41,7 +41,7 @@ public final class FullRender extends AbstractRender {
 
         Map<Region, Boolean> resumedMap = mapWorld.getRenderProgress();
         if (resumedMap != null) {
-            Logger.info(Lang.LOG_RESUMED_RENDERING, Template.of("world", world.getName()));
+            Logger.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", world.getName()));
 
             regions = resumedMap;
 
@@ -49,7 +49,7 @@ public final class FullRender extends AbstractRender {
             this.curRegions.set(count);
             this.curChunks.set(countCompletedChunks(regions));
         } else {
-            Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.of("world", world.getName()));
+            Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", world.getName()));
 
             // find all region files
             Logger.info(Lang.LOG_SCANNING_REGION_FILES);
@@ -90,7 +90,7 @@ public final class FullRender extends AbstractRender {
         this.totalRegions = regions.size();
         this.totalChunks = regions.keySet().stream().mapToInt(visibility::countChunksInRegion).sum();
 
-        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.of("total", Integer.toString(regions.size())));
+        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.template("total", Integer.toString(regions.size())));
 
         this.timer = RenderProgress.printProgress(this);
 
@@ -113,8 +113,8 @@ public final class FullRender extends AbstractRender {
 
     private int countCompletedChunks(Map<Region, Boolean> regions) {
         VisibilityLimit visibility = this.mapWorld.visibilityLimit();
-        return (int) regions.entrySet().stream()
-                .filter(entry -> entry.getValue())
+        return regions.entrySet().stream()
+                .filter(Map.Entry::getValue)
                 .mapToInt(entry -> visibility.countChunksInRegion(entry.getKey()))
                 .sum();
     }

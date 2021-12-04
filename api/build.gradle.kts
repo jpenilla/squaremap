@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    compileOnlyApi("io.papermc.paper", "paper-api", "1.17.1-R0.1-SNAPSHOT")
-    compileOnlyApi("org.checkerframework", "checker-qual", "3.15.0")
+    compileOnly("io.papermc.paper", "paper-api", "1.18-R0.1-SNAPSHOT")
+    compileOnlyApi("org.checkerframework", "checker-qual", "3.19.0")
 }
 
 java {
@@ -14,13 +14,12 @@ java {
 
 publishing {
     publications {
-        create<MavenPublication>("mavenJava") {
+        register<MavenPublication>("maven") {
             from(components["java"])
         }
     }
 
-    repositories.maven {
-        url = uri("https://repo.pl3x.net/snapshots")
+    repositories.maven("https://repo.jpenilla.xyz/snapshots") {
         credentials(PasswordCredentials::class)
     }
 }

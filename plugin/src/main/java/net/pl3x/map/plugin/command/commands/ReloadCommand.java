@@ -25,7 +25,7 @@ public final class ReloadCommand extends Pl3xMapCommand {
     public void register() {
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("reload")
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.RELOAD_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.RELOAD_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.reload")
                         .handler(this::execute));
     }
@@ -43,8 +43,8 @@ public final class ReloadCommand extends Pl3xMapCommand {
 
         PluginDescriptionFile desc = plugin.getDescription();
         Lang.send(sender, Lang.PLUGIN_RELOADED,
-                Template.of("name", desc.getName()),
-                Template.of("version", desc.getVersion())
+                Template.template("name", desc.getName()),
+                Template.template("version", desc.getVersion())
         );
     }
 }

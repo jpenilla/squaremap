@@ -1,21 +1,20 @@
-import xyz.jpenilla.runpaper.task.RunServerTask
-
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("io.papermc.paperweight.userdev") version "1.1.9-SNAPSHOT"
-    id("net.minecrell.plugin-yml.bukkit") version "0.4.0"
-    id("xyz.jpenilla.run-paper") version "1.0.3"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("io.papermc.paperweight.userdev") version "1.3.1"
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+    id("xyz.jpenilla.run-paper") version "1.0.5"
 }
 
 dependencies {
-    paperweightDevBundle(group = "net.pl3x.paper", version = "1.17.1-R0.1-SNAPSHOT")
+    paperDevBundle("1.18-R0.1-SNAPSHOT")
 
     implementation(project(":pl3xmap-api"))
-    val cloudVersion = "1.5.0"
-    implementation("cloud.commandframework", "cloud-paper", cloudVersion)
-    implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
-    implementation("net.kyori", "adventure-text-minimessage", "4.1.0-SNAPSHOT")
+    implementation(platform("cloud.commandframework:cloud-bom:1.6.0"))
+    implementation("cloud.commandframework", "cloud-paper")
+    implementation("cloud.commandframework", "cloud-minecraft-extras")
+    implementation("net.kyori", "adventure-text-minimessage", "4.2.0-SNAPSHOT")
     implementation("io.undertow", "undertow-core", "2.2.3.Final")
+    compileOnly("org.jboss.logging:jboss-logging-annotations:2.2.1.Final")
     implementation("org.bstats", "bstats-bukkit", "2.2.1")
 }
 
@@ -40,25 +39,12 @@ tasks {
     build {
         dependsOn(reobfJar)
     }
-    runServer {
-        minecraftVersion("1.17.1")
-        pluginJars(reobfJar.flatMap { it.outputJar })
-    }
-    register<RunServerTask>("runMojangMappedServer") {
-        minecraftVersion("1.17.1")
-        pluginJars(shadowJar.flatMap { it.archiveFile })
-        paperclip(paperweight.mojangMappedPaperServerJar)
-    }
-}
-
-runPaper {
-    disablePluginJarDetection()
 }
 
 bukkit {
     main = "net.pl3x.map.plugin.Pl3xMapPlugin"
     name = rootProject.name
-    apiVersion = "1.17"
+    apiVersion = "1.18"
     website = project.property("githubUrl") as String
-    authors = listOf("BillyGalbreath", "jmp")
+    authors = listOf("jmp", "BillyGalbreath")
 }

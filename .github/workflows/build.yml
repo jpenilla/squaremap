@@ -1,0 +1,39 @@
+name: Build
+on: [ push, pull_request ]
+jobs:
+  build:
+    # Only run on PRs if the source branch is on someone else's repo
+    if: ${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.5
+      - uses: gradle/wrapper-validation-action@v1
+      - name: "jdk"
+        uses: actions/setup-java@v2.3.1
+        with:
+          distribution: 'temurin'
+          java-version: 17
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            plugin/.gradle/caches/paperweight
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: "build"
+        run: ./gradlew build
+      - name: "determine status"
+        run: |
+          if [ "$(./gradlew properties | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
+            echo "STATUS=snapshot" >> $GITHUB_ENV
+          else
+            echo "STATUS=release" >> $GITHUB_ENV
+          fi
+      - name: "publish snapshot"
+        if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
+        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_jmpUsername: "${{ secrets.JMP_REPO_USER }}"
+          ORG_GRADLE_PROJECT_jmpPassword: "${{ secrets.JMP_REPO_PASSWORD }}"

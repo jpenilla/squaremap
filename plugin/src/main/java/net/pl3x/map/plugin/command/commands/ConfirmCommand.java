@@ -28,7 +28,7 @@ public final class ConfirmCommand extends Pl3xMapCommand {
 
     private static @NonNull ComponentLike confirmationRequiredMessage() {
         return text()
-                .append(Lang.parse(Lang.CONFIRMATION_REQUIRED_MESSAGE, Template.of("command", Config.MAIN_COMMAND_LABEL)))
+                .append(Lang.parse(Lang.CONFIRMATION_REQUIRED_MESSAGE, Template.template("command", Config.MAIN_COMMAND_LABEL)))
                 .hoverEvent(Lang.parse(Lang.CLICK_TO_CONFIRM))
                 .clickEvent(ClickEvent.runCommand('/' + Config.MAIN_COMMAND_LABEL + " confirm"));
     }
@@ -43,7 +43,7 @@ public final class ConfirmCommand extends Pl3xMapCommand {
 
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("confirm")
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.CONFIRM_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.CONFIRM_COMMAND_DESCRIPTION))
                         .handler(this.confirmationManager.createConfirmationExecutionHandler()));
     }
 }

@@ -24,13 +24,13 @@ public final class ShowCommand extends Pl3xMapCommand {
     public void register() {
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("show")
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.SHOW_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.SHOW_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.show")
                         .handler(this::executeShow));
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("show")
                         .argument(SinglePlayerSelectorArgument.optional("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.SHOW_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.SHOW_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.show.others")
                         .handler(this::executeShow));
     }
@@ -39,12 +39,12 @@ public final class ShowCommand extends Pl3xMapCommand {
         final Player target = CommandUtil.resolvePlayer(context);
         final CommandSender sender = context.getSender();
         if (!this.plugin.playerManager().hidden(target)) {
-            Lang.send(sender, Lang.PLAYER_NOT_HIDDEN, Template.of("player", target.getName()));
+            Lang.send(sender, Lang.PLAYER_NOT_HIDDEN, Template.template("player", target.getName()));
             return;
         }
 
         this.plugin.playerManager().show(target, true);
-        Lang.send(sender, Lang.PLAYER_SHOWN, Template.of("player", target.getName()));
+        Lang.send(sender, Lang.PLAYER_SHOWN, Template.template("player", target.getName()));
     }
 
 }

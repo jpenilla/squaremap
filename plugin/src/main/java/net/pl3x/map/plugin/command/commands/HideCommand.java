@@ -24,13 +24,13 @@ public final class HideCommand extends Pl3xMapCommand {
     public void register() {
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("hide")
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.HIDE_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.HIDE_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.hide")
                         .handler(this::executeHide));
         this.commandManager.registerSubcommand(builder ->
                 builder.literal("hide")
                         .argument(SinglePlayerSelectorArgument.optional("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.get().parse(Lang.HIDE_COMMAND_DESCRIPTION))
+                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.HIDE_COMMAND_DESCRIPTION))
                         .permission("pl3xmap.command.hide.others")
                         .handler(this::executeHide));
     }
@@ -39,12 +39,12 @@ public final class HideCommand extends Pl3xMapCommand {
         final Player target = CommandUtil.resolvePlayer(context);
         final CommandSender sender = context.getSender();
         if (this.plugin.playerManager().hidden(target)) {
-            Lang.send(sender, Lang.PLAYER_ALREADY_HIDDEN, Template.of("player", target.getName()));
+            Lang.send(sender, Lang.PLAYER_ALREADY_HIDDEN, Template.template("player", target.getName()));
             return;
         }
 
         this.plugin.playerManager().hide(target, true);
-        Lang.send(sender, Lang.PLAYER_HIDDEN, Template.of("player", target.getName()));
+        Lang.send(sender, Lang.PLAYER_HIDDEN, Template.template("player", target.getName()));
     }
 
 }
