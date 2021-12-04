@@ -1,14 +1,9 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/jpenilla/squaremap/master/plugin/src/main/resources/web/images/og.png" alt="squaremap">
 
 # squaremap
 
-[![MIT License](https://img.shields.io/github/license/jpenilla/squaremap?&logo=github)](LICENSE)
-[![Join us on Discord](https://img.shields.io/discord/838127837667131433.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/B8WpDPXeBh)
-
-[![squaremap's Stargazers](https://img.shields.io/github/stars/jpenilla/squaremap?label=stars&logo=github)](https://github.com/jpenilla/squaremap/stargazers)
-[![squaremap Forks](https://img.shields.io/github/forks/jpenilla/squaremap?label=forks&logo=github)](https://github.com/jpenilla/squaremap/network/members)
-[![squaremap Watchers](https://img.shields.io/github/watchers/jpenilla/squaremap?label=watchers&logo=github)](https://github.com/jpenilla/squaremap/watchers)
+[![License](https://img.shields.io/github/license/jpenilla/squaremap?color=blue)](LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jpenilla/squaremap/Build)](https://github.com/jpenilla/squaremap/actions)
 
 squaremap (formerly known as Pl3xMap) is a minimalistic and lightweight live world map viewer for Paper servers.
 
