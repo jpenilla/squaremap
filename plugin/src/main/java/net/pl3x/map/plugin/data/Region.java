@@ -2,66 +2,28 @@ package net.pl3x.map.plugin.data;
 
 import net.pl3x.map.plugin.util.Numbers;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
-public final class Region {
-    private final int x;
-    private final int z;
-
-    public Region(int x, int z) {
-        this.x = x;
-        this.z = z;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getZ() {
-        return z;
-    }
+@DefaultQualifier(NonNull.class)
+public record Region(int x, int z) {
 
     public int getChunkX() {
-        return Numbers.regionToChunk(x);
+        return Numbers.regionToChunk(this.x);
     }
 
     public int getChunkZ() {
-        return Numbers.regionToChunk(z);
+        return Numbers.regionToChunk(this.z);
     }
 
     public int getBlockX() {
-        return Numbers.regionToBlock(x);
+        return Numbers.regionToBlock(this.x);
     }
 
     public int getBlockZ() {
-        return Numbers.regionToBlock(z);
+        return Numbers.regionToBlock(this.z);
     }
 
-    public @NonNull ChunkCoordinate chunkCoordinate() {
+    public ChunkCoordinate chunkCoordinate() {
         return new ChunkCoordinate(this.getChunkX(), this.getChunkZ());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Region other)) {
-            return false;
-        }
-        return this.x == other.x && this.z == other.z;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + x;
-        result = prime * result + z;
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Region{x=" + x + ",z=" + z + "}";
     }
 }

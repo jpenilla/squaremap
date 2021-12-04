@@ -82,7 +82,7 @@ public final class RadiusRender extends AbstractRender {
                 images.put(region, image);
             }
 
-            futures.put(region, this.mapSingleChunk(image, chunkCoord.getX(), chunkCoord.getZ()));
+            futures.put(region, this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));
         }
 
         final Map<Region, CompletableFuture<Void>> regionFutureMap = new HashMap<>();

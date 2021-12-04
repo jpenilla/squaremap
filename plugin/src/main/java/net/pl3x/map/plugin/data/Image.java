@@ -45,8 +45,8 @@ public class Image {
 
             int step = (int) Math.pow(2, zoom);
             int size = SIZE / step;
-            int scaledX = Mth.floor((double) region.getX() / step);
-            int scaledZ = Mth.floor((double) region.getZ() / step);
+            int scaledX = Mth.floor((double) region.x() / step);
+            int scaledZ = Mth.floor((double) region.z() / step);
 
             String fileName = scaledX + "_" + scaledZ + ".png";
             File file = new File(dir.toString(), fileName);
@@ -59,8 +59,8 @@ public class Image {
                     image = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB);
                 }
 
-                int baseX = (region.getX() * size) & (SIZE - 1);
-                int baseZ = (region.getZ() * size) & (SIZE - 1);
+                int baseX = (region.x() * size) & (SIZE - 1);
+                int baseZ = (region.z() * size) & (SIZE - 1);
                 for (int x = 0; x < SIZE; x += step) {
                     for (int z = 0; z < SIZE; z += step) {
                         final int rgb = this.pixels[x][z];
@@ -87,8 +87,8 @@ public class Image {
                 }
             } catch (IOException e) {
                 Logger.severe(Lang.LOG_COULD_NOT_SAVE_REGION
-                        .replace("{x}", Integer.toString(region.getX()))
-                        .replace("{z}", Integer.toString(region.getZ())));
+                        .replace("{x}", Integer.toString(region.x()))
+                        .replace("{z}", Integer.toString(region.z())));
                 e.printStackTrace();
             }
         }

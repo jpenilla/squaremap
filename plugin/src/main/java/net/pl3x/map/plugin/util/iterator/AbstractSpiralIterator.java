@@ -1,11 +1,19 @@
 package net.pl3x.map.plugin.util.iterator;
 
 import java.util.Iterator;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
-    Direction direction = Direction.RIGHT;
-    int x, z, stepCount, stepLeg, legAxis, layer;
-    final int totalSteps;
+    private Direction direction = Direction.RIGHT;
+    private int x;
+    private int z;
+    private int stepCount;
+    private int stepLeg;
+    private int legAxis;
+    private int layer;
+    private final int totalSteps;
 
     protected AbstractSpiralIterator(int x, int z, int radius) {
         this.x = x;
@@ -15,43 +23,34 @@ public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
 
     @Override
     public boolean hasNext() {
-        return stepCount < totalSteps;
+        return this.stepCount < this.totalSteps;
     }
 
     protected abstract T fromCoordinatePair(final int x, final int z);
 
     @Override
     public T next() {
-        final T t = this.fromCoordinatePair(x, z);
-        if (!hasNext()) {
+        final T t = this.fromCoordinatePair(this.x, this.z);
+        if (!this.hasNext()) {
             return t;
         }
 
-        switch (direction) {
-            case DOWN:
-                z += 1;
-                break;
-            case LEFT:
-                x -= 1;
-                break;
-            case UP:
-                z -= 1;
-                break;
-            case RIGHT:
-            default:
-                x += 1;
-                break;
+        switch (this.direction) {
+            case DOWN -> this.z += 1;
+            case LEFT -> this.x -= 1;
+            case UP -> this.z -= 1;
+            case RIGHT -> this.x += 1;
         }
 
-        stepCount++;
-        stepLeg++;
-        if (stepLeg > layer) {
-            direction = direction.next();
-            stepLeg = 0;
-            legAxis++;
-            if (legAxis > 1) {
-                legAxis = 0;
-                layer++;
+        this.stepCount++;
+        this.stepLeg++;
+        if (this.stepLeg > this.layer) {
+            this.direction = this.direction.next();
+            this.stepLeg = 0;
+            this.legAxis++;
+            if (this.legAxis > 1) {
+                this.legAxis = 0;
+                this.layer++;
             }
         }
 

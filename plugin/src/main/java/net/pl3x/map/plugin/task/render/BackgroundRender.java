@@ -46,7 +46,7 @@ public final class BackgroundRender extends AbstractRender {
             final Image img = new Image(region, worldTilesDir, mapWorld.config().ZOOM_MAX);
 
             final CompletableFuture<Void> future = CompletableFuture.allOf(chunkCoords.stream().map(coord ->
-                    mapSingleChunk(img, coord.getX(), coord.getZ())).toArray(CompletableFuture[]::new));
+                    mapSingleChunk(img, coord.x(), coord.z())).toArray(CompletableFuture[]::new));
 
             future.whenComplete((result, throwable) -> mapWorld.saveImage(img));
             futures.add(future);

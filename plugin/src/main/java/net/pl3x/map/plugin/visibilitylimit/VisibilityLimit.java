@@ -42,7 +42,7 @@ public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.V
             case 0:
                 return REGION_SIZE_CHUNKS * REGION_SIZE_CHUNKS;
             case 1:
-                return this.shapes.get(0).countChunksInRegion(world, region.getX(), region.getZ());
+                return this.shapes.get(0).countChunksInRegion(world, region.x(), region.z());
             default:
                 // multiple shapes overlap - need to check each chunk individually
 
@@ -124,7 +124,7 @@ public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.V
     }
 
     public boolean shouldRenderChunk(ChunkCoordinate chunkCoord) {
-        return this.shouldRenderChunk(chunkCoord.getX(), chunkCoord.getZ());
+        return this.shouldRenderChunk(chunkCoord.x(), chunkCoord.z());
     }
 
     public boolean shouldRenderChunk(int chunkX, int chunkZ) {
@@ -164,7 +164,7 @@ public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.V
     }
 
     public boolean shouldRenderRegion(Region region) {
-        return shouldRenderRegion(region.getX(), region.getZ());
+        return shouldRenderRegion(region.x(), region.z());
     }
 
 
