@@ -1,11 +1,10 @@
 package net.pl3x.map.api.marker;
 
+import java.util.Arrays;
+import java.util.List;
 import net.pl3x.map.api.Point;
 import net.pl3x.map.api.marker.MultiPolygon.MultiPolygonPart;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Interface with common methods to {@link Polygon} and {@link MultiPolygonPart}

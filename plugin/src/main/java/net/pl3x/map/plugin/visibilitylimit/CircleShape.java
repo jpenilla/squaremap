@@ -3,13 +3,14 @@ package net.pl3x.map.plugin.visibilitylimit;
 import net.pl3x.map.api.visibilitylimit.VisibilityShape;
 import net.pl3x.map.plugin.util.Numbers;
 import org.bukkit.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
  * Limits map drawing to a circular region.
- *
  */
+@DefaultQualifier(NonNull.class)
 final class CircleShape implements VisibilityShape {
-
     private static final int REGION_SIZE_BLOCKS = Numbers.regionToBlock(1);
     private static final int CHUNK_SIZE_BLOCKS = Numbers.chunkToBlock(1);
     private static final int REGION_SIZE_CHUNKS = Numbers.regionToChunk(1);
@@ -19,7 +20,7 @@ final class CircleShape implements VisibilityShape {
     private final int radius;
     private final int radiusSquared;
 
-    public CircleShape(int centerX, int centerZ, int radius) {
+    public CircleShape(final int centerX, final int centerZ, final int radius) {
         if (radius < 1) {
             throw new IllegalArgumentException("Radius must be positive, but was " + radius);
         }
@@ -30,7 +31,7 @@ final class CircleShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderChunk(World world, int chunkX, int chunkZ) {
+    public boolean shouldRenderChunk(final World world, final int chunkX, final int chunkZ) {
         if (this.radius == 0) {
             return false;
         }
@@ -53,7 +54,7 @@ final class CircleShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderRegion(World world, int regionX, int regionZ) {
+    public boolean shouldRenderRegion(final World world, final int regionX, final int regionZ) {
         if (this.radius == 0) {
             return false;
         }
@@ -75,7 +76,7 @@ final class CircleShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderColumn(World world, int blockX, int blockZ) {
+    public boolean shouldRenderColumn(final World world, final int blockX, final int blockZ) {
         if (this.radius == 0) {
             return false;
         }
@@ -85,13 +86,13 @@ final class CircleShape implements VisibilityShape {
     }
 
     @Override
-    public int countChunksInRegion(World world, int regionX, int regionZ) {
+    public int countChunksInRegion(final World world, final int regionX, final int regionZ) {
         int chunkXStart = Numbers.regionToChunk(regionX);
         int chunkZStart = Numbers.regionToChunk(regionZ);
         if (this.shouldRenderChunk(world, chunkXStart, chunkZStart)
-                && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart)
-                && this.shouldRenderChunk(world, chunkXStart, chunkZStart + REGION_SIZE_CHUNKS - 1)
-                && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart + REGION_SIZE_CHUNKS - 1)) {
+            && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart)
+            && this.shouldRenderChunk(world, chunkXStart, chunkZStart + REGION_SIZE_CHUNKS - 1)
+            && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart + REGION_SIZE_CHUNKS - 1)) {
             // we need to render all four corners, so that means we need to render the
             // entire region
             // (note: this only works because the visibility limit is one single circle)
@@ -110,5 +111,4 @@ final class CircleShape implements VisibilityShape {
         return count;
 
     }
-
 }

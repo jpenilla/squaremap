@@ -1,10 +1,9 @@
 package net.pl3x.map.api.marker;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.awt.Color;
 import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Class holding options for map markers
@@ -31,16 +30,16 @@ public final class MarkerOptions {
     private final String hoverTooltip;
 
     private MarkerOptions(
-            final boolean stroke,
-            final @NonNull Color strokeColor,
-            final int strokeWeight,
-            final double strokeOpacity,
-            final boolean fill,
-            final @Nullable Color fillColor,
-            final double fillOpacity,
-            final @NonNull FillRule fillRule,
-            final @Nullable String clickTooltip,
-            final @Nullable String hoverTooltip
+        final boolean stroke,
+        final @NonNull Color strokeColor,
+        final int strokeWeight,
+        final double strokeOpacity,
+        final boolean fill,
+        final @Nullable Color fillColor,
+        final double fillOpacity,
+        final @NonNull FillRule fillRule,
+        final @Nullable String clickTooltip,
+        final @Nullable String hoverTooltip
     ) {
         this.stroke = stroke;
         this.strokeColor = strokeColor;
@@ -164,16 +163,16 @@ public final class MarkerOptions {
      */
     public @NonNull Builder asBuilder() {
         return new Builder(
-                this.stroke,
-                this.strokeColor,
-                this.strokeWeight,
-                this.strokeOpacity,
-                this.fill,
-                this.fillColor,
-                this.fillOpacity,
-                this.fillRule,
-                this.clickTooltip,
-                this.hoverTooltip
+            this.stroke,
+            this.strokeColor,
+            this.strokeWeight,
+            this.strokeOpacity,
+            this.fill,
+            this.fillColor,
+            this.fillOpacity,
+            this.fillRule,
+            this.clickTooltip,
+            this.hoverTooltip
         );
     }
 
@@ -188,27 +187,38 @@ public final class MarkerOptions {
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final MarkerOptions that = (MarkerOptions) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable MarkerOptions that = (MarkerOptions) o;
         return this.stroke == that.stroke
-                && this.strokeWeight == that.strokeWeight
-                && Double.compare(that.strokeOpacity, this.strokeOpacity) == 0
-                && this.fill == that.fill
-                && Double.compare(that.fillOpacity, this.fillOpacity) == 0
-                && this.strokeColor.equals(that.strokeColor)
-                && Objects.equals(this.fillColor, that.fillColor)
-                && this.fillRule == that.fillRule
-                && Objects.equals(this.clickTooltip, that.clickTooltip)
-                && Objects.equals(this.hoverTooltip, that.hoverTooltip);
+            && this.strokeWeight == that.strokeWeight
+            && Double.compare(that.strokeOpacity, this.strokeOpacity) == 0
+            && this.fill == that.fill
+            && Double.compare(that.fillOpacity, this.fillOpacity) == 0
+            && this.strokeColor.equals(that.strokeColor)
+            && Objects.equals(this.fillColor, that.fillColor)
+            && this.fillRule == that.fillRule
+            && Objects.equals(this.clickTooltip, that.clickTooltip)
+            && Objects.equals(this.hoverTooltip, that.hoverTooltip);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                this.stroke, this.strokeColor, this.strokeWeight,
-                this.strokeOpacity, this.fill, this.fillColor, this.fillOpacity,
-                this.fillRule, this.clickTooltip, this.hoverTooltip
+            this.stroke,
+            this.strokeColor,
+            this.strokeWeight,
+            this.strokeOpacity,
+            this.fill,
+            this.fillColor,
+            this.fillOpacity,
+            this.fillRule,
+            this.clickTooltip,
+            this.hoverTooltip
         );
     }
 
@@ -241,16 +251,16 @@ public final class MarkerOptions {
         }
 
         private Builder(
-                final boolean stroke,
-                final @NonNull Color strokeColor,
-                final int strokeWeight,
-                final double strokeOpacity,
-                final boolean fill,
-                final @Nullable Color fillColor,
-                final double fillOpacity,
-                final @NonNull FillRule fillRule,
-                final @Nullable String clickTooltip,
-                final @Nullable String hoverTooltip
+            final boolean stroke,
+            final @NonNull Color strokeColor,
+            final int strokeWeight,
+            final double strokeOpacity,
+            final boolean fill,
+            final @Nullable Color fillColor,
+            final double fillOpacity,
+            final @NonNull FillRule fillRule,
+            final @Nullable String clickTooltip,
+            final @Nullable String hoverTooltip
         ) {
             this.stroke = stroke;
             this.strokeColor = strokeColor;
@@ -401,16 +411,16 @@ public final class MarkerOptions {
          */
         public @NonNull MarkerOptions build() {
             return new MarkerOptions(
-                    this.stroke,
-                    this.strokeColor,
-                    this.strokeWeight,
-                    this.strokeOpacity,
-                    this.fill,
-                    this.fillColor,
-                    this.fillOpacity,
-                    this.fillRule,
-                    this.clickTooltip,
-                    this.hoverTooltip
+                this.stroke,
+                this.strokeColor,
+                this.strokeWeight,
+                this.strokeOpacity,
+                this.fill,
+                this.fillColor,
+                this.fillOpacity,
+                this.fillRule,
+                this.clickTooltip,
+                this.hoverTooltip
             );
         }
 

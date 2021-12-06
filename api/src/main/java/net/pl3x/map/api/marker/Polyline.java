@@ -1,13 +1,12 @@
 package net.pl3x.map.api.marker;
 
-import net.pl3x.map.api.Point;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import net.pl3x.map.api.Point;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Polyline marker, used to draw any number of lines
@@ -72,9 +71,13 @@ public final class Polyline extends Marker {
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Polyline polyline = (Polyline) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable Polyline polyline = (Polyline) o;
         return this.points.equals(polyline.points);
     }
 

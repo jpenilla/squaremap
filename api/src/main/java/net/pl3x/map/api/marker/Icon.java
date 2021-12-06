@@ -1,12 +1,11 @@
 package net.pl3x.map.api.marker;
 
+import java.util.Objects;
 import net.pl3x.map.api.Key;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.Objects;
 
 /**
  * Icon marker, used to create an icon with an image on a map
@@ -21,12 +20,12 @@ public final class Icon extends Marker {
     private int sizeZ;
 
     Icon(
-            final @NonNull Point point,
-            final @NonNull Point tooltipAnchor,
-            final @NonNull Point anchor,
-            final @NonNull Key image,
-            final int sizeX,
-            final int sizeZ
+        final @NonNull Point point,
+        final @NonNull Point tooltipAnchor,
+        final @NonNull Point anchor,
+        final @NonNull Key image,
+        final int sizeX,
+        final int sizeZ
     ) {
         this.point = point;
         this.tooltipAnchor = tooltipAnchor;
@@ -151,15 +150,19 @@ public final class Icon extends Marker {
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Icon icon = (Icon) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable Icon icon = (Icon) o;
         return this.sizeX == icon.sizeX
-                && this.sizeZ == icon.sizeZ
-                && this.point.equals(icon.point)
-                && this.tooltipAnchor.equals(icon.tooltipAnchor)
-                && this.anchor.equals(icon.anchor)
-                && this.image.equals(icon.image);
+            && this.sizeZ == icon.sizeZ
+            && this.point.equals(icon.point)
+            && this.tooltipAnchor.equals(icon.tooltipAnchor)
+            && this.anchor.equals(icon.anchor)
+            && this.image.equals(icon.image);
     }
 
     @Override

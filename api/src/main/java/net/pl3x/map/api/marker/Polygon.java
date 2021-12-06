@@ -1,12 +1,11 @@
 package net.pl3x.map.api.marker;
 
-import net.pl3x.map.api.Point;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import net.pl3x.map.api.Point;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Polygon marker
@@ -33,11 +32,15 @@ public final class Polygon extends Marker implements IPolygon {
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Polygon polygon = (Polygon) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable Polygon polygon = (Polygon) o;
         return this.mainPolygon.equals(polygon.mainPolygon)
-                && this.negativeSpace.equals(polygon.negativeSpace);
+            && this.negativeSpace.equals(polygon.negativeSpace);
     }
 
     @Override

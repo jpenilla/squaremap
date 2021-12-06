@@ -1,9 +1,8 @@
 package net.pl3x.map.api;
 
+import java.util.UUID;
 import net.pl3x.map.api.visibilitylimit.VisibilityLimit;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.UUID;
 
 /**
  * Represents a world which is mapped by Pl3xMap

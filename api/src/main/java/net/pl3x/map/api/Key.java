@@ -1,9 +1,9 @@
 package net.pl3x.map.api;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.util.Objects;
 import java.util.function.IntPredicate;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Simple string wrapper used to identify things. Equality is checked based only on the key string.
@@ -13,7 +13,6 @@ import java.util.function.IntPredicate;
  * <p>In most cases keys should be unique, so prefixing keys with a plugin name, for example {@code "myplugin_layer-1"}, would be good practice.</p>
  */
 public final class Key {
-
     private static final IntPredicate CHARACTER_PREDICATE = value -> value == '_' || value == '-' || (value >= 'a' && value <= 'z') || (value >= 'A' && value <= 'Z') || (value >= '0' && value <= '9') || value == '.';
 
     private final String key;
@@ -53,10 +52,14 @@ public final class Key {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Key key1 = (Key) o;
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable Key key1 = (Key) o;
         return this.key.equals(key1.key);
     }
 
@@ -80,10 +83,11 @@ public final class Key {
     }
 
     private static @NonNull IllegalArgumentException invalidKey(final @NonNull String key) {
-        return new IllegalArgumentException(String.format(
+        return new IllegalArgumentException(
+            String.format(
                 "Non [a-zA-Z0-9._-] character in key '%s'",
                 key
-        ));
+            )
+        );
     }
-
 }

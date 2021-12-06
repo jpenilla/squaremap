@@ -1,13 +1,12 @@
 package net.pl3x.map.api;
 
-import org.bukkit.World;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+import org.bukkit.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Pl3xMap API

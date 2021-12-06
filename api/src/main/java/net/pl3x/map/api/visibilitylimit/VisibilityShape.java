@@ -1,13 +1,14 @@
 package net.pl3x.map.api.visibilitylimit;
 
 import org.bukkit.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public interface VisibilityShape {
-    boolean shouldRenderChunk(World world, int chunkX, int chunkZ);
+    boolean shouldRenderChunk(@NonNull World world, int chunkX, int chunkZ);
 
-    boolean shouldRenderRegion(World world, int regionX, int regionZ);
+    boolean shouldRenderRegion(@NonNull World world, int regionX, int regionZ);
 
-    boolean shouldRenderColumn(World world, int blockX, int blockZ);
+    boolean shouldRenderColumn(@NonNull World world, int blockX, int blockZ);
 
-    int countChunksInRegion(World world, int regionX, int regionZ);
+    int countChunksInRegion(@NonNull World world, int regionX, int regionZ);
 }

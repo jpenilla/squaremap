@@ -1,14 +1,13 @@
 package net.pl3x.map.api.marker;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import net.pl3x.map.api.Key;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Parent class to all map markers, also contains static factory methods for different marker types
@@ -153,12 +152,12 @@ public abstract class Marker {
      * @return new icon
      */
     public static @NonNull Icon icon(
-            final @NonNull Point point,
-            final @NonNull Point tooltipAnchor,
-            final @NonNull Point anchor,
-            final @NonNull Key image,
-            final int sizeX,
-            final int sizeZ
+        final @NonNull Point point,
+        final @NonNull Point tooltipAnchor,
+        final @NonNull Point anchor,
+        final @NonNull Key image,
+        final int sizeX,
+        final int sizeZ
     ) {
         return new Icon(point, tooltipAnchor, anchor, image, sizeX, sizeZ);
     }
@@ -173,10 +172,10 @@ public abstract class Marker {
      * @return new icon
      */
     public static @NonNull Icon icon(
-            final @NonNull Point point,
-            final @NonNull Key image,
-            final int sizeX,
-            final int sizeZ
+        final @NonNull Point point,
+        final @NonNull Key image,
+        final int sizeX,
+        final int sizeZ
     ) {
         return icon(point, Point.of(0, -sizeZ / 2D), Point.of(sizeX / 2D, sizeZ / 2D), image, sizeX, sizeZ);
     }
@@ -190,9 +189,9 @@ public abstract class Marker {
      * @return new icon
      */
     public static @NonNull Icon icon(
-            final @NonNull Point point,
-            final @NonNull Key image,
-            final int size
+        final @NonNull Point point,
+        final @NonNull Key image,
+        final int size
     ) {
         return icon(point, Point.of(0, -size / 2D), Point.of(size / 2D, size / 2D), image, size, size);
     }

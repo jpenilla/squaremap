@@ -1,10 +1,9 @@
 package net.pl3x.map.api.marker;
 
+import java.util.Objects;
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.Objects;
 
 /**
  * Circle marker
@@ -57,9 +56,13 @@ public final class Circle extends Marker {
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Circle circle = (Circle) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable Circle circle = (Circle) o;
         return Double.compare(circle.radius, this.radius) == 0 && this.center.equals(circle.center);
     }
 

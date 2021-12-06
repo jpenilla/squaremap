@@ -5,13 +5,13 @@ import net.pl3x.map.plugin.util.Numbers;
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 /**
  * Limits map drawing to a rectangular region.
- *
  */
+@DefaultQualifier(NonNull.class)
 final class RectangleShape implements VisibilityShape {
-
     private final int minBlockX;
     private final int maxBlockX;
     private final int minBlockZ;
@@ -29,15 +29,12 @@ final class RectangleShape implements VisibilityShape {
 
     /**
      * Sets the minimum and maximum locations displayed on the map.
-     * 
-     * @param min
-     *            Minimum location, inclusive.
-     * @param max
-     *            Maximum location, also inclusive.
-     * @throws IllegalArgumentException
-     *             If min > max.
+     *
+     * @param min Minimum location, inclusive.
+     * @param max Maximum location, also inclusive.
+     * @throws IllegalArgumentException If min > max.
      */
-    RectangleShape(@NonNull BlockVector min, @NonNull BlockVector max) throws IllegalArgumentException {
+    RectangleShape(final BlockVector min, final BlockVector max) throws IllegalArgumentException {
         if (min.getBlockX() > max.getBlockX() || min.getBlockZ() > max.getBlockZ()) {
             throw new IllegalArgumentException("min > max: min=" + min + " max=" + max);
         }
@@ -59,25 +56,25 @@ final class RectangleShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderChunk(World world, int chunkX, int chunkZ) {
+    public boolean shouldRenderChunk(final World world, final int chunkX, final int chunkZ) {
         return chunkX >= this.minChunkX && chunkX <= this.maxChunkX
-                && chunkZ >= this.minChunkZ && chunkZ <= this.maxChunkZ;
+            && chunkZ >= this.minChunkZ && chunkZ <= this.maxChunkZ;
     }
 
     @Override
-    public boolean shouldRenderRegion(World world, int regionX, int regionZ) {
+    public boolean shouldRenderRegion(final World world, final int regionX, final int regionZ) {
         return regionX >= this.minRegionX && regionX <= this.maxRegionX
-                && regionZ >= this.minRegionZ && regionZ <= this.maxRegionZ;
+            && regionZ >= this.minRegionZ && regionZ <= this.maxRegionZ;
     }
 
     @Override
-    public boolean shouldRenderColumn(World world, int blockX, int blockZ) {
+    public boolean shouldRenderColumn(final World world, final int blockX, final int blockZ) {
         return blockX >= this.minBlockX && blockX <= this.maxBlockX
-                && blockZ >= this.minBlockZ && blockZ <= this.maxBlockZ;
+            && blockZ >= this.minBlockZ && blockZ <= this.maxBlockZ;
     }
 
     @Override
-    public int countChunksInRegion(World world, int regionX, int regionZ) {
+    public int countChunksInRegion(final World world, final int regionX, final int regionZ) {
         int regionMinChunkX = Numbers.regionToChunk(regionX);
         int regionMaxChunkX = Numbers.regionToChunk(regionX + 1) - 1;
         int regionMinChunkZ = Numbers.regionToChunk(regionZ);

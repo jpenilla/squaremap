@@ -1,10 +1,9 @@
 package net.pl3x.map.api;
 
+import java.util.Objects;
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.Objects;
 
 /**
  * Represents a point on a map in the XZ plane. May be relative or absolute depending on the context
@@ -71,9 +70,13 @@ public final class Point {
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
-        final Point point = (Point) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable Point point = (Point) o;
         return Double.compare(point.x, this.x) == 0 && Double.compare(point.z, this.z) == 0;
     }
 

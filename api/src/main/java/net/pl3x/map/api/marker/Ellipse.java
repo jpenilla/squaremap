@@ -1,10 +1,9 @@
 package net.pl3x.map.api.marker;
 
+import java.util.Objects;
 import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.Objects;
 
 /**
  * Ellipse marker
@@ -77,12 +76,16 @@ public final class Ellipse extends Marker {
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Ellipse ellipse = (Ellipse) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable Ellipse ellipse = (Ellipse) o;
         return Double.compare(ellipse.radiusX, this.radiusX) == 0
-                && Double.compare(ellipse.radiusZ, this.radiusZ) == 0
-                && this.center.equals(ellipse.center);
+            && Double.compare(ellipse.radiusZ, this.radiusZ) == 0
+            && this.center.equals(ellipse.center);
     }
 
     @Override

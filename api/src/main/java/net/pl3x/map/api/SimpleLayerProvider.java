@@ -1,14 +1,13 @@
 package net.pl3x.map.api;
 
-import net.pl3x.map.api.marker.Marker;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
+import net.pl3x.map.api.marker.Marker;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A simple {@link LayerProvider} implementation, backed by a Map.

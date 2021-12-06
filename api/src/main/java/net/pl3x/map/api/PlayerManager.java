@@ -1,8 +1,7 @@
 package net.pl3x.map.api;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.util.UUID;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Interface for interacting with players on the map

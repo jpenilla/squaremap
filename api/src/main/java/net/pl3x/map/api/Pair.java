@@ -1,9 +1,8 @@
 package net.pl3x.map.api;
 
+import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.Objects;
 
 /**
  * Data class for holding a pair of non-null objects with generic types.
@@ -40,9 +39,13 @@ public final class Pair<L, R> {
 
     @Override
     public boolean equals(final @Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Pair<?, ?> pair = (Pair<?, ?>) o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final @Nullable Pair<?, ?> pair = (Pair<?, ?>) o;
         return this.left.equals(pair.left) && this.right.equals(pair.right);
     }
 

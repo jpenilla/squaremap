@@ -1,9 +1,8 @@
 package net.pl3x.map.api;
 
+import java.util.Collection;
 import net.pl3x.map.api.marker.Marker;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.Collection;
 
 /**
  * Provides Markers and other metadata which make up a layer. LayerProviders are called on each update of a layer.
@@ -18,7 +17,7 @@ public interface LayerProvider {
     @NonNull String getLabel();
 
     /**
-     * Whether or not to show this layer in the control box
+     * Whether to show this layer in the control box
      *
      * <p>Default implementation always returns {@code true}</p>
      *
