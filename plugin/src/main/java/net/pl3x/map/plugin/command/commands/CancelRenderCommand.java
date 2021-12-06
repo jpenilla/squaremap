@@ -5,7 +5,7 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.command.CommandManager;
+import net.pl3x.map.plugin.command.Commands;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
 import net.pl3x.map.plugin.command.argument.MapWorldArgument;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -16,17 +16,17 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class CancelRenderCommand extends Pl3xMapCommand {
 
-    public CancelRenderCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull CommandManager commandManager) {
-        super(plugin, commandManager);
+    public CancelRenderCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull Commands commands) {
+        super(plugin, commands);
     }
 
     @Override
     public void register() {
-        this.commandManager.registerSubcommand(builder ->
+        this.commands.registerSubcommand(builder ->
                 builder.literal("cancelrender")
                         .argument(MapWorldArgument.optional("world"), CommandUtil.description(Lang.OPTIONAL_WORLD_ARGUMENT_DESCRIPTION))
                         .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.CANCEL_RENDER_COMMAND_DESCRIPTION))
-                        .permission("pl3xmap.command.cancelrender")
+                        .permission("squaremap.command.cancelrender")
                         .handler(this::executeCancelRender));
     }
 

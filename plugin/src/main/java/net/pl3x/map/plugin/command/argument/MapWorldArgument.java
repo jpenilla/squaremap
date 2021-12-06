@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.pl3x.map.plugin.command.CommandManager;
+import net.pl3x.map.plugin.command.Commands;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -133,12 +133,12 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
             }
 
             inputQueue.remove();
-            return ArgumentParseResult.success(commandContext.get(CommandManager.PLUGIN_INSTANCE_KEY).worldManager().getWorld(world));
+            return ArgumentParseResult.success(commandContext.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().getWorld(world));
         }
 
         @Override
         public List<String> suggestions(final CommandContext<C> commandContext, final String input) {
-            return commandContext.get(CommandManager.PLUGIN_INSTANCE_KEY).worldManager().worlds().values().stream()
+            return commandContext.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().worlds().values().stream()
                 .map(MapWorld::name)
                 .toList();
         }

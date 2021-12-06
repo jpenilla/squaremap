@@ -2,7 +2,6 @@ package net.pl3x.map.plugin.api;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import net.pl3x.map.api.Key;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Pair;

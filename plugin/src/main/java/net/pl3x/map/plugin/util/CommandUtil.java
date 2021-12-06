@@ -8,7 +8,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.command.exception.CompletedSuccessfullyException;
+import net.pl3x.map.plugin.command.exception.CommandCompleted;
 import net.pl3x.map.plugin.command.exception.ConsoleMustProvideWorldException;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -32,7 +32,7 @@ public final class CommandUtil {
             Optional<MapWorld> optionalMapWorld = Pl3xMapPlugin.getInstance().worldManager().getWorldIfEnabled(bukkit);
             if (optionalMapWorld.isEmpty()) {
                 Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Template.template("world", bukkit.getName()));
-                throw new CompletedSuccessfullyException();
+                throw CommandCompleted.withoutMessage();
             } else {
                 return optionalMapWorld.get();
             }
@@ -50,13 +50,13 @@ public final class CommandUtil {
                 return (Player) sender;
             }
             Lang.send(sender, Lang.CONSOLE_MUST_SPECIFY_PLAYER);
-            throw new CompletedSuccessfullyException();
+            throw CommandCompleted.withoutMessage();
         }
 
         final Player targetPlayer = selector.getPlayer();
         if (targetPlayer == null) {
             Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Template.template("input", selector.getSelector()));
-            throw new CompletedSuccessfullyException();
+            throw CommandCompleted.withoutMessage();
         }
 
         return targetPlayer;

@@ -8,7 +8,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.command.CommandManager;
+import net.pl3x.map.plugin.command.Commands;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -33,15 +33,15 @@ public final class ConfirmCommand extends Pl3xMapCommand {
                 .clickEvent(ClickEvent.runCommand('/' + Config.MAIN_COMMAND_LABEL + " confirm"));
     }
 
-    public ConfirmCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull CommandManager commandManager) {
-        super(plugin, commandManager);
+    public ConfirmCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull Commands commands) {
+        super(plugin, commands);
     }
 
     @Override
     public void register() {
-        this.confirmationManager.registerConfirmationProcessor(this.commandManager);
+        this.confirmationManager.registerConfirmationProcessor(this.commands.commandManager());
 
-        this.commandManager.registerSubcommand(builder ->
+        this.commands.registerSubcommand(builder ->
                 builder.literal("confirm")
                         .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.CONFIRM_COMMAND_DESCRIPTION))
                         .handler(this.confirmationManager.createConfirmationExecutionHandler()));

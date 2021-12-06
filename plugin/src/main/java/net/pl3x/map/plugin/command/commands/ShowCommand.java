@@ -6,7 +6,7 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.command.CommandManager;
+import net.pl3x.map.plugin.command.Commands;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.util.CommandUtil;
@@ -16,22 +16,22 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class ShowCommand extends Pl3xMapCommand {
 
-    public ShowCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull CommandManager commandManager) {
-        super(plugin, commandManager);
+    public ShowCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull Commands commands) {
+        super(plugin, commands);
     }
 
     @Override
     public void register() {
-        this.commandManager.registerSubcommand(builder ->
+        this.commands.registerSubcommand(builder ->
                 builder.literal("show")
                         .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.SHOW_COMMAND_DESCRIPTION))
-                        .permission("pl3xmap.command.show")
+                        .permission("squaremap.command.show")
                         .handler(this::executeShow));
-        this.commandManager.registerSubcommand(builder ->
+        this.commands.registerSubcommand(builder ->
                 builder.literal("show")
                         .argument(SinglePlayerSelectorArgument.of("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
                         .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.SHOW_COMMAND_DESCRIPTION))
-                        .permission("pl3xmap.command.show.others")
+                        .permission("squaremap.command.show.others")
                         .handler(this::executeShow));
     }
 

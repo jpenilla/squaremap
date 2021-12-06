@@ -3,14 +3,13 @@ package net.pl3x.map.plugin;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
 import net.pl3x.map.plugin.api.PlayerManager;
 import net.pl3x.map.plugin.api.SpawnIconProvider;
-import net.pl3x.map.plugin.command.CommandManager;
+import net.pl3x.map.plugin.command.Commands;
 import net.pl3x.map.plugin.configuration.Advanced;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -63,13 +62,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         Advanced.reload();
         Lang.reload();
 
-        try {
-            new CommandManager(this);
-        } catch (Exception e) {
-            this.getLogger().log(Level.WARNING, "Failed to initialize command manager", e);
-            this.setEnabled(false);
-            return;
-        }
+        new Commands(this);
 
         this.start();
         this.setupApi();

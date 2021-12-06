@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.command.CommandManager;
+import net.pl3x.map.plugin.command.Commands;
 import net.pl3x.map.plugin.command.Pl3xMapCommand;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.util.FileUtil;
@@ -19,18 +19,18 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class ResetMapCommand extends Pl3xMapCommand {
 
-    public ResetMapCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull CommandManager commandManager) {
-        super(plugin, commandManager);
+    public ResetMapCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull Commands commands) {
+        super(plugin, commands);
     }
 
     @Override
     public void register() {
-        this.commandManager.registerSubcommand(builder ->
+        this.commands.registerSubcommand(builder ->
                 builder.literal("resetmap")
                         .argument(WorldArgument.of("world"))
                         .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.RESETMAP_COMMAND_DESCRIPTION))
                         .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
-                        .permission("pl3xmap.command.resetmap")
+                        .permission("squaremap.command.resetmap")
                         .handler(this::executeResetMap));
     }
 
