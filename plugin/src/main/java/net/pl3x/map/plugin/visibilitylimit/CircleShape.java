@@ -80,7 +80,7 @@ final class CircleShape implements VisibilityShape {
             return false;
         }
 
-        long distanceSquared = (blockX - this.centerX) * (blockX - this.centerX) + (blockZ - this.centerZ) * (blockZ - this.centerZ);
+        long distanceSquared = (long) (blockX - this.centerX) * (blockX - this.centerX) + (long) (blockZ - this.centerZ) * (blockZ - this.centerZ);
         return distanceSquared <= this.radiusSquared;
     }
 

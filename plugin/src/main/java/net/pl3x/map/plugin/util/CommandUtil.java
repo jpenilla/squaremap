@@ -27,8 +27,7 @@ public final class CommandUtil {
         if (world != null) {
             return world;
         }
-        if (sender instanceof Player) {
-            final Player player = (Player) sender;
+        if (sender instanceof final Player player) {
             final World bukkit = player.getWorld();
             Optional<MapWorld> optionalMapWorld = Pl3xMapPlugin.getInstance().worldManager().getWorldIfEnabled(bukkit);
             if (optionalMapWorld.isEmpty()) {

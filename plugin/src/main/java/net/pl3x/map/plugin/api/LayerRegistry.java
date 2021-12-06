@@ -46,8 +46,8 @@ public final class LayerRegistry implements Registry<LayerProvider> {
     @Override
     public @NonNull Iterable<Pair<Key, LayerProvider>> entries() {
         return this.layerProviders.entrySet().stream()
-                .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toUnmodifiableList());
+            .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
+            .toList();
     }
 
     private static @NonNull IllegalArgumentException noLayerRegistered(final @NonNull Key key) {
