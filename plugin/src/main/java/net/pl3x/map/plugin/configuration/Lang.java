@@ -8,13 +8,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.logging.Level;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -115,42 +114,39 @@ public final class Lang {
     @LangKey("plugin-reloaded")
     public static String PLUGIN_RELOADED = "<green><name> v<version> reloaded";
 
-    @LangKey("log.prefix")
-    public static String LOGGER_PREFIX = "<dark_aqua>[<light_purple>squaremap</light_purple>]</dark_aqua>";
-
+    // Colorless console log messages
     @LangKey("log.started-full-render")
-    public static String LOG_STARTED_FULLRENDER = "<dark_aqua>Started full map render for <yellow><world>";
+    public static String LOG_STARTED_FULLRENDER = "Started full map render for <world>";
     @LangKey("log.started-radius-render")
-    public static String LOG_STARTED_RADIUSRENDER = "<dark_aqua>Started radius map render for <yellow><world>";
+    public static String LOG_STARTED_RADIUSRENDER = "Started radius map render for <world>";
     @LangKey("log.scanning-region-files")
-    public static String LOG_SCANNING_REGION_FILES = "<yellow>Scanning region files... (this may take a moment)";
+    public static String LOG_SCANNING_REGION_FILES = "Scanning region files... (this may take a moment)";
     @LangKey("log.found-total-region-files")
-    public static String LOG_FOUND_TOTAL_REGION_FILES = "<green>Found <gray><total> <green>region files";
+    public static String LOG_FOUND_TOTAL_REGION_FILES = "Found <total> region files";
     @LangKey("log.finished-rendering")
-    public static String LOG_FINISHED_RENDERING = "<dark_aqua>Finished rendering map for <yellow><world>";
+    public static String LOG_FINISHED_RENDERING = "Finished rendering map for <world>";
     @LangKey("log.cancelled-rendering")
-    public static String LOG_CANCELLED_RENDERING = "<dark_aqua>Rendering map for <yellow><world> <dark_aqua>has been interrupted";
+    public static String LOG_CANCELLED_RENDERING = "Rendering map for <world> has been interrupted";
     @LangKey("log.resumed-rendering")
-    public static String LOG_RESUMED_RENDERING = "<dark_aqua>Rendering map for <yellow><world> <dark_aqua>has been resumed";
+    public static String LOG_RESUMED_RENDERING = "Rendering map for <world> has been resumed";
     @LangKey("log.scanning-region-progress")
-    public static String LOG_RENDER_PROGRESS = "<gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>World<gray>:</gray> <yellow><world></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Elapsed<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Rate<gray>:</gray> <yellow><rate></yellow> cps";
+    public static String LOG_RENDER_PROGRESS = "(<percent>) World: <world> Chunks: <current_chunks>/<total_chunks> Elapsed: <elapsed> ETA: <eta> Rate: <rate> cps";
     @LangKey("log.scanning-region-progress-with-regions")
-    public static String LOG_RENDER_PROGRESS_WITH_REGIONS = "<gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>World<gray>:</gray> <yellow><world></yellow> Regions<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Elapsed<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Rate<gray>:</gray> <yellow><rate></yellow> cps";
+    public static String LOG_RENDER_PROGRESS_WITH_REGIONS = "(<percent>) World: <world> Regions: <current_regions>/<total_regions> Chunks: <current_chunks>/<total_chunks> Elapsed: <elapsed> ETA: <eta> Rate: <rate> cps";
 
     @LangKey("log.internal-web-disabled")
-    public static String LOG_INTERNAL_WEB_DISABLED = "<green>Internal webserver is disabled in config.yml";
+    public static String LOG_INTERNAL_WEB_DISABLED = "Internal webserver is disabled in config.yml";
     @LangKey("log.internal-web-started")
-    public static String LOG_INTERNAL_WEB_STARTED = "<green>Internal webserver running on <bind>:<port>";
+    public static String LOG_INTERNAL_WEB_STARTED = "Internal webserver running on <bind>:<port>";
     @LangKey("log.internal-web-stopped")
-    public static String LOG_INTERNAL_WEB_STOPPED = "<green>Internal webserver stopped";
+    public static String LOG_INTERNAL_WEB_STOPPED = "Internal webserver stopped";
 
-    // Colorless console log messages
     @LangKey("log.internal-web-start-error")
     public static String LOG_INTERNAL_WEB_START_ERROR = "Internal webserver could not start";
     @LangKey("log.could-not-create-directory")
-    public static String LOG_COULD_NOT_CREATE_DIR = "Could not create directory! {path}";
+    public static String LOG_COULD_NOT_CREATE_DIR = "Could not create directory! <path>";
     @LangKey("log.could-not-save-region")
-    public static String LOG_COULD_NOT_SAVE_REGION = "Could not save map for region {x},{z}";
+    public static String LOG_COULD_NOT_SAVE_REGION = "Could not save map for region <x>,<z>";
     @LangKey("log.internal-web-not-running")
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "An error occurred with the internal webserver";
 
@@ -170,7 +166,7 @@ public final class Lang {
         try {
             field.set(null, getString(langKey.value(), (String) field.get(null)));
         } catch (IllegalAccessException e) {
-            Logger.warn("Failed to load " + Config.LANGUAGE_FILE, e);
+            Logging.warn("Failed to load " + Config.LANGUAGE_FILE, e);
         }
     }
 
@@ -181,7 +177,7 @@ public final class Lang {
             config.load(configFile);
         } catch (IOException ignore) {
         } catch (InvalidConfigurationException ex) {
-            Logger.log().log(Level.SEVERE, "Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
+            Logging.logger().error("Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
             throw new RuntimeException(ex);
         }
         config.options().copyDefaults(true);
@@ -191,7 +187,7 @@ public final class Lang {
         try {
             config.save(configFile);
         } catch (IOException ex) {
-            Logger.log().log(Level.SEVERE, "Could not save " + configFile, ex);
+            Logging.logger().error("Could not save " + configFile, ex);
         }
     }
 

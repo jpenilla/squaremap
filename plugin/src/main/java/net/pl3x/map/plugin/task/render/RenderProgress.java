@@ -1,7 +1,7 @@
 package net.pl3x.map.plugin.task.render;
 
 import net.kyori.adventure.text.minimessage.Template;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Lang;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -73,7 +73,7 @@ public final class RenderProgress extends TimerTask {
         int curRegions = this.render.processedRegions();
         int totalRegions = this.render.totalRegions();
 
-        Logger.info(
+        Logging.info(
                 (totalRegions > 0 ? Lang.LOG_RENDER_PROGRESS_WITH_REGIONS : Lang.LOG_RENDER_PROGRESS),
                 Template.template("world", render.world.getName()),
                 Template.template("current_regions", Integer.toString(curRegions)),

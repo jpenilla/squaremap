@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import net.minecraft.util.Mth;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 
@@ -38,8 +38,8 @@ public class Image {
             try {
                 Files.createDirectories(dir);
             } catch (IOException e) {
-                Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                        .replace("{path}", dir.toAbsolutePath().toString()), e);
+                Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR
+                        .replace("<path>", dir.toAbsolutePath().toString()), e);
                 continue;
             }
 
@@ -86,9 +86,9 @@ public class Image {
                     ImageIO.write(image, "png", file);
                 }
             } catch (IOException e) {
-                Logger.severe(Lang.LOG_COULD_NOT_SAVE_REGION
-                        .replace("{x}", Integer.toString(region.x()))
-                        .replace("{z}", Integer.toString(region.z())));
+                Logging.severe(Lang.LOG_COULD_NOT_SAVE_REGION
+                        .replace("<x>", Integer.toString(region.x()))
+                        .replace("<z>", Integer.toString(region.z())));
                 e.printStackTrace();
             }
         }

@@ -1,5 +1,10 @@
 package net.pl3x.map.plugin;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.logging.Level;
+import javax.imageio.ImageIO;
 import net.pl3x.map.api.Pl3xMap;
 import net.pl3x.map.api.Pl3xMapProvider;
 import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
@@ -23,12 +28,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import javax.imageio.ImageIO;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.logging.Level;
 
 public final class Pl3xMapPlugin extends JavaPlugin {
     private static Pl3xMapPlugin instance;
@@ -78,7 +77,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         try {
             this.api().iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
         } catch (IOException e) {
-            Logger.log().log(Level.WARNING, "Failed to register spawn icon", e);
+            Logging.logger().warn("Failed to register spawn icon", e);
         }
 
         Network.register();
@@ -119,7 +118,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.startServer();
         } else {
-            Logger.info(Lang.LOG_INTERNAL_WEB_DISABLED);
+            Logging.info(Lang.LOG_INTERNAL_WEB_DISABLED);
         }
     }
 

@@ -1,7 +1,9 @@
 package net.pl3x.map.plugin.configuration;
 
-import com.google.common.collect.ImmutableSet;
-import net.pl3x.map.plugin.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import net.pl3x.map.plugin.Logging;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -27,9 +29,6 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @SuppressWarnings("unused")
 public class Advanced extends AbstractConfig {
     private Advanced() {
@@ -50,45 +49,51 @@ public class Advanced extends AbstractConfig {
         WorldAdvanced.reload();
     }
 
-    private static final Map<Class<? extends Event>, Boolean> eventListenerToggles = new HashMap<>();
+    private static final Map<Class<? extends Event>, Boolean> EVENT_LISTENER_TOGGLES = new HashMap<>();
 
     public static boolean listenerEnabled(final @NonNull Class<? extends Event> eventClass) {
-        final Boolean enabled = eventListenerToggles.get(eventClass);
+        final Boolean enabled = EVENT_LISTENER_TOGGLES.get(eventClass);
         if (enabled == null) {
-            Logger.warn(String.format("No configuration option found for event listener: %s, the listener will not be enabled.", eventClass.getSimpleName()));
+            Logging.logger().warn(String.format("No configuration option found for event listener: %s, the listener will not be enabled.", eventClass.getSimpleName()));
             return false;
         }
         return enabled;
     }
 
     private static void listenerToggles() {
-        ImmutableSet.of(
-                BlockPlaceEvent.class,
-                BlockBreakEvent.class,
-                LeavesDecayEvent.class,
-                BlockBurnEvent.class,
-                BlockExplodeEvent.class,
-                BlockGrowEvent.class,
-                BlockFormEvent.class,
-                EntityBlockFormEvent.class,
-                BlockSpreadEvent.class,
-                FluidLevelChangeEvent.class,
-                EntityExplodeEvent.class,
-                EntityChangeBlockEvent.class,
-                StructureGrowEvent.class,
-                ChunkPopulateEvent.class
-        ).forEach(clazz -> eventListenerToggles.put(clazz, config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), true)));
+        final Set<Class<? extends Event>> defaultOn = Set.of(
+            BlockPlaceEvent.class,
+            BlockBreakEvent.class,
+            LeavesDecayEvent.class,
+            BlockBurnEvent.class,
+            BlockExplodeEvent.class,
+            BlockGrowEvent.class,
+            BlockFormEvent.class,
+            EntityBlockFormEvent.class,
+            BlockSpreadEvent.class,
+            FluidLevelChangeEvent.class,
+            EntityExplodeEvent.class,
+            EntityChangeBlockEvent.class,
+            StructureGrowEvent.class,
+            ChunkPopulateEvent.class
+        );
+        for (final Class<? extends Event> clazz : defaultOn) {
+            EVENT_LISTENER_TOGGLES.put(clazz, config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), true));
+        }
 
-        ImmutableSet.of(
-                BlockFromToEvent.class,
-                PlayerJoinEvent.class,
-                PlayerQuitEvent.class,
-                PlayerMoveEvent.class,
-                BlockPhysicsEvent.class,
-                BlockPistonExtendEvent.class,
-                BlockPistonRetractEvent.class,
-                ChunkLoadEvent.class
-        ).forEach(clazz -> eventListenerToggles.put(clazz, config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), false)));
+        final Set<Class<? extends Event>> defaultOff = Set.of(
+            BlockFromToEvent.class,
+            PlayerJoinEvent.class,
+            PlayerQuitEvent.class,
+            PlayerMoveEvent.class,
+            BlockPhysicsEvent.class,
+            BlockPistonExtendEvent.class,
+            BlockPistonRetractEvent.class,
+            ChunkLoadEvent.class
+        );
+        for (final Class<? extends Event> clazz : defaultOff) {
+            EVENT_LISTENER_TOGGLES.put(clazz, config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), false));
+        }
     }
 
 }

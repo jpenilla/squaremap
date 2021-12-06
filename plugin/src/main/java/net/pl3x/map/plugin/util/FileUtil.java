@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -100,7 +100,7 @@ public class FileUtil {
                 Files.createDirectories(dir);
                 WORLD_DIRS.put(world.getUID(), dir);
             } catch (IOException e) {
-                Logger.severe(Lang.LOG_COULD_NOT_CREATE_DIR
+                Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR
                         .replace("{path}", dir.toAbsolutePath().toString()), e);
             }
         }
@@ -114,10 +114,10 @@ public class FileUtil {
         if ((dirURL != null) && dirURL.getProtocol().equals("jar")) {
             ZipFile jar;
             try {
-                Logger.debug("Extracting " + inDir + " directory from jar...");
+                Logging.debug("Extracting " + inDir + " directory from jar...");
                 jar = ((JarURLConnection) dirURL.openConnection()).getJarFile();
             } catch (IOException e) {
-                Logger.severe("Failed to extract directory from jar", e);
+                Logging.severe("Failed to extract directory from jar", e);
                 return;
             }
             final Enumeration<? extends ZipEntry> entries = jar.entries();
@@ -130,18 +130,18 @@ public class FileUtil {
                 final String filename = name.substring(path.length());
                 final File file = new File(outDir, filename);
                 if (!replace && file.exists()) {
-                    Logger.debug("  <yellow>exists</yellow>   " + name);
+                    Logging.debug("  <yellow>exists</yellow>   " + name);
                     continue;
                 }
                 if (entry.isDirectory()) {
                     if (!file.exists()) {
                         final boolean result = file.mkdir();
-                        Logger.debug((result ? "  <green>creating</green> " : "  <red>unable to create</red> ") + name);
+                        Logging.debug((result ? "  <green>creating</green> " : "  <red>unable to create</red> ") + name);
                     } else {
-                        Logger.debug("  <yellow>exists</yellow>   " + name);
+                        Logging.debug("  <yellow>exists</yellow>   " + name);
                     }
                 } else {
-                    Logger.debug("  <green>writing</green>  " + name);
+                    Logging.debug("  <green>writing</green>  " + name);
                     try {
                         final InputStream inputStream = jar.getInputStream(entry);
                         final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
@@ -153,7 +153,7 @@ public class FileUtil {
                         outputStream.close();
                         inputStream.close();
                     } catch (IOException e) {
-                        Logger.severe("Failed to extract file (" + name + ") from jar!", e);
+                        Logging.severe("Failed to extract file (" + name + ") from jar!", e);
                     }
                 }
             }
@@ -178,7 +178,7 @@ public class FileUtil {
         final Path tmp = path.resolveSibling("." + path.getFileName().toString() + ".tmp");
 
         try {
-            Files.write(tmp, str.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            Files.writeString(tmp, str, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         } catch (IOException e) {
             try {
                 Files.deleteIfExists(tmp);

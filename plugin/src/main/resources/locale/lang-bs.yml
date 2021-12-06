@@ -9,7 +9,7 @@ unpaused-renders: <green>Nastavljeni renderi za svijet <world>
 click-for-help: Klikni za pomoć
 plugin-reloaded: <green><name> v<version> je ponovo učitan
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap </gradient>]</white> '
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap </gradient>]</white> '
   message:
     console-must-specify-player: <red>Morate odrediti igrača kada pokrećete ovu komandu sa konzole
     player-not-found-for-input: <red>Nema nađenog igrača za '<input>'
@@ -19,7 +19,7 @@ command:
     confirmation-required: <red>Potvrda je potrebna. Potvrdi koristeći /<command> confirm.
     no-pending-commands: <red>Nemate komandi na čekanju.
   description:
-    help: Pomoć za Pl3xMap komande
+    help: Pomoć za squaremap komande
     resetmap: Resetira kartu za određeni svijet
     confirm: Potvrdi komandu na čekanju
     reload: Ponovno učitava plugin
@@ -41,8 +41,8 @@ command:
     not-hidden: <red><player> nije sakriven sa karte
     shown: <green><player> više nije sakriven sa karte
 ui:
-  page-title: Pl3xMap - {world}
-  coordinates: Koordinate<br/>{x}, {z}
+  page-title: squaremap - {world}
+  coordinates: Koordinate<br/><x>, <z>
   sidebar:
     player-list: Igrači ({cur}/{max})
     world-list: Svijetovi
@@ -51,7 +51,6 @@ ui:
     world-spawn: Mjesto stvaranja
     world-border: Granica svijeta
 log:
-  prefix: <dark_aqua>[<light_purple>Pl3xMap </light_purple>]</dark_aqua>
   started-full-render: <dark_aqua>Pokrenut potpuni render karte za svijet <yellow><world>
   started-radius-render: <dark_aqua>Pokrenut render karte na određenom području za svijet <yellow><world>
   scanning-region-files: <yellow>Skeniranje region fajlova...
@@ -65,6 +64,6 @@ log:
   internal-web-started: <green>Interni webserver je pokrenut na <bind>:<port>
   internal-web-stopped: <green>Interni webserver zaustavljen
   internal-web-start-error: Interni webserver se ne može pokrenuti
-  could-not-create-directory: Nije moguće napraviti direktorij! {path}
-  could-not-save-region: Karta za regiju {x},{z} se nije uspjela spremiti
+  could-not-create-directory: Nije moguće napraviti direktorij! <path>
+  could-not-save-region: Karta za regiju <x>,<z> se nije uspjela spremiti
   internal-web-not-running: Desila se greška sa internim webserverom

@@ -9,7 +9,7 @@ unpaused-renders: <green>Wznowiono rendery dla <world>
 click-for-help: Kliknij, aby uzyskać pomoc
 plugin-reloaded: <green><name> v<version> przeładowano
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
   message:
     console-must-specify-player: <red>Musisz określić docelowego gracza podczas uruchamiania tej komendy z konsoli
     player-not-found-for-input: <red>Nie znaleziono gracza o nazwie '<input>'
@@ -19,7 +19,7 @@ command:
     confirmation-required: <red>Wymagane potwierdzenie. Potwierdź używając /<command> confirm.
     no-pending-commands: <red>Nie masz żadnych poleceń do potwierdzenia.
   description:
-    help: Uzyskaj pomoc dla komend Pl3xmap
+    help: Uzyskaj pomoc dla komend squaremap
     resetmap: Resetuje mapę określonego świata
     confirm: Potwierdź wykonanie komendy
     reload: Przeładuj wtyczkę
@@ -41,8 +41,8 @@ command:
     not-hidden: <red><player> nie jest ukryty na mapie
     shown: <green><player> nie jest już ukryty na mapie
 ui:
-  page-title: Pl3xMap - {world}
-  coordinates: Współrzędne<br/>{x}, {z}
+  page-title: squaremap - {world}
+  coordinates: Współrzędne<br/><x>, <z>
   sidebar:
     player-list: Gracze ({cur}/{max})
     world-list: Światy
@@ -51,7 +51,6 @@ ui:
     world-spawn: Spawn
     world-border: Granica świata
 log:
-  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
   started-full-render: <dark_aqua>Rozpoczęto pełne renderowanie mapy dla <yellow><world>
   started-radius-render: <dark_aqua>Rozpoczęto renderowanie mapy dla <yellow><world>
   scanning-region-files: <yellow>Skanowanie plików regionów...
@@ -65,6 +64,6 @@ log:
   internal-web-started: <green>Wewnętrzny serwer uruchomiony na <bind>:<port>
   internal-web-stopped: <green>Wewnętrzny serwer zatrzymany
   internal-web-start-error: Wewnętrzny serwer nie może się uruchomić
-  could-not-create-directory: Nie można utworzyć katalogu {path}
-  could-not-save-region: Nie można zapisać mapy dla regionu {x},{z}
+  could-not-create-directory: Nie można utworzyć katalogu <path>
+  could-not-save-region: Nie można zapisać mapy dla regionu <x>,<z>
   internal-web-not-running: Wystąpił błąd z wewnętrznym serwerem

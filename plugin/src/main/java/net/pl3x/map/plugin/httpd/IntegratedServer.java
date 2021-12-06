@@ -8,7 +8,7 @@ import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.util.ETag;
 import io.undertow.util.Headers;
 import net.kyori.adventure.text.minimessage.Template;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.util.FileUtil;
@@ -60,25 +60,25 @@ public class IntegratedServer {
                     .build();
             server.start();
 
-            Logger.info(
+            Logging.info(
                     Lang.LOG_INTERNAL_WEB_STARTED,
                     Template.template("bind", Config.HTTPD_BIND),
                     Template.template("port", Integer.toString(Config.HTTPD_PORT))
             );
         } catch (Exception e) {
             server = null;
-            Logger.severe(Lang.LOG_INTERNAL_WEB_START_ERROR, e);
+            Logging.severe(Lang.LOG_INTERNAL_WEB_START_ERROR, e);
         }
     }
 
     public static void stopServer() {
         if (server == null) {
-            Logger.warn(Lang.LOG_INTERNAL_WEB_STOP_ERROR);
+            Logging.logger().warn(Lang.LOG_INTERNAL_WEB_STOP_ERROR);
             return;
         }
 
         server.stop();
         server = null;
-        Logger.info(Lang.LOG_INTERNAL_WEB_STOPPED);
+        Logging.info(Lang.LOG_INTERNAL_WEB_STOPPED);
     }
 }

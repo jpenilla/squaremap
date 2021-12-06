@@ -26,7 +26,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.pl3x.map.api.Pair;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.BiomeColors;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
@@ -104,9 +104,9 @@ public abstract class AbstractRender implements Runnable {
 
             if (finished) {
                 this.mapWorld.finishedRender();
-                Logger.info(Lang.LOG_FINISHED_RENDERING, Template.template("world", world.getName()));
+                Logging.info(Lang.LOG_FINISHED_RENDERING, Template.template("world", world.getName()));
             } else {
-                Logger.info(Lang.LOG_CANCELLED_RENDERING, Template.template("world", world.getName()));
+                Logging.info(Lang.LOG_CANCELLED_RENDERING, Template.template("world", world.getName()));
             }
         }
     }

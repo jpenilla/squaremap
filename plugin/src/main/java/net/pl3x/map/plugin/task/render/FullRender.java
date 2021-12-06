@@ -1,7 +1,7 @@
 package net.pl3x.map.plugin.task.render;
 
 import net.kyori.adventure.text.minimessage.Template;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.data.RegionCoordinate;
@@ -41,7 +41,7 @@ public final class FullRender extends AbstractRender {
 
         Map<RegionCoordinate, Boolean> resumedMap = mapWorld.getRenderProgress();
         if (resumedMap != null) {
-            Logger.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", world.getName()));
+            Logging.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", world.getName()));
 
             regions = resumedMap;
 
@@ -49,10 +49,10 @@ public final class FullRender extends AbstractRender {
             this.curRegions.set(count);
             this.curChunks.set(countCompletedChunks(regions));
         } else {
-            Logger.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", world.getName()));
+            Logging.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", world.getName()));
 
             // find all region files
-            Logger.info(Lang.LOG_SCANNING_REGION_FILES);
+            Logging.info(Lang.LOG_SCANNING_REGION_FILES);
             final List<RegionCoordinate> regionFiles = getRegions();
 
             // setup a spiral iterator
@@ -90,7 +90,7 @@ public final class FullRender extends AbstractRender {
         this.totalRegions = regions.size();
         this.totalChunks = regions.keySet().stream().mapToInt(visibility::countChunksInRegion).sum();
 
-        Logger.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.template("total", Integer.toString(regions.size())));
+        Logging.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.template("total", Integer.toString(regions.size())));
 
         this.timer = RenderProgress.printProgress(this);
 

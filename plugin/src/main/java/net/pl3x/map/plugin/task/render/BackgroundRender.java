@@ -1,7 +1,7 @@
 package net.pl3x.map.plugin.task.render;
 
 import java.util.ArrayList;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -53,7 +53,7 @@ public final class BackgroundRender extends AbstractRender {
         });
         if (!futures.isEmpty()) {
             CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
-            Logger.debug(String.format("Finished background render cycle in %.2f seconds",
+            Logging.debug(String.format("Finished background render cycle in %.2f seconds",
                     (double) (System.currentTimeMillis() - time) / 1000.0D));
         }
     }

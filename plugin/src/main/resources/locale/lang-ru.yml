@@ -9,7 +9,7 @@ unpaused-renders: <green>Создание карты для <world> возобн
 click-for-help: Кликните для помощи
 plugin-reloaded: <green><name> v<version> перезагружен
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
   message:
     console-must-specify-player: <red>При исполнении этой команды из консоли нужно указать игрока
     player-not-found-for-input: <red>Игрок '<input>' не найден
@@ -19,7 +19,7 @@ command:
     confirmation-required: <red>Требуется подтверждение. Подтвердите с помощью /<command> confirm.
     no-pending-commands: <red>У вас нет команд, ожидающих выполнения.
   description:
-    help: Получить справку по командам Pl3xmap
+    help: Получить справку по командам squaremap
     resetmap: Сбросить карту указанного мира
     confirm: Подтвердить команду, ожидающую выполнения
     reload: Перезагрузить плагин
@@ -41,8 +41,8 @@ command:
     not-hidden: <red><player> не скрыт на карте
     shown: <green><player> больше не скрыт на карте
 ui:
-  page-title: Pl3xMap - {world}
-  coordinates: Координаты<br/>{x}, {z}
+  page-title: squaremap - {world}
+  coordinates: Координаты<br/><x>, <z>
   sidebar:
     player-list: Игроки ({cur}/{max})
     world-list: Миры
@@ -51,7 +51,6 @@ ui:
     world-spawn: Спавн
     world-border: Граница мира
 log:
-  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
   started-full-render: <dark_aqua>Начато создание карты всего мира <yellow><world>
   started-radius-render: <dark_aqua>Начато создание карты в радиусе для мира <yellow><world>
   scanning-region-files: <yellow>Сканирование файлов регионов...
@@ -65,6 +64,6 @@ log:
   internal-web-started: <green>Внутренний веб-сервер запущен на <bind>:<port>
   internal-web-stopped: <green>Внутренний веб-сервер остановлен
   internal-web-start-error: Не удалось запустить внутренний веб-сервер
-  could-not-create-directory: Не удалось создать папку! {path}
-  could-not-save-region: Не удалось сохранить карту для региона {x},{z}
+  could-not-create-directory: Не удалось создать папку! <path>
+  could-not-save-region: Не удалось сохранить карту для региона <x>,<z>
   internal-web-not-running: Ошибка внутреннего веб-сервера

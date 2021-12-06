@@ -26,7 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Registry;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.api.LayerRegistry;
 import net.pl3x.map.plugin.api.SpawnIconProvider;
@@ -113,7 +113,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
                 return GSON.fromJson(json, token.getType());
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logger.warn(String.format("Failed to deserialize render progress for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to deserialize render progress for world '%s'", this.name()), e);
         }
         return null;
     }
@@ -122,7 +122,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         try {
             Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
         } catch (IOException e) {
-            Logger.warn(String.format("Failed to serialize render progress for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to serialize render progress for world '%s'", this.name()), e);
         }
     }
 
@@ -130,7 +130,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         try {
             Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
         } catch (IOException e) {
-            Logger.warn(String.format("Failed to serialize dirty chunks for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to serialize dirty chunks for world '%s'", this.name()), e);
         }
     }
 
@@ -144,7 +144,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
                 ));
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logger.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.name()), e);
         }
     }
 
@@ -242,7 +242,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         try {
             Files.deleteIfExists(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME));
         } catch (IOException e) {
-            Logger.warn(String.format("Failed to delete render progress data for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to delete render progress data for world '%s'", this.name()), e);
         }
     }
 

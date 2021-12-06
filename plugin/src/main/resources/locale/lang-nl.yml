@@ -9,7 +9,7 @@ unpaused-renders: <green> Renders voor <world> voortgezet
 click-for-help: Klik hier voor hulp
 plugin-reloaded: <green><name> v<version> herladen
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
   message:
     console-must-specify-player: <red>Je moet een speler opgeven bij het uitvoeren van dit commando vanuit de console
     player-not-found-for-input: <red>Geen speler gevonden voor invoer '<input>'
@@ -19,7 +19,7 @@ command:
     confirmation-required: <red>Bevestiging vereist. Bevestig met /<command> confirm.
     no-pending-commands: <red>Je hebt geen openstaande commando's.
   description:
-    help: Krijg hulp voor Pl3xmap commando's
+    help: Krijg hulp voor squaremap commando's
     resetmap: Reset de kaart van een bepaalde wereld
     confirm: Bevestig een openstaand commando
     reload: Herlaadt de plugin
@@ -41,8 +41,8 @@ command:
     not-hidden: <red><player> is niet verborgen van de kaart
     shown: <green><player> is niet langer verborgen van de kaart
 ui:
-  page-title: Pl3xMap - {world}
-  coordinates: Coördinaten<br/>{x}, {z}
+  page-title: squaremap - {world}
+  coordinates: Coördinaten<br/><x>, <z>
   sidebar:
     player-list: Spelers ({cur}/{max})
     world-list: Werelden
@@ -51,7 +51,6 @@ ui:
     world-spawn: Spawn
     world-border: Wereld Grens
 log:
-  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
   started-full-render: <dark_aqua>Volledige kaart render voor <yellow><world> gestart
   started-radius-render: <dark_aqua>Straal kaart render voor <yellow><world> gestart
   scanning-region-files: <yellow>Scannen van regiobestanden...
@@ -65,6 +64,6 @@ log:
   internal-web-started: '<green>Interne webserver draait op: <bind><port>'
   internal-web-stopped: <green>Interne webserver gestopt
   internal-web-start-error: Interne webserver kon niet starten
-  could-not-create-directory: Kon map niet aanmaken! {path}
-  could-not-save-region: Kan de kaart voor regio {x},{z} niet opslaan
+  could-not-create-directory: Kon map niet aanmaken! <path>
+  could-not-save-region: Kan de kaart voor regio <x>,<z> niet opslaan
   internal-web-not-running: Er is een fout opgetreden met de interne webserver

@@ -10,7 +10,7 @@ unpaused-renders: <green>Reprise du rendu pour le monde <world>
 click-for-help: Cliquez pour demander l'aide
 plugin-reloaded: <green><name> v<version> rechargé
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>Pl3xMap</gradient>]</white> '
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
   message:
     console-must-specify-player: <red>Vous devez spécifier un joueur pour exécuter la commande par la console
     player-not-found-for-input: <red>Aucun joueur n'a été trouvé avec les arguments '<input>'
@@ -20,7 +20,7 @@ command:
     confirmation-required: <red>Une confirmation est demandée. Confirmer ceci avec /<command> confirm.
     no-pending-commands: <red>Vous n'avez aucune commande en attente.
   description:
-    help: Obtenir de l'aide pour les commandes Pl3xmap
+    help: Obtenir de l'aide pour les commandes squaremap
     resetmap: Réinitialiser la carte d'un monde spécifié
     confirm: Confirmer une commande en attente
     reload: Recharger le plugin
@@ -42,8 +42,8 @@ command:
     not-hidden: <red><player> n'est pas caché sur la map
     shown: <green><player> n'est plus caché sur la map
 ui:
-  page-title: Pl3xMap - {world}
-  coordinates: Coordonnées<br/>{x}, {z}
+  page-title: squaremap - {world}
+  coordinates: Coordonnées<br/><x>, <z>
   sidebar:
     player-list: Joueurs ({cur}/{max})
     world-list: Mondes
@@ -52,7 +52,6 @@ ui:
     world-spawn: Spawn
     world-border: Bordure du Monde
 log:
-  prefix: <dark_aqua>[<light_purple>Pl3xMap</light_purple>]</dark_aqua>
   started-full-render: <dark_aqua>Démarrage du rendu de la carte complète pour <yellow><world>
   started-radius-render: <dark_aqua>Rendu de la carte de rayon démarré pour <yellow><world>
   scanning-region-files: <yellow>Numérisation des fichiers de région... (cela peut prendre un moment)
@@ -66,6 +65,6 @@ log:
   internal-web-started: <green>Le serveur Web interne fonctionne sur l'adresse <bind>:<port>
   internal-web-stopped: <green>Le serveur Web interne s'est arrêté
   internal-web-start-error: Le serveur Web interne n'a pas démarré
-  could-not-create-directory: Impossible de crée le dossier ! {path}
-  could-not-save-region: Impossible d'enregistrer la carte pour la région {x},{z}
+  could-not-create-directory: Impossible de crée le dossier ! <path>
+  could-not-save-region: Impossible d'enregistrer la carte pour la région <x>,<z>
   internal-web-not-running: Une erreur s'est produite avec le serveur Web interne

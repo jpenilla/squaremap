@@ -1,5 +1,9 @@
 package net.pl3x.map.plugin.listener;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Advanced;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
@@ -39,11 +43,6 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public final class MapUpdateListeners {
 
@@ -90,8 +89,7 @@ public final class MapUpdateListeners {
         if (!Advanced.listenerEnabled(eventClass)) {
             return;
         }
-        final Listener listener = new Listener() {
-        };
+        final Listener listener = new Listener() {};
         this.registeredListeners.add(listener);
         Bukkit.getPluginManager().registerEvent(
                 eventClass,
@@ -123,10 +121,12 @@ public final class MapUpdateListeners {
     private void markChunk(final @NonNull Location loc, final boolean skipVisibilityCheck) {
         this.plugin.worldManager().getWorldIfEnabled(loc.getWorld()).ifPresent(mapWorld -> {
             if (skipVisibilityCheck || locationVisible(loc)) {
-                mapWorld.chunkModified(new ChunkCoordinate(
+                mapWorld.chunkModified(
+                    new ChunkCoordinate(
                         Numbers.blockToChunk(loc.getBlockX()),
                         Numbers.blockToChunk(loc.getBlockZ())
-                ));
+                    )
+                );
             }
         });
     }

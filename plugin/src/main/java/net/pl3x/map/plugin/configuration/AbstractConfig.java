@@ -1,7 +1,7 @@
 package net.pl3x.map.plugin.configuration;
 
 import com.google.common.collect.ImmutableMap;
-import net.pl3x.map.plugin.Logger;
+import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -30,7 +30,7 @@ abstract class AbstractConfig {
             yaml.load(file);
         } catch (IOException ignore) {
         } catch (InvalidConfigurationException ex) {
-            Logger.severe(String.format("Could not load %s, please correct your syntax errors", filename));
+            Logging.severe(String.format("Could not load %s, please correct your syntax errors", filename));
             throw new RuntimeException(ex);
         }
         yaml.options().copyDefaults(true);
@@ -46,7 +46,7 @@ abstract class AbstractConfig {
                     } catch (InvocationTargetException ex) {
                         throw new RuntimeException(ex.getCause());
                     } catch (Exception ex) {
-                        Logger.severe("Error invoking " + method);
+                        Logging.severe("Error invoking " + method);
                         ex.printStackTrace();
                     }
                 }
@@ -56,7 +56,7 @@ abstract class AbstractConfig {
         try {
             yaml.save(file);
         } catch (IOException ex) {
-            Logger.severe("Could not save " + file);
+            Logging.severe("Could not save " + file);
             ex.printStackTrace();
         }
     }
