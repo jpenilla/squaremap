@@ -33,8 +33,8 @@ public class Image {
     }
 
     public void save() {
-        for (int zoom = 0; zoom <= maxZoom; zoom++) {
-            Path dir = Path.of(directory.toString(), Integer.toString(maxZoom - zoom));
+        for (int zoom = 0; zoom <= this.maxZoom; zoom++) {
+            Path dir = Path.of(this.directory.toString(), Integer.toString(this.maxZoom - zoom));
             try {
                 Files.createDirectories(dir);
             } catch (IOException e) {
@@ -45,8 +45,8 @@ public class Image {
 
             int step = (int) Math.pow(2, zoom);
             int size = SIZE / step;
-            int scaledX = Mth.floor((double) region.x() / step);
-            int scaledZ = Mth.floor((double) region.z() / step);
+            int scaledX = Mth.floor((double) this.region.x() / step);
+            int scaledZ = Mth.floor((double) this.region.z() / step);
 
             String fileName = scaledX + "_" + scaledZ + ".png";
             File file = new File(dir.toString(), fileName);
@@ -59,8 +59,8 @@ public class Image {
                     image = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB);
                 }
 
-                int baseX = (region.x() * size) & (SIZE - 1);
-                int baseZ = (region.z() * size) & (SIZE - 1);
+                int baseX = (this.region.x() * size) & (SIZE - 1);
+                int baseZ = (this.region.z() * size) & (SIZE - 1);
                 for (int x = 0; x < SIZE; x += step) {
                     for (int z = 0; z < SIZE; z += step) {
                         final int rgb = this.pixels[x][z];
@@ -87,8 +87,8 @@ public class Image {
                 }
             } catch (IOException e) {
                 Logging.severe(Lang.LOG_COULD_NOT_SAVE_REGION
-                        .replace("<x>", Integer.toString(region.x()))
-                        .replace("<z>", Integer.toString(region.z())));
+                        .replace("<x>", Integer.toString(this.region.x()))
+                        .replace("<z>", Integer.toString(this.region.z())));
                 e.printStackTrace();
             }
         }

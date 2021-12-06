@@ -1,5 +1,10 @@
 package net.pl3x.map.plugin.task.render;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Lang;
@@ -9,16 +14,9 @@ import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.iterator.RegionSpiralIterator;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public final class FullRender extends AbstractRender {
     private int maxRadius = 0;
@@ -47,20 +45,20 @@ public final class FullRender extends AbstractRender {
 
             final int count = (int) regions.values().stream().filter(bool -> bool).count();
             this.curRegions.set(count);
-            this.curChunks.set(countCompletedChunks(regions));
+            this.curChunks.set(this.countCompletedChunks(regions));
         } else {
             Logging.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", world.getName()));
 
             // find all region files
             Logging.info(Lang.LOG_SCANNING_REGION_FILES);
-            final List<RegionCoordinate> regionFiles = getRegions();
+            final List<RegionCoordinate> regionFiles = this.getRegions();
 
             // setup a spiral iterator
             Location spawn = world.getSpawnLocation();
             RegionSpiralIterator spiral = new RegionSpiralIterator(
                     Numbers.blockToRegion(spawn.getBlockX()),
                     Numbers.blockToRegion(spawn.getBlockZ()),
-                    maxRadius);
+                    this.maxRadius);
 
             // iterate the spiral to get all regions needed
             int failsafe = 0;
@@ -146,7 +144,7 @@ public final class FullRender extends AbstractRender {
                     continue;
                 }
 
-                maxRadius = Math.max(Math.max(maxRadius, Math.abs(x)), Math.abs(z));
+                this.maxRadius = Math.max(Math.max(maxRadius, Math.abs(x)), Math.abs(z));
                 regions.add(region);
 
             } catch (NumberFormatException ignore) {

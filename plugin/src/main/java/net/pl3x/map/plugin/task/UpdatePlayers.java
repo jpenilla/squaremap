@@ -1,6 +1,10 @@
 package net.pl3x.map.plugin.task;
 
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.util.FileUtil;
@@ -11,11 +15,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class UpdatePlayers extends BukkitRunnable {
     private final Pl3xMapPlugin plugin;

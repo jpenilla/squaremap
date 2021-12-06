@@ -1,5 +1,8 @@
 package net.pl3x.map.plugin.api;
 
+import java.awt.Color;
+import java.util.Collection;
+import java.util.Collections;
 import net.pl3x.map.api.Key;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Point;
@@ -12,10 +15,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.awt.Color;
-import java.util.Collection;
-import java.util.Collections;
 
 public class WorldBorderProvider implements LayerProvider {
 
@@ -71,7 +70,7 @@ public class WorldBorderProvider implements LayerProvider {
 
     @Override
     public @NonNull Collection<Marker> getMarkers() {
-        WorldBorder border = world.getWorldBorder();
+        WorldBorder border = this.world.getWorldBorder();
         Location center = border.getCenter();
         int x = center.getBlockX();
         int z = center.getBlockZ();

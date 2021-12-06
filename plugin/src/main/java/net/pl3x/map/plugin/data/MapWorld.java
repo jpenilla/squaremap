@@ -221,7 +221,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     }
 
     public int getMapColor(final @NonNull BlockState state) {
-        final int special = blockColors.getColor(state);
+        final int special = this.blockColors.getColor(state);
         if (special != -1) {
             return special;
         }
@@ -233,7 +233,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     }
 
     public boolean rendersPaused() {
-        return pauseRenders;
+        return this.pauseRenders;
     }
 
     public void pauseRenders(boolean pauseRenders) {
@@ -265,7 +265,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
             this.stopBackgroundRender();
         }
         this.activeRender = render;
-        executor.submit(this.activeRender.getFutureTask());
+        this.executor.submit(this.activeRender.getFutureTask());
     }
 
     public void shutdown() {
@@ -282,8 +282,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         if (this.backgroundRendering()) {
             this.stopBackgroundRender();
         }
-        executor.shutdown();
-        imageIOexecutor.shutdown();
+        this.executor.shutdown();
+        this.imageIOexecutor.shutdown();
         this.serializeDirtyChunks();
     }
 
@@ -308,7 +308,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     @Override
     public @NonNull VisibilityLimit visibilityLimit() {
-        return visibilityLimit;
+        return this.visibilityLimit;
     }
 
 }

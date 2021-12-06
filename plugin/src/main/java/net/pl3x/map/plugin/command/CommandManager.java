@@ -13,6 +13,8 @@ import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.common.collect.ImmutableList;
 import io.leangen.geantyref.TypeToken;
+import java.util.Objects;
+import java.util.function.UnaryOperator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -33,9 +35,6 @@ import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.Objects;
-import java.util.function.UnaryOperator;
 
 public final class CommandManager extends PaperCommandManager<CommandSender> {
     public static final CloudKey<Pl3xMapPlugin> PLUGIN_INSTANCE_KEY = SimpleCloudKey.of("plugin-instance", TypeToken.get(Pl3xMapPlugin.class));

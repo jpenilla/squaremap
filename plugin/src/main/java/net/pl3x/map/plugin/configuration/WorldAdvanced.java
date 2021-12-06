@@ -2,6 +2,11 @@ package net.pl3x.map.plugin.configuration;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
@@ -12,12 +17,6 @@ import net.pl3x.map.plugin.util.Colors;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class WorldAdvanced extends AbstractWorldConfig {
@@ -39,7 +38,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
 
     WorldAdvanced(World world, AbstractConfig parent) {
         super(world, parent);
-        init();
+        this.init();
     }
 
     void init() {
@@ -49,19 +48,19 @@ public class WorldAdvanced extends AbstractWorldConfig {
     public final List<Block> invisibleBlocks = new ArrayList<>();
 
     private void invisibleBlocks() {
-        invisibleBlocks.clear();
+        this.invisibleBlocks.clear();
         getList("invisible-blocks", List.of(
                 "minecraft:tall_grass",
                 "minecraft:fern",
                 "minecraft:grass",
                 "minecraft:large_fern"
-        )).forEach(block -> invisibleBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
+        )).forEach(block -> this.invisibleBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
     }
 
     public final List<Block> iterateUpBaseBlocks = new ArrayList<>();
 
     private void iterateUpBaseBlocks() {
-        iterateUpBaseBlocks.clear();
+        this.iterateUpBaseBlocks.clear();
         getList("iterate-up-base-blocks", List.of(
                 "minecraft:netherrack",
                 "minecraft:glowstone",
@@ -75,14 +74,14 @@ public class WorldAdvanced extends AbstractWorldConfig {
                 "minecraft:nether_quartz_ore",
                 "minecraft:magma_block",
                 "minecraft:basalt"
-        )).forEach(block -> iterateUpBaseBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
+        )).forEach(block -> this.iterateUpBaseBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
     }
 
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_FOLIAGE = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeFoliageSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
-        COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
+        this.COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
         getMap("color-overrides.biomes.foliage", Map.ofEntries(
                 Map.entry("minecraft:dark_forest", "#1c7b07"),
                 Map.entry("minecraft:dark_forest_hills", "#1c7b07"),
@@ -94,7 +93,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         )).forEach((key, color) -> {
             final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
-                COLOR_OVERRIDES_BIOME_FOLIAGE.put(biome, Colors.parseHex(color));
+                this.COLOR_OVERRIDES_BIOME_FOLIAGE.put(biome, Colors.parseHex(color));
             }
         });
     }
@@ -103,12 +102,12 @@ public class WorldAdvanced extends AbstractWorldConfig {
 
     private void colorOverrideBiomeGrassSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
-        COLOR_OVERRIDES_BIOME_GRASS.clear();
+        this.COLOR_OVERRIDES_BIOME_GRASS.clear();
         getMap("color-overrides.biomes.grass", Map.<String, String>ofEntries(
         )).forEach((key, color) -> {
             final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
-                COLOR_OVERRIDES_BIOME_GRASS.put(biome, Colors.parseHex(color));
+                this.COLOR_OVERRIDES_BIOME_GRASS.put(biome, Colors.parseHex(color));
             }
         });
     }
@@ -117,12 +116,12 @@ public class WorldAdvanced extends AbstractWorldConfig {
 
     private void colorOverrideBiomeWaterSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
-        COLOR_OVERRIDES_BIOME_WATER.clear();
+        this.COLOR_OVERRIDES_BIOME_WATER.clear();
         getMap("color-overrides.biomes.water", Map.<String, String>ofEntries(
         )).forEach((key, color) -> {
             final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
-                COLOR_OVERRIDES_BIOME_WATER.put(biome, Colors.parseHex(color));
+                this.COLOR_OVERRIDES_BIOME_WATER.put(biome, Colors.parseHex(color));
             }
         });
     }
@@ -130,7 +129,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
     public final Reference2IntMap<Block> COLOR_OVERRIDES_BLOCKS = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBlocksSettings() {
-        COLOR_OVERRIDES_BLOCKS.clear();
+        this.COLOR_OVERRIDES_BLOCKS.clear();
         getMap("color-overrides.blocks", Map.ofEntries(
                 Map.entry("minecraft:mycelium", "#6F6265"),
                 Map.entry("minecraft:terracotta", "#9E6246"),
@@ -161,7 +160,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         )).forEach((key, color) -> {
             final Block block = Registry.BLOCK.get(new ResourceLocation(key));
             if (block != Blocks.AIR) {
-                COLOR_OVERRIDES_BLOCKS.put(block, Colors.parseHex(color));
+                this.COLOR_OVERRIDES_BLOCKS.put(block, Colors.parseHex(color));
             }
         });
     }

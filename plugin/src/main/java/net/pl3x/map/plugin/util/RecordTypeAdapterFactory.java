@@ -48,7 +48,7 @@ public class RecordTypeAdapterFactory implements TypeAdapterFactory {
      * Otherwise, the component name will be returned.
      */
     private List<String> getRecordComponentNames(final RecordComponent recordComponent) {
-        List<String> inCache = recordComponentNameCache.get(recordComponent);
+        List<String> inCache = this.recordComponentNameCache.get(recordComponent);
         if (inCache != null) {
             return inCache;
         }
@@ -70,7 +70,7 @@ public class RecordTypeAdapterFactory implements TypeAdapterFactory {
             names.add(recordComponent.getName());
         }
         var namesList = List.copyOf(names);
-        recordComponentNameCache.put(recordComponent, namesList);
+        this.recordComponentNameCache.put(recordComponent, namesList);
         return namesList;
     }
 

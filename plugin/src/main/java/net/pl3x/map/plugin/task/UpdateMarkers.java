@@ -2,6 +2,17 @@ package net.pl3x.map.plugin.task;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
+import java.awt.Color;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.pl3x.map.api.Key;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Point;
@@ -21,18 +32,6 @@ import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.awt.Color;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class UpdateMarkers extends BukkitRunnable {
 
@@ -57,7 +56,7 @@ public final class UpdateMarkers extends BukkitRunnable {
             final Key key = registeredLayer.left();
             final List<Marker> markers = ImmutableList.copyOf(provider.getMarkers());
 
-            final Map<String, Object> current = createMap(key, provider);
+            final Map<String, Object> current = this.createMap(key, provider);
             current.put("markers", markers.hashCode());
 
             final Map<String, Object> previous = this.layerCache.get(key);
@@ -86,12 +85,12 @@ public final class UpdateMarkers extends BukkitRunnable {
 
         Bukkit.getServer().getScheduler().runTaskAsynchronously(Pl3xMapPlugin.getInstance(), () -> {
             Path file = FileUtil.getWorldFolder(this.mapWorld.bukkit()).resolve("markers.json");
-            FileUtil.write(gson.toJson(layers), file);
+            FileUtil.write(this.gson.toJson(layers), file);
         });
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {
-        final Map<String, Object> map = createMap(key, provider);
+        final Map<String, Object> map = this.createMap(key, provider);
         map.put("markers", this.serializeMarkers(markers));
         return map;
     }

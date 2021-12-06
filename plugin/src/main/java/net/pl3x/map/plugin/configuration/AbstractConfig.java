@@ -1,14 +1,6 @@
 package net.pl3x.map.plugin.configuration;
 
 import com.google.common.collect.ImmutableMap;
-import net.pl3x.map.plugin.Logging;
-import net.pl3x.map.plugin.Pl3xMapPlugin;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +9,13 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.pl3x.map.plugin.Logging;
+import net.pl3x.map.plugin.Pl3xMapPlugin;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @SuppressWarnings({"unused", "SameParameterValue"})
 abstract class AbstractConfig {
@@ -27,13 +26,13 @@ abstract class AbstractConfig {
         this.file = new File(Pl3xMapPlugin.getInstance().getDataFolder(), filename);
         this.yaml = new YamlConfiguration();
         try {
-            yaml.load(file);
+            this.yaml.load(file);
         } catch (IOException ignore) {
         } catch (InvalidConfigurationException ex) {
             Logging.severe(String.format("Could not load %s, please correct your syntax errors", filename));
             throw new RuntimeException(ex);
         }
-        yaml.options().copyDefaults(true);
+        this.yaml.options().copyDefaults(true);
     }
 
     void readConfig(Class<?> clazz, Object instance) {
@@ -54,51 +53,51 @@ abstract class AbstractConfig {
         }
 
         try {
-            yaml.save(file);
+            this.yaml.save(file);
         } catch (IOException ex) {
-            Logging.severe("Could not save " + file);
+            Logging.severe("Could not save " + this.file);
             ex.printStackTrace();
         }
     }
 
     void set(String path, Object val) {
-        yaml.addDefault(path, val);
-        yaml.set(path, val);
+        this.yaml.addDefault(path, val);
+        this.yaml.set(path, val);
     }
 
     String getString(String path, String def) {
-        yaml.addDefault(path, def);
-        return yaml.getString(path, yaml.getString(path));
+        this.yaml.addDefault(path, def);
+        return this.yaml.getString(path, this.yaml.getString(path));
     }
 
     boolean getBoolean(String path, boolean def) {
-        yaml.addDefault(path, def);
-        return yaml.getBoolean(path, yaml.getBoolean(path));
+        this.yaml.addDefault(path, def);
+        return this.yaml.getBoolean(path, this.yaml.getBoolean(path));
     }
 
     int getInt(String path, int def) {
-        yaml.addDefault(path, def);
-        return yaml.getInt(path, yaml.getInt(path));
+        this.yaml.addDefault(path, def);
+        return this.yaml.getInt(path, this.yaml.getInt(path));
     }
 
     double getDouble(String path, double def) {
-        yaml.addDefault(path, def);
-        return yaml.getDouble(path, yaml.getDouble(path));
+        this.yaml.addDefault(path, def);
+        return this.yaml.getDouble(path, this.yaml.getDouble(path));
     }
 
     <T> List<?> getList(String path, T def) {
-        yaml.addDefault(path, def);
-        return yaml.getList(path, yaml.getList(path));
+        this.yaml.addDefault(path, def);
+        return this.yaml.getList(path, this.yaml.getList(path));
     }
 
     @NonNull <T> Map<String, T> getMap(final @NonNull String path, final @Nullable Map<String, T> def) {
         final ImmutableMap.Builder<String, T> builder = ImmutableMap.builder();
-        if (def != null && yaml.getConfigurationSection(path) == null) {
+        if (def != null && this.yaml.getConfigurationSection(path) == null) {
             //def.forEach((key, value) -> yaml.addDefault(path + "." + key, value));
-            yaml.addDefault(path, def.isEmpty() ? new HashMap<>() : def);
+            this.yaml.addDefault(path, def.isEmpty() ? new HashMap<>() : def);
             return def;
         }
-        final ConfigurationSection section = yaml.getConfigurationSection(path);
+        final ConfigurationSection section = this.yaml.getConfigurationSection(path);
         if (section != null) {
             for (String key : section.getKeys(false)) {
                 @SuppressWarnings("unchecked") final T val = (T) section.get(key);

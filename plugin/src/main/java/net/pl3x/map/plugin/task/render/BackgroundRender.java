@@ -1,13 +1,6 @@
 package net.pl3x.map.plugin.task.render;
 
 import java.util.ArrayList;
-import net.pl3x.map.plugin.Logging;
-import net.pl3x.map.plugin.data.ChunkCoordinate;
-import net.pl3x.map.plugin.data.Image;
-import net.pl3x.map.plugin.data.MapWorld;
-import net.pl3x.map.plugin.data.RegionCoordinate;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +8,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import net.pl3x.map.plugin.Logging;
+import net.pl3x.map.plugin.data.ChunkCoordinate;
+import net.pl3x.map.plugin.data.Image;
+import net.pl3x.map.plugin.data.MapWorld;
+import net.pl3x.map.plugin.data.RegionCoordinate;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class BackgroundRender extends AbstractRender {
 

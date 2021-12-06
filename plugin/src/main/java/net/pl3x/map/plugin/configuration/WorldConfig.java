@@ -1,17 +1,16 @@
 package net.pl3x.map.plugin.configuration;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.util.Mth;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.util.Mth;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 @SuppressWarnings("unused")
 public class WorldConfig extends AbstractWorldConfig {
@@ -33,7 +32,7 @@ public class WorldConfig extends AbstractWorldConfig {
 
     WorldConfig(World world, AbstractConfig parent) {
         super(world, parent);
-        init();
+        this.init();
     }
 
     void init() {
@@ -50,42 +49,42 @@ public class WorldConfig extends AbstractWorldConfig {
     public int MAP_RENDER_PROGRESS_INTERVAL = 1;
 
     private void worldSettings() {
-        MAP_ENABLED = getBoolean("map.enabled", MAP_ENABLED);
-        MAP_DISPLAY_NAME = getString("map.display-name", MAP_DISPLAY_NAME);
-        MAP_ORDER = getInt("map.order", MAP_ORDER);
-        MAP_ICON = getString("map.icon", MAP_ICON);
-        MAX_RENDER_THREADS = getInt("map.max-render-threads", MAX_RENDER_THREADS);
-        MAP_ITERATE_UP = getBoolean("map.iterate-up", MAP_ITERATE_UP);
-        MAP_MAX_HEIGHT = getInt("map.max-height", MAP_MAX_HEIGHT);
-        MAP_RENDER_PROGRESS_INTERVAL = getInt("map.render-progress-interval", MAP_RENDER_PROGRESS_INTERVAL);
+        this.MAP_ENABLED = getBoolean("map.enabled", this.MAP_ENABLED);
+        this.MAP_DISPLAY_NAME = getString("map.display-name", this.MAP_DISPLAY_NAME);
+        this.MAP_ORDER = getInt("map.order", this.MAP_ORDER);
+        this.MAP_ICON = getString("map.icon", this.MAP_ICON);
+        this.MAX_RENDER_THREADS = getInt("map.max-render-threads", this.MAX_RENDER_THREADS);
+        this.MAP_ITERATE_UP = getBoolean("map.iterate-up", this.MAP_ITERATE_UP);
+        this.MAP_MAX_HEIGHT = getInt("map.max-height", this.MAP_MAX_HEIGHT);
+        this.MAP_RENDER_PROGRESS_INTERVAL = getInt("map.render-progress-interval", this.MAP_RENDER_PROGRESS_INTERVAL);
     }
 
     public boolean MAP_BIOMES = true;
     public int MAP_BIOMES_BLEND = 4;
 
     private void biomeSettings() {
-        MAP_BIOMES = getBoolean("map.biomes.enabled", MAP_BIOMES);
-        MAP_BIOMES_BLEND = Mth.clamp(getInt("map.biomes.blend-biomes", MAP_BIOMES_BLEND), 0, 15);
+        this.MAP_BIOMES = getBoolean("map.biomes.enabled", this.MAP_BIOMES);
+        this.MAP_BIOMES_BLEND = Mth.clamp(getInt("map.biomes.blend-biomes", this.MAP_BIOMES_BLEND), 0, 15);
     }
 
     public boolean MAP_GLASS_CLEAR = true;
 
     private void glassSettings() {
-        MAP_GLASS_CLEAR = getBoolean("map.glass.clear", MAP_GLASS_CLEAR);
+        this.MAP_GLASS_CLEAR = getBoolean("map.glass.clear", this.MAP_GLASS_CLEAR);
     }
 
     public boolean MAP_LAVA_CHECKERBOARD = true;
 
     private void lavaSettings() {
-        MAP_LAVA_CHECKERBOARD = getBoolean("map.lava.checkerboard", MAP_LAVA_CHECKERBOARD);
+        this.MAP_LAVA_CHECKERBOARD = getBoolean("map.lava.checkerboard", this.MAP_LAVA_CHECKERBOARD);
     }
 
     public boolean MAP_WATER_CLEAR = true;
     public boolean MAP_WATER_CHECKERBOARD = false;
 
     private void waterSettings() {
-        MAP_WATER_CLEAR = getBoolean("map.water.clear-depth", MAP_WATER_CLEAR);
-        MAP_WATER_CHECKERBOARD = getBoolean("map.water.checkerboard", MAP_WATER_CHECKERBOARD);
+        this.MAP_WATER_CLEAR = getBoolean("map.water.clear-depth", this.MAP_WATER_CLEAR);
+        this.MAP_WATER_CHECKERBOARD = getBoolean("map.water.checkerboard", this.MAP_WATER_CHECKERBOARD);
     }
 
     public int ZOOM_MAX = 3;
@@ -93,9 +92,9 @@ public class WorldConfig extends AbstractWorldConfig {
     public int ZOOM_EXTRA = 2;
 
     private void zoomSettings() {
-        ZOOM_MAX = getInt("map.zoom.maximum", ZOOM_MAX);
-        ZOOM_DEFAULT = getInt("map.zoom.default", ZOOM_DEFAULT);
-        ZOOM_EXTRA = getInt("map.zoom.extra", ZOOM_EXTRA);
+        this.ZOOM_MAX = getInt("map.zoom.maximum", this.ZOOM_MAX);
+        this.ZOOM_DEFAULT = getInt("map.zoom.default", this.ZOOM_DEFAULT);
+        this.ZOOM_EXTRA = getInt("map.zoom.extra", this.ZOOM_EXTRA);
     }
 
     public boolean BACKGROUND_RENDER_ENABLED = true;
@@ -104,10 +103,10 @@ public class WorldConfig extends AbstractWorldConfig {
     public int BACKGROUND_RENDER_MAX_THREADS = -1;
 
     private void backgroundRenderSettings() {
-        BACKGROUND_RENDER_ENABLED = getBoolean("map.background-render.enabled", BACKGROUND_RENDER_ENABLED);
-        BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = getInt("map.background-render.max-chunks-per-interval", BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL);
-        BACKGROUND_RENDER_INTERVAL_SECONDS = getInt("map.background-render.interval-seconds", BACKGROUND_RENDER_INTERVAL_SECONDS);
-        BACKGROUND_RENDER_MAX_THREADS = getInt("map.background-render.max-render-threads", BACKGROUND_RENDER_MAX_THREADS);
+        this.BACKGROUND_RENDER_ENABLED = getBoolean("map.background-render.enabled", this.BACKGROUND_RENDER_ENABLED);
+        this.BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL = getInt("map.background-render.max-chunks-per-interval", this.BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL);
+        this.BACKGROUND_RENDER_INTERVAL_SECONDS = getInt("map.background-render.interval-seconds", this.BACKGROUND_RENDER_INTERVAL_SECONDS);
+        this.BACKGROUND_RENDER_MAX_THREADS = getInt("map.background-render.max-render-threads", this.BACKGROUND_RENDER_MAX_THREADS);
     }
 
     public boolean PLAYER_TRACKER_ENABLED = true;
@@ -125,25 +124,25 @@ public class WorldConfig extends AbstractWorldConfig {
     public boolean PLAYER_TRACKER_HIDE_SPECTATORS = true;
 
     private void playerTrackerSettings() {
-        PLAYER_TRACKER_ENABLED = getBoolean("player-tracker.enabled", PLAYER_TRACKER_ENABLED);
-        PLAYER_TRACKER_UPDATE_INTERVAL = getInt("player-tracker.update-interval-seconds", PLAYER_TRACKER_UPDATE_INTERVAL);
-        PLAYER_TRACKER_SHOW_CONTROLS = getBoolean("player-tracker.show-controls", PLAYER_TRACKER_SHOW_CONTROLS);
-        PLAYER_TRACKER_DEFAULT_HIDDEN = getBoolean("player-tracker.default-hidden", PLAYER_TRACKER_DEFAULT_HIDDEN);
-        PLAYER_TRACKER_PRIORITY = getInt("player-tracker.layer-priority", PLAYER_TRACKER_PRIORITY);
-        PLAYER_TRACKER_Z_INDEX = getInt("player-tracker.z-index", PLAYER_TRACKER_Z_INDEX);
-        PLAYER_TRACKER_NAMEPLATE_ENABLED = getBoolean("player-tracker.nameplate.enabled", PLAYER_TRACKER_NAMEPLATE_ENABLED);
-        PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = getBoolean("player-tracker.nameplate.show-head", PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD);
-        PLAYER_TRACKER_NAMEPLATE_HEADS_URL = getString("player-tracker.nameplate.heads-url", PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
-        PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR = getBoolean("player-tracker.nameplate.show-armor", PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR);
-        PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH = getBoolean("player-tracker.nameplate.show-health", PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH);
-        PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", PLAYER_TRACKER_HIDE_INVISIBLE);
-        PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", PLAYER_TRACKER_HIDE_SPECTATORS);
+        this.PLAYER_TRACKER_ENABLED = getBoolean("player-tracker.enabled", this.PLAYER_TRACKER_ENABLED);
+        this.PLAYER_TRACKER_UPDATE_INTERVAL = getInt("player-tracker.update-interval-seconds", this.PLAYER_TRACKER_UPDATE_INTERVAL);
+        this.PLAYER_TRACKER_SHOW_CONTROLS = getBoolean("player-tracker.show-controls", this.PLAYER_TRACKER_SHOW_CONTROLS);
+        this.PLAYER_TRACKER_DEFAULT_HIDDEN = getBoolean("player-tracker.default-hidden", this.PLAYER_TRACKER_DEFAULT_HIDDEN);
+        this.PLAYER_TRACKER_PRIORITY = getInt("player-tracker.layer-priority", this.PLAYER_TRACKER_PRIORITY);
+        this.PLAYER_TRACKER_Z_INDEX = getInt("player-tracker.z-index", this.PLAYER_TRACKER_Z_INDEX);
+        this.PLAYER_TRACKER_NAMEPLATE_ENABLED = getBoolean("player-tracker.nameplate.enabled", this.PLAYER_TRACKER_NAMEPLATE_ENABLED);
+        this.PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD = getBoolean("player-tracker.nameplate.show-head", this.PLAYER_TRACKER_NAMEPLATE_SHOW_HEAD);
+        this.PLAYER_TRACKER_NAMEPLATE_HEADS_URL = getString("player-tracker.nameplate.heads-url", this.PLAYER_TRACKER_NAMEPLATE_HEADS_URL);
+        this.PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR = getBoolean("player-tracker.nameplate.show-armor", this.PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR);
+        this.PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH = getBoolean("player-tracker.nameplate.show-health", this.PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH);
+        this.PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", this.PLAYER_TRACKER_HIDE_INVISIBLE);
+        this.PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", this.PLAYER_TRACKER_HIDE_SPECTATORS);
     }
 
     public int MARKER_API_UPDATE_INTERVAL_SECONDS = 5;
 
     private void markerSettings() {
-        MARKER_API_UPDATE_INTERVAL_SECONDS = getInt("map.markers.update-interval-seconds", MARKER_API_UPDATE_INTERVAL_SECONDS);
+        this.MARKER_API_UPDATE_INTERVAL_SECONDS = getInt("map.markers.update-interval-seconds", this.MARKER_API_UPDATE_INTERVAL_SECONDS);
     }
 
     public boolean SPAWN_MARKER_ICON_ENABLED = true;
@@ -153,11 +152,11 @@ public class WorldConfig extends AbstractWorldConfig {
     public int SPAWN_MARKER_ICON_Z_INDEX = 0;
 
     private void spawnMarkerSettings() {
-        SPAWN_MARKER_ICON_ENABLED = getBoolean("map.markers.spawn-icon.enabled", SPAWN_MARKER_ICON_ENABLED);
-        SPAWN_MARKER_ICON_SHOW_CONTROLS = getBoolean("map.markers.spawn-icon.show-controls", SPAWN_MARKER_ICON_SHOW_CONTROLS);
-        SPAWN_MARKER_ICON_DEFAULT_HIDDEN = getBoolean("map.markers.spawn-icon.default-hidden", SPAWN_MARKER_ICON_DEFAULT_HIDDEN);
-        SPAWN_MARKER_ICON_LAYER_PRIORITY = getInt("map.markers.spawn-icon.layer-priority", SPAWN_MARKER_ICON_LAYER_PRIORITY);
-        SPAWN_MARKER_ICON_Z_INDEX = getInt("map.markers.spawn-icon.z-index", SPAWN_MARKER_ICON_Z_INDEX);
+        this.SPAWN_MARKER_ICON_ENABLED = getBoolean("map.markers.spawn-icon.enabled", this.SPAWN_MARKER_ICON_ENABLED);
+        this.SPAWN_MARKER_ICON_SHOW_CONTROLS = getBoolean("map.markers.spawn-icon.show-controls", this.SPAWN_MARKER_ICON_SHOW_CONTROLS);
+        this.SPAWN_MARKER_ICON_DEFAULT_HIDDEN = getBoolean("map.markers.spawn-icon.default-hidden", this.SPAWN_MARKER_ICON_DEFAULT_HIDDEN);
+        this.SPAWN_MARKER_ICON_LAYER_PRIORITY = getInt("map.markers.spawn-icon.layer-priority", this.SPAWN_MARKER_ICON_LAYER_PRIORITY);
+        this.SPAWN_MARKER_ICON_Z_INDEX = getInt("map.markers.spawn-icon.z-index", this.SPAWN_MARKER_ICON_Z_INDEX);
     }
 
     public boolean WORLDBORDER_MARKER_ENABLED = true;
@@ -167,18 +166,18 @@ public class WorldConfig extends AbstractWorldConfig {
     public int WORLDBORDER_MARKER_Z_INDEX = 1;
 
     private void worldborderMarkerSettings() {
-        WORLDBORDER_MARKER_ENABLED = getBoolean("map.markers.world-border.enabled", WORLDBORDER_MARKER_ENABLED);
-        WORLDBORDER_MARKER_SHOW_CONTROLS = getBoolean("map.markers.world-border.show-controls", WORLDBORDER_MARKER_SHOW_CONTROLS);
-        WORLDBORDER_MARKER_DEFAULT_HIDDEN = getBoolean("map.markers.world-border.default-hidden", WORLDBORDER_MARKER_DEFAULT_HIDDEN);
-        WORLDBORDER_MARKER_LAYER_PRIORITY = getInt("map.markers.world-border.layer-priority", WORLDBORDER_MARKER_LAYER_PRIORITY);
-        WORLDBORDER_MARKER_Z_INDEX = getInt("map.markers.world-border.z-index", WORLDBORDER_MARKER_Z_INDEX);
+        this.WORLDBORDER_MARKER_ENABLED = getBoolean("map.markers.world-border.enabled", this.WORLDBORDER_MARKER_ENABLED);
+        this.WORLDBORDER_MARKER_SHOW_CONTROLS = getBoolean("map.markers.world-border.show-controls", this.WORLDBORDER_MARKER_SHOW_CONTROLS);
+        this.WORLDBORDER_MARKER_DEFAULT_HIDDEN = getBoolean("map.markers.world-border.default-hidden", this.WORLDBORDER_MARKER_DEFAULT_HIDDEN);
+        this.WORLDBORDER_MARKER_LAYER_PRIORITY = getInt("map.markers.world-border.layer-priority", this.WORLDBORDER_MARKER_LAYER_PRIORITY);
+        this.WORLDBORDER_MARKER_Z_INDEX = getInt("map.markers.world-border.z-index", this.WORLDBORDER_MARKER_Z_INDEX);
     }
 
     public List<Map<String, Object>> VISIBILITY_LIMITS = new ArrayList<>();
 
     @SuppressWarnings("unchecked") // Safe, as YAML can only store dicts of <String, object>
     private void visibilityLimitSettings() {
-        VISIBILITY_LIMITS = (List<Map<String, Object>>) this.getList("map.visibility-limits", Collections.singletonList(
+        this.VISIBILITY_LIMITS = (List<Map<String, Object>>) this.getList("map.visibility-limits", Collections.singletonList(
                 ImmutableMap.of("type", "world-border", "enabled", false)));
     }
 

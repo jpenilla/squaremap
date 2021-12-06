@@ -1,14 +1,13 @@
 package net.pl3x.map.plugin.api;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import net.pl3x.map.api.Key;
 import net.pl3x.map.api.LayerProvider;
 import net.pl3x.map.api.Pair;
 import net.pl3x.map.api.Registry;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public final class LayerRegistry implements Registry<LayerProvider> {
 

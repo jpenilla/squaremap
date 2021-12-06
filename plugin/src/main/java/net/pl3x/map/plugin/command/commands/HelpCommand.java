@@ -6,6 +6,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
+import java.util.stream.Collectors;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -17,8 +18,6 @@ import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.util.CommandUtil;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.stream.Collectors;
 
 public final class HelpCommand extends Pl3xMapCommand {
 

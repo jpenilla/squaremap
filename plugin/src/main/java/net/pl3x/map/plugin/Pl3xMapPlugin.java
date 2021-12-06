@@ -155,7 +155,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
             this.worldManager = null;
         }
 
-        if (playerManager != null) {
+        if (this.playerManager != null) {
             this.playerManager = null;
         }
 

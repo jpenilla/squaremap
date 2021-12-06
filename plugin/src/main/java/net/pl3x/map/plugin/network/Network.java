@@ -3,6 +3,8 @@ package net.pl3x.map.plugin.network;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import java.util.Map;
+import java.util.UUID;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.data.MapWorld;
@@ -13,9 +15,6 @@ import org.bukkit.craftbukkit.v1_18_R1.map.CraftMapRenderer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
-
-import java.util.Map;
-import java.util.UUID;
 
 public class Network {
     public static final String CHANNEL = "pl3xmap:pl3xmap";

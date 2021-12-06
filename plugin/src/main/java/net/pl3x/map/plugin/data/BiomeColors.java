@@ -120,7 +120,7 @@ public final class BiomeColors {
         } else if (foliageColorBlocks.contains(block)) {
             color = this.foliage(pos);
         } else if (waterColorBlocks.contains(block) || waterColorMaterials.contains(mat)) {
-            int modColor = water(pos);
+            int modColor = this.water(pos);
             color = Colors.mix(color, modColor, 0.8F);
         }
 

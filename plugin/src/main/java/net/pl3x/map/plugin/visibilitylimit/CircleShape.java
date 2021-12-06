@@ -2,7 +2,6 @@ package net.pl3x.map.plugin.visibilitylimit;
 
 import net.pl3x.map.api.visibilitylimit.VisibilityShape;
 import net.pl3x.map.plugin.util.Numbers;
-
 import org.bukkit.World;
 
 /**
@@ -32,7 +31,7 @@ final class CircleShape implements VisibilityShape {
 
     @Override
     public boolean shouldRenderChunk(World world, int chunkX, int chunkZ) {
-        if (radius == 0) {
+        if (this.radius == 0) {
             return false;
         }
 
@@ -41,21 +40,21 @@ final class CircleShape implements VisibilityShape {
 
         // make sure we look at the corner of the chunk that is the closest to the
         // center of our visibility limit
-        if (blockX < centerX) {
-            blockX += Math.min(CHUNK_SIZE_BLOCKS - 1, centerX - blockX);
+        if (blockX < this.centerX) {
+            blockX += Math.min(CHUNK_SIZE_BLOCKS - 1, this.centerX - blockX);
         }
-        if (blockZ < centerZ) {
-            blockZ += Math.min(CHUNK_SIZE_BLOCKS - 1, centerZ - blockZ);
+        if (blockZ < this.centerZ) {
+            blockZ += Math.min(CHUNK_SIZE_BLOCKS - 1, this.centerZ - blockZ);
         }
 
-        long distanceSquared = (blockX - centerX) * (blockX - centerX) + (blockZ - centerZ) * (blockZ - centerZ);
-        return distanceSquared <= radiusSquared;
+        long distanceSquared = (blockX - this.centerX) * (blockX - this.centerX) + (blockZ - this.centerZ) * (blockZ - this.centerZ);
+        return distanceSquared <= this.radiusSquared;
 
     }
 
     @Override
     public boolean shouldRenderRegion(World world, int regionX, int regionZ) {
-        if (radius == 0) {
+        if (this.radius == 0) {
             return false;
         }
 
@@ -64,35 +63,35 @@ final class CircleShape implements VisibilityShape {
 
         // make sure we look at the corner of the region that is the closest to the
         // center of our visibility limit
-        if (blockX < centerX) {
-            blockX += Math.min(REGION_SIZE_BLOCKS - 1, centerX - blockX);
+        if (blockX < this.centerX) {
+            blockX += Math.min(REGION_SIZE_BLOCKS - 1, this.centerX - blockX);
         }
-        if (blockZ < centerZ) {
-            blockZ += Math.min(REGION_SIZE_BLOCKS - 1, centerZ - blockZ);
+        if (blockZ < this.centerZ) {
+            blockZ += Math.min(REGION_SIZE_BLOCKS - 1, this.centerZ - blockZ);
         }
 
-        long distanceSquared = (blockX - centerX) * (blockX - centerX) + (blockZ - centerZ) * (blockZ - centerZ);
-        return distanceSquared <= radiusSquared;
+        long distanceSquared = (blockX - this.centerX) * (blockX - this.centerX) + (blockZ - this.centerZ) * (blockZ - this.centerZ);
+        return distanceSquared <= this.radiusSquared;
     }
 
     @Override
     public boolean shouldRenderColumn(World world, int blockX, int blockZ) {
-        if (radius == 0) {
+        if (this.radius == 0) {
             return false;
         }
 
-        long distanceSquared = (blockX - centerX) * (blockX - centerX) + (blockZ - centerZ) * (blockZ - centerZ);
-        return distanceSquared <= radiusSquared;
+        long distanceSquared = (blockX - this.centerX) * (blockX - this.centerX) + (blockZ - this.centerZ) * (blockZ - this.centerZ);
+        return distanceSquared <= this.radiusSquared;
     }
 
     @Override
     public int countChunksInRegion(World world, int regionX, int regionZ) {
         int chunkXStart = Numbers.regionToChunk(regionX);
         int chunkZStart = Numbers.regionToChunk(regionZ);
-        if (shouldRenderChunk(world, chunkXStart, chunkZStart)
-                && shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart)
-                && shouldRenderChunk(world, chunkXStart, chunkZStart + REGION_SIZE_CHUNKS - 1)
-                && shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart + REGION_SIZE_CHUNKS - 1)) {
+        if (this.shouldRenderChunk(world, chunkXStart, chunkZStart)
+                && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart)
+                && this.shouldRenderChunk(world, chunkXStart, chunkZStart + REGION_SIZE_CHUNKS - 1)
+                && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart + REGION_SIZE_CHUNKS - 1)) {
             // we need to render all four corners, so that means we need to render the
             // entire region
             // (note: this only works because the visibility limit is one single circle)

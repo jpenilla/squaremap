@@ -1,17 +1,15 @@
 package net.pl3x.map.plugin.visibilitylimit;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import net.pl3x.map.api.visibilitylimit.VisibilityShape;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.RegionCoordinate;
 import net.pl3x.map.plugin.util.Numbers;
-
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Decides what blocks, chunks and regions are visible on the map. Even if a
@@ -79,11 +77,11 @@ public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.V
                 continue;
             }
             if (type.equals("circle")) {
-                parseCircleShape(visibilityLimit);
+                this.parseCircleShape(visibilityLimit);
             } else if (type.equals("rectangle")) {
-                parseRectangleShape(visibilityLimit);
+                this.parseRectangleShape(visibilityLimit);
             } else if (type.equals("world-border")) {
-                parseWorldBorderShape(visibilityLimit);
+                this.parseWorldBorderShape(visibilityLimit);
             }
         }
     }
@@ -164,7 +162,7 @@ public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.V
     }
 
     public boolean shouldRenderRegion(RegionCoordinate region) {
-        return shouldRenderRegion(region.x(), region.z());
+        return this.shouldRenderRegion(region.x(), region.z());
     }
 
 

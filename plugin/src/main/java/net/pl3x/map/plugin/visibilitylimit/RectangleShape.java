@@ -2,7 +2,6 @@ package net.pl3x.map.plugin.visibilitylimit;
 
 import net.pl3x.map.api.visibilitylimit.VisibilityShape;
 import net.pl3x.map.plugin.util.Numbers;
-
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;
 import org.checkerframework.checker.nullness.qual.NonNull;

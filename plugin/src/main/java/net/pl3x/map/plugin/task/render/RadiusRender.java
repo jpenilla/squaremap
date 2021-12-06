@@ -2,6 +2,9 @@ package net.pl3x.map.plugin.task.render;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
@@ -12,13 +15,8 @@ import net.pl3x.map.plugin.data.RegionCoordinate;
 import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.iterator.ChunkSpiralIterator;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
-
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public final class RadiusRender extends AbstractRender {
     private final int centerX;

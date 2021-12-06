@@ -4,6 +4,8 @@ import cloud.commandframework.bukkit.parsers.WorldArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import java.io.IOException;
+import java.nio.file.Path;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
@@ -14,9 +16,6 @@ import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.io.IOException;
-import java.nio.file.Path;
 
 public final class ResetMapCommand extends Pl3xMapCommand {
 

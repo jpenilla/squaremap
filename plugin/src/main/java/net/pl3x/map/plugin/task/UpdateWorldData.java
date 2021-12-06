@@ -1,6 +1,10 @@
 package net.pl3x.map.plugin.task;
 
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.configuration.WorldConfig;
@@ -8,11 +12,6 @@ import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class UpdateWorldData extends BukkitRunnable {
     private final Gson gson = new Gson();
@@ -62,7 +61,7 @@ public class UpdateWorldData extends BukkitRunnable {
             settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
             settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
 
-            FileUtil.write(gson.toJson(settings), FileUtil.getWorldFolder(world).resolve("settings.json"));
+            FileUtil.write(this.gson.toJson(settings), FileUtil.getWorldFolder(world).resolve("settings.json"));
 
             Map<String, Object> worldsList = new HashMap<>();
             worldsList.put("name", world.getName());
@@ -96,6 +95,6 @@ public class UpdateWorldData extends BukkitRunnable {
         map.put("worlds", worlds);
         map.put("ui", ui);
 
-        FileUtil.write(gson.toJson(map), FileUtil.TILES_DIR.resolve("settings.json"));
+        FileUtil.write(this.gson.toJson(map), FileUtil.TILES_DIR.resolve("settings.json"));
     }
 }

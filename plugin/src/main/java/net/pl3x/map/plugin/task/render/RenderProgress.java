@@ -1,10 +1,5 @@
 package net.pl3x.map.plugin.task.render;
 
-import net.kyori.adventure.text.minimessage.Template;
-import net.pl3x.map.plugin.Logging;
-import net.pl3x.map.plugin.configuration.Lang;
-import org.checkerframework.checker.nullness.qual.NonNull;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +7,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import net.kyori.adventure.text.minimessage.Template;
+import net.pl3x.map.plugin.Logging;
+import net.pl3x.map.plugin.configuration.Lang;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class RenderProgress extends TimerTask {
 
@@ -48,27 +47,27 @@ public final class RenderProgress extends TimerTask {
         }
 
         final int curChunks = this.render.processedChunks();
-        final int diff = curChunks - prevChunks;
-        prevChunks = curChunks;
+        final int diff = curChunks - this.prevChunks;
+        this.prevChunks = curChunks;
 
-        rollingAvgCps[index] = diff;
-        totalAvgCps.add(diff);
-        index++;
-        if (index == 15) {
-            index = 0;
+        this.rollingAvgCps[this.index] = diff;
+        this.totalAvgCps.add(diff);
+        this.index++;
+        if (this.index == 15) {
+            this.index = 0;
         }
         final double rollingAvg = Arrays.stream(rollingAvgCps).filter(i -> i != 0).average().orElse(0.00D);
 
         final int chunksLeft = this.render.totalChunks() - curChunks;
-        final long timeLeft = (long) (chunksLeft / (totalAvgCps.stream().filter(i -> i != 0).mapToInt(i -> i).average().orElse(0.00D) / 1000));
+        final long timeLeft = (long) (chunksLeft / (this.totalAvgCps.stream().filter(i -> i != 0).mapToInt(i -> i).average().orElse(0.00D) / 1000));
 
         String etaStr = formatMilliseconds(timeLeft);
-        String elapsedStr = formatMilliseconds(System.currentTimeMillis() - startTime);
+        String elapsedStr = formatMilliseconds(System.currentTimeMillis() - this.startTime);
 
         double percent = (double) curChunks / (double) this.render.totalChunks();
 
-        String rateStr = dfRate.format(rollingAvg);
-        String percentStr = dfPercent.format(percent);
+        String rateStr = this.dfRate.format(rollingAvg);
+        String percentStr = this.dfPercent.format(percent);
 
         int curRegions = this.render.processedRegions();
         int totalRegions = this.render.totalRegions();
