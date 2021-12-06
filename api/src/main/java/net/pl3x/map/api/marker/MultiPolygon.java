@@ -39,6 +39,7 @@ public final class MultiPolygon extends Marker {
      * @return new part
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static @NonNull MultiPolygonPart part(final @NonNull List<Point> points, final @NonNull List<Point> @NonNull ... negativeSpace) {
         return part(points, Arrays.asList(negativeSpace));
     }

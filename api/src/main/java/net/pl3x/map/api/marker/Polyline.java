@@ -64,6 +64,7 @@ public final class Polyline extends Marker {
      * @param points new points
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public final void multiPoints(final @NonNull List<Point> @NonNull ... points) {
         this.points.clear();
         this.points.addAll(Arrays.asList(points));

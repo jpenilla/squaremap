@@ -90,6 +90,7 @@ public abstract class Marker {
      * @return new polyline
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static @NonNull Polyline multiPolyline(final @NonNull List<Point> @NonNull ... points) {
         return multiPolyline(Arrays.asList(points));
     }
@@ -261,6 +262,7 @@ public abstract class Marker {
      * @return new polygon
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static @NonNull Polygon polygon(final @NonNull List<Point> mainPolygon, final @NonNull List<Point> @NonNull ... negativeSpace) {
         return polygon(mainPolygon, Arrays.asList(negativeSpace));
     }
