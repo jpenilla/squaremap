@@ -73,8 +73,8 @@ public abstract class AbstractRender implements Runnable {
         this.level = ReflectionUtil.CraftBukkit.serverLevel(this.world);
         this.worldTilesDir = FileUtil.getWorldFolder(world);
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
-                ? ThreadLocal.withInitial(() -> new BiomeColors(mapWorld))
-                : null; // this should be null if we are not mapping biomes
+            ? ThreadLocal.withInitial(() -> new BiomeColors(mapWorld))
+            : null; // this should be null if we are not mapping biomes
     }
 
     public static int getThreads(int threads) {
@@ -137,17 +137,20 @@ public abstract class AbstractRender implements Runnable {
         for (int chunkX = startX; chunkX < startX + 32; chunkX++) {
             futures.add(this.mapChunkColumn(image, chunkX, startZ));
         }
-        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
-                .whenComplete((result, throwable) -> {
-                    if (throwable != null) {
-                        LOGGER.warn("Exception mapping region!", throwable);
-                        return;
-                    }
-                    if (!this.cancelled) {
-                        this.mapWorld.saveImage(image);
-                    }
-                })
-                .join();
+        final List<Exception> exceptions = new ArrayList<>();
+        for (final CompletableFuture<Void> future : futures) {
+            try {
+                future.join();
+            } catch (final Exception ex) {
+                exceptions.add(ex);
+            }
+        }
+        for (final Exception exception : exceptions) {
+            LOGGER.warn("Exception mapping region {}", region, exception);
+        }
+        if (!this.cancelled) {
+            this.mapWorld.saveImage(image);
+        }
     }
 
     protected final @NonNull CompletableFuture<Void> mapChunkColumn(final @NonNull Image image, final int chunkX, final int startChunkZ) {
@@ -256,9 +259,9 @@ public abstract class AbstractRender implements Runnable {
             final int yDiff = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, 15) + 1;
             int height = this.mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.getLevel().dimensionType().logicalHeight() : this.mapWorld.config().MAP_MAX_HEIGHT;
             mutablePos.set(
-                    chunk.getPos().getMinBlockX() + x,
-                    Math.min(yDiff, height),
-                    chunk.getPos().getMinBlockZ() + 15
+                chunk.getPos().getMinBlockX() + x,
+                Math.min(yDiff, height),
+                chunk.getPos().getMinBlockZ() + 15
             );
             final BlockState state = this.mapWorld.config().MAP_ITERATE_UP ? this.iterateUp(chunk, mutablePos) : this.iterateDown(chunk, mutablePos);
             if (this.mapWorld.config().MAP_GLASS_CLEAR && isGlass(state)) {

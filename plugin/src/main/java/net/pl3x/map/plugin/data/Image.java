@@ -15,31 +15,30 @@ import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 
-public class Image {
+public final class Image {
     public static final int SIZE = 512;
     private final int[][] pixels = new int[SIZE][SIZE];
     private final int maxZoom;
     private final RegionCoordinate region;
     private final Path directory;
 
-    public Image(RegionCoordinate region, Path directory, int maxZoom) {
+    public Image(final RegionCoordinate region, final Path directory, final int maxZoom) {
         this.region = region;
         this.directory = directory;
         this.maxZoom = maxZoom;
     }
 
-    public synchronized void setPixel(int x, int z, int color) {
+    public synchronized void setPixel(final int x, final int z, final int color) {
         this.pixels[x & (SIZE - 1)][z & (SIZE - 1)] = color;
     }
 
     public void save() {
         for (int zoom = 0; zoom <= this.maxZoom; zoom++) {
-            Path dir = Path.of(this.directory.toString(), Integer.toString(this.maxZoom - zoom));
+            final Path dir = Path.of(this.directory.toString(), Integer.toString(this.maxZoom - zoom));
             try {
                 Files.createDirectories(dir);
-            } catch (IOException e) {
-                Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                        .replace("<path>", dir.toAbsolutePath().toString()), e);
+            } catch (final IOException e) {
+                Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR.replace("<path>", dir.toAbsolutePath().toString()), e);
                 continue;
             }
 
@@ -85,11 +84,13 @@ public class Image {
                 } else {
                     ImageIO.write(image, "png", file);
                 }
-            } catch (IOException e) {
-                Logging.severe(Lang.LOG_COULD_NOT_SAVE_REGION
+            } catch (final IOException ex) {
+                Logging.severe(
+                    Lang.LOG_COULD_NOT_SAVE_REGION
                         .replace("<x>", Integer.toString(this.region.x()))
-                        .replace("<z>", Integer.toString(this.region.z())));
-                e.printStackTrace();
+                        .replace("<z>", Integer.toString(this.region.z())),
+                    ex
+                );
             }
         }
     }

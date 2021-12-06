@@ -96,9 +96,9 @@ public final class FullRender extends AbstractRender {
         for (Map.Entry<RegionCoordinate, Boolean> entry : regions.entrySet()) {
             if (this.cancelled) break;
             if (entry.getValue()) continue;
-            mapRegion(entry.getKey());
+            this.mapRegion(entry.getKey());
             entry.setValue(true);
-            curRegions.incrementAndGet();
+            this.curRegions.incrementAndGet();
             // only save progress is task is not cancelled
             if (!this.cancelled) mapWorld.saveRenderProgress(regions);
         }
@@ -109,8 +109,8 @@ public final class FullRender extends AbstractRender {
 
     }
 
-    private int countCompletedChunks(Map<RegionCoordinate, Boolean> regions) {
-        VisibilityLimit visibility = this.mapWorld.visibilityLimit();
+    private int countCompletedChunks(final Map<RegionCoordinate, Boolean> regions) {
+        final VisibilityLimit visibility = this.mapWorld.visibilityLimit();
         return regions.entrySet().stream()
                 .filter(Map.Entry::getValue)
                 .mapToInt(entry -> visibility.countChunksInRegion(entry.getKey()))
