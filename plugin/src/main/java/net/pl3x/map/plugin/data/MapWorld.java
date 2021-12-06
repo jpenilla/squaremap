@@ -52,8 +52,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         .create();
     private static final Map<UUID, LayerRegistry> LAYER_REGISTRIES = new HashMap<>();
 
-    private final ServerLevel world;
-    private final org.bukkit.World bukkitWorld;
+    private final ServerLevel level;
+    private final org.bukkit.World world;
     private final Path dataPath;
     private final ExecutorService imageIOexecutor = Executors.newSingleThreadExecutor();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -67,8 +67,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private boolean pauseRenders = false;
 
     private MapWorld(final org.bukkit.@NonNull World world) {
-        this.bukkitWorld = world;
-        this.world = ReflectionUtil.CraftBukkit.serverLevel(world);
+        this.world = world;
+        this.level = ReflectionUtil.CraftBukkit.serverLevel(world);
 
         this.blockColors = new BlockColors(this);
 
@@ -98,8 +98,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
         this.deserializeDirtyChunks();
 
-        if (getRenderProgress() != null) {
-            startRender(new FullRender(this));
+        if (this.getRenderProgress() != null) {
+            this.startRender(new FullRender(this));
         }
     }
 
@@ -138,10 +138,12 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         try {
             final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
             if (Files.exists(file)) {
-                this.modifiedChunks.addAll(GSON.fromJson(
+                this.modifiedChunks.addAll(
+                    GSON.fromJson(
                         new FileReader(file.toFile()),
                         TypeToken.getParameterized(List.class, ChunkCoordinate.class).getType()
-                ));
+                    )
+                );
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             Logging.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.name()), e);
@@ -194,28 +196,28 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
 
     @Override
     public @NonNull String name() {
-        return this.bukkitWorld.getName();
+        return this.world.getName();
     }
 
     @Override
     public @NonNull UUID uuid() {
-        return this.bukkitWorld.getUID();
+        return this.world.getUID();
     }
 
     public @NonNull WorldConfig config() {
-        return WorldConfig.get(this.bukkitWorld);
+        return WorldConfig.get(this.world);
     }
 
     public @NonNull WorldAdvanced advanced() {
-        return WorldAdvanced.get(this.bukkitWorld);
+        return WorldAdvanced.get(this.world);
     }
 
-    public ServerLevel nms() {
-        return world;
+    public ServerLevel serverLevel() {
+        return this.level;
     }
 
     public org.bukkit.@NonNull World bukkit() {
-        return this.bukkitWorld;
+        return this.world;
     }
 
     public int getMapColor(final @NonNull BlockState state) {

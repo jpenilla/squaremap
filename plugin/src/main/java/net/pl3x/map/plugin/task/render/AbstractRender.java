@@ -51,7 +51,7 @@ public abstract class AbstractRender implements Runnable {
 
     protected final MapWorld mapWorld;
     protected final World world;
-    protected final ServerLevel nmsWorld;
+    protected final ServerLevel level;
     protected final Path worldTilesDir;
 
     private final ThreadLocal<BiomeColors> biomeColors;
@@ -70,7 +70,7 @@ public abstract class AbstractRender implements Runnable {
         this.mapWorld = mapWorld;
         this.executor = executor;
         this.world = mapWorld.bukkit();
-        this.nmsWorld = ReflectionUtil.CraftBukkit.serverLevel(this.world);
+        this.level = ReflectionUtil.CraftBukkit.serverLevel(this.world);
         this.worldTilesDir = FileUtil.getWorldFolder(world);
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
                 ? ThreadLocal.withInitial(() -> new BiomeColors(mapWorld))
@@ -166,12 +166,12 @@ public abstract class AbstractRender implements Runnable {
                     // this is the top line of the image, we need to
                     // scan the bottom line of the region to the north
                     // in order to get the correct lastY for shading
-                    chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
+                    chunk = getChunkAt(level, chunkX, chunkZ - 1);
                     if (chunk != null && !chunk.isEmpty()) {
                         lastY = getLastYFromBottomRow(chunk);
                     }
                 }
-                chunk = getChunkAt(nmsWorld, chunkX, chunkZ);
+                chunk = getChunkAt(level, chunkX, chunkZ);
                 if (chunk != null && !chunk.isEmpty()) {
                     scanChunk(image, lastY, chunk);
                 }
@@ -190,13 +190,13 @@ public abstract class AbstractRender implements Runnable {
             net.minecraft.world.level.chunk.LevelChunk chunk;
 
             // try scanning south row of northern chunk to get proper yDiff
-            chunk = getChunkAt(nmsWorld, chunkX, chunkZ - 1);
+            chunk = getChunkAt(level, chunkX, chunkZ - 1);
             if (chunk != null && !chunk.isEmpty()) {
                 lastY = getLastYFromBottomRow(chunk);
             }
 
             // scan the chunk itself
-            chunk = getChunkAt(nmsWorld, chunkX, chunkZ);
+            chunk = getChunkAt(level, chunkX, chunkZ);
             if (chunk != null && !chunk.isEmpty()) {
                 scanChunk(image, lastY, chunk);
             }
@@ -204,7 +204,7 @@ public abstract class AbstractRender implements Runnable {
             // queue up the southern chunk in case it was stored with improper yDiff
             // https://github.com/pl3xgaming/Pl3xMap/issues/15
             final int down = chunkZ + 1;
-            chunk = getChunkAt(nmsWorld, chunkX, down);
+            chunk = getChunkAt(level, chunkX, down);
             if (chunk != null && !chunk.isEmpty()) {
                 if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
                     scanTopRow(image, lastY, chunk);
