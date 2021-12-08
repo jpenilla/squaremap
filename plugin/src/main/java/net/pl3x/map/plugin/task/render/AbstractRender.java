@@ -330,19 +330,19 @@ public abstract class AbstractRender implements Runnable {
             do {
                 mutablePos.move(Direction.DOWN);
                 state = chunk.getBlockState(mutablePos);
-            } while (!state.isAir() && mutablePos.getY() > 0);
+            } while (!state.isAir() && mutablePos.getY() > chunk.getMinBuildHeight());
         }
         do {
             mutablePos.move(Direction.DOWN);
             state = chunk.getBlockState(mutablePos);
-        } while ((this.mapWorld.getMapColor(state) == Colors.clearMapColor() || this.mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        } while ((this.mapWorld.getMapColor(state) == Colors.clearMapColor() || this.mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > chunk.getMinBuildHeight());
         return state;
     }
 
     private @NonNull BlockState iterateUp(final @NonNull LevelChunk chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
         BlockState state;
         int height = mutablePos.getY();
-        mutablePos.setY(0);
+        mutablePos.setY(chunk.getMinBuildHeight());
         if (chunk.getLevel().dimensionType().hasCeiling()) {
             do {
                 mutablePos.move(Direction.UP);
@@ -356,7 +356,7 @@ public abstract class AbstractRender implements Runnable {
         do {
             mutablePos.move(Direction.DOWN);
             state = chunk.getBlockState(mutablePos);
-        } while ((this.mapWorld.getMapColor(state) == Colors.clearMapColor() || this.mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > 0);
+        } while ((this.mapWorld.getMapColor(state) == Colors.clearMapColor() || this.mapWorld.advanced().invisibleBlocks.contains(state.getBlock())) && mutablePos.getY() > chunk.getMinBuildHeight());
         return state;
     }
 
