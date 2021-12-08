@@ -39,13 +39,14 @@ public final class Polygon extends Marker implements IPolygon {
             return false;
         }
         final @Nullable Polygon polygon = (Polygon) o;
-        return this.mainPolygon.equals(polygon.mainPolygon)
+        return this.markerOptionsMatch(polygon)
+            && this.mainPolygon.equals(polygon.mainPolygon)
             && this.negativeSpace.equals(polygon.negativeSpace);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.mainPolygon, this.negativeSpace);
+        return Objects.hash(this.markerOptions(), this.mainPolygon, this.negativeSpace);
     }
 
 }

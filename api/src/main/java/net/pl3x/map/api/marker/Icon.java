@@ -157,7 +157,8 @@ public final class Icon extends Marker {
             return false;
         }
         final @Nullable Icon icon = (Icon) o;
-        return this.sizeX == icon.sizeX
+        return this.markerOptionsMatch(icon)
+            && this.sizeX == icon.sizeX
             && this.sizeZ == icon.sizeZ
             && this.point.equals(icon.point)
             && this.tooltipAnchor.equals(icon.tooltipAnchor)
@@ -167,7 +168,7 @@ public final class Icon extends Marker {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.point, this.tooltipAnchor, this.anchor, this.image, this.sizeX, this.sizeZ);
+        return Objects.hash(this.markerOptions(), this.point, this.tooltipAnchor, this.anchor, this.image, this.sizeX, this.sizeZ);
     }
 
 }

@@ -267,4 +267,7 @@ public abstract class Marker {
     }
     // End polygon factory methods
 
+    protected boolean markerOptionsMatch(final Marker marker) {
+        return this.markerOptions.equals(marker.markerOptions);
+    }
 }

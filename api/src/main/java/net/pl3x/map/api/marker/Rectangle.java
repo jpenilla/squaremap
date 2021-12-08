@@ -68,13 +68,14 @@ public final class Rectangle extends Marker {
             return false;
         }
         final @Nullable Rectangle rectangle = (Rectangle) o;
-        return this.point1.equals(rectangle.point1)
+        return this.markerOptionsMatch(rectangle)
+            && this.point1.equals(rectangle.point1)
             && this.point2.equals(rectangle.point2);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.point1, this.point2);
+        return Objects.hash(this.markerOptions(), this.point1, this.point2);
     }
 
 }

@@ -63,12 +63,14 @@ public final class Circle extends Marker {
             return false;
         }
         final @Nullable Circle circle = (Circle) o;
-        return Double.compare(circle.radius, this.radius) == 0 && this.center.equals(circle.center);
+        return this.markerOptionsMatch(circle)
+            && Double.compare(circle.radius, this.radius) == 0
+            && this.center.equals(circle.center);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.center, this.radius);
+        return Objects.hash(this.markerOptions(), this.center, this.radius);
     }
 
 }

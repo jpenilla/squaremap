@@ -83,14 +83,15 @@ public final class Ellipse extends Marker {
             return false;
         }
         final @Nullable Ellipse ellipse = (Ellipse) o;
-        return Double.compare(ellipse.radiusX, this.radiusX) == 0
+        return this.markerOptionsMatch(ellipse)
+            && Double.compare(ellipse.radiusX, this.radiusX) == 0
             && Double.compare(ellipse.radiusZ, this.radiusZ) == 0
             && this.center.equals(ellipse.center);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.center, this.radiusX, this.radiusZ);
+        return Objects.hash(this.markerOptions(), this.center, this.radiusX, this.radiusZ);
     }
 
 }

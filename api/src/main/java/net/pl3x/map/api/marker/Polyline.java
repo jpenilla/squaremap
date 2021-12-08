@@ -78,12 +78,13 @@ public final class Polyline extends Marker {
             return false;
         }
         final @Nullable Polyline polyline = (Polyline) o;
-        return this.points.equals(polyline.points);
+        return this.markerOptionsMatch(polyline)
+            && this.points.equals(polyline.points);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.points);
+        return Objects.hash(this.markerOptions(), this.points);
     }
 
 }

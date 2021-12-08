@@ -91,12 +91,13 @@ public final class MultiPolygon extends Marker {
             return false;
         }
         final @Nullable MultiPolygon that = (MultiPolygon) o;
-        return this.subPolygons.equals(that.subPolygons);
+        return this.markerOptionsMatch(that)
+            && this.subPolygons.equals(that.subPolygons);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.subPolygons);
+        return Objects.hash(this.markerOptions(), this.subPolygons);
     }
 
     /**
