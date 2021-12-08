@@ -26,7 +26,6 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.pl3x.map.api.Pair;
 import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.BiomeColors;
@@ -312,10 +311,10 @@ public abstract class AbstractRender implements Runnable {
 
         int odd = (imgX + imgZ & 1);
 
-        final Pair<Integer, BlockState> fluidPair = findDepthIfFluid(mutablePos, state, chunk);
-        if (fluidPair != null) {
-            final int fluidDepth = fluidPair.left();
-            final BlockState blockUnder = fluidPair.right();
+        final @Nullable DepthResult fluidDepthResult = findDepthIfFluid(mutablePos, state, chunk);
+        if (fluidDepthResult != null) {
+            final int fluidDepth = fluidDepthResult.depth;
+            final BlockState blockUnder = fluidDepthResult.state;
             return this.getFluidColor(fluidDepth, color, state, blockUnder, odd);
         }
 
@@ -375,7 +374,9 @@ public abstract class AbstractRender implements Runnable {
         return state;
     }
 
-    private static @Nullable Pair<Integer, BlockState> findDepthIfFluid(final @NonNull BlockPos blockPos, final @NonNull BlockState state, final @NonNull LevelChunk chunk) {
+    private record DepthResult(int depth, BlockState state) {}
+
+    private static @Nullable DepthResult findDepthIfFluid(final @NonNull BlockPos blockPos, final @NonNull BlockState state, final @NonNull LevelChunk chunk) {
         if (blockPos.getY() > 0 && !state.getFluidState().isEmpty()) {
             BlockState fluidState;
             int fluidDepth = 0;
@@ -389,7 +390,7 @@ public abstract class AbstractRender implements Runnable {
                 ++fluidDepth;
             } while (yBelowSurface > 0 && fluidDepth <= 10 && !fluidState.getFluidState().isEmpty());
 
-            return Pair.of(fluidDepth, fluidState);
+            return new DepthResult(fluidDepth, fluidState);
         }
         return null;
     }
