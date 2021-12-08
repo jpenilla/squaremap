@@ -1,10 +1,12 @@
 package net.pl3x.map.plugin.data;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -16,6 +18,7 @@ import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 
 public final class Image {
+    private static final int TRANSPARENT = new Color(0, 0, 0, 0).getRGB();
     public static final int SIZE = 512;
     private final int[][] pixels = new int[SIZE][SIZE];
     private final int maxZoom;
@@ -26,6 +29,9 @@ public final class Image {
         this.region = region;
         this.directory = directory;
         this.maxZoom = maxZoom;
+        for (int[] arr : this.pixels) {
+            Arrays.fill(arr, Integer.MIN_VALUE);
+        }
     }
 
     public synchronized void setPixel(final int x, final int z, final int color) {
@@ -71,9 +77,10 @@ public final class Image {
             int baseZ = (this.region.z() * size) & (SIZE - 1);
             for (int x = 0; x < SIZE; x += step) {
                 for (int z = 0; z < SIZE; z += step) {
-                    final int rgb = this.pixels[x][z];
-                    if (rgb != 0) {
-                        image.setRGB(baseX + (x / step), baseZ + (z / step), rgb);
+                    final int pixel = this.pixels[x][z];
+                    if (pixel != Integer.MIN_VALUE) {
+                        final int color = pixel == 0 ? TRANSPARENT : pixel;
+                        image.setRGB(baseX + (x / step), baseZ + (z / step), color);
                     }
                 }
             }

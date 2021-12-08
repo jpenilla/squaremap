@@ -92,17 +92,17 @@ public final class MapUpdateListeners {
         final Listener listener = new Listener() {};
         this.registeredListeners.add(listener);
         Bukkit.getPluginManager().registerEvent(
-                eventClass,
-                listener,
-                EventPriority.MONITOR,
-                (l, event) -> {
-                    if (!eventClass.isAssignableFrom(event.getClass())) {
-                        return;
-                    }
-                    eventConsumer.accept(eventClass.cast(event));
-                },
-                this.plugin,
-                true
+            eventClass,
+            listener,
+            EventPriority.MONITOR,
+            (l, event) -> {
+                if (!eventClass.isAssignableFrom(event.getClass())) {
+                    return;
+                }
+                eventConsumer.accept(eventClass.cast(event));
+            },
+            this.plugin,
+            true
         );
     }
 
@@ -133,26 +133,26 @@ public final class MapUpdateListeners {
 
     private void markLocations(final @NonNull World world, final @NonNull List<Location> locations) {
         this.plugin.worldManager().getWorldIfEnabled(world).ifPresent(mapWorld -> locations.stream()
-                .filter(MapUpdateListeners::locationVisible)
-                .map(loc -> new ChunkCoordinate(
-                        Numbers.blockToChunk(loc.getBlockX()),
-                        Numbers.blockToChunk(loc.getBlockZ())
-                ))
-                .distinct()
-                .forEach(mapWorld::chunkModified));
+            .filter(MapUpdateListeners::locationVisible)
+            .map(loc -> new ChunkCoordinate(
+                Numbers.blockToChunk(loc.getBlockX()),
+                Numbers.blockToChunk(loc.getBlockZ())
+            ))
+            .distinct()
+            .forEach(mapWorld::chunkModified));
     }
 
     private void markChunksFromBlocks(final @NonNull World world, final @NonNull List<BlockState> blockStates) {
         this.plugin.worldManager().getWorldIfEnabled(world).ifPresent(mapWorld ->
-                blockStates.stream()
-                        .map(BlockState::getLocation)
-                        .filter(MapUpdateListeners::locationVisible)
-                        .map(loc -> new ChunkCoordinate(
-                                Numbers.blockToChunk(loc.getBlockX()),
-                                Numbers.blockToChunk(loc.getBlockZ())
-                        ))
-                        .distinct()
-                        .forEach(mapWorld::chunkModified));
+            blockStates.stream()
+                .map(BlockState::getLocation)
+                .filter(MapUpdateListeners::locationVisible)
+                .map(loc -> new ChunkCoordinate(
+                    Numbers.blockToChunk(loc.getBlockX()),
+                    Numbers.blockToChunk(loc.getBlockZ())
+                ))
+                .distinct()
+                .forEach(mapWorld::chunkModified));
     }
 
     private static boolean locationVisible(final @NonNull Location loc) {
