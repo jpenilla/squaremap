@@ -2,10 +2,11 @@ package net.pl3x.map.plugin.configuration;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -45,7 +46,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         this.config.readConfig(WorldAdvanced.class, this);
     }
 
-    public final List<Block> invisibleBlocks = new ArrayList<>();
+    public final Set<Block> invisibleBlocks = new HashSet<>();
 
     private void invisibleBlocks() {
         this.invisibleBlocks.clear();
@@ -57,7 +58,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
         )).forEach(block -> this.invisibleBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
     }
 
-    public final List<Block> iterateUpBaseBlocks = new ArrayList<>();
+    public final Set<Block> iterateUpBaseBlocks = new HashSet<>();
 
     private void iterateUpBaseBlocks() {
         this.iterateUpBaseBlocks.clear();
