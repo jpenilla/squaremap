@@ -79,7 +79,7 @@ public abstract class AbstractRender implements Runnable {
 
     public static int getThreads(int threads) {
         if (threads == -1) {
-            threads = Runtime.getRuntime().availableProcessors() / 2;
+            threads = Runtime.getRuntime().availableProcessors() / 3;
         }
         return Math.max(1, threads);
     }
