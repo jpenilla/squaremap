@@ -284,7 +284,7 @@ public abstract class AbstractRender implements Runnable {
         int height = this.mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.getLevel().dimensionType().logicalHeight() : this.mapWorld.config().MAP_MAX_HEIGHT;
         mutablePos.set(blockX, Math.min(yDiff, height), blockZ);
 
-        if (yDiff > 1) {
+        if (yDiff > chunk.getMinBuildHeight() + 1) {
             state = this.mapWorld.config().MAP_ITERATE_UP ? this.iterateUp(chunk, mutablePos) : this.iterateDown(chunk, mutablePos);
         } else {
             // no blocks found, show invisible/air
@@ -377,7 +377,7 @@ public abstract class AbstractRender implements Runnable {
     private record DepthResult(int depth, BlockState state) {}
 
     private static @Nullable DepthResult findDepthIfFluid(final @NonNull BlockPos blockPos, final @NonNull BlockState state, final @NonNull LevelChunk chunk) {
-        if (blockPos.getY() > 0 && !state.getFluidState().isEmpty()) {
+        if (blockPos.getY() > chunk.getMinBuildHeight() && !state.getFluidState().isEmpty()) {
             BlockState fluidState;
             int fluidDepth = 0;
 
@@ -388,7 +388,7 @@ public abstract class AbstractRender implements Runnable {
                 mutablePos.setY(yBelowSurface--);
                 fluidState = chunk.getBlockState(mutablePos);
                 ++fluidDepth;
-            } while (yBelowSurface > 0 && fluidDepth <= 10 && !fluidState.getFluidState().isEmpty());
+            } while (yBelowSurface > chunk.getMinBuildHeight() && fluidDepth <= 10 && !fluidState.getFluidState().isEmpty());
 
             return new DepthResult(fluidDepth, fluidState);
         }
