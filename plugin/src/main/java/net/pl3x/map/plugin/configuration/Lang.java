@@ -145,6 +145,8 @@ public final class Lang {
     public static String LOG_INTERNAL_WEB_START_ERROR = "Internal webserver could not start";
     @LangKey("log.could-not-create-directory")
     public static String LOG_COULD_NOT_CREATE_DIR = "Could not create directory! <path>";
+    @LangKey("log.could-not-read-region")
+    public static String LOG_COULD_NOT_READ_REGION = "Could not read map image for region <x>,<z> (image corrupted?). It will be overwritten.";
     @LangKey("log.could-not-save-region")
     public static String LOG_COULD_NOT_SAVE_REGION = "Could not save map for region <x>,<z>";
     @LangKey("log.internal-web-not-running")

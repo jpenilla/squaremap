@@ -1,15 +1,15 @@
 package net.pl3x.map.plugin.data;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import net.minecraft.util.Mth;
 import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Config;
@@ -47,51 +47,66 @@ public final class Image {
             int scaledX = Mth.floor((double) this.region.x() / step);
             int scaledZ = Mth.floor((double) this.region.z() / step);
 
-            String fileName = scaledX + "_" + scaledZ + ".png";
-            File file = new File(dir.toString(), fileName);
+            final String fileName = scaledX + "_" + scaledZ + ".png";
+            final Path file = dir.resolve(fileName);
+
+            final BufferedImage image;
+            if (Files.isRegularFile(file)) {
+                try {
+                    image = ImageIO.read(file.toFile());
+                } catch (final IOException ex) {
+                    try {
+                        Files.delete(file);
+                    } catch (final IOException x) {
+                        ex.addSuppressed(x);
+                    }
+                    Logging.severe(this.replaceXZ(Lang.LOG_COULD_NOT_READ_REGION), ex);
+                    continue;
+                }
+            } else {
+                image = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB);
+            }
+
+            int baseX = (this.region.x() * size) & (SIZE - 1);
+            int baseZ = (this.region.z() * size) & (SIZE - 1);
+            for (int x = 0; x < SIZE; x += step) {
+                for (int z = 0; z < SIZE; z += step) {
+                    final int rgb = this.pixels[x][z];
+                    if (rgb != 0) {
+                        image.setRGB(baseX + (x / step), baseZ + (z / step), rgb);
+                    }
+                }
+            }
 
             try {
-                BufferedImage image;
-                if (file.exists()) {
-                    image = ImageIO.read(file);
-                } else {
-                    image = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB);
-                }
-
-                int baseX = (this.region.x() * size) & (SIZE - 1);
-                int baseZ = (this.region.z() * size) & (SIZE - 1);
-                for (int x = 0; x < SIZE; x += step) {
-                    for (int z = 0; z < SIZE; z += step) {
-                        final int rgb = this.pixels[x][z];
-                        if (rgb != 0) {
-                            image.setRGB(baseX + (x / step), baseZ + (z / step), rgb);
-                        }
-                    }
-                }
-
                 if (Config.COMPRESS_IMAGES) {
-                    ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
-                    writer.setOutput(ImageIO.createImageOutputStream(new FileOutputStream(file)));
-                    ImageWriteParam param = writer.getDefaultWriteParam();
-                    if (param.canWriteCompressed()) {
-                        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                        if (param.getCompressionType() == null) {
-                            param.setCompressionType(param.getCompressionTypes()[0]);
+                    final ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
+                    try (
+                        final OutputStream outputStream = Files.newOutputStream(file);
+                        final ImageOutputStream imageOutputStream = ImageIO.createImageOutputStream(outputStream)
+                    ) {
+                        writer.setOutput(imageOutputStream);
+                        ImageWriteParam param = writer.getDefaultWriteParam();
+                        if (param.canWriteCompressed()) {
+                            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                            if (param.getCompressionType() == null) {
+                                param.setCompressionType(param.getCompressionTypes()[0]);
+                            }
+                            param.setCompressionQuality(Config.COMPRESSION_RATIO);
                         }
-                        param.setCompressionQuality(Config.COMPRESSION_RATIO);
+                        writer.write(null, new IIOImage(image, null, null), param);
                     }
-                    writer.write(null, new IIOImage(image, null, null), param);
                 } else {
-                    ImageIO.write(image, "png", file);
+                    ImageIO.write(image, "png", file.toFile());
                 }
             } catch (final IOException ex) {
-                Logging.severe(
-                    Lang.LOG_COULD_NOT_SAVE_REGION
-                        .replace("<x>", Integer.toString(this.region.x()))
-                        .replace("<z>", Integer.toString(this.region.z())),
-                    ex
-                );
+                Logging.severe(this.replaceXZ(Lang.LOG_COULD_NOT_SAVE_REGION), ex);
             }
         }
+    }
+
+    private String replaceXZ(final String s) {
+        return s.replace("<x>", Integer.toString(this.region.x()))
+            .replace("<z>", Integer.toString(this.region.z()));
     }
 }
