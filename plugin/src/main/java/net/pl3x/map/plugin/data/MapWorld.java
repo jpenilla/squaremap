@@ -40,6 +40,7 @@ import net.pl3x.map.plugin.task.render.FullRender;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.RecordTypeAdapterFactory;
 import net.pl3x.map.plugin.util.ReflectionUtil;
+import net.pl3x.map.plugin.util.Util;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -282,8 +283,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         if (this.backgroundRendering()) {
             this.stopBackgroundRender();
         }
-        this.executor.shutdown();
-        this.imageIOexecutor.shutdown();
+        Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 1L);
+        Util.shutdownExecutor(this.imageIOexecutor, TimeUnit.SECONDS, 2L);
         this.serializeDirtyChunks();
     }
 

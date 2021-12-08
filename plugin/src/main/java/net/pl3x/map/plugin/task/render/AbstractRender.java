@@ -9,6 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.core.BlockPos;
@@ -37,6 +38,7 @@ import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.ReflectionUtil;
+import net.pl3x.map.plugin.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -88,8 +90,8 @@ public abstract class AbstractRender implements Runnable {
         if (this.timer != null) {
             this.timer.cancel();
         }
-        this.executor.shutdown();
         this.cancelled = true;
+        Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 1L);
         this.futureTask.cancel(false);
     }
 
@@ -226,7 +228,7 @@ public abstract class AbstractRender implements Runnable {
 
     private void scanChunk(Image image, int[] lastY, LevelChunk chunk) {
         while (this.mapWorld.rendersPaused()) {
-            this.sleep(500);
+            sleep(500);
         }
         final int blockX = chunk.getPos().getMinBlockX();
         final int blockZ = chunk.getPos().getMinBlockZ();
@@ -435,7 +437,7 @@ public abstract class AbstractRender implements Runnable {
         return (LevelChunk) future.join().left().orElse(null);
     }
 
-    void sleep(int ms) {
+    static void sleep(int ms) {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException ignore) {

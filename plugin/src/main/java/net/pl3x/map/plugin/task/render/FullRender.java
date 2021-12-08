@@ -37,9 +37,9 @@ public final class FullRender extends AbstractRender {
         // order preserved map of regions with boolean to signify if it was already scanned
         final Map<RegionCoordinate, Boolean> regions;
 
-        Map<RegionCoordinate, Boolean> resumedMap = mapWorld.getRenderProgress();
+        Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.getRenderProgress();
         if (resumedMap != null) {
-            Logging.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", world.getName()));
+            Logging.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", this.world.getName()));
 
             regions = resumedMap;
 
@@ -47,24 +47,27 @@ public final class FullRender extends AbstractRender {
             this.curRegions.set(count);
             this.curChunks.set(this.countCompletedChunks(regions));
         } else {
-            Logging.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", world.getName()));
+            Logging.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", this.world.getName()));
 
             // find all region files
             Logging.info(Lang.LOG_SCANNING_REGION_FILES);
             final List<RegionCoordinate> regionFiles = this.getRegions();
 
             // setup a spiral iterator
-            Location spawn = world.getSpawnLocation();
+            Location spawn = this.world.getSpawnLocation();
             RegionSpiralIterator spiral = new RegionSpiralIterator(
                     Numbers.blockToRegion(spawn.getBlockX()),
                     Numbers.blockToRegion(spawn.getBlockZ()),
-                    this.maxRadius);
+                    this.maxRadius
+            );
 
             // iterate the spiral to get all regions needed
             int failsafe = 0;
             regions = new LinkedHashMap<>();
             while (spiral.hasNext()) {
-                if (this.cancelled) break;
+                if (this.cancelled) {
+                    break;
+                }
                 if (failsafe > 500000) {
                     // we scanned over half a million non-existent regions straight
                     // quit the prescan and add the remaining regions to the end
@@ -94,13 +97,17 @@ public final class FullRender extends AbstractRender {
 
         // finally, scan each region in the order provided by the spiral
         for (Map.Entry<RegionCoordinate, Boolean> entry : regions.entrySet()) {
-            if (this.cancelled) break;
+            if (this.cancelled) {
+                break;
+            }
             if (entry.getValue()) continue;
             this.mapRegion(entry.getKey());
             entry.setValue(true);
             this.curRegions.incrementAndGet();
             // only save progress is task is not cancelled
-            if (!this.cancelled) mapWorld.saveRenderProgress(regions);
+            if (!this.cancelled) {
+                this.mapWorld.saveRenderProgress(regions);
+            }
         }
 
         if (this.timer != null) {
@@ -129,7 +136,7 @@ public final class FullRender extends AbstractRender {
 
     private List<RegionCoordinate> getRegions() {
         List<RegionCoordinate> regions = new ArrayList<>();
-        File[] files = FileUtil.getRegionFiles(world);
+        File[] files = FileUtil.getRegionFiles(this.world);
         for (File file : files) {
             if (file.length() == 0) continue;
             try {
@@ -140,11 +147,11 @@ public final class FullRender extends AbstractRender {
                 RegionCoordinate region = new RegionCoordinate(x, z);
 
                 // ignore regions completely outside the visibility limit
-                if (!mapWorld.visibilityLimit().shouldRenderRegion(region)) {
+                if (!this.mapWorld.visibilityLimit().shouldRenderRegion(region)) {
                     continue;
                 }
 
-                this.maxRadius = Math.max(Math.max(maxRadius, Math.abs(x)), Math.abs(z));
+                this.maxRadius = Math.max(Math.max(this.maxRadius, Math.abs(x)), Math.abs(z));
                 regions.add(region);
 
             } catch (NumberFormatException ignore) {
