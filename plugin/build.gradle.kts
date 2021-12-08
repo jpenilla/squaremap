@@ -25,7 +25,7 @@ dependencies {
 
 tasks {
     shadowJar {
-        archiveFileName.set("${rootProject.name}-${rootProject.version}-dev-all.jar")
+        archiveFileName.set("${rootProject.name}-${project.version}-dev-all.jar")
         from(rootProject.projectDir.resolve("LICENSE"))
         minimize {
             exclude { it.moduleName == "squaremap-api" }
@@ -41,7 +41,7 @@ tasks {
         ).forEach { relocate(it, "squaremap.libraries.$it") }
     }
     reobfJar {
-        outputJar.set(project.layout.buildDirectory.file("libs/${rootProject.name}-${rootProject.version}.jar"))
+        outputJar.set(project.layout.buildDirectory.file("libs/${rootProject.name}-${project.version}.jar"))
     }
     build {
         dependsOn(reobfJar)
