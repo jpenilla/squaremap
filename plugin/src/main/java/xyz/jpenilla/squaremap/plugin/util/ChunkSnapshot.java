@@ -54,7 +54,7 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
                 .orElse(null));
     }
 
-    @SuppressWarnings({"unchecked", "deprecation"})
+    @SuppressWarnings({"unchecked", "deprecation", "rawtypes"})
     static ChunkSnapshot snapshot(final LevelChunk chunk) {
         // AsyncCatcher.catchOp("Chunk Snapshot");
         final LevelChunkSection[] sections = chunk.getSections();
