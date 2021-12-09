@@ -13,9 +13,12 @@ public final class Colors {
     }
 
     public static int shade(int color, int shade) {
-        float ratio = 220F / 255F;
-        if (shade == 2) ratio = 1.0F;
-        if (shade == 0) ratio = 180F / 255F;
+        final float ratio = switch (shade) {
+            case 0 -> 180F / 255F;
+            case 1 -> 220F / 255F;
+            case 2 -> 1.0F;
+            default -> throw new IllegalStateException("Unexpected shade: " + shade);
+        };
         return shade(color, ratio);
     }
 
