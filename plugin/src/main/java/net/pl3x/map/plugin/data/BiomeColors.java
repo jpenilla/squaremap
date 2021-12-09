@@ -2,6 +2,7 @@ package net.pl3x.map.plugin.data;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.awt.image.BufferedImage;
@@ -15,15 +16,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.material.Material;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
+import net.pl3x.map.plugin.util.Numbers;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -31,9 +33,12 @@ import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.FieldGetter;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.Proxies;
+import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
 
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
+    private static final int CHUNK_SNAPSHOT_CACHE_SIZE = 128;
+
     private static final Set<Block> grassColorBlocks = Set.of(
         Blocks.GRASS_BLOCK,
         Blocks.GRASS,
@@ -82,6 +87,7 @@ public final class BiomeColors {
     }
 
     private final Cache<Long, Biome> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
+    private final ChunkSnapshotCache chunkSnapshotCache;
 
     private final MapWorld world;
 
@@ -93,6 +99,7 @@ public final class BiomeColors {
 
     public BiomeColors(final MapWorld world) {
         this.world = world;
+        this.chunkSnapshotCache = ChunkSnapshotCache.sized(this.world.serverLevel(), CHUNK_SNAPSHOT_CACHE_SIZE);
 
         final Registry<Biome> biomeRegistry = biomeRegistry(world.serverLevel());
         for (final Biome biome : biomeRegistry) {
@@ -110,7 +117,9 @@ public final class BiomeColors {
         world.advanced().COLOR_OVERRIDES_BIOME_WATER.forEach((key, value) -> this.waterColors.put(key, value.intValue()));
     }
 
-    public int modifyColorFromBiome(int color, final LevelChunk chunk, final BlockPos pos) {
+    public int modifyColorFromBiome(int color, final ChunkSnapshot chunk, final BlockPos pos) {
+        this.chunkSnapshotCache.put(chunk.pos().toLong(), chunk);
+
         final BlockState data = chunk.getBlockState(pos);
         final Material mat = data.getMaterial();
         final Block block = data.getBlock();
@@ -210,7 +219,14 @@ public final class BiomeColors {
         long xz = (long) pos.getX() << 32 | pos.getZ() & 0xffffffffL;
         @Nullable Biome biome = this.blockPosBiomeCache.getIfPresent(xz);
         if (biome == null) {
-            biome = this.world.serverLevel().getBiome(pos);
+            final @Nullable ChunkSnapshot chunk = this.chunkSnapshotCache.snapshot(
+                new ChunkPos(Numbers.blockToChunk(pos.getX()), Numbers.blockToChunk(pos.getZ()))
+            );
+            if (chunk == null) {
+                biome = this.world.serverLevel().getBiome(pos);
+            } else {
+                biome = chunk.getBiome(pos);
+            }
             this.blockPosBiomeCache.put(xz, biome);
         }
         return biome;
@@ -280,6 +296,46 @@ public final class BiomeColors {
 
         private static int waterColor(final Biome biome) {
             return BIOME_SPECIAL_EFFECTS.waterColor(biome.getSpecialEffects());
+        }
+    }
+
+    private record ChunkSnapshotCache(
+        ServerLevel level,
+        int size,
+        Long2ObjectLinkedOpenHashMap<ChunkSnapshot> cache
+    ) {
+        public void put(long pos, ChunkSnapshot snapshot) {
+            if (this.cache.size() >= this.size()) {
+                this.cache.removeLast();
+            }
+            this.cache.putAndMoveToFirst(pos, snapshot);
+        }
+
+        public @Nullable ChunkSnapshot snapshot(final ChunkPos chunkPos) {
+            final @Nullable ChunkSnapshot cached = this.cache.getAndMoveToFirst(chunkPos.toLong());
+            if (cached != null) {
+                return cached;
+            }
+
+            @Nullable final ChunkSnapshot chunk = ChunkSnapshot.asyncSnapshot(this.level(), chunkPos.x, chunkPos.z)
+                // todo respect cancellation
+                .join();
+            if (chunk == null) {
+                return null;
+            }
+            if (this.cache.size() >= this.size()) {
+                this.cache.removeLast();
+            }
+            this.cache.putAndMoveToFirst(
+                chunkPos.toLong(),
+                chunk
+            );
+            return chunk;
+        }
+
+        public static ChunkSnapshotCache sized(final ServerLevel level, final int size) {
+            final Long2ObjectLinkedOpenHashMap<ChunkSnapshot> map = new Long2ObjectLinkedOpenHashMap<>(size);
+            return new ChunkSnapshotCache(level, size, map);
         }
     }
 }

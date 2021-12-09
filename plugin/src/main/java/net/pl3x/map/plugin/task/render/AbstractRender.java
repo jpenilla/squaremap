@@ -1,6 +1,5 @@
 package net.pl3x.map.plugin.task.render;
 
-import com.mojang.datafixers.util.Either;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +13,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ChunkHolder;
-import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.StainedGlassBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -42,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
 
 public abstract class AbstractRender implements Runnable {
     private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger();
@@ -165,18 +161,18 @@ public abstract class AbstractRender implements Runnable {
                     continue;
                 }
 
-                net.minecraft.world.level.chunk.LevelChunk chunk;
+                ChunkSnapshot chunk;
                 if (chunkZ == startChunkZ) {
                     // this is the top line of the image, we need to
                     // scan the bottom line of the region to the north
                     // in order to get the correct lastY for shading
-                    chunk = this.getChunkAt(this.level, chunkX, chunkZ - 1);
-                    if (chunk != null && !chunk.isEmpty()) {
+                    chunk = this.chunkSnapshot(this.level, chunkX, chunkZ - 1);
+                    if (chunk != null) {
                         lastY = this.getLastYFromBottomRow(chunk);
                     }
                 }
-                chunk = this.getChunkAt(this.level, chunkX, chunkZ);
-                if (chunk != null && !chunk.isEmpty()) {
+                chunk = this.chunkSnapshot(this.level, chunkX, chunkZ);
+                if (chunk != null) {
                     this.scanChunk(image, lastY, chunk);
                 }
                 this.curChunks.incrementAndGet();
@@ -191,25 +187,25 @@ public abstract class AbstractRender implements Runnable {
         return CompletableFuture.runAsync(() -> {
             int[] lastY = new int[16];
 
-            net.minecraft.world.level.chunk.LevelChunk chunk;
+            ChunkSnapshot chunk;
 
             // try scanning south row of northern chunk to get proper yDiff
-            chunk = this.getChunkAt(this.level, chunkX, chunkZ - 1);
-            if (chunk != null && !chunk.isEmpty()) {
+            chunk = this.chunkSnapshot(this.level, chunkX, chunkZ - 1);
+            if (chunk != null) {
                 lastY = this.getLastYFromBottomRow(chunk);
             }
 
             // scan the chunk itself
-            chunk = this.getChunkAt(this.level, chunkX, chunkZ);
-            if (chunk != null && !chunk.isEmpty()) {
+            chunk = this.chunkSnapshot(this.level, chunkX, chunkZ);
+            if (chunk != null) {
                 this.scanChunk(image, lastY, chunk);
             }
 
             // queue up the southern chunk in case it was stored with improper yDiff
             // https://github.com/pl3xgaming/Pl3xMap/issues/15
             final int down = chunkZ + 1;
-            chunk = this.getChunkAt(this.level, chunkX, down);
-            if (chunk != null && !chunk.isEmpty()) {
+            chunk = this.chunkSnapshot(this.level, chunkX, down);
+            if (chunk != null) {
                 if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
                     this.scanTopRow(image, lastY, chunk);
                 } else {
@@ -225,12 +221,12 @@ public abstract class AbstractRender implements Runnable {
         });
     }
 
-    private void scanChunk(Image image, int[] lastY, LevelChunk chunk) {
+    private void scanChunk(Image image, int[] lastY, ChunkSnapshot chunk) {
         while (this.mapWorld.rendersPaused()) {
             sleep(500);
         }
-        final int blockX = chunk.getPos().getMinBlockX();
-        final int blockZ = chunk.getPos().getMinBlockZ();
+        final int blockX = chunk.pos().getMinBlockX();
+        final int blockZ = chunk.pos().getMinBlockZ();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 if (this.cancelled) return;
@@ -241,9 +237,9 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    private void scanTopRow(Image image, int[] lastY, LevelChunk chunk) {
-        final int blockX = chunk.getPos().getMinBlockX();
-        final int blockZ = chunk.getPos().getMinBlockZ();
+    private void scanTopRow(Image image, int[] lastY, ChunkSnapshot chunk) {
+        final int blockX = chunk.pos().getMinBlockX();
+        final int blockZ = chunk.pos().getMinBlockZ();
         for (int x = 0; x < 16; x++) {
             if (this.cancelled) return;
             if (this.mapWorld.visibilityLimit().shouldRenderColumn(blockX + x, blockZ)) {
@@ -252,17 +248,17 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    private int @NonNull [] getLastYFromBottomRow(final @NonNull LevelChunk chunk) {
+    private int @NonNull [] getLastYFromBottomRow(final @NonNull ChunkSnapshot chunk) {
         final int[] lastY = new int[16];
         final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         for (int x = 0; x < 16; x++) {
             if (this.cancelled) return lastY;
             final int yDiff = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, 15) + 1;
-            int height = this.mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.getLevel().dimensionType().logicalHeight() : this.mapWorld.config().MAP_MAX_HEIGHT;
+            int height = this.mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.dimensionType().logicalHeight() : this.mapWorld.config().MAP_MAX_HEIGHT;
             mutablePos.set(
-                chunk.getPos().getMinBlockX() + x,
+                chunk.pos().getMinBlockX() + x,
                 Math.min(yDiff, height),
-                chunk.getPos().getMinBlockZ() + 15
+                chunk.pos().getMinBlockZ() + 15
             );
             final BlockState state = this.mapWorld.config().MAP_ITERATE_UP ? this.iterateUp(chunk, mutablePos) : this.iterateDown(chunk, mutablePos);
             if (this.mapWorld.config().MAP_GLASS_CLEAR && isGlass(state)) {
@@ -273,15 +269,15 @@ public abstract class AbstractRender implements Runnable {
         return lastY;
     }
 
-    private int scanBlock(LevelChunk chunk, int imgX, int imgZ, int[] lastY) {
-        int blockX = chunk.getPos().getMinBlockX() + imgX;
-        int blockZ = chunk.getPos().getMinBlockZ() + imgZ;
+    private int scanBlock(ChunkSnapshot chunk, int imgX, int imgZ, int[] lastY) {
+        int blockX = chunk.pos().getMinBlockX() + imgX;
+        int blockZ = chunk.pos().getMinBlockZ() + imgZ;
 
         BlockState state;
         final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 
         final int yDiff = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, imgX, imgZ) + 1;
-        int height = this.mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.getLevel().dimensionType().logicalHeight() : this.mapWorld.config().MAP_MAX_HEIGHT;
+        int height = this.mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.dimensionType().logicalHeight() : this.mapWorld.config().MAP_MAX_HEIGHT;
         mutablePos.set(blockX, Math.min(yDiff, height), blockZ);
 
         if (yDiff > chunk.getMinBuildHeight() + 1) {
@@ -302,7 +298,7 @@ public abstract class AbstractRender implements Runnable {
         return this.getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
     }
 
-    private int getColor(final @NonNull LevelChunk chunk, final int imgX, final int imgZ, final int[] lastY, final @NonNull BlockState state, final BlockPos.@NonNull MutableBlockPos mutablePos) {
+    private int getColor(final @NonNull ChunkSnapshot chunk, final int imgX, final int imgZ, final int[] lastY, final @NonNull BlockState state, final BlockPos.@NonNull MutableBlockPos mutablePos) {
         int color = this.mapWorld.getMapColor(state);
 
         if (this.biomeColors != null) {
@@ -325,9 +321,9 @@ public abstract class AbstractRender implements Runnable {
         return Colors.shade(color, colorOffset);
     }
 
-    private @NonNull BlockState iterateDown(final @NonNull LevelChunk chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
+    private @NonNull BlockState iterateDown(final @NonNull ChunkSnapshot chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
         BlockState state;
-        if (chunk.getLevel().dimensionType().hasCeiling()) {
+        if (chunk.dimensionType().hasCeiling()) {
             do {
                 mutablePos.move(Direction.DOWN);
                 state = chunk.getBlockState(mutablePos);
@@ -340,11 +336,11 @@ public abstract class AbstractRender implements Runnable {
         return state;
     }
 
-    private @NonNull BlockState iterateUp(final @NonNull LevelChunk chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
+    private @NonNull BlockState iterateUp(final @NonNull ChunkSnapshot chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
         BlockState state;
         int height = mutablePos.getY();
         mutablePos.setY(chunk.getMinBuildHeight());
-        if (chunk.getLevel().dimensionType().hasCeiling()) {
+        if (chunk.dimensionType().hasCeiling()) {
             do {
                 mutablePos.move(Direction.UP);
                 state = chunk.getBlockState(mutablePos);
@@ -366,7 +362,7 @@ public abstract class AbstractRender implements Runnable {
         return block == Blocks.GLASS || block instanceof StainedGlassBlock;
     }
 
-    private @NonNull BlockState handleGlass(final @NonNull LevelChunk chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
+    private @NonNull BlockState handleGlass(final @NonNull ChunkSnapshot chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
         BlockState state = chunk.getBlockState(mutablePos);
         while (isGlass(state)) {
             state = this.iterateDown(chunk, mutablePos);
@@ -374,9 +370,10 @@ public abstract class AbstractRender implements Runnable {
         return state;
     }
 
-    private record DepthResult(int depth, BlockState state) {}
+    private record DepthResult(int depth, BlockState state) {
+    }
 
-    private static @Nullable DepthResult findDepthIfFluid(final @NonNull BlockPos blockPos, final @NonNull BlockState state, final @NonNull LevelChunk chunk) {
+    private static @Nullable DepthResult findDepthIfFluid(final @NonNull BlockPos blockPos, final @NonNull BlockState state, final @NonNull ChunkSnapshot chunk) {
         if (blockPos.getY() > chunk.getMinBuildHeight() && !state.getFluidState().isEmpty()) {
             BlockState fluidState;
             int fluidDepth = 0;
@@ -425,17 +422,14 @@ public abstract class AbstractRender implements Runnable {
         return Colors.shade(color, colorOffset);
     }
 
-    private net.minecraft.world.level.chunk.LevelChunk getChunkAt(ServerLevel world, int x, int z) {
-        final ServerChunkCache chunkCache = world.getChunkSource();
-        net.minecraft.world.level.chunk.LevelChunk ifLoaded = chunkCache.getChunkAtIfLoadedImmediately(x, z);
-        if (ifLoaded != null) {
-            return ifLoaded;
-        }
-        final CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> future = chunkCache.getChunkAtAsynchronously(x, z, false, true);
+    private @Nullable ChunkSnapshot chunkSnapshot(final ServerLevel level, final int x, final int z) {
+        final CompletableFuture<ChunkSnapshot> future = ChunkSnapshot.asyncSnapshot(level, x, z);
         while (!future.isDone()) {
-            if (this.cancelled) return null;
+            if (this.cancelled) {
+                return null;
+            }
         }
-        return (LevelChunk) future.join().left().orElse(null);
+        return future.join();
     }
 
     static void sleep(int ms) {

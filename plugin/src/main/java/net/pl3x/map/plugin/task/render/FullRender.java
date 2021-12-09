@@ -85,7 +85,9 @@ public final class FullRender extends AbstractRender {
         }
 
         // ensure task wasnt cancelled before we start
-        if (this.cancelled) return;
+        if (this.cancelled) {
+            return;
+        }
 
         VisibilityLimit visibility = this.mapWorld.visibilityLimit();
         this.totalRegions = regions.size();

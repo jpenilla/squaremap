@@ -1,6 +1,5 @@
 package net.pl3x.map.plugin.task;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import java.awt.Color;
 import java.nio.file.Path;
@@ -54,7 +53,7 @@ public final class UpdateMarkers extends BukkitRunnable {
         layerRegistry.entries().forEach(registeredLayer -> {
             final LayerProvider provider = registeredLayer.right();
             final Key key = registeredLayer.left();
-            final List<Marker> markers = ImmutableList.copyOf(provider.getMarkers());
+            final List<Marker> markers = List.copyOf(provider.getMarkers());
 
             final Map<String, Object> current = this.createMap(key, provider);
             current.put("markers", markers.hashCode());
