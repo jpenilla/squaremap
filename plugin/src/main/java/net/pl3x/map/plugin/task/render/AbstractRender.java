@@ -430,7 +430,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private @Nullable ChunkSnapshot chunkSnapshot(final ServerLevel level, final int x, final int z) {
-        final CompletableFuture<ChunkSnapshot> future = ChunkSnapshot.asyncSnapshot(level, x, z);
+        final CompletableFuture<ChunkSnapshot> future = ChunkSnapshot.asyncSnapshot(level, x, z, false);
         while (!future.isDone()) {
             if (this.cancelled) {
                 return null;

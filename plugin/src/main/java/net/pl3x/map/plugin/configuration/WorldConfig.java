@@ -58,7 +58,7 @@ public class WorldConfig extends AbstractWorldConfig {
     }
 
     public boolean MAP_BIOMES = true;
-    public int MAP_BIOMES_BLEND = 4;
+    public int MAP_BIOMES_BLEND = 3;
 
     private void biomeSettings() {
         this.MAP_BIOMES = getBoolean("map.biomes.enabled", this.MAP_BIOMES);

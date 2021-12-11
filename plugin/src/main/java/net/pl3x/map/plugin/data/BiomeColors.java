@@ -13,11 +13,13 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.QuartPos;
 import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -25,7 +27,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
-import net.pl3x.map.plugin.util.Numbers;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -222,17 +223,25 @@ public final class BiomeColors {
         long xz = (long) pos.getX() << 32 | pos.getZ() & 0xffffffffL;
         @Nullable Biome biome = this.blockPosBiomeCache.getIfPresent(xz);
         if (biome == null) {
-            final @Nullable ChunkSnapshot chunk = this.chunkSnapshotCache.snapshot(
-                new ChunkPos(Numbers.blockToChunk(pos.getX()), Numbers.blockToChunk(pos.getZ()))
-            );
-            if (chunk == null) {
-                biome = this.world.serverLevel().getBiome(pos);
-            } else {
-                biome = chunk.getBiome(pos);
-            }
+            biome = this.world.serverLevel().getBiomeManager()
+                .withDifferentSource(this::getNoiseBiome)
+                .getBiome(pos);
             this.blockPosBiomeCache.put(xz, biome);
         }
         return biome;
+    }
+
+    private Biome getNoiseBiome(int quartX, int quartY, int quartZ) {
+        final @Nullable ChunkSnapshot chunk = this.chunkSnapshotCache.snapshot(
+            new ChunkPos(QuartPos.toSection(quartX), QuartPos.toSection(quartZ))
+        );
+        final BiomeManager.NoiseBiomeSource noiseBiomeSource;
+        if (chunk == null) {
+            noiseBiomeSource = this.world.serverLevel();
+        } else {
+            noiseBiomeSource = chunk;
+        }
+        return noiseBiomeSource.getNoiseBiome(quartX, quartY, quartZ);
     }
 
     public static Registry<Biome> biomeRegistry(ServerLevel world) {
@@ -320,7 +329,7 @@ public final class BiomeColors {
                 return cached;
             }
 
-            @Nullable final ChunkSnapshot chunk = ChunkSnapshot.asyncSnapshot(this.level(), chunkPos.x, chunkPos.z)
+            @Nullable final ChunkSnapshot chunk = ChunkSnapshot.asyncSnapshot(this.level(), chunkPos.x, chunkPos.z, true)
                 // todo respect cancellation
                 .join();
             if (chunk == null) {

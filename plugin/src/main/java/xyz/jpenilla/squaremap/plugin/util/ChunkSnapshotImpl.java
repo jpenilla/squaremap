@@ -7,7 +7,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,42 +19,21 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-final class ChunkSnapshotImpl implements ChunkSnapshot {
+record ChunkSnapshotImpl(
+    LevelHeightAccessor heightAccessor,
+    PalettedContainer<BlockState>[] states,
+    PalettedContainer<Biome>[] biomes,
+    Map<Heightmap.Types, Heightmap> heightmaps,
+    boolean[] emptySections,
+    DimensionType dimensionType,
+    ChunkPos pos
+) implements ChunkSnapshot {
     @SuppressWarnings("deprecation")
-    static final PalettedContainer<net.minecraft.world.level.block.state.BlockState> EMPTY_SECTION_BLOCK_STATES = new PalettedContainer<>(
+    static final PalettedContainer<BlockState> EMPTY_SECTION_BLOCK_STATES = new PalettedContainer<>(
         Block.BLOCK_STATE_REGISTRY,
         Blocks.AIR.defaultBlockState(),
         PalettedContainer.Strategy.SECTION_STATES
     );
-
-    private final LevelHeightAccessor heightAccessor;
-    private final PalettedContainer<BlockState>[] states;
-    private final PalettedContainer<Biome>[] biomes;
-    private final Map<Heightmap.Types, Heightmap> heightmaps;
-    private final boolean[] emptySections;
-    private final DimensionType dimensionType;
-    private final BiomeManager biomeManager;
-    private final ChunkPos pos;
-
-    public ChunkSnapshotImpl(
-        final LevelHeightAccessor heightAccessor,
-        final PalettedContainer<BlockState>[] states,
-        final PalettedContainer<Biome>[] biomes,
-        final Map<Heightmap.Types, Heightmap> heightmaps,
-        final boolean[] emptySections,
-        final DimensionType dimensionType,
-        final long seed,
-        final ChunkPos pos
-    ) {
-        this.heightAccessor = heightAccessor;
-        this.states = states;
-        this.biomes = biomes;
-        this.heightmaps = heightmaps;
-        this.emptySections = emptySections;
-        this.dimensionType = dimensionType;
-        this.pos = pos;
-        this.biomeManager = new BiomeManager(this, seed);
-    }
 
     @Override
     public BlockState getBlockState(final BlockPos pos) {
@@ -93,11 +71,6 @@ final class ChunkSnapshotImpl implements ChunkSnapshot {
     }
 
     @Override
-    public Biome getBiome(final BlockPos pos) {
-        return this.biomeManager.getBiome(pos);
-    }
-
-    @Override
     public int getHeight() {
         return this.heightAccessor.getHeight();
     }
@@ -108,26 +81,16 @@ final class ChunkSnapshotImpl implements ChunkSnapshot {
     }
 
     @Override
-    public ChunkPos pos() {
-        return this.pos;
-    }
-
-    @Override
     public boolean sectionEmpty(final int sectionIndex) {
         return this.emptySections[sectionIndex];
     }
 
     @Override
-    public Biome getNoiseBiome(final int biomeX, final int biomeY, final int biomeZ) {
-        int l = QuartPos.fromBlock(this.getMinBuildHeight());
-        int i1 = l + QuartPos.fromBlock(this.getHeight()) - 1;
-        int j1 = Mth.clamp(biomeY, l, i1);
-        int sectionIndex = this.getSectionIndex(QuartPos.toBlock(j1));
-        return this.biomes[sectionIndex].get(biomeX & 3, j1 & 3, biomeZ & 3);
-    }
-
-    @Override
-    public DimensionType dimensionType() {
-        return dimensionType;
+    public Biome getNoiseBiome(final int quartX, final int quartY, final int quartZ) {
+        int minQuartY = QuartPos.fromBlock(this.getMinBuildHeight());
+        int maxQuartY = minQuartY + QuartPos.fromBlock(this.getHeight()) - 1;
+        int clampedQuartY = Mth.clamp(quartY, minQuartY, maxQuartY);
+        int sectionIndex = this.getSectionIndex(QuartPos.toBlock(clampedQuartY));
+        return this.biomes[sectionIndex].get(quartX & 3, clampedQuartY & 3, quartZ & 3);
     }
 }

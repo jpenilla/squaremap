@@ -25,7 +25,7 @@ import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 @DefaultQualifier(NonNull.class)
 public final class ProgressLoggingCommand extends Pl3xMapCommand {
-    public ProgressLoggingCommand(final @NonNull Pl3xMapPlugin plugin, final @NonNull Commands commands) {
+    public ProgressLoggingCommand(final Pl3xMapPlugin plugin, final Commands commands) {
         super(plugin, commands);
     }
 
@@ -47,7 +47,7 @@ public final class ProgressLoggingCommand extends Pl3xMapCommand {
             .handler(this::executeRate));
     }
 
-    private void executePrint(final @NonNull CommandContext<CommandSender> context) {
+    private void executePrint(final CommandContext<CommandSender> context) {
         Lang.send(
             context.getSender(),
             Lang.PROGRESSLOGGING_STATUS_MESSAGE,
@@ -56,7 +56,7 @@ public final class ProgressLoggingCommand extends Pl3xMapCommand {
         );
     }
 
-    private void executeToggle(final @NonNull CommandContext<CommandSender> context) {
+    private void executeToggle(final CommandContext<CommandSender> context) {
         Config.toggleProgressLogging();
 
         context.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().worlds().values()
@@ -76,7 +76,7 @@ public final class ProgressLoggingCommand extends Pl3xMapCommand {
             .clickEvent(runCommand("/" + Config.MAIN_COMMAND_LABEL + " progresslogging toggle"));
     }
 
-    private void executeRate(final @NonNull CommandContext<CommandSender> context) {
+    private void executeRate(final CommandContext<CommandSender> context) {
         final int seconds = context.get("seconds");
         Config.setLoggingInterval(seconds);
 
