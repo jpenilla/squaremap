@@ -26,6 +26,17 @@ subprojects {
         javaVersions {
             target(17)
         }
+
+        configurePublications {
+            pom {
+                developers {
+                    developer {
+                        id.set("jmp")
+                        timezone.set("America/Los Angeles")
+                    }
+                }
+            }
+        }
     }
 
     repositories {
