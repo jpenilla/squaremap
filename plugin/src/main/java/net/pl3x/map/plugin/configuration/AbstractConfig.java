@@ -52,11 +52,14 @@ abstract class AbstractConfig {
             }
         }
 
+        this.save();
+    }
+
+    public void save() {
         try {
             this.yaml.save(file);
-        } catch (IOException ex) {
-            Logging.severe("Could not save " + this.file);
-            ex.printStackTrace();
+        } catch (final IOException ex) {
+            Logging.severe("Could not save " + this.file, ex);
         }
     }
 

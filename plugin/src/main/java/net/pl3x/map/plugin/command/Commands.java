@@ -37,6 +37,7 @@ import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.plugin.command.commands.ProgressLoggingCommand;
 
 @DefaultQualifier(NonNull.class)
 public final class Commands {
@@ -58,7 +59,7 @@ public final class Commands {
 
         if (this.commandManager.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
             this.commandManager.registerBrigadier();
-            final CloudBrigadierManager<?, ?> brigManager = this.commandManager.brigadierManager();
+            final @Nullable CloudBrigadierManager<?, ?> brigManager = this.commandManager.brigadierManager();
             if (brigManager != null) {
                 brigManager.setNativeNumberSuggestions(false);
             }
@@ -80,7 +81,8 @@ public final class Commands {
             new PauseRenderCommand(plugin, this),
             new ResetMapCommand(plugin, this),
             new HideCommand(plugin, this),
-            new ShowCommand(plugin, this)
+            new ShowCommand(plugin, this),
+            new ProgressLoggingCommand(plugin, this)
         ).forEach(Pl3xMapCommand::register);
 
     }
@@ -115,11 +117,15 @@ public final class Commands {
         });
     }
 
+    public void register(final Command.Builder<CommandSender> builder) {
+        this.commandManager.command(builder);
+    }
+
     public void registerSubcommand(UnaryOperator<Command.Builder<CommandSender>> builderModifier) {
         this.commandManager.command(builderModifier.apply(this.rootBuilder()));
     }
 
-    private Command.Builder<CommandSender> rootBuilder() {
+    public Command.Builder<CommandSender> rootBuilder() {
         return this.commandManager.commandBuilder(Config.MAIN_COMMAND_LABEL, Config.MAIN_COMMAND_ALIASES.toArray(String[]::new))
             /* MinecraftHelp uses the MinecraftExtrasMetaKeys.DESCRIPTION meta, this is just so we give Bukkit a description
              * for our commands in the Bukkit and EssentialsX '/help' command */

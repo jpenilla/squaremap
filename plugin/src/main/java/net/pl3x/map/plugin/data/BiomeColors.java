@@ -86,7 +86,10 @@ public final class BiomeColors {
         mapFoliage = init(imgFoliage);
     }
 
-    private final Cache<Long, Biome> blockPosBiomeCache = CacheBuilder.newBuilder().expireAfterAccess(10L, TimeUnit.SECONDS).maximumSize(100000L).build();
+    private final Cache<Long, Biome> blockPosBiomeCache = CacheBuilder.newBuilder()
+        .expireAfterAccess(10L, TimeUnit.SECONDS)
+        .maximumSize(100000L)
+        .build();
     private final ChunkSnapshotCache chunkSnapshotCache;
 
     private final MapWorld world;
@@ -326,10 +329,7 @@ public final class BiomeColors {
             if (this.cache.size() >= this.size()) {
                 this.cache.removeLast();
             }
-            this.cache.putAndMoveToFirst(
-                chunkPos.toLong(),
-                chunk
-            );
+            this.cache.putAndMoveToFirst(chunkPos.toLong(), chunk);
             return chunk;
         }
 

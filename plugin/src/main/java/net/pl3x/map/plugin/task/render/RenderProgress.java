@@ -9,8 +9,10 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.minimessage.Template;
 import net.pl3x.map.plugin.Logging;
+import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class RenderProgress extends TimerTask {
 
@@ -23,6 +25,7 @@ public final class RenderProgress extends TimerTask {
     final List<Integer> totalAvgCps = new ArrayList<>();
     int index = 0;
     int prevChunks;
+    long seconds;
 
     private RenderProgress(final @NonNull AbstractRender render) {
         this.startTime = System.currentTimeMillis();
@@ -30,13 +33,12 @@ public final class RenderProgress extends TimerTask {
         this.prevChunks = this.render.processedChunks();
     }
 
-    public static Timer printProgress(final @NonNull AbstractRender render) {
-        final RenderProgress progress = new RenderProgress(render);
-        final Timer timer = new Timer();
-        final int interval = render.mapWorld.config().MAP_RENDER_PROGRESS_INTERVAL;
-        if (interval > 0) {
-            timer.scheduleAtFixedRate(progress, interval * 1000L, interval * 1000L);
+    public static @Nullable Timer printProgress(final @NonNull AbstractRender render) {
+        if (!Config.PROGRESS_LOGGING) {
+            return null;
         }
+        final Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new RenderProgress(render), 1000L, 1000L);
         return timer;
     }
 
@@ -56,7 +58,7 @@ public final class RenderProgress extends TimerTask {
         if (this.index == 15) {
             this.index = 0;
         }
-        final double rollingAvg = Arrays.stream(rollingAvgCps).filter(i -> i != 0).average().orElse(0.00D);
+        final double rollingAvg = Arrays.stream(this.rollingAvgCps).filter(i -> i != 0).average().orElse(0.00D);
 
         final int chunksLeft = this.render.totalChunks() - curChunks;
         final long timeLeft = (long) (chunksLeft / (this.totalAvgCps.stream().filter(i -> i != 0).mapToInt(i -> i).average().orElse(0.00D) / 1000));
@@ -72,19 +74,24 @@ public final class RenderProgress extends TimerTask {
         int curRegions = this.render.processedRegions();
         int totalRegions = this.render.totalRegions();
 
-        Logging.info(
-                (totalRegions > 0 ? Lang.LOG_RENDER_PROGRESS_WITH_REGIONS : Lang.LOG_RENDER_PROGRESS),
-                Template.template("world", render.world.getName()),
-                Template.template("current_regions", Integer.toString(curRegions)),
-                Template.template("total_regions", Integer.toString(totalRegions)),
-                Template.template("current_chunks", Integer.toString(curChunks)),
-                Template.template("total_chunks", Integer.toString(this.render.totalChunks())),
-                Template.template("percent", percentStr),
-                Template.template("elapsed", elapsedStr),
-                Template.template("eta", etaStr),
-                Template.template("rate", rateStr)
-        );
+        if (this.seconds % Config.PROGRESS_LOGGING_INTERVAL != 0) {
+            this.seconds++;
+            return;
+        }
+        this.seconds++;
 
+        Logging.info(
+            (totalRegions > 0 ? Lang.LOG_RENDER_PROGRESS_WITH_REGIONS : Lang.LOG_RENDER_PROGRESS),
+            Template.template("world", render.world.getName()),
+            Template.template("current_regions", Integer.toString(curRegions)),
+            Template.template("total_regions", Integer.toString(totalRegions)),
+            Template.template("current_chunks", Integer.toString(curChunks)),
+            Template.template("total_chunks", Integer.toString(this.render.totalChunks())),
+            Template.template("percent", percentStr),
+            Template.template("elapsed", elapsedStr),
+            Template.template("eta", etaStr),
+            Template.template("rate", rateStr)
+        );
     }
 
     private static @NonNull String formatMilliseconds(long timeLeft) {

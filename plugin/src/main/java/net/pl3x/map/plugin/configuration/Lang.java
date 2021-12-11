@@ -49,11 +49,21 @@ public final class Lang {
     public static String CONFIRMATION_REQUIRED_MESSAGE = "<red>Confirmation required. Confirm using /<command> confirm.";
     @LangKey("command.message.no-pending-commands")
     public static String NO_PENDING_COMMANDS_MESSAGE = "<red>You don't have any pending commands.";
+    @LangKey("command.message.progresslogging.enabled")
+    public static String PROGRESSLOGGING_ENABLED_MESSAGE = "<green>Render progress logging has been enabled.";
+    @LangKey("command.message.progresslogging.disabled")
+    public static String PROGRESSLOGGING_DISABLED_MESSAGE = "<green>Render progress logging has been disabled.";
+    @LangKey("command.message.progresslogging.set-rate")
+    public static String PROGRESSLOGGING_SET_RATE_MESSAGE = "<green>Render progress logging interval has been set to </green><seconds> seconds";
+    @LangKey("command.message.progresslogging.statusmessage")
+    public static String PROGRESSLOGGING_STATUS_MESSAGE = "Render progress logging enabled: <enabled>, interval: <green><seconds></green> seconds";
 
     @LangKey("click-for-help")
     public static String CLICK_FOR_HELP = "Click for help";
     @LangKey("click-to-confirm")
     public static String CLICK_TO_CONFIRM = "Click to confirm";
+    @LangKey("click-to-toggle")
+    public static String CLICK_TO_TOGGLE = "Click to toggle";
 
     @LangKey("command.prefix")
     public static String COMMAND_PREFIX = "<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> ";
@@ -75,6 +85,12 @@ public final class Lang {
     public static String OPTIONAL_WORLD_ARGUMENT_DESCRIPTION = "Defaults to the players current world if not provided";
     @LangKey("command.description.radius-render")
     public static String RADIUSRENDER_COMMAND_DESCRIPTION = "Starts a radius render";
+    @LangKey("command.description.progresslogging")
+    public static String PROGRESSLOGGING_COMMAND_DESCRIPTION = "Prints the current settings for render progress logging";
+    @LangKey("command.description.progresslogging.toggle")
+    public static String PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION = "Toggles render progress logging on or off";
+    @LangKey("command.description.progresslogging.rate")
+    public static String PROGRESSLOGGING_RATE_COMMAND_DESCRIPTION = "Sets the interval in seconds for logging render progress";
     @LangKey("command.argument.optional-center")
     public static String OPTIONAL_CENTER_ARGUMENT_DESCRIPTION = "Defaults to (<white>0<gray>,</gray> 0</white>) if unspecified";
     @LangKey("command.argument.optional-player")
@@ -201,7 +217,7 @@ public final class Lang {
     }
 
     public static @NonNull Component parse(final @NonNull String miniMessage) {
-        return MiniMessage.miniMessage().parse(miniMessage);
+        return MiniMessage.miniMessage().deserialize(miniMessage);
     }
 
     public static @NonNull Component parse(final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {

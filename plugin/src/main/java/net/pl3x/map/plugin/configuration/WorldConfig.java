@@ -46,7 +46,6 @@ public class WorldConfig extends AbstractWorldConfig {
     public int MAX_RENDER_THREADS = -1;
     public boolean MAP_ITERATE_UP = false;
     public int MAP_MAX_HEIGHT = -1;
-    public int MAP_RENDER_PROGRESS_INTERVAL = 1;
 
     private void worldSettings() {
         this.MAP_ENABLED = getBoolean("map.enabled", this.MAP_ENABLED);
@@ -56,7 +55,6 @@ public class WorldConfig extends AbstractWorldConfig {
         this.MAX_RENDER_THREADS = getInt("map.max-render-threads", this.MAX_RENDER_THREADS);
         this.MAP_ITERATE_UP = getBoolean("map.iterate-up", this.MAP_ITERATE_UP);
         this.MAP_MAX_HEIGHT = getInt("map.max-height", this.MAP_MAX_HEIGHT);
-        this.MAP_RENDER_PROGRESS_INTERVAL = getInt("map.render-progress-interval", this.MAP_RENDER_PROGRESS_INTERVAL);
     }
 
     public boolean MAP_BIOMES = true;

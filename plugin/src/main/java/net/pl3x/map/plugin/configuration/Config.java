@@ -76,8 +76,28 @@ public class Config extends AbstractConfig {
         MAIN_COMMAND_LABEL = config.getString("settings.commands.main-command-label", MAIN_COMMAND_LABEL);
         MAIN_COMMAND_ALIASES.clear();
         config.getList("settings.commands.main-command-aliases", List.of(
-                "map"
+            "map"
         )).forEach(entry -> MAIN_COMMAND_ALIASES.add(entry.toString()));
+    }
+
+    public static void toggleProgressLogging() {
+        PROGRESS_LOGGING = !PROGRESS_LOGGING;
+        config.yaml.set("settings.render-progress-logging.enabled", PROGRESS_LOGGING);
+        config.save();
+    }
+
+    public static void setLoggingInterval(final int rate) {
+        PROGRESS_LOGGING_INTERVAL = rate;
+        config.yaml.set("settings.render-progress-logging.interval-seconds", rate);
+        config.save();
+    }
+
+    public static volatile boolean PROGRESS_LOGGING;
+    public static volatile int PROGRESS_LOGGING_INTERVAL = 1;
+
+    private static void progressLogging() {
+        PROGRESS_LOGGING = config.getBoolean("settings.render-progress-logging.enabled", true);
+        PROGRESS_LOGGING_INTERVAL = config.getInt("settings.render-progress-logging.interval-seconds", 1);
     }
 
 }

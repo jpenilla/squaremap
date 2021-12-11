@@ -90,6 +90,13 @@ public abstract class AbstractRender implements Runnable {
         this.futureTask.cancel(false);
     }
 
+    public void restartProgressLogger() {
+        if (this.timer != null) {
+            this.timer.cancel();
+        }
+        this.timer = RenderProgress.printProgress(this);
+    }
+
     @Override
     public final void run() {
         this.render();

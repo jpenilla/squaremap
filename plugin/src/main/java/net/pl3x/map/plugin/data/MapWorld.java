@@ -312,4 +312,10 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         return this.visibilityLimit;
     }
 
+    public void restartRenderProgressLogging() {
+        if (this.activeRender != null) {
+            this.activeRender.restartProgressLogger();
+        }
+    }
+
 }
