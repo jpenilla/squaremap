@@ -1,12 +1,12 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "7.1.0"
-    id("io.papermc.paperweight.userdev") version "1.3.1"
+    id("io.papermc.paperweight.userdev") version "1.3.2-SNAPSHOT"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
     id("xyz.jpenilla.run-paper") version "1.0.6"
 }
 
 dependencies {
-    paperDevBundle("1.18-R0.1-SNAPSHOT")
+    paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 
     implementation(project(":squaremap-api"))
     implementation(platform("cloud.commandframework:cloud-bom:1.6.0"))
