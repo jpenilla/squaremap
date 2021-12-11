@@ -85,7 +85,7 @@ public final class Lang {
     public static String OPTIONAL_WORLD_ARGUMENT_DESCRIPTION = "Defaults to the players current world if not provided";
     @LangKey("command.description.radius-render")
     public static String RADIUSRENDER_COMMAND_DESCRIPTION = "Starts a radius render";
-    @LangKey("command.description.progresslogging")
+    @LangKey("command.description.progresslogging.status")
     public static String PROGRESSLOGGING_COMMAND_DESCRIPTION = "Prints the current settings for render progress logging";
     @LangKey("command.description.progresslogging.toggle")
     public static String PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION = "Toggles render progress logging on or off";
