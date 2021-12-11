@@ -211,14 +211,14 @@ public abstract class AbstractRender implements Runnable {
             // queue up the southern chunk in case it was stored with improper yDiff
             // https://github.com/pl3xgaming/Pl3xMap/issues/15
             final int down = chunkZ + 1;
-            chunk = this.chunkSnapshot(this.level, chunkX, down);
-            if (chunk != null) {
-                if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
+            if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
+                chunk = this.chunkSnapshot(this.level, chunkX, down);
+                if (chunk != null) {
                     this.scanTopRow(image, lastY, chunk);
-                } else {
-                    // chunk belongs to a different region, add to queue
-                    this.mapWorld.chunkModified(new ChunkCoordinate(chunkX, down));
                 }
+            } else {
+                // chunk belongs to a different region, add to queue
+                this.mapWorld.chunkModified(new ChunkCoordinate(chunkX, down));
             }
 
             this.curChunks.incrementAndGet();
