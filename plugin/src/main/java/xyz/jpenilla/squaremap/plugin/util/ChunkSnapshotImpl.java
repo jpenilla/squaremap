@@ -8,6 +8,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.PalettedContainer;
@@ -20,6 +21,13 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 final class ChunkSnapshotImpl implements ChunkSnapshot {
+    @SuppressWarnings("deprecation")
+    static final PalettedContainer<net.minecraft.world.level.block.state.BlockState> EMPTY_SECTION_BLOCK_STATES = new PalettedContainer<>(
+        Block.BLOCK_STATE_REGISTRY,
+        Blocks.AIR.defaultBlockState(),
+        PalettedContainer.Strategy.SECTION_STATES
+    );
+
     private final LevelHeightAccessor heightAccessor;
     private final PalettedContainer<BlockState>[] states;
     private final PalettedContainer<Biome>[] biomes;

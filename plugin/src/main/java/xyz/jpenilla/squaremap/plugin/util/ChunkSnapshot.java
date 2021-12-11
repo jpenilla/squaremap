@@ -72,13 +72,18 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
         final boolean[] empty = new boolean[sections.length];
 
         for (int i = 0; i < sections.length; i++) {
-            empty[i] = sections[i].hasOnlyAir();
+            final boolean sectionEmpty = sections[i].hasOnlyAir();
+            empty[i] = sectionEmpty;
 
-            states[i] = ChunkSerializer.BLOCK_STATE_CODEC.parse(
-                NbtOps.INSTANCE,
-                ChunkSerializer.BLOCK_STATE_CODEC.encodeStart(NbtOps.INSTANCE, sections[i].getStates())
-                    .get().left().orElseThrow()
-            ).get().left().orElseThrow();
+            if (sectionEmpty) {
+                states[i] = ChunkSnapshotImpl.EMPTY_SECTION_BLOCK_STATES;
+            } else {
+                states[i] = ChunkSerializer.BLOCK_STATE_CODEC.parse(
+                    NbtOps.INSTANCE,
+                    ChunkSerializer.BLOCK_STATE_CODEC.encodeStart(NbtOps.INSTANCE, sections[i].getStates())
+                        .get().left().orElseThrow()
+                ).get().left().orElseThrow();
+            }
 
             biomes[i] = biomeCodec.parse(
                 NbtOps.INSTANCE,
