@@ -34,7 +34,7 @@ Leaflet (the web ui frontend) is licensed under [2-clause BSD License](https://g
 
 ## bStats
 
-[![bStats Graph Data](https://bstats.org/signatures/bukkit/Pl3xMap.svg)](https://bstats.org/plugin/bukkit/Pl3xMap/10133)
+[![bStats Graph Data](https://bstats.org/signatures/bukkit/squaremap.svg)](https://bstats.org/plugin/bukkit/squaremap/13571)
 
 ## API
 
