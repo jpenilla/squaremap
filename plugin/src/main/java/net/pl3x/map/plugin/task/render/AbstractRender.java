@@ -33,12 +33,12 @@ import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.FileUtil;
 import net.pl3x.map.plugin.util.Numbers;
 import net.pl3x.map.plugin.util.ReflectionUtil;
-import net.pl3x.map.plugin.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
+import xyz.jpenilla.squaremap.plugin.util.Util;
 
 public abstract class AbstractRender implements Runnable {
     private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger();

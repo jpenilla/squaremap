@@ -13,8 +13,8 @@ import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.data.RegionCoordinate;
-import net.pl3x.map.plugin.util.Util;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.plugin.util.Util;
 
 public final class BackgroundRender extends AbstractRender {
 

@@ -1,4 +1,4 @@
-package net.pl3x.map.plugin.util;
+package xyz.jpenilla.squaremap.plugin.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.plugin.util.NamedThreadFactory;
 
 @DefaultQualifier(NonNull.class)
 public final class Util {

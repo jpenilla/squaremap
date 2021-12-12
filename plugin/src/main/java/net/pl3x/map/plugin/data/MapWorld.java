@@ -40,9 +40,9 @@ import net.pl3x.map.plugin.task.render.FullRender;
 import net.pl3x.map.plugin.util.Colors;
 import net.pl3x.map.plugin.util.RecordTypeAdapterFactory;
 import net.pl3x.map.plugin.util.ReflectionUtil;
-import net.pl3x.map.plugin.util.Util;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.plugin.util.Util;
 
 public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private static final String DIRTY_CHUNKS_FILE_NAME = "dirty_chunks.json";
