@@ -59,7 +59,7 @@ public final class RadiusRender extends AbstractRender {
     protected void render() {
         Logging.info(Lang.LOG_STARTED_RADIUSRENDER, Template.template("world", world.getName()));
 
-        this.timer = RenderProgress.printProgress(this);
+        this.progress = RenderProgress.printProgress(this, null);
 
         ChunkSpiralIterator spiral = new ChunkSpiralIterator(this.centerX, this.centerZ, this.radius);
         final Map<RegionCoordinate, Image> images = new HashMap<>();
@@ -96,8 +96,8 @@ public final class RadiusRender extends AbstractRender {
 
         CompletableFuture.allOf(regionFutureMap.values().toArray(CompletableFuture[]::new)).join();
 
-        if (this.timer != null) {
-            this.timer.cancel();
+        if (this.progress != null) {
+            this.progress.left().cancel();
         }
 
     }

@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.pl3x.map.api.Pair;
 import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.BiomeColors;
@@ -56,7 +57,7 @@ public abstract class AbstractRender implements Runnable {
     protected final AtomicInteger curChunks = new AtomicInteger(0);
     protected final AtomicInteger curRegions = new AtomicInteger(0);
 
-    protected Timer timer = null;
+    protected Pair<Timer, RenderProgress> progress = null;
 
     public AbstractRender(final @NonNull MapWorld mapWorld) {
         this(mapWorld, Executors.newFixedThreadPool(getThreads(mapWorld.config().MAX_RENDER_THREADS)));
@@ -82,8 +83,8 @@ public abstract class AbstractRender implements Runnable {
     }
 
     public synchronized void cancel() {
-        if (this.timer != null) {
-            this.timer.cancel();
+        if (this.progress != null) {
+            this.progress.left().cancel();
         }
         this.cancelled = true;
         Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 1L);
@@ -91,10 +92,14 @@ public abstract class AbstractRender implements Runnable {
     }
 
     public void restartProgressLogger() {
-        if (this.timer != null) {
-            this.timer.cancel();
+        final RenderProgress old;
+        if (this.progress != null) {
+            this.progress.left().cancel();
+            old = this.progress.right();
+        } else {
+            old = null;
         }
-        this.timer = RenderProgress.printProgress(this);
+        this.progress = RenderProgress.printProgress(this, old);
     }
 
     @Override

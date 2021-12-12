@@ -95,7 +95,7 @@ public final class FullRender extends AbstractRender {
 
         Logging.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.template("total", Integer.toString(regions.size())));
 
-        this.timer = RenderProgress.printProgress(this);
+        this.progress = RenderProgress.printProgress(this, null);
 
         // finally, scan each region in the order provided by the spiral
         for (Map.Entry<RegionCoordinate, Boolean> entry : regions.entrySet()) {
@@ -112,8 +112,8 @@ public final class FullRender extends AbstractRender {
             }
         }
 
-        if (this.timer != null) {
-            this.timer.cancel();
+        if (this.progress != null) {
+            this.progress.left().cancel();
         }
 
     }
