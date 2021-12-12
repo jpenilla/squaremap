@@ -77,7 +77,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
-        new Metrics(this, 10133); // https://bstats.org/plugin/bukkit/Pl3xMap/10133
+        new Metrics(this, 13571); // https://bstats.org/plugin/bukkit/squaremap/13571
     }
 
     @Override
