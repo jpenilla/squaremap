@@ -63,13 +63,19 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private final BlockColors blockColors;
     private final VisibilityLimit visibilityLimit;
 
+    private volatile boolean pauseRenders = false;
+    private WorldConfig worldConfig;
+    private WorldAdvanced advancedWorldConfig;
     private AbstractRender activeRender = null;
     private ScheduledFuture<?> backgroundRender = null;
-    private boolean pauseRenders = false;
 
     private MapWorld(final org.bukkit.@NonNull World world) {
         this.world = world;
         this.level = ReflectionUtil.CraftBukkit.serverLevel(world);
+
+        // Keep updated references to world configs to avoid constant HashMap lookups during renders
+        this.worldConfig = WorldConfig.get(world);
+        this.advancedWorldConfig = WorldAdvanced.get(world);
 
         this.blockColors = new BlockColors(this);
 
@@ -206,11 +212,11 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     }
 
     public @NonNull WorldConfig config() {
-        return WorldConfig.get(this.world);
+        return this.worldConfig;
     }
 
     public @NonNull WorldAdvanced advanced() {
-        return WorldAdvanced.get(this.world);
+        return this.advancedWorldConfig;
     }
 
     public ServerLevel serverLevel() {
@@ -318,4 +324,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         }
     }
 
+    public void refreshConfigInstances() {
+        this.worldConfig = WorldConfig.get(this.world);
+        this.advancedWorldConfig = WorldAdvanced.get(this.world);
+    }
 }

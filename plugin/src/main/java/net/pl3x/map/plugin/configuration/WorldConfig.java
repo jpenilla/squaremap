@@ -1,36 +1,27 @@
 package net.pl3x.map.plugin.configuration;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.util.Mth;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 @SuppressWarnings("unused")
-public class WorldConfig extends AbstractWorldConfig {
-    private static final Map<UUID, WorldConfig> configs = new HashMap<>();
+public final class WorldConfig extends AbstractWorldConfig {
+    private static final Map<UUID, WorldConfig> CONFIG_MAP = new HashMap<>();
 
     public static void reload() {
-        configs.clear();
-        Bukkit.getWorlds().forEach(WorldConfig::get);
+        reload(WorldConfig.class, CONFIG_MAP, WorldConfig::get);
     }
 
     public static WorldConfig get(final @NonNull World world) {
-        WorldConfig config = configs.get(world.getUID());
-        if (config == null) {
-            config = new WorldConfig(world, Config.config);
-            configs.put(world.getUID(), config);
-        }
-        return config;
+        return CONFIG_MAP.computeIfAbsent(world.getUID(), $ -> new WorldConfig(world, Config.config));
     }
 
-    WorldConfig(World world, AbstractConfig parent) {
+    private WorldConfig(final World world, final AbstractConfig parent) {
         super(world, parent);
         this.init();
     }
@@ -175,8 +166,17 @@ public class WorldConfig extends AbstractWorldConfig {
 
     @SuppressWarnings("unchecked") // Safe, as YAML can only store dicts of <String, object>
     private void visibilityLimitSettings() {
-        this.VISIBILITY_LIMITS = (List<Map<String, Object>>) this.getList("map.visibility-limits", Collections.singletonList(
-                ImmutableMap.of("type", "world-border", "enabled", false)));
+        this.VISIBILITY_LIMITS = (List<Map<String, Object>>) this.getList(
+            "map.visibility-limits",
+            List.of(
+                Map.of(
+                    "type",
+                    "world-border",
+                    "enabled",
+                    false
+                )
+            )
+        );
     }
 
 }

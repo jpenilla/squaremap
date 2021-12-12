@@ -1,9 +1,12 @@
 package net.pl3x.map.plugin.data;
 
-import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMaps;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMaps;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -18,7 +21,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public final class BlockColors {
     private final Reference2IntMap<Block> staticColorMap;
-    private final Map<Block, DynamicColorGetter> dynamicColorMap;
+    private final Reference2ObjectMap<Block, DynamicColorGetter> dynamicColorMap;
 
     public BlockColors(final MapWorld world) {
         final Reference2IntMap<Block> staticColors = new Reference2IntOpenHashMap<>(world.advanced().COLOR_OVERRIDES_BLOCKS);
@@ -27,14 +30,14 @@ public final class BlockColors {
         this.dynamicColorMap = this.loadDynamicColors();
     }
 
-    private Map<Block, DynamicColorGetter> loadDynamicColors() {
-        final ImmutableMap.Builder<Block, DynamicColorGetter> dynamicColorBuilder = ImmutableMap.builder();
+    private Reference2ObjectMap<Block, DynamicColorGetter> loadDynamicColors() {
+        final Map<Block, DynamicColorGetter> map = new HashMap<>();
 
-        dynamicColorBuilder.put(Blocks.MELON_STEM, BlockColors::melonAndPumpkinStem);
-        dynamicColorBuilder.put(Blocks.PUMPKIN_STEM, BlockColors::melonAndPumpkinStem);
-        dynamicColorBuilder.put(Blocks.WHEAT, BlockColors::wheat);
+        map.put(Blocks.MELON_STEM, BlockColors::melonAndPumpkinStem);
+        map.put(Blocks.PUMPKIN_STEM, BlockColors::melonAndPumpkinStem);
+        map.put(Blocks.WHEAT, BlockColors::wheat);
 
-        return dynamicColorBuilder.build();
+        return Reference2ObjectMaps.unmodifiable(new Reference2ObjectOpenHashMap<>(map));
     }
 
     /**

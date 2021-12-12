@@ -155,7 +155,7 @@ public final class Pl3xMapPlugin extends JavaPlugin {
         this.getServer().getScheduler().cancelTasks(this);
     }
 
-    public @NonNull WorldManager worldManager() {
+    public WorldManager worldManager() {
         return this.worldManager;
     }
 
