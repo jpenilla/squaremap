@@ -13,12 +13,19 @@ import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.Image;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.data.RegionCoordinate;
+import net.pl3x.map.plugin.util.Util;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class BackgroundRender extends AbstractRender {
 
     public BackgroundRender(final @NonNull MapWorld world) {
-        super(world, Executors.newFixedThreadPool(getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS)));
+        super(
+            world,
+            Executors.newFixedThreadPool(
+                getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS),
+                Util.squareMapThreadFactory("bg-render-worker", world.serverLevel())
+            )
+        );
     }
 
     @Override
@@ -35,25 +42,29 @@ public final class BackgroundRender extends AbstractRender {
     protected void render() {
         long time = System.currentTimeMillis();
         final Set<ChunkCoordinate> chunks = new HashSet<>();
-        while (mapWorld.hasModifiedChunks() && chunks.size() < mapWorld.config().BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL) {
-            chunks.add(mapWorld.nextModifiedChunk());
+        while (this.mapWorld.hasModifiedChunks() && chunks.size() < this.mapWorld.config().BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL) {
+            chunks.add(this.mapWorld.nextModifiedChunk());
         }
         final Map<RegionCoordinate, List<ChunkCoordinate>> coordMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         coordMap.forEach((region, chunkCoords) -> {
-            final Image img = new Image(region, worldTilesDir, mapWorld.config().ZOOM_MAX);
+            final Image img = new Image(region, this.worldTilesDir, this.mapWorld.config().ZOOM_MAX);
 
             final CompletableFuture<Void> future = CompletableFuture.allOf(chunkCoords.stream().map(coord ->
-                    mapSingleChunk(img, coord.x(), coord.z())).toArray(CompletableFuture[]::new));
+                mapSingleChunk(img, coord.x(), coord.z())).toArray(CompletableFuture[]::new));
 
-            future.whenComplete((result, throwable) -> mapWorld.saveImage(img));
+            future.whenComplete((result, throwable) -> this.mapWorld.saveImage(img));
             futures.add(future);
         });
         if (!futures.isEmpty()) {
             CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
-            Logging.debug(String.format("Finished background render cycle in %.2f seconds",
-                    (double) (System.currentTimeMillis() - time) / 1000.0D));
+            Logging.debug(
+                String.format(
+                    "Finished background render cycle in %.2f seconds",
+                    (double) (System.currentTimeMillis() - time) / 1000.0D
+                )
+            );
         }
     }
 }

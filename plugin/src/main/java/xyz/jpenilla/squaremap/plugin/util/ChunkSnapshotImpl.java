@@ -53,7 +53,7 @@ record ChunkSnapshotImpl(
         return this.getFluidState(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    private FluidState getFluidState(int x, int y, int z) {
+    private FluidState getFluidState(final int x, final int y, final int z) {
         final int i = this.getSectionIndex(y);
         if (this.sectionEmpty(i)) {
             return Fluids.EMPTY.defaultFluidState();

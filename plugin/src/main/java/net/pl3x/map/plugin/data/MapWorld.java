@@ -56,8 +56,8 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private final ServerLevel level;
     private final org.bukkit.World world;
     private final Path dataPath;
-    private final ExecutorService imageIOexecutor = Executors.newSingleThreadExecutor();
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private final ExecutorService imageIOexecutor;
+    private final ScheduledExecutorService executor;
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final UpdateMarkers updateMarkersTask;
     private final BlockColors blockColors;
@@ -72,6 +72,13 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
     private MapWorld(final org.bukkit.@NonNull World world) {
         this.world = world;
         this.level = ReflectionUtil.CraftBukkit.serverLevel(world);
+
+        this.imageIOexecutor = Executors.newSingleThreadExecutor(
+            Util.squareMapThreadFactory("imageio", this.level)
+        );
+        this.executor = Executors.newSingleThreadScheduledExecutor(
+            Util.squareMapThreadFactory("render", this.level)
+        );
 
         // Keep updated references to world configs to avoid constant HashMap lookups during renders
         this.worldConfig = WorldConfig.get(world);

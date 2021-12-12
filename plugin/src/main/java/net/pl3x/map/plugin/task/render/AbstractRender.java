@@ -59,8 +59,14 @@ public abstract class AbstractRender implements Runnable {
 
     protected Pair<Timer, RenderProgress> progress = null;
 
-    public AbstractRender(final @NonNull MapWorld mapWorld) {
-        this(mapWorld, Executors.newFixedThreadPool(getThreads(mapWorld.config().MAX_RENDER_THREADS)));
+    public AbstractRender(final @NonNull MapWorld world) {
+        this(
+            world,
+            Executors.newFixedThreadPool(
+                getThreads(world.config().MAX_RENDER_THREADS),
+                Util.squareMapThreadFactory("render-worker", world.serverLevel())
+            )
+        );
     }
 
     public AbstractRender(final @NonNull MapWorld mapWorld, final @NonNull ExecutorService executor) {

@@ -40,7 +40,7 @@ import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
 public final class BiomeColors {
     private static final int CHUNK_SNAPSHOT_CACHE_SIZE = 128;
 
-    private static final Set<Block> grassColorBlocks = Set.of(
+    private static final Set<Block> GRASS_COLOR_BLOCKS = Set.of(
         Blocks.GRASS_BLOCK,
         Blocks.GRASS,
         Blocks.TALL_GRASS,
@@ -50,7 +50,7 @@ public final class BiomeColors {
         Blocks.SUGAR_CANE
     );
 
-    private static final Set<Block> foliageColorBlocks = Set.of(
+    private static final Set<Block> FOLIAGE_COLOR_BLOCKS = Set.of(
         Blocks.VINE,
         Blocks.OAK_LEAVES,
         Blocks.JUNGLE_LEAVES,
@@ -58,19 +58,19 @@ public final class BiomeColors {
         Blocks.DARK_OAK_LEAVES
     );
 
-    private static final Set<Block> waterColorBlocks = Set.of(
+    private static final Set<Block> WATER_COLOR_BLOCKS = Set.of(
         Blocks.WATER,
         Blocks.BUBBLE_COLUMN,
         Blocks.WATER_CAULDRON
     );
 
-    private static final Set<Material> waterColorMaterials = Set.of(
+    private static final Set<Material> WATER_COLOR_MATERIALS = Set.of(
         Material.WATER_PLANT,
         Material.REPLACEABLE_WATER_PLANT
     );
 
-    private static final int[] mapGrass;
-    private static final int[] mapFoliage;
+    private static final int[] MAP_GRASS;
+    private static final int[] MAP_FOLIAGE;
 
     static {
         final File imagesDir = FileUtil.WEB_DIR.resolve("images").toFile();
@@ -83,8 +83,8 @@ public final class BiomeColors {
             throw new IllegalStateException("Failed to read biome images", e);
         }
 
-        mapGrass = init(imgGrass);
-        mapFoliage = init(imgFoliage);
+        MAP_GRASS = init(imgGrass);
+        MAP_FOLIAGE = init(imgFoliage);
     }
 
     private final Cache<Long, Biome> blockPosBiomeCache = CacheBuilder.newBuilder()
@@ -128,11 +128,11 @@ public final class BiomeColors {
         final Material mat = data.getMaterial();
         final Block block = data.getBlock();
 
-        if (grassColorBlocks.contains(block)) {
+        if (GRASS_COLOR_BLOCKS.contains(block)) {
             color = this.grass(pos);
-        } else if (foliageColorBlocks.contains(block)) {
+        } else if (FOLIAGE_COLOR_BLOCKS.contains(block)) {
             color = this.foliage(pos);
-        } else if (waterColorBlocks.contains(block) || waterColorMaterials.contains(mat)) {
+        } else if (WATER_COLOR_BLOCKS.contains(block) || WATER_COLOR_MATERIALS.contains(mat)) {
             int modColor = this.water(pos);
             color = Colors.mix(color, modColor, 0.8F);
         }
@@ -158,16 +158,16 @@ public final class BiomeColors {
         int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
         int i = (int) ((1.0 - temperature) * 255.0);
         int k = j << 8 | i;
-        if (k > mapGrass.length) {
+        if (k > MAP_GRASS.length) {
             return 0;
         }
-        return mapGrass[k];
+        return MAP_GRASS[k];
     }
 
     private static int getDefaultFoliageColor(double temperature, double humidity) {
         int i = (int) ((1.0 - temperature) * 255.0);
         int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
-        return mapFoliage[(j << 8 | i)];
+        return MAP_FOLIAGE[(j << 8 | i)];
     }
 
     private int grass(final BlockPos pos) {
