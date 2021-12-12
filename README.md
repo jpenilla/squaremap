@@ -25,10 +25,6 @@ If, like me, you have no real need for 3D views, the novelty of Dynmap and Bluem
 ## Downloads
 Downloads can be obtained from the [releases](https://github.com/jpenilla/squaremap/releases) section.
 
-## Servers Using squaremap
-
-[Click here](SERVERS.md) to view a list of servers using squaremap.
-
 ## License
 [![MIT License](https://img.shields.io/github/license/jpenilla/squaremap?&logo=github)](LICENSE)
 
