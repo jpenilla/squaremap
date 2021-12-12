@@ -78,7 +78,7 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
         }
 
         return new ChunkSnapshotImpl(
-            LevelHeightAccessor.create(chunk.getMinBuildHeight(), chunk.getMaxBuildHeight()),
+            LevelHeightAccessor.create(chunk.getMinBuildHeight(), chunk.getHeight()),
             states,
             biomes,
             Util.make(new EnumMap<>(Heightmap.Types.class), map -> map.put(Heightmap.Types.WORLD_SURFACE, heightmap)),

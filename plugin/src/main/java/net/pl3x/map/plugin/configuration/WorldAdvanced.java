@@ -81,7 +81,7 @@ public class WorldAdvanced extends AbstractWorldConfig {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_FOLIAGE = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeFoliageSettings() {
-        final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
         getMap("color-overrides.biomes.foliage", Map.ofEntries(
                 Map.entry("minecraft:dark_forest", "#1c7b07"),
@@ -102,10 +102,9 @@ public class WorldAdvanced extends AbstractWorldConfig {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_GRASS = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeGrassSettings() {
-        final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_GRASS.clear();
-        getMap("color-overrides.biomes.grass", Map.<String, String>ofEntries(
-        )).forEach((key, color) -> {
+        getMap("color-overrides.biomes.grass", Map.<String, String>ofEntries()).forEach((key, color) -> {
             final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
                 this.COLOR_OVERRIDES_BIOME_GRASS.put(biome, Colors.parseHex(color));
@@ -116,10 +115,9 @@ public class WorldAdvanced extends AbstractWorldConfig {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_WATER = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeWaterSettings() {
-        final Registry<Biome> registry = BiomeColors.biomeRegistry(world);
+        final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_WATER.clear();
-        getMap("color-overrides.biomes.water", Map.<String, String>ofEntries(
-        )).forEach((key, color) -> {
+        getMap("color-overrides.biomes.water", Map.<String, String>ofEntries()).forEach((key, color) -> {
             final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
                 this.COLOR_OVERRIDES_BIOME_WATER.put(biome, Colors.parseHex(color));

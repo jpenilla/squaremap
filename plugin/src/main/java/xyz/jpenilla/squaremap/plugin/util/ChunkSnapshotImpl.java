@@ -87,10 +87,10 @@ record ChunkSnapshotImpl(
 
     @Override
     public Biome getNoiseBiome(final int quartX, final int quartY, final int quartZ) {
-        int minQuartY = QuartPos.fromBlock(this.getMinBuildHeight());
-        int maxQuartY = minQuartY + QuartPos.fromBlock(this.getHeight()) - 1;
-        int clampedQuartY = Mth.clamp(quartY, minQuartY, maxQuartY);
-        int sectionIndex = this.getSectionIndex(QuartPos.toBlock(clampedQuartY));
+        final int minQuartY = QuartPos.fromBlock(this.getMinBuildHeight());
+        final int maxQuartY = minQuartY + QuartPos.fromBlock(this.getHeight()) - 1;
+        final int clampedQuartY = Mth.clamp(quartY, minQuartY, maxQuartY);
+        final int sectionIndex = this.getSectionIndex(QuartPos.toBlock(clampedQuartY));
         return this.biomes[sectionIndex].get(quartX & 3, clampedQuartY & 3, quartZ & 3);
     }
 }

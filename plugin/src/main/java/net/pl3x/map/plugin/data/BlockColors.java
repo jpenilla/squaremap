@@ -39,7 +39,7 @@ public final class BlockColors {
 
     /**
      * Get a special color for a BlockState, if it exists. Will return -1 if there
-     * is no special color for the provided IBlockData.
+     * is no special color for the provided BlockState.
      *
      * @param state IBlockData to test
      * @return special color, or -1

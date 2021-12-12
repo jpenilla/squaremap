@@ -200,7 +200,11 @@ public final class BiomeColors {
     }
 
     private int sampleNeighbors(final BlockPos pos, final int radius, final ColorSampler colorSampler) {
-        int rgb, r = 0, g = 0, b = 0, count = 0;
+        int rgb;
+        int r = 0;
+        int g = 0;
+        int b = 0;
+        int count = 0;
         // Sampling in the y direction as well would improve output, however would complicate caching (low priority, PRs accepted)
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
