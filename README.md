@@ -2,8 +2,9 @@
 
 # squaremap
 
-[![License](https://img.shields.io/github/license/jpenilla/squaremap?color=blue)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jpenilla/squaremap/Build)](https://github.com/jpenilla/squaremap/actions)
+[![Discord](https://img.shields.io/discord/390942438061113344?color=8C9CFE&label=discord&logo=discord&logoColor=white)](https://discord.gg/PHpuzZS)
 
 squaremap (formerly known as Pl3xMap) is a minimalistic and lightweight live world map viewer for Paper servers.
 
@@ -26,7 +27,7 @@ If, like me, you have no real need for 3D views, the novelty of Dynmap and Bluem
 Downloads can be obtained from the [releases](https://github.com/jpenilla/squaremap/releases) section.
 
 ## License
-[![MIT License](https://img.shields.io/github/license/jpenilla/squaremap?&logo=github)](LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 This project is licensed under the [MIT license](https://github.com/jpenilla/squaremap/blob/master/LICENSE)
 
