@@ -20,7 +20,7 @@ If, like me, you have no real need for 3D views, the novelty of Dynmap and Bluem
 * Player markers showing yaw rotation, health, and armor
 * [Easy configuration](https://github.com/jpenilla/squaremap/wiki/Default-config.yml). Even a caveman can do it.
 * Up to date Leaflet front-end.
-* [Addons and integrations](ADDONS_INTEGRATIONS.md) for many popular plugins.
+* [Addons and integrations](https://github.com/jpenilla/squaremap/wiki/Addons) for many popular plugins.
 
 ## Downloads
 Downloads can be obtained from the [releases](https://github.com/jpenilla/squaremap/releases) section.
