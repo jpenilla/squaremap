@@ -1,5 +1,5 @@
 import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon } from "./Markers.js";
-import { P } from '../Pl3xMap.js';
+import { P } from '../Squaremap.js';
 
 class World {
     constructor(json) {

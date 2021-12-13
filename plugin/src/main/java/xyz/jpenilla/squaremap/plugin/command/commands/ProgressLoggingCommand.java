@@ -8,15 +8,15 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
-import net.pl3x.map.plugin.Pl3xMapPlugin;
-import net.pl3x.map.plugin.command.Commands;
-import net.pl3x.map.plugin.command.Pl3xMapCommand;
-import net.pl3x.map.plugin.configuration.Config;
-import net.pl3x.map.plugin.configuration.Lang;
-import net.pl3x.map.plugin.data.MapWorld;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
+import xyz.jpenilla.squaremap.plugin.command.Commands;
+import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
+import xyz.jpenilla.squaremap.plugin.configuration.Config;
+import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.event.ClickEvent.runCommand;
@@ -24,8 +24,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.GREEN;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 @DefaultQualifier(NonNull.class)
-public final class ProgressLoggingCommand extends Pl3xMapCommand {
-    public ProgressLoggingCommand(final Pl3xMapPlugin plugin, final Commands commands) {
+public final class ProgressLoggingCommand extends SquaremapCommand {
+    public ProgressLoggingCommand(final SquaremapPlugin plugin, final Commands commands) {
         super(plugin, commands);
     }
 

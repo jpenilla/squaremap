@@ -49,9 +49,9 @@ tasks {
 }
 
 bukkit {
-    main = "net.pl3x.map.plugin.Pl3xMapPlugin"
+    main = "xyz.jpenilla.squaremap.plugin.SquaremapPlugin"
     name = rootProject.name
     apiVersion = "1.18"
     website = project.property("githubUrl") as String
-    authors = listOf("jmp", "BillyGalbreath")
+    authors = listOf("jmp")
 }

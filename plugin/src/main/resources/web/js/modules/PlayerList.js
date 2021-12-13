@@ -1,5 +1,5 @@
 import { Player } from "./util/Player.js";
-import { P } from './Pl3xMap.js';
+import { P } from './Squaremap.js';
 
 class PlayerList {
     constructor(json) {

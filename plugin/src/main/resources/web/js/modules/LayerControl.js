@@ -1,5 +1,5 @@
-import { P } from './Pl3xMap.js';
-import { Pl3xmapTileLayer } from './Pl3xmapTileLayer.js';
+import { P } from './Squaremap.js';
+import { SquaremapTileLayer } from './SquaremapTileLayer.js';
 
 class LayerControl {
     constructor() {
@@ -70,7 +70,7 @@ class LayerControl {
         this.playersLayer.setZIndex(world.player_tracker.z_index);
     }
     createTileLayer(world) {
-        return new Pl3xmapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
+        return new SquaremapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
             tileSize: 512,
             minNativeZoom: 0,
             maxNativeZoom: world.zoom.max
