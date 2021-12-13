@@ -54,4 +54,5 @@ bukkit {
     apiVersion = "1.18"
     website = project.property("githubUrl") as String
     authors = listOf("jmp", "BillyGalbreath")
+    provides = listOf("Pl3xMap")
 }
