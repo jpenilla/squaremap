@@ -11,7 +11,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class PlayerManager implements net.pl3x.map.api.PlayerManager {
+public class PlayerManager implements xyz.jpenilla.squaremap.api.PlayerManager {
     public static final NamespacedKey key = new NamespacedKey(Pl3xMapPlugin.getInstance(), "hidden");
 
     private final Set<UUID> tempHidden = new HashSet<>();

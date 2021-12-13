@@ -1,8 +1,12 @@
-package net.pl3x.map.api.visibilitylimit;
+package xyz.jpenilla.squaremap.api.visibilitylimit;
 
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+/**
+ * @deprecated Unsupported API.
+ */
+@Deprecated(forRemoval = true)
 public interface VisibilityShape {
     boolean shouldRenderChunk(@NonNull World world, int chunkX, int chunkZ);
 

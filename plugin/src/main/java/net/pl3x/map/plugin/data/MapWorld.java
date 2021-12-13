@@ -24,8 +24,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
-import net.pl3x.map.api.LayerProvider;
-import net.pl3x.map.api.Registry;
 import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.api.LayerRegistry;
@@ -42,9 +40,11 @@ import net.pl3x.map.plugin.util.RecordTypeAdapterFactory;
 import net.pl3x.map.plugin.util.ReflectionUtil;
 import net.pl3x.map.plugin.visibilitylimit.VisibilityLimit;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.LayerProvider;
+import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.plugin.util.Util;
 
-public final class MapWorld implements net.pl3x.map.api.MapWorld {
+public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
     private static final String DIRTY_CHUNKS_FILE_NAME = "dirty_chunks.json";
     private static final String RENDER_PROGRESS_FILE_NAME = "resume_render.json";
     private static final Gson GSON = new GsonBuilder()
@@ -320,7 +320,7 @@ public final class MapWorld implements net.pl3x.map.api.MapWorld {
         return new IllegalStateException(String.format("Failed to create data directory for world '%s'", this.name()), cause);
     }
 
-    @Override
+    //@Override
     public @NonNull VisibilityLimit visibilityLimit() {
         return this.visibilityLimit;
     }

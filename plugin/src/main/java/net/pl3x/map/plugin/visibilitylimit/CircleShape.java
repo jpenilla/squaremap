@@ -1,10 +1,10 @@
 package net.pl3x.map.plugin.visibilitylimit;
 
-import net.pl3x.map.api.visibilitylimit.VisibilityShape;
 import net.pl3x.map.plugin.util.Numbers;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
 
 /**
  * Limits map drawing to a circular region.

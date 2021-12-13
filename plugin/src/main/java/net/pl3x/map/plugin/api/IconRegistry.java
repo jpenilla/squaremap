@@ -7,11 +7,11 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
-import net.pl3x.map.api.Key;
-import net.pl3x.map.api.Pair;
-import net.pl3x.map.api.Registry;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.Key;
+import xyz.jpenilla.squaremap.api.Pair;
+import xyz.jpenilla.squaremap.api.Registry;
 
 public final class IconRegistry implements Registry<BufferedImage> {
 

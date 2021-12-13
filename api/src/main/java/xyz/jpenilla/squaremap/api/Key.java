@@ -1,4 +1,4 @@
-package net.pl3x.map.api;
+package xyz.jpenilla.squaremap.api;
 
 import java.util.Objects;
 import java.util.function.IntPredicate;
@@ -65,7 +65,7 @@ public final class Key {
 
     @Override
     public int hashCode() {
-        return Objects.hash(key);
+        return Objects.hash(this.key);
     }
 
     @Override

@@ -3,15 +3,15 @@ package net.pl3x.map.plugin.visibilitylimit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import net.pl3x.map.api.visibilitylimit.VisibilityShape;
 import net.pl3x.map.plugin.data.ChunkCoordinate;
 import net.pl3x.map.plugin.data.RegionCoordinate;
 import net.pl3x.map.plugin.util.Numbers;
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
 
-public final class VisibilityLimit implements net.pl3x.map.api.visibilitylimit.VisibilityLimit {
+public final class VisibilityLimit implements xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityLimit {
     private static final int REGION_SIZE_CHUNKS = Numbers.regionToChunk(1);
     private final List<VisibilityShape> shapes = new CopyOnWriteArrayList<>();
     private final World world;

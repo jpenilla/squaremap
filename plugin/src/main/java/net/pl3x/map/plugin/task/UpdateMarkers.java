@@ -12,25 +12,25 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.pl3x.map.api.Key;
-import net.pl3x.map.api.LayerProvider;
-import net.pl3x.map.api.Point;
-import net.pl3x.map.api.Registry;
-import net.pl3x.map.api.marker.Circle;
-import net.pl3x.map.api.marker.Ellipse;
-import net.pl3x.map.api.marker.Icon;
-import net.pl3x.map.api.marker.Marker;
-import net.pl3x.map.api.marker.MarkerOptions;
-import net.pl3x.map.api.marker.MultiPolygon;
-import net.pl3x.map.api.marker.Polygon;
-import net.pl3x.map.api.marker.Polyline;
-import net.pl3x.map.api.marker.Rectangle;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.data.MapWorld;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.Key;
+import xyz.jpenilla.squaremap.api.LayerProvider;
+import xyz.jpenilla.squaremap.api.Point;
+import xyz.jpenilla.squaremap.api.Registry;
+import xyz.jpenilla.squaremap.api.marker.Circle;
+import xyz.jpenilla.squaremap.api.marker.Ellipse;
+import xyz.jpenilla.squaremap.api.marker.Icon;
+import xyz.jpenilla.squaremap.api.marker.Marker;
+import xyz.jpenilla.squaremap.api.marker.MarkerOptions;
+import xyz.jpenilla.squaremap.api.marker.MultiPolygon;
+import xyz.jpenilla.squaremap.api.marker.Polygon;
+import xyz.jpenilla.squaremap.api.marker.Polyline;
+import xyz.jpenilla.squaremap.api.marker.Rectangle;
 
 public final class UpdateMarkers extends BukkitRunnable {
 

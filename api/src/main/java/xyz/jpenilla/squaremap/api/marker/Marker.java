@@ -1,13 +1,13 @@
-package net.pl3x.map.api.marker;
+package xyz.jpenilla.squaremap.api.marker;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import net.pl3x.map.api.Key;
-import net.pl3x.map.api.Pl3xMap;
-import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.Key;
+import xyz.jpenilla.squaremap.api.Point;
+import xyz.jpenilla.squaremap.api.Squaremap;
 
 /**
  * Parent class to all map markers, also contains static factory methods for different marker types
@@ -146,7 +146,7 @@ public abstract class Marker {
      * @param point         location for this marker
      * @param tooltipAnchor tooltip anchor, see {@link Icon#tooltipAnchor()}
      * @param anchor        icon anchor, see {@link Icon#anchor()}
-     * @param image         image key, must be registered with the {@link Pl3xMap#iconRegistry() icon registry}.
+     * @param image         image key, must be registered with the {@link Squaremap#iconRegistry() icon registry}.
      * @param sizeX         x size
      * @param sizeZ         z size
      * @return new icon
@@ -166,7 +166,7 @@ public abstract class Marker {
      * Create a new icon marker
      *
      * @param point location for this marker
-     * @param image image key, must be registered with the {@link Pl3xMap#iconRegistry() icon registry}.
+     * @param image image key, must be registered with the {@link Squaremap#iconRegistry() icon registry}.
      * @param sizeX x size
      * @param sizeZ z size
      * @return new icon
@@ -184,7 +184,7 @@ public abstract class Marker {
      * Create a new icon marker
      *
      * @param point location for this marker
-     * @param image image key, must be registered with the {@link Pl3xMap#iconRegistry() icon registry}.
+     * @param image image key, must be registered with the {@link Squaremap#iconRegistry() icon registry}.
      * @param size  size to use for X and Z size
      * @return new icon
      */

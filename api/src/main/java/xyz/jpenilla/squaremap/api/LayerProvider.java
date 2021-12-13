@@ -1,8 +1,8 @@
-package net.pl3x.map.api;
+package xyz.jpenilla.squaremap.api;
 
 import java.util.Collection;
-import net.pl3x.map.api.marker.Marker;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.marker.Marker;
 
 /**
  * Provides Markers and other metadata which make up a layer. LayerProviders are called on each update of a layer.

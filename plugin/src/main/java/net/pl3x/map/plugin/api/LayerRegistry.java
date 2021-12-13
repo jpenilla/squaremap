@@ -2,11 +2,11 @@ package net.pl3x.map.plugin.api;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import net.pl3x.map.api.Key;
-import net.pl3x.map.api.LayerProvider;
-import net.pl3x.map.api.Pair;
-import net.pl3x.map.api.Registry;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.Key;
+import xyz.jpenilla.squaremap.api.LayerProvider;
+import xyz.jpenilla.squaremap.api.Pair;
+import xyz.jpenilla.squaremap.api.Registry;
 
 public final class LayerRegistry implements Registry<LayerProvider> {
 

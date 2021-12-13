@@ -1,4 +1,4 @@
-package net.pl3x.map.api.marker;
+package xyz.jpenilla.squaremap.api.marker;
 
 import java.awt.Color;
 import java.util.Objects;

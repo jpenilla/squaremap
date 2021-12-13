@@ -7,21 +7,21 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
-import net.pl3x.map.api.MapWorld;
-import net.pl3x.map.api.Pl3xMap;
-import net.pl3x.map.api.Registry;
 import net.pl3x.map.plugin.Pl3xMapPlugin;
 import net.pl3x.map.plugin.util.FileUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.MapWorld;
+import xyz.jpenilla.squaremap.api.Registry;
+import xyz.jpenilla.squaremap.api.Squaremap;
 
-public final class Pl3xMapApiProvider implements Pl3xMap {
+public final class SquaremapApiProvider implements Squaremap {
 
     private final Pl3xMapPlugin plugin;
     private final IconRegistry iconRegistry;
 
-    public Pl3xMapApiProvider(final @NonNull Pl3xMapPlugin plugin) {
+    public SquaremapApiProvider(final @NonNull Pl3xMapPlugin plugin) {
         this.plugin = plugin;
         this.iconRegistry = new IconRegistry();
     }

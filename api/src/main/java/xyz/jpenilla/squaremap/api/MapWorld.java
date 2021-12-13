@@ -1,23 +1,22 @@
-package net.pl3x.map.api;
+package xyz.jpenilla.squaremap.api;
 
 import java.util.UUID;
-import net.pl3x.map.api.visibilitylimit.VisibilityLimit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
- * Represents a world which is mapped by Pl3xMap
+ * Represents a world mapped by squaremap.
  */
 public interface MapWorld {
 
     /**
-     * Get the layer registry for this world
+     * Gets the layer registry for this world.
      *
      * @return the layer registry
      */
     @NonNull Registry<LayerProvider> layerRegistry();
 
     /**
-     * Get the name of this world
+     * Get the name of this world.
      *
      * @return name
      */
@@ -29,7 +28,7 @@ public interface MapWorld {
      *
      * @return The visibility limit.
      */
-    @NonNull VisibilityLimit visibilityLimit();
+    //@NonNull VisibilityLimit visibilityLimit();
 
     /**
      * Get the UUID of this world

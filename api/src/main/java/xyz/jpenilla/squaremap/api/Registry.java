@@ -1,4 +1,4 @@
-package net.pl3x.map.api;
+package xyz.jpenilla.squaremap.api;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 

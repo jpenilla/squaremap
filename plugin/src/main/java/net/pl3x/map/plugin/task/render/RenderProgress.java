@@ -7,13 +7,13 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import net.pl3x.map.api.Pair;
 import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Config;
 import net.pl3x.map.plugin.configuration.Lang;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.Pair;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.minimessage.Template.template;

@@ -1,4 +1,4 @@
-package net.pl3x.map.api.visibilitylimit;
+package xyz.jpenilla.squaremap.api.visibilitylimit;
 
 import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -6,7 +6,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 /**
  * Decides what blocks, chunks and regions are visible on the map. A chunk outside this limit
  * will not be displayed regardless of whether it exists.
+ *
+ * @deprecated Unsupported API.
  */
+@Deprecated(forRemoval = true)
 public interface VisibilityLimit {
 
     /**

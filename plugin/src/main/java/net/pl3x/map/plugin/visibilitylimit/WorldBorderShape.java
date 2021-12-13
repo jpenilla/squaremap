@@ -1,12 +1,12 @@
 package net.pl3x.map.plugin.visibilitylimit;
 
-import net.pl3x.map.api.visibilitylimit.VisibilityShape;
 import net.pl3x.map.plugin.util.Numbers;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
 
 /**
  * A visibility limit that follows the world border.

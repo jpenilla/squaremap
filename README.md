@@ -38,7 +38,7 @@ Leaflet (the web ui frontend) is licensed under [2-clause BSD License](https://g
 
 ## API
 
-Addons written for the Pl3xMap api are generally also compatible with squaremap.
+squaremap provides simple APIs to draw markers, shapes, icons, and etc. on rendered maps. Javadocs are hosted on the maven repository alongside the binaries, and should be automatically downloaded by your IDE. 
 
 ### Dependency Information
 Maven

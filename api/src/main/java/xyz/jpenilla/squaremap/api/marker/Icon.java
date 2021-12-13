@@ -1,11 +1,11 @@
-package net.pl3x.map.api.marker;
+package xyz.jpenilla.squaremap.api.marker;
 
 import java.util.Objects;
-import net.pl3x.map.api.Key;
-import net.pl3x.map.api.Pl3xMap;
-import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import xyz.jpenilla.squaremap.api.Key;
+import xyz.jpenilla.squaremap.api.Point;
+import xyz.jpenilla.squaremap.api.Squaremap;
 
 /**
  * Icon marker, used to create an icon with an image on a map
@@ -106,7 +106,7 @@ public final class Icon extends Marker {
      * Set the image to use for this icon. Must be registered with the icon registry
      *
      * @param image new image
-     * @see Pl3xMap#iconRegistry()
+     * @see Squaremap#iconRegistry()
      */
     public void image(final @NonNull Key image) {
         this.image = image;

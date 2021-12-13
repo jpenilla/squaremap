@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper", "paper-api", "1.18-R0.1-SNAPSHOT")
-    compileOnlyApi("org.checkerframework", "checker-qual", "3.19.0")
+    compileOnly("io.papermc.paper", "paper-api", "1.18.1-R0.1-SNAPSHOT")
+    compileOnlyApi("org.checkerframework", "checker-qual", "3.20.0")
 }
 
 java {

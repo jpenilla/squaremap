@@ -1,9 +1,9 @@
-package net.pl3x.map.api.marker;
+package xyz.jpenilla.squaremap.api.marker;
 
 import java.util.Objects;
-import net.pl3x.map.api.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import xyz.jpenilla.squaremap.api.Point;
 
 /**
  * Circle marker

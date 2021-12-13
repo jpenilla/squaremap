@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.pl3x.map.api.Pair;
 import net.pl3x.map.plugin.Logging;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.data.BiomeColors;
@@ -37,6 +36,7 @@ import org.apache.logging.log4j.LogManager;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
 import xyz.jpenilla.squaremap.plugin.util.Util;
 

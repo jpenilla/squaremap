@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import javax.imageio.ImageIO;
-import net.pl3x.map.api.Pl3xMap;
-import net.pl3x.map.api.Pl3xMapProvider;
-import net.pl3x.map.plugin.api.Pl3xMapApiProvider;
 import net.pl3x.map.plugin.api.PlayerManager;
 import net.pl3x.map.plugin.api.SpawnIconProvider;
+import net.pl3x.map.plugin.api.SquaremapApiProvider;
 import net.pl3x.map.plugin.command.Commands;
 import net.pl3x.map.plugin.configuration.Advanced;
 import net.pl3x.map.plugin.configuration.Config;
@@ -27,10 +25,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.Squaremap;
+import xyz.jpenilla.squaremap.api.SquaremapProvider;
 
 public final class Pl3xMapPlugin extends JavaPlugin {
     private static Pl3xMapPlugin instance;
-    private Pl3xMap pl3xMap;
+    private Squaremap squaremap;
     private WorldManager worldManager;
     private PlayerManager playerManager;
     private UpdateWorldData updateWorldData;
@@ -160,21 +160,21 @@ public final class Pl3xMapPlugin extends JavaPlugin {
     }
 
     private void setupApi() {
-        this.pl3xMap = new Pl3xMapApiProvider(this);
-        this.getServer().getServicesManager().register(Pl3xMap.class, this.pl3xMap, this, ServicePriority.Normal);
-        final Method register = ReflectionUtil.needMethod(Pl3xMapProvider.class, List.of("register"), Pl3xMap.class);
-        ReflectionUtil.invokeOrThrow(register, null, this.pl3xMap);
+        this.squaremap = new SquaremapApiProvider(this);
+        this.getServer().getServicesManager().register(Squaremap.class, this.squaremap, this, ServicePriority.Normal);
+        final Method register = ReflectionUtil.needMethod(SquaremapProvider.class, List.of("register"), Squaremap.class);
+        ReflectionUtil.invokeOrThrow(register, null, this.squaremap);
     }
 
     private void shutdownApi() {
-        this.getServer().getServicesManager().unregister(Pl3xMap.class, this.pl3xMap);
-        final Method unregister = ReflectionUtil.needMethod(Pl3xMapProvider.class, List.of("unregister"));
+        this.getServer().getServicesManager().unregister(Squaremap.class, this.squaremap);
+        final Method unregister = ReflectionUtil.needMethod(SquaremapProvider.class, List.of("unregister"));
         ReflectionUtil.invokeOrThrow(unregister, null);
-        this.pl3xMap = null;
+        this.squaremap = null;
     }
 
-    public @NonNull Pl3xMap api() {
-        return this.pl3xMap;
+    public @NonNull Squaremap api() {
+        return this.squaremap;
     }
 
     public PlayerManager playerManager() {

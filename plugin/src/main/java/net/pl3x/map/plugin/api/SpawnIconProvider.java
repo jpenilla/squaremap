@@ -2,16 +2,16 @@ package net.pl3x.map.plugin.api;
 
 import java.util.Collection;
 import java.util.Collections;
-import net.pl3x.map.api.Key;
-import net.pl3x.map.api.LayerProvider;
-import net.pl3x.map.api.Point;
-import net.pl3x.map.api.marker.Marker;
-import net.pl3x.map.api.marker.MarkerOptions;
 import net.pl3x.map.plugin.configuration.Lang;
 import net.pl3x.map.plugin.configuration.WorldConfig;
 import net.pl3x.map.plugin.data.MapWorld;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.Key;
+import xyz.jpenilla.squaremap.api.LayerProvider;
+import xyz.jpenilla.squaremap.api.Point;
+import xyz.jpenilla.squaremap.api.marker.Marker;
+import xyz.jpenilla.squaremap.api.marker.MarkerOptions;
 
 public class SpawnIconProvider implements LayerProvider {
 

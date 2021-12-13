@@ -1,4 +1,4 @@
-package net.pl3x.map.api;
+package xyz.jpenilla.squaremap.api;
 
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
@@ -9,21 +9,21 @@ import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
- * Pl3xMap API
+ * squaremap API
  *
- * <p>The API allows other plugins on the server integrate with Pl3xmap.</p>
+ * <p>The API allows other plugins on the server integrate with squaremap.</p>
  *
  * <p>This interface represents the base of the API package. All functions are
  * accessed via this interface.</p>
  *
  * <p>To start using the API, you need to obtain an instance of this interface.
- * These are registered by the Pl3xMap plugin to the platforms Services
+ * These are registered by the squaremap plugin to the platforms Services
  * Manager. This is the preferred method for obtaining an instance.</p>
  *
  * <p>For ease of use, an instance can also be obtained from the static
- * singleton accessor in {@link Pl3xMapProvider}.</p>
+ * singleton accessor in {@link SquaremapProvider}.</p>
  */
-public interface Pl3xMap {
+public interface Squaremap {
 
     /**
      * Get an unmodifiable view of the enabled worlds
@@ -35,8 +35,8 @@ public interface Pl3xMap {
     /**
      * Get an optional which will either
      * <ul>
-     *     <li>A) Be empty, if the world does not have Pl3xMap enabled</li>
-     *     <li>B) Contain the {@link MapWorld} instance for the provided {@link World}, if the world does have Pl3xMap enabled</li>
+     *     <li>A) Be empty, if the world does not have squaremap enabled</li>
+     *     <li>B) Contain the {@link MapWorld} instance for the provided {@link World}, if the world does have squaremap enabled</li>
      * </ul>
      *
      * @param world Bukkit World
@@ -47,8 +47,8 @@ public interface Pl3xMap {
     /**
      * Get an optional which will either
      * <ul>
-     *     <li>A) Be empty, if the world does not exist, or does not have Pl3xMap enabled</li>
-     *     <li>B) Contain the {@link MapWorld} instance for the World associated with the provided {@link UUID}, if the world exists and has Pl3xMap enabled</li>
+     *     <li>A) Be empty, if the world does not exist, or does not have squaremap enabled</li>
+     *     <li>B) Contain the {@link MapWorld} instance for the World associated with the provided {@link UUID}, if the world exists and has squaremap enabled</li>
      * </ul>
      *
      * @param uuid world uuid
