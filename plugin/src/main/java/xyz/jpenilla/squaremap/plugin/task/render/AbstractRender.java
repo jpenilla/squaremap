@@ -247,7 +247,9 @@ public abstract class AbstractRender implements Runnable {
         final int blockZ = chunk.pos().getMinBlockZ();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                if (this.cancelled) return;
+                if (this.cancelled) {
+                    return;
+                }
                 if (this.mapWorld.visibilityLimit().shouldRenderColumn(blockX + x, blockZ + z)) {
                     image.setPixel(blockX + x, blockZ + z, this.scanBlock(chunk, x, z, lastY));
                 }
@@ -259,26 +261,37 @@ public abstract class AbstractRender implements Runnable {
         final int blockX = chunk.pos().getMinBlockX();
         final int blockZ = chunk.pos().getMinBlockZ();
         for (int x = 0; x < 16; x++) {
-            if (this.cancelled) return;
+            if (this.cancelled) {
+                return;
+            }
             if (this.mapWorld.visibilityLimit().shouldRenderColumn(blockX + x, blockZ)) {
                 image.setPixel(blockX + x, blockZ, this.scanBlock(chunk, x, 0, lastY));
             }
         }
     }
 
+    private int effectiveMaxHeight(final ChunkSnapshot chunk) {
+        return this.mapWorld.config().MAP_MAX_HEIGHT == -1
+            ? chunk.dimensionType().logicalHeight()
+            : this.mapWorld.config().MAP_MAX_HEIGHT;
+    }
+
     private int @NonNull [] getLastYFromBottomRow(final @NonNull ChunkSnapshot chunk) {
         final int[] lastY = new int[16];
         final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         for (int x = 0; x < 16; x++) {
-            if (this.cancelled) return lastY;
-            final int yDiff = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, 15) + 1;
-            int height = this.mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.dimensionType().logicalHeight() : this.mapWorld.config().MAP_MAX_HEIGHT;
+            if (this.cancelled) {
+                return lastY;
+            }
+            final int topY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, 15) + 1;
             mutablePos.set(
                 chunk.pos().getMinBlockX() + x,
-                Math.min(yDiff, height),
+                Math.min(topY, this.effectiveMaxHeight(chunk)),
                 chunk.pos().getMinBlockZ() + 15
             );
-            final BlockState state = this.mapWorld.config().MAP_ITERATE_UP ? this.iterateUp(chunk, mutablePos) : this.iterateDown(chunk, mutablePos);
+            final BlockState state = this.mapWorld.config().MAP_ITERATE_UP
+                ? this.iterateUp(chunk, mutablePos)
+                : this.iterateDown(chunk, mutablePos);
             if (this.mapWorld.config().MAP_GLASS_CLEAR && isGlass(state)) {
                 this.handleGlass(chunk, mutablePos);
             }
@@ -287,21 +300,28 @@ public abstract class AbstractRender implements Runnable {
         return lastY;
     }
 
-    private int scanBlock(ChunkSnapshot chunk, int imgX, int imgZ, int[] lastY) {
+    private int scanBlock(final ChunkSnapshot chunk, final int imgX, final int imgZ, final int[] lastY) {
         int blockX = chunk.pos().getMinBlockX() + imgX;
         int blockZ = chunk.pos().getMinBlockZ() + imgZ;
 
         BlockState state;
         final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 
-        final int yDiff = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, imgX, imgZ) + 1;
-        int height = this.mapWorld.config().MAP_MAX_HEIGHT == -1 ? chunk.dimensionType().logicalHeight() : this.mapWorld.config().MAP_MAX_HEIGHT;
-        mutablePos.set(blockX, Math.min(yDiff, height), blockZ);
+        final int topY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, imgX, imgZ) + 1;
+        mutablePos.set(blockX, Math.min(topY, this.effectiveMaxHeight(chunk)), blockZ);
 
-        if (yDiff > chunk.getMinBuildHeight() + 1) {
-            state = this.mapWorld.config().MAP_ITERATE_UP ? this.iterateUp(chunk, mutablePos) : this.iterateDown(chunk, mutablePos);
+        if (topY > chunk.getMinBuildHeight() + 1) {
+            state = this.mapWorld.config().MAP_ITERATE_UP
+                ? this.iterateUp(chunk, mutablePos)
+                : this.iterateDown(chunk, mutablePos);
         } else {
             // no blocks found, show invisible/air
+            return Colors.clearMapColor();
+        }
+
+        // This should only happen in dimensions with a ceiling when we walk down to the bottom without seeing air
+        // (in a dimension without a ceiling we know beforehand from heightmaps)
+        if (state.isAir()) {
             return Colors.clearMapColor();
         }
 

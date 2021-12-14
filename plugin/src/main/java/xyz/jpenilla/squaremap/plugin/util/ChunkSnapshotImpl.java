@@ -41,11 +41,11 @@ record ChunkSnapshotImpl(
     }
 
     private BlockState getBlockState(final int x, final int y, final int z) {
-        final int i = this.getSectionIndex(y);
-        if (this.sectionEmpty(i)) {
+        final int sectionIndex = this.getSectionIndex(y);
+        if (sectionIndex < 0 || sectionIndex >= this.states.length || this.sectionEmpty(sectionIndex)) {
             return Blocks.AIR.defaultBlockState();
         }
-        return this.states[i].get((y & 15) << 8 | (z & 15) << 4 | x & 15);
+        return this.states[sectionIndex].get((y & 15) << 8 | (z & 15) << 4 | x & 15);
     }
 
     @Override
@@ -54,11 +54,11 @@ record ChunkSnapshotImpl(
     }
 
     private FluidState getFluidState(final int x, final int y, final int z) {
-        final int i = this.getSectionIndex(y);
-        if (this.sectionEmpty(i)) {
+        final int sectionIndex = this.getSectionIndex(y);
+        if (sectionIndex < 0 || sectionIndex >= this.states.length || this.sectionEmpty(sectionIndex)) {
             return Fluids.EMPTY.defaultFluidState();
         }
-        return this.states[i].get((y & 15) << 8 | (z & 15) << 4 | x & 15).getFluidState();
+        return this.states[sectionIndex].get((y & 15) << 8 | (z & 15) << 4 | x & 15).getFluidState();
     }
 
     @Override
