@@ -27,7 +27,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
     }
 
     public static WorldAdvanced get(final @NonNull World world) {
-        return CONFIG_MAP.computeIfAbsent(world.getUID(), $ -> new WorldAdvanced(world, Config.config));
+        return CONFIG_MAP.computeIfAbsent(world.getUID(), $ -> new WorldAdvanced(world, Advanced.config));
     }
 
     private WorldAdvanced(final World world, final AbstractConfig parent) {
