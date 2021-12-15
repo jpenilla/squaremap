@@ -319,12 +319,6 @@ public abstract class AbstractRender implements Runnable {
             return Colors.clearMapColor();
         }
 
-        // This should only happen in dimensions with a ceiling when we walk down to the bottom without seeing air
-        // (in a dimension without a ceiling we know beforehand from heightmaps)
-        if (state.isAir()) {
-            return Colors.clearMapColor();
-        }
-
         if (this.mapWorld.config().MAP_GLASS_CLEAR && isGlass(state)) {
             final int glassColor = this.mapWorld.getMapColor(state);
             final float glassAlpha = state.getBlock() == Blocks.GLASS ? 0.25F : 0.5F;
