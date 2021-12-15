@@ -18,6 +18,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
@@ -61,6 +62,7 @@ public final class MapUpdateListeners {
         this.registerBlockEventListener(BlockExplodeEvent.class);
         this.registerBlockEventListener(BlockGrowEvent.class);
         this.registerBlockEventListener(BlockFormEvent.class);
+        this.registerBlockEventListener(BlockFadeEvent.class);
         this.registerBlockEventListener(EntityBlockFormEvent.class);
         this.registerBlockEventListener(BlockSpreadEvent.class);
         this.registerBlockEventListener(BlockPhysicsEvent.class);

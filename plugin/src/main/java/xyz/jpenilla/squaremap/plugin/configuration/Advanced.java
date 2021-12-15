@@ -7,6 +7,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
@@ -69,6 +70,7 @@ public class Advanced extends AbstractConfig {
             BlockExplodeEvent.class,
             BlockGrowEvent.class,
             BlockFormEvent.class,
+            BlockFadeEvent.class,
             EntityBlockFormEvent.class,
             BlockSpreadEvent.class,
             FluidLevelChangeEvent.class,
