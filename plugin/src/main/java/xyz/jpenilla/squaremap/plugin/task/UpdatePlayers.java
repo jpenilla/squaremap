@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.plugin.task;
 
 import com.google.gson.Gson;
+import io.papermc.paper.text.PaperComponents;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +16,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.configuration.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
+import xyz.jpenilla.squaremap.plugin.util.HtmlComponentSerializer;
 
 public class UpdatePlayers extends BukkitRunnable {
     private final SquaremapPlugin plugin;
     private final Gson gson = new Gson();
+    private final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(PaperComponents.flattener());
 
-    public UpdatePlayers(SquaremapPlugin plugin) {
+    public UpdatePlayers(final SquaremapPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -47,6 +50,9 @@ public class UpdatePlayers extends BukkitRunnable {
                 Map<String, Object> playerEntry = new HashMap<>();
                 Location playerLoc = player.getLocation();
                 playerEntry.put("name", player.getName());
+                if (worldConfig.PLAYER_TRACKER_USE_DISPLAY_NAME) {
+                    playerEntry.put("display_name", this.htmlComponentSerializer.serialize(player.displayName()));
+                }
                 playerEntry.put("uuid", player.getUniqueId().toString().replace("-", ""));
                 playerEntry.put("world", playerLoc.getWorld().getName());
                 if (worldConfig.PLAYER_TRACKER_ENABLED) {

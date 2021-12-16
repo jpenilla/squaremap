@@ -36,7 +36,10 @@ class PlayerList {
     addToList(player) {
         const head = document.createElement("img");
         head.src = player.getHeadUrl();
-        const span = P.createTextElement("span", player.name);
+
+        const span = document.createElement("span");
+        span.innerHTML = player.displayName
+
         const link = P.createElement("a", player.uuid, this);
         link.onclick = function (e) {
             if (this.parent.showPlayer(this.id)) {
@@ -49,7 +52,10 @@ class PlayerList {
         const fieldset = P.sidebar.players.element;
         fieldset.appendChild(link);
         Array.from(fieldset.getElementsByTagName("a"))
-            .sort((a, b) => a.getElementsByTagName("span")[0].textContent.localeCompare(b.getElementsByTagName("span")[0].textContent))
+            .sort((a, b) => {
+                return plain(a.getElementsByTagName("span")[0])
+                    .localeCompare(plain(b.getElementsByTagName("span")[0]));
+            })
             .forEach(link => fieldset.appendChild(link));
     }
     removeFromList(player) {
@@ -63,6 +69,8 @@ class PlayerList {
     updatePlayerList(players) {
         const playersToRemove = Array.from(this.players.keys());
 
+        let needsSort = false;
+
         // update players from json
         for (let i = 0; i < players.length; i++) {
             let player = this.players.get(players[i].uuid);
@@ -71,8 +79,16 @@ class PlayerList {
                 player = new Player(players[i]);
                 this.players.set(player.uuid, player);
                 this.addToList(player);
+            } else {
+                const oldDisplayName = player.displayName;
+                player.update(players[i]);
+                if (oldDisplayName !== player.displayName) {
+                    needsSort = true;
+                    document.getElementById(player.uuid)
+                        .getElementsByTagName("span")[0]
+                        .innerHTML = player.displayName;
+                }
             }
-            player.update(players[i]);
             playersToRemove.remove(players[i].uuid);
         }
 
@@ -80,6 +96,16 @@ class PlayerList {
         for (let i = 0; i < playersToRemove.length; i++) {
             const player = this.players.get(playersToRemove[i]);
             this.removeFromList(player);
+        }
+
+        if (needsSort) {
+            const fieldset = P.sidebar.players.element;
+            Array.from(fieldset.getElementsByTagName("a"))
+                .sort((a, b) => {
+                    return plain(a.getElementsByTagName("span")[0])
+                        .localeCompare(plain(b.getElementsByTagName("span")[0]));
+                })
+                .forEach(link => fieldset.appendChild(link));
         }
 
         // first tick only
@@ -122,6 +148,10 @@ class PlayerList {
             document.getElementById(this.following).classList.add("following");
         }
     }
+}
+
+function plain(element) {
+    return element.textContent || element.innerText || "";
 }
 
 export { PlayerList };

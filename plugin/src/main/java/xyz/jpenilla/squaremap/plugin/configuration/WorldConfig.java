@@ -111,6 +111,7 @@ public final class WorldConfig extends AbstractWorldConfig {
     public boolean PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH = true;
     public boolean PLAYER_TRACKER_HIDE_INVISIBLE = true;
     public boolean PLAYER_TRACKER_HIDE_SPECTATORS = true;
+    public boolean PLAYER_TRACKER_USE_DISPLAY_NAME = false;
 
     private void playerTrackerSettings() {
         this.PLAYER_TRACKER_ENABLED = getBoolean("player-tracker.enabled", this.PLAYER_TRACKER_ENABLED);
@@ -126,6 +127,7 @@ public final class WorldConfig extends AbstractWorldConfig {
         this.PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH = getBoolean("player-tracker.nameplate.show-health", this.PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH);
         this.PLAYER_TRACKER_HIDE_INVISIBLE = getBoolean("player-tracker.hide.invisible", this.PLAYER_TRACKER_HIDE_INVISIBLE);
         this.PLAYER_TRACKER_HIDE_SPECTATORS = getBoolean("player-tracker.hide.spectators", this.PLAYER_TRACKER_HIDE_SPECTATORS);
+        this.PLAYER_TRACKER_USE_DISPLAY_NAME = getBoolean("player-tracker.use-display-names", this.PLAYER_TRACKER_USE_DISPLAY_NAME);
     }
 
     public int MARKER_API_UPDATE_INTERVAL_SECONDS = 5;

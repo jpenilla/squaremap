@@ -5,6 +5,7 @@ class Player {
         this.name = json.name;
         this.uuid = json.uuid;
         this.world = json.world;
+        this.displayName = json.display_name !== undefined ? json.display_name : json.name;
         this.x = 0;
         this.z = 0;
         this.armor = 0;
@@ -47,7 +48,7 @@ class Player {
         if (P.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
             healthImg = `<img src="images/health/${Math.min(Math.max(player.health, 0), 20)}.png" class="health" />`;
         }
-        this.tooltip.setContent(`<ul><li>${headImg}</li><li>${player.name}${healthImg}${armorImg}</li>`);
+        this.tooltip.setContent(`<ul><li>${headImg}</li><li>${this.displayName}${healthImg}${armorImg}</li>`);
     }
     update(player) {
         this.x = player.x;
@@ -55,6 +56,7 @@ class Player {
         this.world = player.world;
         this.armor = player.armor;
         this.health = player.health;
+        this.displayName = player.display_name !== undefined ? player.display_name : player.name;
         const link = document.getElementById(player.uuid);
         const img = link.getElementsByTagName("img")[0];
         const span = link.getElementsByTagName("span")[0];

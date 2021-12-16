@@ -21,6 +21,9 @@ dependencies {
     compileOnly("org.jboss.logging:jboss-logging-annotations:2.2.1.Final")
     implementation("org.bstats", "bstats-bukkit", "2.2.1")
     implementation("xyz.jpenilla:reflection-remapper:0.1.0-SNAPSHOT")
+    implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20211018.2") {
+        isTransitive = false // Depends on guava, provided by mc at runtime
+    }
 }
 
 tasks {
@@ -38,6 +41,7 @@ tasks {
             "org.bstats",
             "xyz.jpenilla.reflectionremapper",
             "net.fabricmc.mappingio",
+            "org.owasp.html",
         ).forEach { relocate(it, "squaremap.libraries.$it") }
     }
     reobfJar {
