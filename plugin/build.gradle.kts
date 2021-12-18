@@ -9,7 +9,7 @@ dependencies {
     paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 
     implementation(project(":squaremap-api"))
-    implementation(platform("cloud.commandframework:cloud-bom:1.6.0"))
+    implementation(platform("cloud.commandframework:cloud-bom:1.7.0-SNAPSHOT"))
     implementation("cloud.commandframework", "cloud-paper")
     implementation("cloud.commandframework", "cloud-minecraft-extras") {
         isTransitive = false // Paper provides adventure
