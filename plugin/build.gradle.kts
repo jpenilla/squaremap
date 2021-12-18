@@ -9,7 +9,7 @@ dependencies {
     paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 
     implementation(project(":squaremap-api"))
-    implementation(platform("cloud.commandframework:cloud-bom:1.7.0-SNAPSHOT"))
+    implementation(platform("cloud.commandframework:cloud-bom:1.6.1"))
     implementation("cloud.commandframework", "cloud-paper")
     implementation("cloud.commandframework", "cloud-minecraft-extras") {
         isTransitive = false // Paper provides adventure
@@ -56,6 +56,6 @@ bukkit {
     main = "xyz.jpenilla.squaremap.plugin.SquaremapPlugin"
     name = rootProject.name
     apiVersion = "1.18"
-    website = project.property("githubUrl") as String
+    website = providers.gradleProperty("githubUrl").forUseAtConfigurationTime().get()
     authors = listOf("jmp")
 }
