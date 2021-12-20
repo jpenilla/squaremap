@@ -24,6 +24,7 @@ subprojects {
 
     configure<IndraExtension> {
         javaVersions {
+            minimumToolchain(17)
             target(17)
         }
 
