@@ -25,8 +25,10 @@ import java.util.concurrent.TimeUnit;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.Registry;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.api.LayerRegistry;
@@ -107,7 +109,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
             this.layerRegistry().register(WorldBorderProvider.WORLDBORDER_KEY, new WorldBorderProvider(this));
         }
 
-        this.visibilityLimit = new VisibilityLimit(world);
+        this.visibilityLimit = new VisibilityLimit(this);
         this.visibilityLimit.parse(this.config().VISIBILITY_LIMITS);
 
         this.deserializeDirtyChunks();
@@ -214,6 +216,10 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
     }
 
     @Override
+    public @NonNull WorldIdentifier identifier() {
+        return BukkitAdapter.worldIdentifier(this.world);
+    }
+
     public @NonNull UUID uuid() {
         return this.world.getUID();
     }

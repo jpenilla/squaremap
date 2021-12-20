@@ -1,10 +1,10 @@
 package xyz.jpenilla.squaremap.plugin.visibilitylimit;
 
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
 import xyz.jpenilla.squaremap.plugin.util.Numbers;
 
@@ -15,8 +15,8 @@ import xyz.jpenilla.squaremap.plugin.util.Numbers;
 public final class WorldBorderShape implements VisibilityShape {
 
     @Override
-    public boolean shouldRenderChunk(final World world, final int chunkX, final int chunkZ) {
-        WorldBorder border = world.getWorldBorder();
+    public boolean shouldRenderChunk(final MapWorld world, final int chunkX, final int chunkZ) {
+        WorldBorder border = ((xyz.jpenilla.squaremap.plugin.data.MapWorld) world).bukkit().getWorldBorder();
         Location center = border.getCenter();
         int radius = (int) Math.ceil(border.getSize() / 2);
         if (chunkX < Numbers.blockToChunk(center.getBlockX() - radius)
@@ -31,8 +31,8 @@ public final class WorldBorderShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderRegion(final World world, final int regionX, final int regionZ) {
-        WorldBorder border = world.getWorldBorder();
+    public boolean shouldRenderRegion(final MapWorld world, final int regionX, final int regionZ) {
+        WorldBorder border = ((xyz.jpenilla.squaremap.plugin.data.MapWorld) world).bukkit().getWorldBorder();
         Location center = border.getCenter();
         int radius = (int) Math.ceil(border.getSize() / 2);
         if (regionX < Numbers.blockToRegion(center.getBlockX() - radius)
@@ -47,8 +47,8 @@ public final class WorldBorderShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderColumn(final World world, final int blockX, final int blockZ) {
-        WorldBorder border = world.getWorldBorder();
+    public boolean shouldRenderColumn(final MapWorld world, final int blockX, final int blockZ) {
+        WorldBorder border = ((xyz.jpenilla.squaremap.plugin.data.MapWorld) world).bukkit().getWorldBorder();
         Location center = border.getCenter();
         int radius = (int) Math.ceil(border.getSize() / 2);
         if (blockX < center.getBlockX() - radius || blockX >= center.getBlockX() + radius) {
@@ -61,8 +61,8 @@ public final class WorldBorderShape implements VisibilityShape {
     }
 
     @Override
-    public int countChunksInRegion(final World world, final int regionX, final int regionZ) {
-        WorldBorder border = world.getWorldBorder();
+    public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
+        WorldBorder border = ((xyz.jpenilla.squaremap.plugin.data.MapWorld) world).bukkit().getWorldBorder();
         int regionMinChunkX = Numbers.regionToChunk(regionX);
         int regionMaxChunkX = Numbers.regionToChunk(regionX + 1) - 1;
         int regionMinChunkZ = Numbers.regionToChunk(regionZ);

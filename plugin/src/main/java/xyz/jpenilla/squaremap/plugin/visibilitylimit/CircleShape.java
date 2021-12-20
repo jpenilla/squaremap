@@ -1,8 +1,8 @@
 package xyz.jpenilla.squaremap.plugin.visibilitylimit;
 
-import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
 import xyz.jpenilla.squaremap.plugin.util.Numbers;
 
@@ -31,7 +31,7 @@ final class CircleShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderChunk(final World world, final int chunkX, final int chunkZ) {
+    public boolean shouldRenderChunk(final MapWorld world, final int chunkX, final int chunkZ) {
         if (this.radius == 0) {
             return false;
         }
@@ -54,7 +54,7 @@ final class CircleShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderRegion(final World world, final int regionX, final int regionZ) {
+    public boolean shouldRenderRegion(final MapWorld world, final int regionX, final int regionZ) {
         if (this.radius == 0) {
             return false;
         }
@@ -76,7 +76,7 @@ final class CircleShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderColumn(final World world, final int blockX, final int blockZ) {
+    public boolean shouldRenderColumn(final MapWorld world, final int blockX, final int blockZ) {
         if (this.radius == 0) {
             return false;
         }
@@ -86,7 +86,7 @@ final class CircleShape implements VisibilityShape {
     }
 
     @Override
-    public int countChunksInRegion(final World world, final int regionX, final int regionZ) {
+    public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
         int chunkXStart = Numbers.regionToChunk(regionX);
         int chunkZStart = Numbers.regionToChunk(regionZ);
         if (this.shouldRenderChunk(world, chunkXStart, chunkZStart)

@@ -4,8 +4,6 @@ import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.UUID;
-import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -35,26 +33,14 @@ public interface Squaremap {
     /**
      * Get an optional which will either
      * <ul>
-     *     <li>A) Be empty, if the world does not have squaremap enabled</li>
-     *     <li>B) Contain the {@link MapWorld} instance for the provided {@link World}, if the world does have squaremap enabled</li>
-     * </ul>
-     *
-     * @param world Bukkit World
-     * @return optional
-     */
-    @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull World world);
-
-    /**
-     * Get an optional which will either
-     * <ul>
      *     <li>A) Be empty, if the world does not exist, or does not have squaremap enabled</li>
-     *     <li>B) Contain the {@link MapWorld} instance for the World associated with the provided {@link UUID}, if the world exists and has squaremap enabled</li>
+     *     <li>B) Contain the {@link MapWorld} instance for the World associated with the provided {@link WorldIdentifier}, if the world exists and has squaremap enabled</li>
      * </ul>
      *
-     * @param uuid world uuid
+     * @param identifier world identifier
      * @return optional
      */
-    @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull UUID uuid);
+    @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull WorldIdentifier identifier);
 
     /**
      * Get the registry of images which can be used with icon markers

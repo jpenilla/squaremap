@@ -1,9 +1,9 @@
 package xyz.jpenilla.squaremap.plugin.visibilitylimit;
 
-import org.bukkit.World;
 import org.bukkit.util.BlockVector;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
 import xyz.jpenilla.squaremap.plugin.util.Numbers;
 
@@ -56,25 +56,25 @@ final class RectangleShape implements VisibilityShape {
     }
 
     @Override
-    public boolean shouldRenderChunk(final World world, final int chunkX, final int chunkZ) {
+    public boolean shouldRenderChunk(final MapWorld world, final int chunkX, final int chunkZ) {
         return chunkX >= this.minChunkX && chunkX <= this.maxChunkX
             && chunkZ >= this.minChunkZ && chunkZ <= this.maxChunkZ;
     }
 
     @Override
-    public boolean shouldRenderRegion(final World world, final int regionX, final int regionZ) {
+    public boolean shouldRenderRegion(final MapWorld world, final int regionX, final int regionZ) {
         return regionX >= this.minRegionX && regionX <= this.maxRegionX
             && regionZ >= this.minRegionZ && regionZ <= this.maxRegionZ;
     }
 
     @Override
-    public boolean shouldRenderColumn(final World world, final int blockX, final int blockZ) {
+    public boolean shouldRenderColumn(final MapWorld world, final int blockX, final int blockZ) {
         return blockX >= this.minBlockX && blockX <= this.maxBlockX
             && blockZ >= this.minBlockZ && blockZ <= this.maxBlockZ;
     }
 
     @Override
-    public int countChunksInRegion(final World world, final int regionX, final int regionZ) {
+    public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
         int regionMinChunkX = Numbers.regionToChunk(regionX);
         int regionMaxChunkX = Numbers.regionToChunk(regionX + 1) - 1;
         int regionMinChunkZ = Numbers.regionToChunk(regionZ);

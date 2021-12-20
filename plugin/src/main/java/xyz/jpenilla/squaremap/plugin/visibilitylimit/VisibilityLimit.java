@@ -3,20 +3,20 @@ package xyz.jpenilla.squaremap.plugin.visibilitylimit;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.bukkit.World;
 import org.bukkit.util.BlockVector;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
 import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 import xyz.jpenilla.squaremap.plugin.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.plugin.util.Numbers;
 
 public final class VisibilityLimit implements xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityLimit {
     private static final int REGION_SIZE_CHUNKS = Numbers.regionToChunk(1);
     private final List<VisibilityShape> shapes = new CopyOnWriteArrayList<>();
-    private final World world;
+    private final MapWorld world;
 
-    public VisibilityLimit(@NonNull World world) {
+    public VisibilityLimit(MapWorld world) {
         this.world = world;
     }
 

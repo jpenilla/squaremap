@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.api.marker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -35,7 +36,7 @@ public final class Polyline extends Marker {
      * @param points new points
      */
     public void points(final @NonNull List<Point> points) {
-        this.multiPoints(List.of(points));
+        this.multiPoints(Collections.unmodifiableList(new ArrayList<>(points)));
     }
 
     /**

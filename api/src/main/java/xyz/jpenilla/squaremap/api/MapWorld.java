@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.api;
 
-import java.util.UUID;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -16,11 +15,19 @@ public interface MapWorld {
     @NonNull Registry<LayerProvider> layerRegistry();
 
     /**
-     * Get the name of this world.
+     * Get the name of this world. Depending on the implementation,
+     * this may be the same as the {@link WorldIdentifier#asString()} of {@link #identifier()}.
      *
      * @return name
      */
     @NonNull String name();
+
+    /**
+     * Get the identifier of this world.
+     *
+     * @return identifier
+     */
+    @NonNull WorldIdentifier identifier();
 
     /**
      * Get the map visibility limit of the world. Only these regions are drawn,
@@ -29,12 +36,5 @@ public interface MapWorld {
      * @return The visibility limit.
      */
     //@NonNull VisibilityLimit visibilityLimit();
-
-    /**
-     * Get the UUID of this world
-     *
-     * @return uuid
-     */
-    @NonNull UUID uuid();
 
 }

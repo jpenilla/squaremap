@@ -1,6 +1,6 @@
 package xyz.jpenilla.squaremap.api.marker;
 
-import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -59,7 +59,7 @@ public abstract class Marker {
      * @return new polyline
      */
     public static @NonNull Polyline polyline(final @NonNull List<Point> points) {
-        return multiPolyline(ImmutableList.of(points));
+        return multiPolyline(Collections.unmodifiableList(new ArrayList<>(points)));
     }
 
     /**

@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
-import xyz.jpenilla.squaremap.api.Point;
 import xyz.jpenilla.squaremap.api.marker.Marker;
 import xyz.jpenilla.squaremap.api.marker.MarkerOptions;
 import xyz.jpenilla.squaremap.plugin.configuration.Lang;
@@ -64,7 +64,7 @@ public class SpawnIconProvider implements LayerProvider {
     public @NonNull Collection<Marker> getMarkers() {
         return List.of(
             Marker.icon(
-                Point.fromLocation(this.world.getSpawnLocation()),
+                BukkitAdapter.point(this.world.getSpawnLocation()),
                 SPAWN_ICON_KEY,
                 16
             ).markerOptions(this.options)

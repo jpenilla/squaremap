@@ -1,18 +1,18 @@
 package xyz.jpenilla.squaremap.api.visibilitylimit;
 
-import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.MapWorld;
 
 /**
  * @deprecated Unsupported API.
  */
-@Deprecated(forRemoval = true)
+@Deprecated
 public interface VisibilityShape {
-    boolean shouldRenderChunk(@NonNull World world, int chunkX, int chunkZ);
+    boolean shouldRenderChunk(@NonNull MapWorld world, int chunkX, int chunkZ);
 
-    boolean shouldRenderRegion(@NonNull World world, int regionX, int regionZ);
+    boolean shouldRenderRegion(@NonNull MapWorld world, int regionX, int regionZ);
 
-    boolean shouldRenderColumn(@NonNull World world, int blockX, int blockZ);
+    boolean shouldRenderColumn(@NonNull MapWorld world, int blockX, int blockZ);
 
-    int countChunksInRegion(@NonNull World world, int regionX, int regionZ);
+    int countChunksInRegion(@NonNull MapWorld world, int regionX, int regionZ);
 }

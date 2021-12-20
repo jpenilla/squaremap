@@ -1,7 +1,6 @@
 package xyz.jpenilla.squaremap.api;
 
 import java.util.Objects;
-import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -56,16 +55,6 @@ public final class Point {
      */
     public static @NonNull Point point(final double x, final double z) {
         return new Point(x, z);
-    }
-
-    /**
-     * Get a new point from a Bukkit {@link Location}. Uses block location
-     *
-     * @param location location
-     * @return point
-     */
-    public static @NonNull Point fromLocation(final @NonNull Location location) {
-        return point(location.getBlockX(), location.getBlockZ());
     }
 
     @Override

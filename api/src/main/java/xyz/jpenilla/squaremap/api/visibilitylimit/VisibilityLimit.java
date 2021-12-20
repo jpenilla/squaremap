@@ -9,7 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *
  * @deprecated Unsupported API.
  */
-@Deprecated(forRemoval = true)
+@Deprecated
 public interface VisibilityLimit {
 
     /**
