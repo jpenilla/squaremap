@@ -9,16 +9,22 @@ import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
 import xyz.jpenilla.squaremap.plugin.configuration.Lang;
 import xyz.jpenilla.squaremap.plugin.configuration.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
+
+import static cloud.commandframework.arguments.parser.ArgumentParseResult.failure;
+import static cloud.commandframework.arguments.parser.ArgumentParseResult.success;
 
 /**
  * cloud argument type that parses {@link MapWorld}
@@ -79,16 +85,11 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @param <C>          Command sender type
      * @return Created argument
      */
-    public static <C> MapWorldArgument<C> optional(
-        final String name,
-        final String defaultValue
-    ) {
+    public static <C> MapWorldArgument<C> optional(final String name, final String defaultValue) {
         return MapWorldArgument.<C>newBuilder(name).asOptionalWithDefault(defaultValue).build();
     }
 
-
     public static final class Builder<C> extends CommandArgument.TypedBuilder<C, MapWorld, Builder<C>> {
-
         private Builder(final String name) {
             super(MapWorld.class, name);
         }
@@ -103,7 +104,6 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
                 this.getDefaultDescription()
             );
         }
-
     }
 
 
@@ -116,49 +116,48 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
         ) {
             final @Nullable String input = inputQueue.peek();
             if (input == null) {
-                return ArgumentParseResult.failure(new NoInputProvidedException(
-                    MapWorldParser.class,
-                    commandContext
-                ));
+                return failure(new NoInputProvidedException(MapWorldParser.class, commandContext));
             }
 
-            final @Nullable World world = Bukkit.getWorld(input);
+            final @Nullable NamespacedKey key = NamespacedKey.fromString(input);
+            if (key == null) {
+                return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
+            }
+
+            final @Nullable World world = Bukkit.getWorld(key);
             if (world == null) {
-                return ArgumentParseResult.failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
+                return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
             final WorldConfig worldConfig = WorldConfig.get(world);
             if (!worldConfig.MAP_ENABLED) {
-                return ArgumentParseResult.failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.MAP_NOT_ENABLED));
+                return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.MAP_NOT_ENABLED));
             }
 
             inputQueue.remove();
-            return ArgumentParseResult.success(commandContext.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().getWorld(world));
+            return success(commandContext.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().getWorld(world));
         }
 
         @Override
         public List<String> suggestions(final CommandContext<C> commandContext, final String input) {
             return commandContext.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().worlds().values().stream()
-                .map(MapWorld::name)
+                .flatMap(mapWorld -> {
+                    final WorldIdentifier identifier = mapWorld.identifier();
+                    if (!input.isBlank() && identifier.value().startsWith(input)) {
+                        return Stream.of(identifier.value(), identifier.asString());
+                    }
+                    return Stream.of(identifier.asString());
+                })
                 .toList();
         }
-
     }
 
-
     public static final class MapWorldParseException extends IllegalArgumentException {
-
         private static final long serialVersionUID = 3072715326923004782L;
 
         private final String input;
         private final FailureReason reason;
 
-        /**
-         * Construct a new MapWorldParseException
-         *
-         * @param input  Input
-         * @param reason Failure reason
-         */
         public MapWorldParseException(
             final String input,
             final FailureReason reason
@@ -178,7 +177,5 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
         public enum FailureReason {
             NO_SUCH_WORLD, MAP_NOT_ENABLED
         }
-
     }
-
 }

@@ -18,11 +18,13 @@ import java.util.function.UnaryOperator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.minecraft.commands.arguments.DimensionArgument;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
+import xyz.jpenilla.squaremap.plugin.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.plugin.command.commands.CancelRenderCommand;
 import xyz.jpenilla.squaremap.plugin.command.commands.ConfirmCommand;
 import xyz.jpenilla.squaremap.plugin.command.commands.FullRenderCommand;
@@ -59,9 +61,14 @@ public final class Commands {
 
         if (this.commandManager.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
             this.commandManager.registerBrigadier();
-            final @Nullable CloudBrigadierManager<?, ?> brigManager = this.commandManager.brigadierManager();
+            final @Nullable CloudBrigadierManager<CommandSender, ?> brigManager = this.commandManager.brigadierManager();
             if (brigManager != null) {
                 brigManager.setNativeNumberSuggestions(false);
+                brigManager.registerMapping(
+                    new TypeToken<MapWorldArgument.MapWorldParser<CommandSender>>() {
+                    },
+                    builder -> builder.toConstant(DimensionArgument.dimension()).cloudSuggestions()
+                );
             }
         }
 
