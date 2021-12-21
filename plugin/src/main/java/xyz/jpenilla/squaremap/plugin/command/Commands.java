@@ -65,8 +65,7 @@ public final class Commands {
             if (brigManager != null) {
                 brigManager.setNativeNumberSuggestions(false);
                 brigManager.registerMapping(
-                    new TypeToken<MapWorldArgument.MapWorldParser<CommandSender>>() {
-                    },
+                    new TypeToken<MapWorldArgument.Parser<CommandSender>>() {},
                     builder -> builder.toConstant(DimensionArgument.dimension()).cloudSuggestions()
                 );
             }

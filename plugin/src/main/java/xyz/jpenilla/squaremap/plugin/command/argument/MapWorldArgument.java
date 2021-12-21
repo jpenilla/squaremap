@@ -41,7 +41,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
         final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
         final ArgumentDescription defaultDescription
     ) {
-        super(required, name, new MapWorldParser<>(), defaultValue, MapWorld.class, suggestionsProvider, defaultDescription);
+        super(required, name, new Parser<>(), defaultValue, MapWorld.class, suggestionsProvider, defaultDescription);
     }
 
     /**
@@ -51,7 +51,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @param <C>  Command sender type
      * @return Created builder
      */
-    public static <C> Builder<C> newBuilder(final String name) {
+    public static <C> Builder<C> builder(final String name) {
         return new MapWorldArgument.Builder<>(name);
     }
 
@@ -63,7 +63,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @return Created argument
      */
     public static <C> MapWorldArgument<C> of(final String name) {
-        return MapWorldArgument.<C>newBuilder(name).build();
+        return MapWorldArgument.<C>builder(name).build();
     }
 
     /**
@@ -74,7 +74,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @return Created argument
      */
     public static <C> MapWorldArgument<C> optional(final String name) {
-        return MapWorldArgument.<C>newBuilder(name).asOptional().build();
+        return MapWorldArgument.<C>builder(name).asOptional().build();
     }
 
     /**
@@ -86,7 +86,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
      * @return Created argument
      */
     public static <C> MapWorldArgument<C> optional(final String name, final String defaultValue) {
-        return MapWorldArgument.<C>newBuilder(name).asOptionalWithDefault(defaultValue).build();
+        return MapWorldArgument.<C>builder(name).asOptionalWithDefault(defaultValue).build();
     }
 
     public static final class Builder<C> extends CommandArgument.TypedBuilder<C, MapWorld, Builder<C>> {
@@ -107,16 +107,13 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
     }
 
 
-    public static final class MapWorldParser<C> implements ArgumentParser<C, MapWorld> {
+    public static final class Parser<C> implements ArgumentParser<C, MapWorld> {
 
         @Override
-        public ArgumentParseResult<MapWorld> parse(
-            final CommandContext<C> commandContext,
-            final Queue<String> inputQueue
-        ) {
+        public ArgumentParseResult<MapWorld> parse(final CommandContext<C> commandContext, final Queue<String> inputQueue) {
             final @Nullable String input = inputQueue.peek();
             if (input == null) {
-                return failure(new NoInputProvidedException(MapWorldParser.class, commandContext));
+                return failure(new NoInputProvidedException(Parser.class, commandContext));
             }
 
             final @Nullable NamespacedKey key = NamespacedKey.fromString(input);
