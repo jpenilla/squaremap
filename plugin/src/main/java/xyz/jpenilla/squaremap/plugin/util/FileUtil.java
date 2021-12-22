@@ -62,12 +62,12 @@ public class FileUtil {
         return dir;
     }
 
-    public static File[] getRegionFiles(World world) {
-        File[] files = getRegionFolder(world).toFile().listFiles((dir, name) -> name.endsWith(".mca"));
-        if (files == null) {
-            files = new File[0];
+    public static Path[] getRegionFiles(World world) {
+        try (final Stream<Path> stream = Files.list(getRegionFolder(world))) {
+            return stream.filter(it -> it.getFileName().toString().endsWith(".mca")).toArray(Path[]::new);
+        } catch (final IOException ex) {
+            throw new RuntimeException("Failed to list region files in " + getRegionFolder(world).toAbsolutePath(), ex);
         }
-        return files;
     }
 
     public static void deleteSubdirectories(Path dir) throws IOException {
@@ -86,8 +86,8 @@ public class FileUtil {
         try (Stream<Path> walk = Files.walk(dir)) {
             //noinspection ResultOfMethodCallIgnored
             walk.sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
+                .map(Path::toFile)
+                .forEach(File::delete);
         }
     }
 
@@ -100,7 +100,7 @@ public class FileUtil {
                 WORLD_DIRS.put(world.getUID(), dir);
             } catch (IOException e) {
                 Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                        .replace("{path}", dir.toAbsolutePath().toString()), e);
+                    .replace("{path}", dir.toAbsolutePath().toString()), e);
             }
         }
         return dir;

@@ -1,6 +1,6 @@
 package xyz.jpenilla.squaremap.plugin.task.render;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,9 +56,9 @@ public final class FullRender extends AbstractRender {
             // setup a spiral iterator
             Location spawn = this.world.getSpawnLocation();
             RegionSpiralIterator spiral = new RegionSpiralIterator(
-                    Numbers.blockToRegion(spawn.getBlockX()),
-                    Numbers.blockToRegion(spawn.getBlockZ()),
-                    this.maxRadius
+                Numbers.blockToRegion(spawn.getBlockX()),
+                Numbers.blockToRegion(spawn.getBlockZ()),
+                this.maxRadius
             );
 
             // iterate the spiral to get all regions needed
@@ -121,9 +121,9 @@ public final class FullRender extends AbstractRender {
     private int countCompletedChunks(final Map<RegionCoordinate, Boolean> regions) {
         final VisibilityLimit visibility = this.mapWorld.visibilityLimit();
         return regions.entrySet().stream()
-                .filter(Map.Entry::getValue)
-                .mapToInt(entry -> visibility.countChunksInRegion(entry.getKey()))
-                .sum();
+            .filter(Map.Entry::getValue)
+            .mapToInt(entry -> visibility.countChunksInRegion(entry.getKey()))
+            .sum();
     }
 
     @Override
@@ -137,27 +137,31 @@ public final class FullRender extends AbstractRender {
     }
 
     private List<RegionCoordinate> getRegions() {
-        List<RegionCoordinate> regions = new ArrayList<>();
-        File[] files = FileUtil.getRegionFiles(this.world);
-        for (File file : files) {
-            if (file.length() == 0) continue;
-            try {
-                String[] split = file.getName().split("\\.");
-                int x = Integer.parseInt(split[1]);
-                int z = Integer.parseInt(split[2]);
+        final List<RegionCoordinate> regions = new ArrayList<>();
 
-                RegionCoordinate region = new RegionCoordinate(x, z);
-
-                // ignore regions completely outside the visibility limit
-                if (!this.mapWorld.visibilityLimit().shouldRenderRegion(region)) {
-                    continue;
-                }
-
-                this.maxRadius = Math.max(Math.max(this.maxRadius, Math.abs(x)), Math.abs(z));
-                regions.add(region);
-
-            } catch (NumberFormatException ignore) {
+        for (final Path path : FileUtil.getRegionFiles(this.world)) {
+            if (path.toFile().length() == 0) {
+                continue;
             }
+            final String[] split = path.getFileName().toString().split("\\.");
+            final int x;
+            final int z;
+            try {
+                x = Integer.parseInt(split[1]);
+                z = Integer.parseInt(split[2]);
+            } catch (final NumberFormatException ignored) {
+                continue;
+            }
+
+            final RegionCoordinate region = new RegionCoordinate(x, z);
+
+            // ignore regions completely outside the visibility limit
+            if (!this.mapWorld.visibilityLimit().shouldRenderRegion(region)) {
+                continue;
+            }
+
+            this.maxRadius = Math.max(Math.max(this.maxRadius, Math.abs(x)), Math.abs(z));
+            regions.add(region);
         }
 
         return regions;
