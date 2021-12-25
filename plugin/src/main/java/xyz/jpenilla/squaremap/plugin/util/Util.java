@@ -12,12 +12,17 @@ public final class Util {
     private Util() {
     }
 
-    public static ThreadFactory squareMapThreadFactory(final String name) {
+    @SuppressWarnings("unchecked")
+    public static <X extends Throwable> RuntimeException rethrow(final Throwable t) throws X {
+        throw (X) t;
+    }
+
+    public static ThreadFactory squaremapThreadFactory(final String name) {
         return new NamedThreadFactory("squaremap-" + name);
     }
 
-    public static ThreadFactory squareMapThreadFactory(final String name, final ServerLevel level) {
-        return squareMapThreadFactory(name + "-[" + level.dimension().location() + "]");
+    public static ThreadFactory squaremapThreadFactory(final String name, final ServerLevel level) {
+        return squaremapThreadFactory(name + "-[" + level.dimension().location() + "]");
     }
 
     public static void shutdownExecutor(final ExecutorService service, final TimeUnit timeoutUnit, final long timeoutLength) {

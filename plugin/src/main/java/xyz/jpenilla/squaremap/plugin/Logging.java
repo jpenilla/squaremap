@@ -8,7 +8,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.plugin.configuration.Config;
+import xyz.jpenilla.squaremap.plugin.config.Config;
 
 @DefaultQualifier(NonNull.class)
 public final class Logging {

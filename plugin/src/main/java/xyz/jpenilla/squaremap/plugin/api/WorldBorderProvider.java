@@ -12,8 +12,8 @@ import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.Point;
 import xyz.jpenilla.squaremap.api.marker.Marker;
 import xyz.jpenilla.squaremap.api.marker.MarkerOptions;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
-import xyz.jpenilla.squaremap.plugin.configuration.WorldConfig;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
+import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 
 public class WorldBorderProvider implements LayerProvider {

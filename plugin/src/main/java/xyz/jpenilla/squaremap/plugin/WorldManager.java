@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import xyz.jpenilla.squaremap.plugin.configuration.WorldConfig;
+import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 
 public final class WorldManager {

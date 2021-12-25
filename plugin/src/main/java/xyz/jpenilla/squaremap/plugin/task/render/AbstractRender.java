@@ -27,7 +27,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.plugin.Logging;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.BiomeColors;
 import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.plugin.data.Image;
@@ -64,7 +64,7 @@ public abstract class AbstractRender implements Runnable {
             world,
             Executors.newFixedThreadPool(
                 getThreads(world.config().MAX_RENDER_THREADS),
-                Util.squareMapThreadFactory("render-worker", world.serverLevel())
+                Util.squaremapThreadFactory("render-worker", world.serverLevel())
             )
         );
     }

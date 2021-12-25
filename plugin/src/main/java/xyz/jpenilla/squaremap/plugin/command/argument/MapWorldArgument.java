@@ -19,8 +19,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
-import xyz.jpenilla.squaremap.plugin.configuration.WorldConfig;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
+import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.failure;

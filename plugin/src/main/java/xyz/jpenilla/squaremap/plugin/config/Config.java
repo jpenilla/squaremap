@@ -1,10 +1,10 @@
-package xyz.jpenilla.squaremap.plugin.configuration;
+package xyz.jpenilla.squaremap.plugin.config;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class Config extends AbstractConfig {
+public final class Config extends AbstractConfig {
     private Config() {
         super("config.yml");
     }
@@ -75,25 +75,23 @@ public class Config extends AbstractConfig {
     private static void commandSettings() {
         MAIN_COMMAND_LABEL = config.getString("settings.commands.main-command-label", MAIN_COMMAND_LABEL);
         MAIN_COMMAND_ALIASES.clear();
-        config.getList("settings.commands.main-command-aliases", List.of(
-            "map"
-        )).forEach(entry -> MAIN_COMMAND_ALIASES.add(entry.toString()));
+        MAIN_COMMAND_ALIASES.addAll(config.getList(String.class, "settings.commands.main-command-aliases", List.of("map")));
     }
 
     public static void toggleProgressLogging() {
         PROGRESS_LOGGING = !PROGRESS_LOGGING;
-        config.yaml.set("settings.render-progress-logging.enabled", PROGRESS_LOGGING);
+        config.set("settings.render-progress-logging.enabled", PROGRESS_LOGGING);
         config.save();
     }
 
     public static void setLoggingInterval(final int rate) {
         PROGRESS_LOGGING_INTERVAL = rate;
-        config.yaml.set("settings.render-progress-logging.interval-seconds", rate);
+        config.set("settings.render-progress-logging.interval-seconds", rate);
         config.save();
     }
 
     public static volatile boolean PROGRESS_LOGGING;
-    public static volatile int PROGRESS_LOGGING_INTERVAL = 1;
+    public static volatile int PROGRESS_LOGGING_INTERVAL;
 
     private static void progressLogging() {
         PROGRESS_LOGGING = config.getBoolean("settings.render-progress-logging.enabled", true);

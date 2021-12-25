@@ -1,5 +1,6 @@
-package xyz.jpenilla.squaremap.plugin.configuration;
+package xyz.jpenilla.squaremap.plugin.config;
 
+import io.leangen.geantyref.TypeToken;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.util.HashMap;
@@ -36,26 +37,26 @@ public final class WorldAdvanced extends AbstractWorldConfig {
     }
 
     void init() {
-        this.config.readConfig(WorldAdvanced.class, this);
+        this.parent.readConfig(WorldAdvanced.class, this);
     }
 
     public final Set<Block> invisibleBlocks = new HashSet<>();
 
     private void invisibleBlocks() {
         this.invisibleBlocks.clear();
-        getList("invisible-blocks", List.of(
+        getList(String.class, "invisible-blocks", List.of(
             "minecraft:tall_grass",
             "minecraft:fern",
             "minecraft:grass",
             "minecraft:large_fern"
-        )).forEach(block -> this.invisibleBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
+        )).forEach(block -> this.invisibleBlocks.add(Registry.BLOCK.get(new ResourceLocation(block))));
     }
 
     public final Set<Block> iterateUpBaseBlocks = new HashSet<>();
 
     private void iterateUpBaseBlocks() {
         this.iterateUpBaseBlocks.clear();
-        getList("iterate-up-base-blocks", List.of(
+        getList(String.class, "iterate-up-base-blocks", List.of(
             "minecraft:netherrack",
             "minecraft:glowstone",
             "minecraft:soul_sand",
@@ -68,7 +69,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
             "minecraft:nether_quartz_ore",
             "minecraft:magma_block",
             "minecraft:basalt"
-        )).forEach(block -> this.iterateUpBaseBlocks.add(Registry.BLOCK.get(new ResourceLocation(block.toString()))));
+        )).forEach(block -> this.iterateUpBaseBlocks.add(Registry.BLOCK.get(new ResourceLocation(block))));
     }
 
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_FOLIAGE = new Reference2IntOpenHashMap<>();
@@ -76,7 +77,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
     private void colorOverrideBiomeFoliageSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
-        getMap("color-overrides.biomes.foliage", Map.ofEntries(
+        getMap(TypeToken.get(String.class), TypeToken.get(String.class), "color-overrides.biomes.foliage", Map.ofEntries(
             Map.entry("minecraft:dark_forest", "#1c7b07"),
             Map.entry("minecraft:dark_forest_hills", "#1c7b07"),
             Map.entry("minecraft:jungle", "#1f8907"),
@@ -97,7 +98,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
     private void colorOverrideBiomeGrassSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_GRASS.clear();
-        getMap("color-overrides.biomes.grass", Map.<String, String>ofEntries()).forEach((key, color) -> {
+        getMap(TypeToken.get(String.class), TypeToken.get(String.class), "color-overrides.biomes.grass", Map.of()).forEach((key, color) -> {
             final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
                 this.COLOR_OVERRIDES_BIOME_GRASS.put(biome, Colors.parseHex(color));
@@ -110,7 +111,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
     private void colorOverrideBiomeWaterSettings() {
         final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_WATER.clear();
-        getMap("color-overrides.biomes.water", Map.<String, String>ofEntries()).forEach((key, color) -> {
+        getMap(TypeToken.get(String.class), TypeToken.get(String.class), "color-overrides.biomes.water", Map.of()).forEach((key, color) -> {
             final Biome biome = registry.get(new ResourceLocation(key));
             if (biome != null) {
                 this.COLOR_OVERRIDES_BIOME_WATER.put(biome, Colors.parseHex(color));
@@ -122,7 +123,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
 
     private void colorOverrideBlocksSettings() {
         this.COLOR_OVERRIDES_BLOCKS.clear();
-        getMap("color-overrides.blocks", Map.ofEntries(
+        getMap(TypeToken.get(String.class), TypeToken.get(String.class), "color-overrides.blocks", Map.ofEntries(
             Map.entry("minecraft:mycelium", "#6F6265"),
             Map.entry("minecraft:terracotta", "#9E6246"),
             Map.entry("minecraft:dandelion", "#FFEC4F"),

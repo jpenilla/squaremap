@@ -1,24 +1,28 @@
-package xyz.jpenilla.squaremap.plugin.configuration;
+package xyz.jpenilla.squaremap.plugin.config;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.Arrays;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.yaml.NodeStyle;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 
+@DefaultQualifier(NonNull.class)
 public final class Lang {
 
     // MiniMessage formatted strings, to be sent using Logger.info(String, Template...) or Lang.send(CommandSender, String, Template...)
@@ -170,16 +174,16 @@ public final class Lang {
 
     private static void init() {
         Arrays.stream(Lang.class.getDeclaredFields())
-                .filter(Lang::annotatedString)
-                .forEach(Lang::loadValue);
+            .filter(Lang::annotatedString)
+            .forEach(Lang::loadValue);
     }
 
-    private static boolean annotatedString(final @NonNull Field field) {
+    private static boolean annotatedString(final Field field) {
         return field.getType().equals(String.class)
-                && field.getDeclaredAnnotation(LangKey.class) != null;
+            && field.getDeclaredAnnotation(LangKey.class) != null;
     }
 
-    private static void loadValue(final @NonNull Field field) {
+    private static void loadValue(final Field field) {
         final LangKey langKey = field.getDeclaredAnnotation(LangKey.class);
         try {
             field.set(null, getString(langKey.value(), (String) field.get(null)));
@@ -189,53 +193,52 @@ public final class Lang {
     }
 
     public static void reload() {
-        File configFile = FileUtil.LOCALE_DIR.resolve(Config.LANGUAGE_FILE).toFile();
-        config = new YamlConfiguration();
+        final Path configFile = FileUtil.LOCALE_DIR.resolve(Config.LANGUAGE_FILE);
+        final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
+            .path(configFile)
+            .nodeStyle(NodeStyle.BLOCK)
+            .build();
         try {
-            config.load(configFile);
-        } catch (IOException ignore) {
-        } catch (InvalidConfigurationException ex) {
-            Logging.logger().error("Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
-            throw new RuntimeException(ex);
+            config = loader.load();
+        } catch (ConfigurateException ex) {
+            throw new RuntimeException("Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
         }
-        config.options().copyDefaults(true);
 
         init();
 
         try {
-            config.save(configFile);
-        } catch (IOException ex) {
+            loader.save(config);
+        } catch (ConfigurateException ex) {
             Logging.logger().error("Could not save " + configFile, ex);
         }
     }
 
-    private static YamlConfiguration config;
+    private static @MonotonicNonNull ConfigurationNode config;
 
     private static String getString(String path, String def) {
-        config.addDefault(path, def);
-        return config.getString(path, config.getString(path));
+        return config.node(AbstractConfig.splitPath(path)).getString(def);
     }
 
-    public static @NonNull Component parse(final @NonNull String miniMessage) {
+    public static Component parse(final String miniMessage) {
         return MiniMessage.miniMessage().deserialize(miniMessage);
     }
 
-    public static @NonNull Component parse(final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
+    public static Component parse(final String miniMessage, final Template... placeholders) {
         return MiniMessage.miniMessage().deserialize(miniMessage, TemplateResolver.templates(placeholders));
     }
 
-    public static void send(final @NonNull Audience recipient, final @NonNull String miniMessage, final @NonNull Template @NonNull ... placeholders) {
+    public static void send(final Audience recipient, final String miniMessage, final Template... placeholders) {
         recipient.sendMessage(parse(miniMessage, placeholders));
     }
 
-    public static void send(final @NonNull Audience recipient, final @NonNull String miniMessage) {
+    public static void send(final Audience recipient, final String miniMessage) {
         recipient.sendMessage(parse(miniMessage));
     }
 
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     private @interface LangKey {
-        @NonNull String value();
+        String value();
     }
 
 }

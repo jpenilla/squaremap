@@ -11,7 +11,7 @@ import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
 import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.plugin.command.argument.MapWorldArgument;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 import xyz.jpenilla.squaremap.plugin.task.render.FullRender;
 import xyz.jpenilla.squaremap.plugin.util.CommandUtil;

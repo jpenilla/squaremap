@@ -1,5 +1,6 @@
-package xyz.jpenilla.squaremap.plugin.configuration;
+package xyz.jpenilla.squaremap.plugin.config;
 
+import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ public final class WorldConfig extends AbstractWorldConfig {
     }
 
     void init() {
-        this.config.readConfig(WorldConfig.class, this);
+        this.parent.readConfig(WorldConfig.class, this);
     }
 
     public boolean MAP_ENABLED = true;
@@ -164,18 +165,19 @@ public final class WorldConfig extends AbstractWorldConfig {
         this.WORLDBORDER_MARKER_Z_INDEX = getInt("map.markers.world-border.z-index", this.WORLDBORDER_MARKER_Z_INDEX);
     }
 
-    public List<Map<String, Object>> VISIBILITY_LIMITS = new ArrayList<>();
+    public List<Map<String, String>> VISIBILITY_LIMITS = new ArrayList<>();
 
-    @SuppressWarnings("unchecked") // Safe, as YAML can only store dicts of <String, object>
     private void visibilityLimitSettings() {
-        this.VISIBILITY_LIMITS = (List<Map<String, Object>>) this.getList(
+        this.VISIBILITY_LIMITS = this.getList(
+            new TypeToken<>() {
+            },
             "map.visibility-limits",
             List.of(
                 Map.of(
                     "type",
                     "world-border",
                     "enabled",
-                    false
+                    "false"
                 )
             )
         );

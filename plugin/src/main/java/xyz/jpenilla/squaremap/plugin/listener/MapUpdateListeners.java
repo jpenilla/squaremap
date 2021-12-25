@@ -41,7 +41,7 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.configuration.Advanced;
+import xyz.jpenilla.squaremap.plugin.config.Advanced;
 import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.plugin.util.Numbers;
 

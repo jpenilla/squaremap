@@ -38,8 +38,8 @@ import xyz.jpenilla.squaremap.plugin.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.plugin.command.commands.ShowCommand;
 import xyz.jpenilla.squaremap.plugin.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.plugin.command.exception.ConsoleMustProvideWorldException;
-import xyz.jpenilla.squaremap.plugin.configuration.Config;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Config;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 
 @DefaultQualifier(NonNull.class)
 public final class Commands {
