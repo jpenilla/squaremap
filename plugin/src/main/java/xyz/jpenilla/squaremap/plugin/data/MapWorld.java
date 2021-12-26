@@ -244,6 +244,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
         return this.world;
     }
 
+    @SuppressWarnings("ConstantConditions") // params for getMapColor are never used, check on mc update
     public int getMapColor(final @NonNull BlockState state) {
         final int special = this.blockColors.getColor(state);
         if (special != -1) {
