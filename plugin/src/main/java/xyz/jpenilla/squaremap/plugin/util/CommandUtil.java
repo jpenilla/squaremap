@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.plugin.command.exception.ConsoleMustProvideWorldException;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 
@@ -37,7 +36,7 @@ public final class CommandUtil {
                 return optionalMapWorld.get();
             }
         } else {
-            throw new ConsoleMustProvideWorldException(context);
+            throw CommandCompleted.withMessage(MiniMessage.miniMessage().deserialize(Lang.CONSOLE_MUST_SPECIFY_WORLD));
         }
     }
 
@@ -49,8 +48,7 @@ public final class CommandUtil {
             if (sender instanceof Player player) {
                 return player;
             }
-            Lang.send(sender, Lang.CONSOLE_MUST_SPECIFY_PLAYER);
-            throw CommandCompleted.withoutMessage();
+            throw CommandCompleted.withMessage(MiniMessage.miniMessage().deserialize(Lang.CONSOLE_MUST_SPECIFY_PLAYER));
         }
 
         final Player targetPlayer = selector.getPlayer();

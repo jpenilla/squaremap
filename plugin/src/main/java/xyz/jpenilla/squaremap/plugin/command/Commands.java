@@ -37,7 +37,6 @@ import xyz.jpenilla.squaremap.plugin.command.commands.ReloadCommand;
 import xyz.jpenilla.squaremap.plugin.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.plugin.command.commands.ShowCommand;
 import xyz.jpenilla.squaremap.plugin.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.plugin.command.exception.ConsoleMustProvideWorldException;
 import xyz.jpenilla.squaremap.plugin.config.Config;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
 
@@ -113,9 +112,6 @@ public final class Commands {
                 if (message != null) {
                     sender.sendMessage(message);
                 }
-                return;
-            } else if (cause instanceof ConsoleMustProvideWorldException) {
-                Lang.send(sender, Lang.CONSOLE_MUST_SPECIFY_WORLD);
                 return;
             }
 
