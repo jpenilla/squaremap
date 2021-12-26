@@ -61,7 +61,7 @@ public final class Config extends AbstractConfig {
 
     public static boolean UI_COORDINATES_ENABLED = true;
     public static boolean UI_LINK_ENABLED = true;
-    public static String UI_SIDEBAR_PINNED = "pinned";
+    public static String UI_SIDEBAR_PINNED = "unpinned";
 
     private static void uiSettings() {
         UI_COORDINATES_ENABLED = config.getBoolean("settings.ui.coordinates.enabled", UI_COORDINATES_ENABLED);
