@@ -10,7 +10,6 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -41,8 +40,6 @@ public class FileUtil {
     public static final Map<UUID, Path> WORLD_DIRS = new HashMap<>();
     public static final Map<UUID, Path> REGION_DIRS = new HashMap<>();
 
-    private static FileSystem fileSystem;
-
     public static void reload() {
         PLUGIN_DIR = SquaremapPlugin.getInstance().getDataFolder().toPath();
         WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
@@ -56,7 +53,7 @@ public class FileUtil {
         Path dir = REGION_DIRS.get(world.getUID());
         if (dir == null) {
             dir = LevelStorageSource.getStorageFolder(world.getWorldFolder().toPath(), ((CraftWorld) world).getHandle().getTypeKey())
-                    .resolve("region");
+                .resolve("region");
             REGION_DIRS.put(world.getUID(), dir);
         }
         return dir;
@@ -110,15 +107,15 @@ public class FileUtil {
         // https://coderanch.com/t/472574/java/extract-directory-current-jar
         final URL dirURL = FileUtil.class.getResource(inDir);
         final String path = inDir.substring(1);
-        if ((dirURL != null) && dirURL.getProtocol().equals("jar")) {
-            ZipFile jar;
-            try {
-                Logging.debug("Extracting " + inDir + " directory from jar...");
-                jar = ((JarURLConnection) dirURL.openConnection()).getJarFile();
-            } catch (IOException e) {
-                Logging.severe("Failed to extract directory from jar", e);
-                return;
-            }
+
+        if (dirURL == null) {
+            throw new IllegalStateException("can't find " + inDir + " on the classpath");
+        } else if (!dirURL.getProtocol().equals("jar")) {
+            throw new IllegalStateException("don't know how to handle extracting from " + dirURL);
+        }
+
+        Logging.debug("Extracting " + inDir + " directory from jar...");
+        try (final ZipFile jar = ((JarURLConnection) dirURL.openConnection()).getJarFile()) {
             final Enumeration<? extends ZipEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 final ZipEntry entry = entries.nextElement();
@@ -129,37 +126,34 @@ public class FileUtil {
                 final String filename = name.substring(path.length());
                 final File file = new File(outDir, filename);
                 if (!replace && file.exists()) {
-                    Logging.debug("  <yellow>exists</yellow>   " + name);
+                    Logging.debug("  exists   " + name);
                     continue;
                 }
                 if (entry.isDirectory()) {
                     if (!file.exists()) {
                         final boolean result = file.mkdir();
-                        Logging.debug((result ? "  <green>creating</green> " : "  <red>unable to create</red> ") + name);
+                        Logging.debug((result ? "  creating " : "  unable to create ") + name);
                     } else {
-                        Logging.debug("  <yellow>exists</yellow>   " + name);
+                        Logging.debug("  exists   " + name);
                     }
                 } else {
-                    Logging.debug("  <green>writing</green>  " + name);
-                    try {
+                    Logging.debug("  writing  " + name);
+                    try (
                         final InputStream inputStream = jar.getInputStream(entry);
-                        final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
+                        final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))
+                    ) {
                         final byte[] buffer = new byte[4096];
                         int readCount;
                         while ((readCount = inputStream.read(buffer)) > 0) {
                             outputStream.write(buffer, 0, readCount);
                         }
-                        outputStream.close();
-                        inputStream.close();
                     } catch (IOException e) {
                         Logging.severe("Failed to extract file (" + name + ") from jar!", e);
                     }
                 }
             }
-        } else if (dirURL == null) {
-            throw new IllegalStateException("can't find " + inDir + " on the classpath");
-        } else {
-            throw new IllegalStateException("don't know how to handle extracting from " + dirURL);
+        } catch (IOException e) {
+            Logging.severe("Failed to extract directory '" + inDir + "' from jar to '" + outDir + "'", e);
         }
     }
 
