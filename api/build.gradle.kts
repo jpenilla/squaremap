@@ -15,13 +15,11 @@ indra {
     javaVersions {
         target(8)
     }
+
+    publishSnapshotsTo("jmp", "https://repo.jpenilla.xyz/snapshots/")
 }
 
 java {
     withJavadocJar()
     withSourcesJar()
-}
-
-indra {
-    publishSnapshotsTo("jmp", "https://repo.jpenilla.xyz/snapshots")
 }
