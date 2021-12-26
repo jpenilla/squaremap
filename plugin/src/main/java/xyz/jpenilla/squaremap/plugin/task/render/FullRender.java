@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.plugin.Logging;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 import xyz.jpenilla.squaremap.plugin.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;

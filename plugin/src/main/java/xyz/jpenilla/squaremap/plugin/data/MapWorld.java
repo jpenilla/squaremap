@@ -34,8 +34,8 @@ import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.api.LayerRegistry;
 import xyz.jpenilla.squaremap.plugin.api.SpawnIconProvider;
 import xyz.jpenilla.squaremap.plugin.api.WorldBorderProvider;
-import xyz.jpenilla.squaremap.plugin.configuration.WorldAdvanced;
-import xyz.jpenilla.squaremap.plugin.configuration.WorldConfig;
+import xyz.jpenilla.squaremap.plugin.config.WorldAdvanced;
+import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.task.UpdateMarkers;
 import xyz.jpenilla.squaremap.plugin.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.plugin.task.render.BackgroundRender;
@@ -76,10 +76,10 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
         this.level = ReflectionUtil.CraftBukkit.serverLevel(world);
 
         this.imageIOexecutor = Executors.newSingleThreadExecutor(
-            Util.squareMapThreadFactory("imageio", this.level)
+            Util.squaremapThreadFactory("imageio", this.level)
         );
         this.executor = Executors.newSingleThreadScheduledExecutor(
-            Util.squareMapThreadFactory("render", this.level)
+            Util.squaremapThreadFactory("render", this.level)
         );
 
         // Keep updated references to world configs to avoid constant HashMap lookups during renders

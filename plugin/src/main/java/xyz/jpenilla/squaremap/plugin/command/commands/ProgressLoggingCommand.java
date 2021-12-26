@@ -14,8 +14,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
 import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
-import xyz.jpenilla.squaremap.plugin.configuration.Config;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Config;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 
 import static net.kyori.adventure.text.Component.text;

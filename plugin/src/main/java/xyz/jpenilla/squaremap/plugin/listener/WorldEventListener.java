@@ -6,7 +6,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.configuration.WorldConfig;
+import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
 
 public final class WorldEventListener implements Listener {
 

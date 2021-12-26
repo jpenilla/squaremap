@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.configuration;
+package xyz.jpenilla.squaremap.plugin.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.plugin.Logging;
 
 @SuppressWarnings("unused")
-public class Advanced extends AbstractConfig {
+public final class Advanced extends AbstractConfig {
     private Advanced() {
         super("advanced.yml");
     }

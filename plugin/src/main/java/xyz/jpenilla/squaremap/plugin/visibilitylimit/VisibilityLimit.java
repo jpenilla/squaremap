@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.bukkit.util.BlockVector;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
 import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
@@ -62,52 +63,53 @@ public final class VisibilityLimit implements xyz.jpenilla.squaremap.api.visibil
         return this.shouldRenderColumn(blockX, blockZ);
     }
 
-    public void parse(final List<Map<String, Object>> configLimits) {
+    public void parse(final List<Map<String, String>> configLimits) {
         this.shapes.clear();
-        for (Map<String, Object> visibilityLimit : configLimits) {
-            Object type = visibilityLimit.get("type");
+        for (Map<String, String> visibilityLimit : configLimits) {
+            String type = visibilityLimit.get("type");
             if (type == null) {
                 continue;
             }
-            if (type.equals("circle")) {
-                this.parseCircleShape(visibilityLimit);
-            } else if (type.equals("rectangle")) {
-                this.parseRectangleShape(visibilityLimit);
-            } else if (type.equals("world-border")) {
-                this.parseWorldBorderShape(visibilityLimit);
+            switch (type) {
+                case "circle" -> this.parseCircleShape(visibilityLimit);
+                case "rectangle" -> this.parseRectangleShape(visibilityLimit);
+                case "world-border" -> this.parseWorldBorderShape(visibilityLimit);
             }
         }
     }
 
-    private void parseCircleShape(final Map<String, Object> visibilityLimit) {
-        if (visibilityLimit.get("center-x") instanceof Number
-            && visibilityLimit.get("center-z") instanceof Number
-            && visibilityLimit.get("radius") instanceof Number) {
-            int centerX = ((Number) visibilityLimit.get("center-x")).intValue();
-            int centerZ = ((Number) visibilityLimit.get("center-z")).intValue();
-            int radius = ((Number) visibilityLimit.get("radius")).intValue();
+    private static @Nullable Integer tryParseInt(final String s) {
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private void parseCircleShape(final Map<String, String> visibilityLimit) {
+        Integer centerX = tryParseInt(visibilityLimit.get("center-x"));
+        Integer centerZ = tryParseInt(visibilityLimit.get("center-z"));
+        Integer radius = tryParseInt(visibilityLimit.get("radius"));
+        if (centerX != null && centerZ != null && radius != null) {
             if (radius > 0) {
                 this.shapes.add(new CircleShape(centerX, centerZ, radius));
             }
         }
     }
 
-    private void parseRectangleShape(final Map<String, Object> visibilityLimit) {
-        if (visibilityLimit.get("min-x") instanceof Number
-            && visibilityLimit.get("min-z") instanceof Number
-            && visibilityLimit.get("max-x") instanceof Number
-            && visibilityLimit.get("max-z") instanceof Number) {
-            int minX = ((Number) visibilityLimit.get("min-x")).intValue();
-            int minZ = ((Number) visibilityLimit.get("min-z")).intValue();
-            int maxX = ((Number) visibilityLimit.get("max-x")).intValue();
-            int maxZ = ((Number) visibilityLimit.get("max-z")).intValue();
+    private void parseRectangleShape(final Map<String, String> visibilityLimit) {
+        Integer minX = tryParseInt(visibilityLimit.get("min-x"));
+        Integer minZ = tryParseInt(visibilityLimit.get("min-z"));
+        Integer maxX = tryParseInt(visibilityLimit.get("max-x"));
+        Integer maxZ = tryParseInt(visibilityLimit.get("max-z"));
+        if (minX != null && minZ != null && maxX != null && maxZ != null) {
             if (maxX >= minX && maxZ >= minZ) {
                 this.shapes.add(new RectangleShape(new BlockVector(minX, 0, minZ), new BlockVector(maxX, 0, maxZ)));
             }
         }
     }
 
-    private void parseWorldBorderShape(final Map<String, Object> visibilityLimit) {
+    private void parseWorldBorderShape(final Map<String, String> visibilityLimit) {
         Object enabled = visibilityLimit.get("enabled");
         if (enabled != null && enabled.equals(Boolean.TRUE)) {
             this.shapes.add(new WorldBorderShape());

@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
 import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.util.CommandUtil;
 
 public final class ShowCommand extends SquaremapCommand {

@@ -8,9 +8,9 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
-import xyz.jpenilla.squaremap.plugin.configuration.Config;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
-import xyz.jpenilla.squaremap.plugin.configuration.WorldConfig;
+import xyz.jpenilla.squaremap.plugin.config.Config;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
+import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 
 public class UpdateWorldData extends BukkitRunnable {

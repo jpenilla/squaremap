@@ -30,8 +30,8 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.configuration.Config;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Config;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 
 public class FileUtil {
     public static Path PLUGIN_DIR = SquaremapPlugin.getInstance().getDataFolder().toPath();

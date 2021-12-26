@@ -14,7 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.plugin.command.exception.ConsoleMustProvideWorldException;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 
 public final class CommandUtil {
@@ -46,8 +46,8 @@ public final class CommandUtil {
         final SinglePlayerSelector selector = context.getOrDefault("player", null);
 
         if (selector == null) {
-            if (sender instanceof Player) {
-                return (Player) sender;
+            if (sender instanceof Player player) {
+                return player;
             }
             Lang.send(sender, Lang.CONSOLE_MUST_SPECIFY_PLAYER);
             throw CommandCompleted.withoutMessage();

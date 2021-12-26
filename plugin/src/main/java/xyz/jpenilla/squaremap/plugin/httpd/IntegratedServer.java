@@ -13,8 +13,8 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import net.kyori.adventure.text.minimessage.Template;
 import xyz.jpenilla.squaremap.plugin.Logging;
-import xyz.jpenilla.squaremap.plugin.configuration.Config;
-import xyz.jpenilla.squaremap.plugin.configuration.Lang;
+import xyz.jpenilla.squaremap.plugin.config.Config;
+import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 
 public class IntegratedServer {

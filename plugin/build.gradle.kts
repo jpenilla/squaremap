@@ -24,6 +24,13 @@ dependencies {
     implementation("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20211018.2") {
         isTransitive = false // Depends on guava, provided by mc at runtime
     }
+
+    implementation(platform("org.spongepowered:configurate-bom:4.1.2"))
+    implementation("org.spongepowered:configurate-yaml")
+}
+
+configurations.mojangMappedServer {
+    exclude("org.yaml", "snakeyaml")
 }
 
 tasks {
@@ -42,6 +49,8 @@ tasks {
             "xyz.jpenilla.reflectionremapper",
             "net.fabricmc.mappingio",
             "org.owasp.html",
+            "org.spongepowered.configurate",
+            "org.yaml.snakeyaml",
         ).forEach { relocate(it, "squaremap.libraries.$it") }
     }
     reobfJar {
