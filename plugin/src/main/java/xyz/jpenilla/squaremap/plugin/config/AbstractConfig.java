@@ -8,7 +8,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
@@ -97,6 +96,16 @@ abstract class AbstractConfig {
         return this.node(path).getDouble(def);
     }
 
+    protected final <T> T get(TypeToken<T> type, final String path, T def) {
+        final ConfigurationNode node = this.node(path);
+        try {
+            final @Nullable T ret = node.virtual() ? null : node.get(type);
+            return ret == null ? storeDefault(node, type.getType(), def) : ret;
+        } catch (SerializationException e) {
+            throw rethrow(e);
+        }
+    }
+
     protected final <T> List<T> getList(TypeToken<T> elementType, String path, List<T> def) {
         try {
             //return this.config.node((Object[]) splitPath(path)).getList(elementType, def);
@@ -109,29 +118,21 @@ abstract class AbstractConfig {
     protected final <T> List<T> getList(Class<T> elementType, String path, List<T> def) {
         try {
             //return this.config.node((Object[]) splitPath(path)).getList(elementType, def);
-            return this.getList0(elementType, path, def);
+            return this.getList0(TypeToken.get(elementType), path, def);
         } catch (SerializationException e) {
             throw rethrow(e);
         }
     }
 
-    private <V> List<V> getList0(Class<V> elementType, final String path, List<V> def) throws SerializationException {
-        return this.getList0(TypeToken.get(elementType), path, def);
+    protected final List<String> getStringList(String path, List<String> def) {
+        return this.getList(String.class, path, def);
     }
 
     @SuppressWarnings("unchecked")
     private <V> List<V> getList0(TypeToken<V> elementType, final String path, List<V> def) throws SerializationException {
         final ConfigurationNode node = this.node(path);
         final Type type = TypeFactory.parameterizedClass(List.class, elementType.getType());
-        final @Nullable List<V> ret = node.virtual() ? null : (List<V>) node.get(type/*, def*/);
-        return ret == null ? storeDefault(node, type, def) : ret;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected final <K, V> Map<K, V> getMap(TypeToken<K> keyType, TypeToken<V> valueType, final String path, Map<K, V> def) throws SerializationException {
-        final ConfigurationNode node = this.node(path);
-        final Type type = TypeFactory.parameterizedClass(Map.class, keyType.getType(), valueType.getType());
-        final @Nullable Map<K, V> ret = node.virtual() ? null : (Map<K, V>) node.get(type/*, def*/);
+        final @Nullable List<V> ret = node.virtual() ? null : (List<V>) node.get(type);
         return ret == null ? storeDefault(node, type, def) : ret;
     }
 

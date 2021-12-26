@@ -8,13 +8,10 @@ import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.spongepowered.configurate.serialize.SerializationException;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.WorldManager;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 import xyz.jpenilla.squaremap.plugin.util.ReflectionUtil;
-
-import static xyz.jpenilla.squaremap.plugin.util.Util.rethrow;
 
 @SuppressWarnings("unused")
 abstract class AbstractWorldConfig {
@@ -75,21 +72,18 @@ abstract class AbstractWorldConfig {
     }
 
     protected final <T> List<T> getList(Class<T> elementType, String path, List<T> def) {
-        if (this.virtual(this.wrapPath(path))) {
-            return this.parent.getList(elementType, wrapDefaultPath(path), def);
-        }
-        return this.parent.getList(elementType, this.wrapPath(path), this.parent.getList(elementType, wrapDefaultPath(path), def));
+        return this.getList(TypeToken.get(elementType), path, def);
     }
 
-    protected final <K, V> Map<K, V> getMap(final TypeToken<K> keyType, final TypeToken<V> valueType, final String path, final Map<K, V> def) {
-        try {
-            if (this.virtual(this.wrapPath(path))) {
-                return this.parent.getMap(keyType, valueType, wrapDefaultPath(path), def);
-            }
-            return this.parent.getMap(keyType, valueType, this.wrapPath(path), this.parent.getMap(keyType, valueType, wrapDefaultPath(path), def));
-        } catch (SerializationException e) {
-            throw rethrow(e);
+    protected final List<String> getStringList(String path, List<String> def) {
+        return this.getList(String.class, path, def);
+    }
+
+    protected final <T> T get(final TypeToken<T> type, final String path, final T def) {
+        if (this.virtual(this.wrapPath(path))) {
+            return this.parent.get(type, wrapDefaultPath(path), def);
         }
+        return this.parent.get(type, this.wrapPath(path), this.parent.get(type, wrapDefaultPath(path), def));
     }
 
     private boolean virtual(String path) {
