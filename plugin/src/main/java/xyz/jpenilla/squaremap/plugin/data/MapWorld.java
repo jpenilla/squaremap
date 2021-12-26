@@ -5,8 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -122,11 +123,12 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
     public Map<RegionCoordinate, Boolean> getRenderProgress() {
         try {
             final Path file = this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME);
-            if (Files.exists(file)) {
-                String json = String.join("", Files.readAllLines(file));
-                TypeToken<LinkedHashMap<RegionCoordinate, Boolean>> token = new TypeToken<>() {
-                };
-                return GSON.fromJson(json, token.getType());
+            if (Files.isRegularFile(file)) {
+                final Type type = new TypeToken<LinkedHashMap<RegionCoordinate, Boolean>>() {
+                }.getType();
+                try (final BufferedReader reader = Files.newBufferedReader(file)) {
+                    return GSON.fromJson(reader, type);
+                }
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             Logging.warn(String.format("Failed to deserialize render progress for world '%s'", this.name()), e);
@@ -153,13 +155,15 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
     private void deserializeDirtyChunks() {
         try {
             final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
-            if (Files.exists(file)) {
-                this.modifiedChunks.addAll(
-                    GSON.fromJson(
-                        new FileReader(file.toFile()),
-                        TypeToken.getParameterized(List.class, ChunkCoordinate.class).getType()
-                    )
-                );
+            if (Files.isRegularFile(file)) {
+                try (final BufferedReader reader = Files.newBufferedReader(file)) {
+                    this.modifiedChunks.addAll(
+                        GSON.fromJson(
+                            reader,
+                            TypeToken.getParameterized(List.class, ChunkCoordinate.class).getType()
+                        )
+                    );
+                }
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
             Logging.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.name()), e);
