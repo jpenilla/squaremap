@@ -3,6 +3,7 @@ package xyz.jpenilla.squaremap.plugin.config;
 import io.leangen.geantyref.TypeFactory;
 import io.leangen.geantyref.TypeToken;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -52,6 +53,8 @@ abstract class AbstractConfig {
             try {
                 method.setAccessible(true);
                 method.invoke(instance);
+            } catch (InvocationTargetException ex) {
+                Logging.severe("Error invoking " + method, ex.getCause());
             } catch (final Exception ex) {
                 Logging.severe("Error invoking " + method, ex);
             }
