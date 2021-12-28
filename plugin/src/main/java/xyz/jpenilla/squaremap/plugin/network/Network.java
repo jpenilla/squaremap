@@ -16,26 +16,28 @@ import xyz.jpenilla.squaremap.plugin.config.Config;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 import xyz.jpenilla.squaremap.plugin.listener.PlayerListener;
 
-public class Network {
-    public static final String CHANNEL = "pl3xmap:pl3xmap";
+public final class Network {
+    public static final String CHANNEL = "squaremap:client";
 
     public static void register() {
         Bukkit.getMessenger().registerOutgoingPluginChannel(SquaremapPlugin.getInstance(), Network.CHANNEL);
-        Bukkit.getMessenger().registerIncomingPluginChannel(SquaremapPlugin.getInstance(), Network.CHANNEL,
-                (channel, player, bytes) -> {
-                    ByteArrayDataInput in = in(bytes);
-                    int action = in.readInt();
-                    switch (action) {
-                        case Constants.SERVER_DATA -> {
-                            PlayerListener.clientUsers.add(player.getUniqueId());
-                            Network.sendServerData(player);
-                        }
-                        case Constants.MAP_DATA -> {
-                            int id = in.readInt();
-                            Network.sendMapData(player, id);
-                        }
+        Bukkit.getMessenger().registerIncomingPluginChannel(
+            SquaremapPlugin.getInstance(),
+            Network.CHANNEL,
+            (channel, player, bytes) -> {
+                ByteArrayDataInput in = in(bytes);
+                int action = in.readInt();
+                switch (action) {
+                    case Constants.SERVER_DATA -> {
+                        PlayerListener.clientUsers.add(player.getUniqueId());
+                        Network.sendServerData(player);
+                    }
+                    case Constants.MAP_DATA -> {
+                        int id = in.readInt();
+                        Network.sendMapData(player, id);
                     }
                 }
+            }
         );
     }
 
@@ -56,15 +58,15 @@ public class Network {
         Map<UUID, MapWorld> mapWorlds = SquaremapPlugin.getInstance().worldManager().worlds();
         out.writeInt(mapWorlds.size());
 
-        mapWorlds.forEach((uuid, mapWorld) -> {
-            out.writeUTF(uuid.toString());
+        mapWorlds.forEach(($, mapWorld) -> {
+            out.writeUTF(mapWorld.identifier().asString());
             out.writeUTF(mapWorld.name());
             out.writeInt(mapWorld.config().ZOOM_MAX);
             out.writeInt(mapWorld.config().ZOOM_DEFAULT);
             out.writeInt(mapWorld.config().ZOOM_EXTRA);
         });
 
-        out.writeUTF(player.getWorld().getUID().toString());
+        out.writeUTF(player.getWorld().key().asString());
 
         send(player, out);
     }
@@ -101,7 +103,7 @@ public class Network {
         out.writeByte(getScale(map));
         out.writeInt(map.getCenterX());
         out.writeInt(map.getCenterZ());
-        out.writeUTF(world.getUID().toString());
+        out.writeUTF(world.key().asString());
 
         send(player, out);
     }
@@ -112,7 +114,7 @@ public class Network {
         out.writeInt(Constants.PROTOCOL);
         out.writeInt(Constants.RESPONSE_SUCCESS);
 
-        out.writeUTF(player.getWorld().getUID().toString());
+        out.writeUTF(player.getWorld().getKey().asString());
 
         send(player, out);
     }
