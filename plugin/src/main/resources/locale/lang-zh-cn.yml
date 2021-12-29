@@ -1,69 +1,81 @@
 # Translators: [thaumiel9]
 
-render-in-progress: <red>存在一个在世界 <world> 上进行的渲染
-render-not-in-progress: <red>没有在世界 <world> 上进行的渲染
-cancelled-render: <green>取消了世界 <world> 上进行的渲染
-successfully-reset-map: <green>成功重置了世界 <world> 渲染的地图
-paused-renders: <green>暂停了世界 <world> 上进行的渲染
-unpaused-renders: <green>恢复了世界 <world> 上进行的渲染
-click-for-help: 点击获取帮助
-plugin-reloaded: <green><name> v<version> 已重新加载
+render-in-progress: <red>世界 <world> 存在进行中的渲染
+render-not-in-progress: <red>世界 <world> 没有进行中的渲染
+cancelled-render: <green>世界 <world> 的渲染已取消
+successfully-reset-map: <green>世界 <world> 的渲染已重置
+paused-renders: <green>世界 <world> 的渲染已暂停
+unpaused-renders: <green>世界 <world> 的渲染已恢复
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
   message:
     console-must-specify-player: <red>从控制台执行此命令时必须指定一个玩家
     player-not-found-for-input: <red>没有找到玩家 '<input>'
     console-must-specify-world: <red>从控制台执行此命令时必须指定一个世界
     no-such-world: <red>没有找到世界 '<world>'
-    map-not-enabled-for-world: <red>没有启用世界 '<world>' 的地图'
+    map-not-enabled-for-world: <red>世界 '<world>' 的地图没有启用'
     confirmation-required: <red>请输入 /<command> confirm 确认操作
     no-pending-commands: <red>你没有任何待处理的命令
+        progresslogging:
+            enabled: <green>渲染进度日志已启用
+            disabled: <green>渲染进度日志已禁用
+            set-rate: <green>渲染进度日志的间隔已设置为 </green><seconds> 秒
+            statusmessage: '渲染进度日志状态: <enabled>, 间隔: <green><seconds></green> 秒'
+  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
   description:
-    help: 获取 squaremap 的指令帮助
-    resetmap: 重置指定世界的地图
+    help: 获取 squaremap 的命令帮助
+    resetmap: 重置指定世界的渲染
     confirm: 确认待处理的命令
     reload: 重新加载插件
     full-render: 完整渲染指定世界
-    cancel-render: 取消指定世界的渲染
-    pause-render: 暂停指定世界的所有渲染
+    cancel-render: 取消渲染指定世界
+    pause-render: 暂停渲染指定世界
     radius-render: 指定半径渲染
+        progresslogging:
+            status: 显示渲染进度日志的当前设置
+            toggle: 切换渲染进度日志的状态
+            rate: 设置渲染进度日志的间隔 (秒)
     hide: 在地图中隐藏玩家
     show: 在地图中显示玩家
   argument:
-    optional-world: 如果未指定世界, 则默认为玩家所在世界
-    optional-center: 如果未指定圆心, 则默认为 (<white>0<gray>,</gray> 0</white>)
-    optional-player: 如果未指定玩家, 则默认为执行指令的玩家 (控制台执行必须指定一个玩家)
-    help-query: 查询帮助
+    optional-world: 如未指定世界, 则默认为玩家当前世界
+    optional-center: 如未指定圆心, 则默认为 (<white>0<gray>,</gray> 0</white>)
+    optional-player: 如未指定玩家, 则默认为执行命令的玩家 (控制台执行必须指定一个玩家)
+    help-query: 获取帮助
   hide:
-    already-hidden: <red><player> 已经在地图中处于隐藏状态了
+    already-hidden: <red><player> 没有显示在地图中
     hidden: <green><player> 已在地图中隐藏
   show:
-    not-hidden: <red><player> 已经在地图中处于显示状态了
+    not-hidden: <red><player> 没有隐藏在地图中
     shown: <green><player> 已在地图中显示
+click-for-help: 点击获取帮助
+click-to-confirm: 点击进行确认
+click-to-toggle: 点击进行切换
 ui:
   page-title: squaremap - {world}
-  coordinates: 坐标<br/><x>, <z>
+  coordinates: 坐标<br/>{x}, {z}
   sidebar:
-    player-list: 玩家列表 ({cur}/{max})
-    world-list: 世界列表
+    player-list: 玩家 ({cur}/{max})
+    world-list: 世界
   layers:
     player-tracker: 玩家
     world-spawn: 出生点
     world-border: 世界边界
+plugin-reloaded: <green><name> v<version> 已重新加载
 log:
-  started-full-render: <dark_aqua>开始世界 <yellow><world></yellow> 的完整渲染
-  started-radius-render: <dark_aqua>开始世界 <yellow><world></yellow> 的半径渲染
-  scanning-region-files: <yellow>正在扫描区域文件... (这可能需要一点时间)
-  found-total-region-files: <green>共找到 <gray><total> <green>个区域文件
-  finished-rendering: <dark_aqua>已完成 <yellow><world></yellow> 的地图渲染
-  cancelled-rendering: <dark_aqua>世界 <yellow><world> <dark_aqua>进行的渲染已经取消
-  resumed-rendering: <dark_aqua>世界 <yellow><world> <dark_aqua>进行的渲染已经继续
-  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>世界<gray>:</gray> <yellow><world></yellow> 区块<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> 已用时<gray>:</gray> <yellow><elapsed></yellow> 剩余时间<gray>:</gray> <yellow><eta></yellow> 速度<gray>:</gray> <yellow><rate></yellow> cps
-  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>世界<gray>:</gray> <yellow><world></yellow> 区域<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> 区块<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> 已用时<gray>:</gray> <yellow><elapsed></yellow> 剩余时间<gray>:</gray> <yellow><eta></yellow> 速度<gray>:</gray> <yellow><rate></yellow> cps
-  internal-web-disabled: <green>内部Web服务器已在 config.yml 设置为关闭
-  internal-web-started: <green>内部Web服务器已启动于 <bind>:<port>
-  internal-web-stopped: <green>内部Web服务器已停止
+  started-full-render: 开始世界 <world> 的完整渲染
+  started-radius-render: 开始世界 <world> 的半径渲染
+  scanning-region-files: 正在扫描区域文件... (这可能需要一点时间)
+  found-total-region-files: 共找到 <total> 个区域文件
+  finished-rendering: 世界 <world> 的渲染已完成
+  cancelled-rendering: 世界 <world> 的渲染已取消
+  resumed-rendering: 世界 <world> 的渲染已恢复
+  scanning-region-progress: '(<percent>) 世界: <world> 区块: <current_chunks>/<total_chunks> 已用时: <elapsed> 剩余时间: <eta> 速度: <rate> cps'
+  scanning-region-progress-with-regions: '(<percent>) 世界: <world> 区域: <current_regions>/<total_regions> 区块: <current_chunks>/<total_chunks> 已用时: <elapsed> 剩余时间: <eta> 速度: <rate> cps'
+  internal-web-disabled: 内部Web服务器已在 config.yml 设置为关闭
+  internal-web-started: 内部Web服务器已启动于 <bind>:<port>
+  internal-web-stopped: 内部Web服务器已停止
   internal-web-start-error: 内部Web服务器无法启动
   could-not-create-directory: 无法创建目录! <path>
+  could-not-read-region: 无法读取 <x>,<z> 区域的地图图片 (已损坏?) 它将被覆盖
   could-not-save-region: 无法保存 <x>,<z> 区域的地图
   internal-web-not-running: 内部Web服务器发生错误
