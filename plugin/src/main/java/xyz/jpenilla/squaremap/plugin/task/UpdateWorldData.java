@@ -8,9 +8,11 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
+import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.config.Config;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
+import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 
 public class UpdateWorldData extends BukkitRunnable {
@@ -21,11 +23,12 @@ public class UpdateWorldData extends BukkitRunnable {
         List<Object> worlds = new ArrayList<>();
 
         Bukkit.getWorlds().forEach(world -> {
-            WorldConfig worldConfig = WorldConfig.get(world);
-
-            if (!worldConfig.MAP_ENABLED) {
+            final MapWorld mapWorld = SquaremapPlugin.getInstance().worldManager().getWorldIfEnabled(world)
+                .orElse(null);
+            if (mapWorld == null) {
                 return;
             }
+            final WorldConfig worldConfig = mapWorld.config();
 
             Map<String, Object> spawn = new HashMap<>();
             Location loc = world.getSpawnLocation();
@@ -61,7 +64,7 @@ public class UpdateWorldData extends BukkitRunnable {
             settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
             settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
 
-            FileUtil.write(this.gson.toJson(settings), FileUtil.getWorldFolder(world).resolve("settings.json"));
+            FileUtil.write(this.gson.toJson(settings), mapWorld.tilesPath().resolve("settings.json"));
 
             Map<String, Object> worldsList = new HashMap<>();
             worldsList.put("name", world.getName());

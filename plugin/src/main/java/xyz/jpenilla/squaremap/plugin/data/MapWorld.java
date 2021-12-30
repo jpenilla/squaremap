@@ -42,6 +42,7 @@ import xyz.jpenilla.squaremap.plugin.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.plugin.task.render.BackgroundRender;
 import xyz.jpenilla.squaremap.plugin.task.render.FullRender;
 import xyz.jpenilla.squaremap.plugin.util.Colors;
+import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 import xyz.jpenilla.squaremap.plugin.util.RecordTypeAdapterFactory;
 import xyz.jpenilla.squaremap.plugin.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.plugin.util.Util;
@@ -59,6 +60,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
     private final ServerLevel level;
     private final org.bukkit.World world;
     private final Path dataPath;
+    private final Path tilesPath;
     private final ExecutorService imageIOexecutor;
     private final ScheduledExecutorService executor;
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
@@ -97,6 +99,9 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
         } catch (IOException e) {
             throw this.failedToCreateDataDirectory(e);
         }
+
+        this.tilesPath = FileUtil.getAndCreateTilesDirectory(this.bukkit());
+
         this.startBackgroundRender();
 
         this.updateMarkersTask = new UpdateMarkers(this);
@@ -242,6 +247,10 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
 
     public org.bukkit.@NonNull World bukkit() {
         return this.world;
+    }
+
+    public Path tilesPath() {
+        return this.tilesPath;
     }
 
     @SuppressWarnings("ConstantConditions") // params for getMapColor are never used, check on mc update

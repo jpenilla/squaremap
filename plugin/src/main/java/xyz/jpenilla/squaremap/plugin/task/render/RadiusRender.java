@@ -70,13 +70,13 @@ public final class RadiusRender extends AbstractRender {
             final RegionCoordinate region = chunkCoord.regionCoordinate();
 
             // ignore chunks within the radius that are outside the visibility limit
-            if (!mapWorld.visibilityLimit().shouldRenderChunk(chunkCoord)) {
+            if (!this.mapWorld.visibilityLimit().shouldRenderChunk(chunkCoord)) {
                 continue;
             }
 
             Image image = images.get(region);
             if (image == null) {
-                image = new Image(region, worldTilesDir, mapWorld.config().ZOOM_MAX);
+                image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
                 images.put(region, image);
             }
 

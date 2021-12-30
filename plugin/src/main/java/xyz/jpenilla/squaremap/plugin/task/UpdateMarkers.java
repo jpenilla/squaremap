@@ -83,7 +83,7 @@ public final class UpdateMarkers extends BukkitRunnable {
         });
 
         Bukkit.getServer().getScheduler().runTaskAsynchronously(SquaremapPlugin.getInstance(), () -> {
-            Path file = FileUtil.getWorldFolder(this.mapWorld.bukkit()).resolve("markers.json");
+            Path file = this.mapWorld.tilesPath().resolve("markers.json");
             FileUtil.write(this.gson.toJson(layers), file);
         });
     }

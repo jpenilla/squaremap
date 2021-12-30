@@ -49,7 +49,7 @@ public final class BackgroundRender extends AbstractRender {
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         coordMap.forEach((region, chunkCoords) -> {
-            final Image img = new Image(region, this.worldTilesDir, this.mapWorld.config().ZOOM_MAX);
+            final Image img = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
 
             final CompletableFuture<Void> future = CompletableFuture.allOf(chunkCoords.stream().map(coord ->
                 mapSingleChunk(img, coord.x(), coord.z())).toArray(CompletableFuture[]::new));

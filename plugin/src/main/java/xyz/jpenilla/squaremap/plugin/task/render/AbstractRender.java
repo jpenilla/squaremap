@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.plugin.task.render;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -35,7 +34,6 @@ import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 import xyz.jpenilla.squaremap.plugin.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
 import xyz.jpenilla.squaremap.plugin.util.Colors;
-import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 import xyz.jpenilla.squaremap.plugin.util.Numbers;
 import xyz.jpenilla.squaremap.plugin.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.plugin.util.Util;
@@ -50,7 +48,6 @@ public abstract class AbstractRender implements Runnable {
     protected final MapWorld mapWorld;
     protected final World world;
     protected final ServerLevel level;
-    protected final Path worldTilesDir;
 
     private final ThreadLocal<BiomeColors> biomeColors;
 
@@ -75,7 +72,6 @@ public abstract class AbstractRender implements Runnable {
         this.executor = executor;
         this.world = mapWorld.bukkit();
         this.level = ReflectionUtil.CraftBukkit.serverLevel(this.world);
-        this.worldTilesDir = FileUtil.getWorldFolder(world);
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
             ? ThreadLocal.withInitial(() -> new BiomeColors(mapWorld))
             : null; // this should be null if we are not mapping biomes
@@ -145,7 +141,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     protected final void mapRegion(final @NonNull RegionCoordinate region) {
-        Image image = new Image(region, this.worldTilesDir, this.mapWorld.config().ZOOM_MAX);
+        Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
         int startX = region.getChunkX();
         int startZ = region.getChunkZ();
         final List<CompletableFuture<Void>> futures = new ArrayList<>();

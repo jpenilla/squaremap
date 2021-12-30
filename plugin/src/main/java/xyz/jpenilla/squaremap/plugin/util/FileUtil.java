@@ -17,9 +17,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -33,38 +30,50 @@ import xyz.jpenilla.squaremap.plugin.config.Config;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
 
 public class FileUtil {
-    public static Path PLUGIN_DIR = SquaremapPlugin.getInstance().getDataFolder().toPath();
-    public static Path WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
-    public static Path LOCALE_DIR = PLUGIN_DIR.resolve("locale");
-    public static Path TILES_DIR = WEB_DIR.resolve("tiles");
-    public static final Map<UUID, Path> WORLD_DIRS = new HashMap<>();
-    public static final Map<UUID, Path> REGION_DIRS = new HashMap<>();
+    public static Path PLUGIN_DIR;
+    public static Path WEB_DIR;
+    public static Path LOCALE_DIR;
+    public static Path TILES_DIR;
+
+    static {
+        reload();
+    }
 
     public static void reload() {
         PLUGIN_DIR = SquaremapPlugin.getInstance().getDataFolder().toPath();
         WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
+        LOCALE_DIR = PLUGIN_DIR.resolve("locale");
         TILES_DIR = WEB_DIR.resolve("tiles");
-
-        WORLD_DIRS.clear();
-        REGION_DIRS.clear();
     }
 
-    public static Path getRegionFolder(World world) {
-        Path dir = REGION_DIRS.get(world.getUID());
-        if (dir == null) {
-            dir = LevelStorageSource.getStorageFolder(world.getWorldFolder().toPath(), ((CraftWorld) world).getHandle().getTypeKey())
-                .resolve("region");
-            REGION_DIRS.put(world.getUID(), dir);
-        }
-        return dir;
+    private static Path getRegionFolder(World world) {
+        return LevelStorageSource
+            .getStorageFolder(
+                world.getWorldFolder().toPath(),
+                ((CraftWorld) world).getHandle().getTypeKey()
+            )
+            .resolve("region");
     }
 
     public static Path[] getRegionFiles(World world) {
-        try (final Stream<Path> stream = Files.list(getRegionFolder(world))) {
+        final Path regionFolder = getRegionFolder(world);
+        try (final Stream<Path> stream = Files.list(regionFolder)) {
             return stream.filter(it -> it.getFileName().toString().endsWith(".mca")).toArray(Path[]::new);
         } catch (final IOException ex) {
-            throw new RuntimeException("Failed to list region files in " + getRegionFolder(world).toAbsolutePath(), ex);
+            throw new RuntimeException("Failed to list region files in " + regionFolder.toAbsolutePath(), ex);
         }
+    }
+
+    public static Path getAndCreateTilesDirectory(World world) {
+        final Path dir = TILES_DIR.resolve(world.getName());
+        if (!Files.exists(dir)) {
+            try {
+                Files.createDirectories(dir);
+            } catch (IOException e) {
+                Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR.replace("{path}", dir.toAbsolutePath().toString()), e);
+            }
+        }
+        return dir;
     }
 
     public static void deleteSubdirectories(Path dir) throws IOException {
@@ -86,21 +95,6 @@ public class FileUtil {
                 .map(Path::toFile)
                 .forEach(File::delete);
         }
-    }
-
-    public static Path getWorldFolder(World world) {
-        Path dir = WORLD_DIRS.get(world.getUID());
-        if (dir == null) {
-            dir = TILES_DIR.resolve(world.getName());
-            try {
-                Files.createDirectories(dir);
-                WORLD_DIRS.put(world.getUID(), dir);
-            } catch (IOException e) {
-                Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR
-                    .replace("{path}", dir.toAbsolutePath().toString()), e);
-            }
-        }
-        return dir;
     }
 
     public static void extract(String inDir, File outDir, boolean replace) {

@@ -37,7 +37,7 @@ public final class ResetMapCommand extends SquaremapCommand {
     private void executeResetMap(final @NonNull CommandContext<CommandSender> context) {
         final CommandSender sender = context.getSender();
         final World world = context.get("world");
-        final Path worldTilesDir = FileUtil.getWorldFolder(world);
+        final Path worldTilesDir = FileUtil.getAndCreateTilesDirectory(world);
         try {
             FileUtil.deleteSubdirectories(worldTilesDir);
         } catch (IOException e) {
