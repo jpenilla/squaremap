@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -181,8 +180,8 @@ public final class UpdateMarkers extends BukkitRunnable {
             final Object points;
             if (line.points().size() == 1) {
                 points = line.points().get(0).stream()
-                        .map(UpdateMarkers::toMap)
-                        .collect(Collectors.toList());
+                    .map(UpdateMarkers::toMap)
+                    .toList();
             } else {
                 points = serializePoints(line.points().stream());
             }
@@ -192,8 +191,8 @@ public final class UpdateMarkers extends BukkitRunnable {
         register(Rectangle.class, (destination, rectangle) -> {
             destination.put("type", "rectangle");
             destination.put("points", List.of(
-                    toMap(rectangle.point1()),
-                    toMap(rectangle.point2())
+                toMap(rectangle.point1()),
+                toMap(rectangle.point2())
             ));
         });
 
@@ -215,20 +214,20 @@ public final class UpdateMarkers extends BukkitRunnable {
             final List<List<Point>> list = new ArrayList<>(Collections.singleton(polygon.mainPolygon()));
             list.addAll(polygon.negativeSpace());
             destination.put(
-                    "points",
-                    serializePoints(list.stream())
+                "points",
+                serializePoints(list.stream())
             );
         });
 
         register(MultiPolygon.class, (destination, multiPolygon) -> {
             destination.put("type", "polygon");
             destination.put(
-                    "points",
-                    multiPolygon.subPolygons().stream().map(subPoly -> {
-                        final List<List<Point>> list = new ArrayList<>(Collections.singleton(subPoly.mainPolygon()));
-                        list.addAll(subPoly.negativeSpace());
-                        return serializePoints(list.stream());
-                    }).collect(Collectors.toList())
+                "points",
+                multiPolygon.subPolygons().stream().map(subPoly -> {
+                    final List<List<Point>> list = new ArrayList<>(Collections.singleton(subPoly.mainPolygon()));
+                    list.addAll(subPoly.negativeSpace());
+                    return serializePoints(list.stream());
+                }).toList()
             );
         });
 
@@ -244,10 +243,8 @@ public final class UpdateMarkers extends BukkitRunnable {
 
     private static @NonNull List<List<Map<String, Integer>>> serializePoints(final @NonNull Stream<List<Point>> stream) {
         return stream.map(points ->
-                points.stream()
-                        .map(UpdateMarkers::toMap)
-                        .collect(Collectors.toList())
-        ).collect(Collectors.toList());
+            points.stream().map(UpdateMarkers::toMap).toList()
+        ).toList();
     }
 
     @FunctionalInterface
@@ -258,5 +255,4 @@ public final class UpdateMarkers extends BukkitRunnable {
     private static @NonNull Map<String, Integer> toMap(final @NonNull Point point) {
         return Map.of("x", (int) point.x(), "z", (int) point.z());
     }
-
 }
