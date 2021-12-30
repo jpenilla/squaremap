@@ -6,19 +6,20 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractSpiralIterator<T> implements Iterator<T> {
-    private Direction direction = Direction.RIGHT;
+    private final long totalSteps;
+
     private int x;
     private int z;
-    private int stepCount;
-    private int stepLeg;
-    private int legAxis;
-    private int layer;
-    private final int totalSteps;
+    private long legAxis;
+    private long stepCount;
+    private long stepLeg;
+    private long layer;
+    private Direction direction = Direction.RIGHT;
 
     protected AbstractSpiralIterator(int x, int z, int radius) {
         this.x = x;
         this.z = z;
-        this.totalSteps = (radius * 2 + 1) * (radius * 2 + 1);
+        this.totalSteps = (radius * 2L + 1) * (radius * 2L + 1);
     }
 
     @Override
