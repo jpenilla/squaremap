@@ -1,16 +1,16 @@
 package xyz.jpenilla.squaremap.plugin.data;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ReferenceLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.QuartPos;
@@ -38,7 +38,8 @@ import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
-    private static final int CHUNK_SNAPSHOT_CACHE_SIZE = 128;
+    private static final int CHUNK_SNAPSHOT_CACHE_SIZE = 64;
+    private static final int BLOCKPOS_BIOME_CACHE_SIZE = 4096;
 
     private static final Set<Block> GRASS_COLOR_BLOCKS = Set.of(
         Blocks.GRASS_BLOCK,
@@ -87,11 +88,8 @@ public final class BiomeColors {
         MAP_FOLIAGE = init(imgFoliage);
     }
 
-    private final Cache<Long, Biome> blockPosBiomeCache = CacheBuilder.newBuilder()
-        .expireAfterAccess(10L, TimeUnit.SECONDS)
-        .maximumSize(100000L)
-        .build();
     private final ChunkSnapshotCache chunkSnapshotCache;
+    private final BiomeCache biomeCache;
 
     private final MapWorld world;
 
@@ -104,16 +102,28 @@ public final class BiomeColors {
     public BiomeColors(final MapWorld world) {
         this.world = world;
         this.chunkSnapshotCache = ChunkSnapshotCache.sized(this.world.serverLevel(), CHUNK_SNAPSHOT_CACHE_SIZE);
+        this.biomeCache = BiomeCache.sized(this.world.serverLevel(), this.chunkSnapshotCache, BLOCKPOS_BIOME_CACHE_SIZE);
 
         final Registry<Biome> biomeRegistry = biomeRegistry(world.serverLevel());
         for (final Biome biome : biomeRegistry) {
             float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
             float humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
-            this.grassColors.put(biome, BiomeSpecialEffectsHelper.grassColor(biome)
-                .orElse(getDefaultGrassColor(temperature, humidity)).intValue());
-            this.foliageColors.put(biome, BiomeSpecialEffectsHelper.foliageColor(biome)
-                .orElse(Colors.mix(Colors.leavesMapColor(), getDefaultFoliageColor(temperature, humidity), 0.85f)).intValue());
-            this.waterColors.put(biome, BiomeSpecialEffectsHelper.waterColor(biome));
+            this.grassColors.put(
+                biome,
+                BiomeSpecialEffectsHelper.grassColor(biome)
+                    .orElse(getDefaultGrassColor(temperature, humidity))
+                    .intValue()
+            );
+            this.foliageColors.put(
+                biome,
+                BiomeSpecialEffectsHelper.foliageColor(biome)
+                    .orElse(Colors.mix(Colors.leavesMapColor(), getDefaultFoliageColor(temperature, humidity), 0.85f))
+                    .intValue()
+            );
+            this.waterColors.put(
+                biome,
+                BiomeSpecialEffectsHelper.waterColor(biome)
+            );
         }
 
         world.advanced().COLOR_OVERRIDES_BIOME_FOLIAGE.forEach((key, value) -> this.foliageColors.put(key, value.intValue()));
@@ -174,7 +184,7 @@ public final class BiomeColors {
         if (this.world.config().MAP_BIOMES_BLEND > 0) {
             return this.sampleNeighbors(pos, this.world.config().MAP_BIOMES_BLEND, this::grassColorSampler);
         }
-        return this.grassColorSampler(this.getBiomeWithCaching(pos), pos);
+        return this.grassColorSampler(this.biome(pos), pos);
     }
 
     private int grassColorSampler(final Biome biome, final BlockPos pos) {
@@ -185,14 +195,14 @@ public final class BiomeColors {
         if (this.world.config().MAP_BIOMES_BLEND > 0) {
             return this.sampleNeighbors(pos, this.world.config().MAP_BIOMES_BLEND, (biome, b) -> this.foliageColors.getInt(biome));
         }
-        return this.foliageColors.getInt(this.getBiomeWithCaching(pos));
+        return this.foliageColors.getInt(this.biome(pos));
     }
 
     private int water(final BlockPos pos) {
         if (this.world.config().MAP_BIOMES_BLEND > 0) {
             return this.sampleNeighbors(pos, this.world.config().MAP_BIOMES_BLEND, (biome, b) -> this.waterColors.getInt(biome));
         }
-        return this.waterColors.getInt(this.getBiomeWithCaching(pos));
+        return this.waterColors.getInt(this.biome(pos));
     }
 
     interface ColorSampler {
@@ -209,7 +219,7 @@ public final class BiomeColors {
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
                 this.sharedBlockPos.set(x, pos.getY(), z);
-                final Biome biome = this.getBiomeWithCaching(this.sharedBlockPos);
+                final Biome biome = this.biome(this.sharedBlockPos);
                 rgb = colorSampler.sample(biome, this.sharedBlockPos);
                 r += (rgb >> 16) & 0xFF;
                 g += (rgb >> 8) & 0xFF;
@@ -223,37 +233,18 @@ public final class BiomeColors {
         return rgb;
     }
 
-    private Biome getBiomeWithCaching(final BlockPos pos) {
-        long xz = (long) pos.getX() << 32 | pos.getZ() & 0xffffffffL;
-        @Nullable Biome biome = this.blockPosBiomeCache.getIfPresent(xz);
-        if (biome == null) {
-            biome = this.world.serverLevel().getBiomeManager()
-                .withDifferentSource(this::getNoiseBiome)
-                .getBiome(pos);
-            this.blockPosBiomeCache.put(xz, biome);
-        }
-        return biome;
-    }
-
-    private Biome getNoiseBiome(int quartX, int quartY, int quartZ) {
-        final @Nullable ChunkSnapshot chunk = this.chunkSnapshotCache.snapshot(
-            new ChunkPos(QuartPos.toSection(quartX), QuartPos.toSection(quartZ))
-        );
-        final BiomeManager.NoiseBiomeSource noiseBiomeSource;
-        if (chunk == null) {
-            noiseBiomeSource = this.world.serverLevel();
-        } else {
-            noiseBiomeSource = chunk;
-        }
-        return noiseBiomeSource.getNoiseBiome(quartX, quartY, quartZ);
+    private Biome biome(final BlockPos pos) {
+        return this.biomeCache.biome(pos);
     }
 
     public static Registry<Biome> biomeRegistry(ServerLevel world) {
         return world.registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY);
     }
 
-    private static int modifiedGrassColor(final Biome biome, final BlockPos pos, final int color) {
-        return switch (BiomeSpecialEffectsHelper.grassColorModifier(biome)) {
+    private final Reference2ObjectMap<Biome, BiomeSpecialEffects.GrassColorModifier> grassColorModifiers = new Reference2ObjectOpenHashMap<>();
+
+    private int modifiedGrassColor(final Biome biome, final BlockPos pos, final int color) {
+        return switch (this.grassColorModifiers.computeIfAbsent(biome, BiomeSpecialEffectsHelper::grassColorModifier)) {
             case NONE -> color;
             case SWAMP -> modifiedSwampGrassColor(pos);
             case DARK_FOREST -> (color & 0xFEFEFE) + 2634762 >> 1;
@@ -262,14 +253,18 @@ public final class BiomeColors {
 
     private static int modifiedSwampGrassColor(final BlockPos pos) {
         // swamps have 2 grass colors, depends on sample from noise generator
-        double sample = Biome.BIOME_INFO_NOISE.getValue(pos.getX() * 0.0225, pos.getZ() * 0.0225, false);
+        final double sample = Biome.BIOME_INFO_NOISE.getValue(
+            pos.getX() * 0.0225,
+            pos.getZ() * 0.0225,
+            false
+        );
         if (sample < -0.1) {
             return 5011004;
         }
         return 6975545;
     }
 
-    // Utils for reflecting into BiomeFog/BiomeEffects
+    // Utils for reflecting into BiomeSpecialEffects
     private static final class BiomeSpecialEffectsHelper {
         private BiomeSpecialEffectsHelper() {
         }
@@ -315,6 +310,60 @@ public final class BiomeColors {
         }
     }
 
+    private static final class BiomeCache {
+        private final ServerLevel level;
+        private final ChunkSnapshotCache chunkSnapshotCache;
+        private final int size;
+        private final Long2ReferenceLinkedOpenHashMap<Biome> cache;
+        private final BiomeManager biomeManager;
+
+        private BiomeCache(
+            final ServerLevel level,
+            final ChunkSnapshotCache chunkSnapshotCache,
+            final int size
+        ) {
+            this.level = level;
+            this.chunkSnapshotCache = chunkSnapshotCache;
+            this.size = size;
+            this.cache = new Long2ReferenceLinkedOpenHashMap<>(size);
+            this.biomeManager = this.level.getBiomeManager().withDifferentSource(this::noiseBiome);
+        }
+
+        public Biome biome(final BlockPos pos) {
+            final long blockKey = pos.asLong();
+            final @Nullable Biome cached = this.cache.get(blockKey);
+            if (cached != null) {
+                return cached;
+            }
+
+            final Biome biome = this.biomeManager.getBiome(pos);
+
+            if (this.cache.size() >= this.size) {
+                this.cache.removeLast();
+            }
+            this.cache.putAndMoveToFirst(blockKey, biome);
+            return biome;
+        }
+
+        private Biome noiseBiome(final int quartX, final int quartY, final int quartZ) {
+            final ChunkPos chunkPos = new ChunkPos(
+                QuartPos.toSection(quartX),
+                QuartPos.toSection(quartZ)
+            );
+            final @Nullable ChunkSnapshot chunk = this.chunkSnapshotCache.snapshot(chunkPos);
+
+            final BiomeManager.NoiseBiomeSource noiseBiomeSource = chunk == null
+                ? this.level // no chunk exists, this will get from the chunk generator
+                : chunk;
+
+            return noiseBiomeSource.getNoiseBiome(quartX, quartY, quartZ);
+        }
+
+        public static BiomeCache sized(final ServerLevel level, final ChunkSnapshotCache snapshotCache, final int size) {
+            return new BiomeCache(level, snapshotCache, size);
+        }
+    }
+
     private record ChunkSnapshotCache(
         ServerLevel level,
         int size,
@@ -328,7 +377,9 @@ public final class BiomeColors {
         }
 
         public @Nullable ChunkSnapshot snapshot(final ChunkPos chunkPos) {
-            final @Nullable ChunkSnapshot cached = this.cache.getAndMoveToFirst(chunkPos.toLong());
+            final long chunkKey = chunkPos.toLong();
+
+            final @Nullable ChunkSnapshot cached = this.cache.getAndMoveToFirst(chunkKey);
             if (cached != null) {
                 return cached;
             }
@@ -339,16 +390,20 @@ public final class BiomeColors {
             if (chunk == null) {
                 return null;
             }
+
             if (this.cache.size() >= this.size()) {
                 this.cache.removeLast();
             }
-            this.cache.putAndMoveToFirst(chunkPos.toLong(), chunk);
+            this.cache.putAndMoveToFirst(chunkKey, chunk);
             return chunk;
         }
 
         public static ChunkSnapshotCache sized(final ServerLevel level, final int size) {
-            final Long2ObjectLinkedOpenHashMap<ChunkSnapshot> map = new Long2ObjectLinkedOpenHashMap<>(size);
-            return new ChunkSnapshotCache(level, size, map);
+            return new ChunkSnapshotCache(
+                level,
+                size,
+                new Long2ObjectLinkedOpenHashMap<>(size)
+            );
         }
     }
 }

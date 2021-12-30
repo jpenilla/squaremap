@@ -2,8 +2,10 @@ package xyz.jpenilla.squaremap.plugin.task.render;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -21,6 +23,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -39,7 +42,7 @@ import xyz.jpenilla.squaremap.plugin.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.plugin.util.Util;
 
 public abstract class AbstractRender implements Runnable {
-    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final ExecutorService executor;
     private final FutureTask<Void> futureTask;
@@ -49,7 +52,7 @@ public abstract class AbstractRender implements Runnable {
     protected final World world;
     protected final ServerLevel level;
 
-    private final ThreadLocal<BiomeColors> biomeColors;
+    protected final Map<Thread, BiomeColors> biomeColors;
 
     protected final AtomicInteger curChunks = new AtomicInteger(0);
     protected final AtomicInteger curRegions = new AtomicInteger(0);
@@ -73,7 +76,7 @@ public abstract class AbstractRender implements Runnable {
         this.world = mapWorld.bukkit();
         this.level = ReflectionUtil.CraftBukkit.serverLevel(this.world);
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
-            ? ThreadLocal.withInitial(() -> new BiomeColors(mapWorld))
+            ? new ConcurrentHashMap<>()
             : null; // this should be null if we are not mapping biomes
     }
 
@@ -330,7 +333,8 @@ public abstract class AbstractRender implements Runnable {
         int color = this.mapWorld.getMapColor(state);
 
         if (this.biomeColors != null) {
-            color = this.biomeColors.get().modifyColorFromBiome(color, chunk, mutablePos);
+            color = this.biomeColors.computeIfAbsent(Thread.currentThread(), $ -> new BiomeColors(this.mapWorld))
+                .modifyColorFromBiome(color, chunk, mutablePos);
         }
 
         int odd = (imgX + imgZ & 1);
