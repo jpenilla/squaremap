@@ -149,7 +149,8 @@ public final class FullRender extends AbstractRender {
             try {
                 x = Integer.parseInt(split[1]);
                 z = Integer.parseInt(split[2]);
-            } catch (final NumberFormatException ignored) {
+            } catch (final NumberFormatException ex) {
+                Logging.logger().warn("Failed to parse coordinates for region file '{}' (file name path: '{}')", path, path.getFileName(), ex);
                 continue;
             }
 
