@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.plugin;
 
 import io.papermc.paper.text.PaperComponents;
+import java.util.function.Supplier;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.kyori.adventure.text.minimessage.template.TemplateResolver;
@@ -21,6 +22,12 @@ public final class Logging {
 
     public static Logger logger() {
         return SquaremapPlugin.getInstance().getLog4JLogger();
+    }
+
+    public static void debug(final Supplier<String> msg) {
+        if (Config.DEBUG_MODE) {
+            logger().info("[DEBUG] " + msg.get());
+        }
     }
 
     public static void debug(final String msg) {

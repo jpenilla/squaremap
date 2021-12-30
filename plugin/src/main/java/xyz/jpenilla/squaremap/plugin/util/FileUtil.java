@@ -57,8 +57,15 @@ public class FileUtil {
 
     public static Path[] getRegionFiles(World world) {
         final Path regionFolder = getRegionFolder(world);
+        Logging.debug(() -> "Listing region files for directory '" + regionFolder + "'...");
         try (final Stream<Path> stream = Files.list(regionFolder)) {
-            return stream.filter(it -> it.getFileName().toString().endsWith(".mca")).toArray(Path[]::new);
+            return stream
+                .filter(file -> {
+                    final boolean endsWithMca = file.getFileName().toString().endsWith(".mca");
+                    Logging.debug(() -> String.format("File '%s', endsWithMca: '%s', length: %s", file, endsWithMca, file.toFile().length()));
+                    return endsWithMca;
+                })
+                .toArray(Path[]::new);
         } catch (final IOException ex) {
             throw new RuntimeException("Failed to list region files in " + regionFolder.toAbsolutePath(), ex);
         }
