@@ -30,7 +30,7 @@ public final class CommandUtil {
             final World bukkit = player.getWorld();
             Optional<MapWorld> optionalMapWorld = SquaremapPlugin.getInstance().worldManager().getWorldIfEnabled(bukkit);
             if (optionalMapWorld.isEmpty()) {
-                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Template.template("world", bukkit.getName()));
+                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Template.template("world", bukkit.getKey().asString()));
                 throw CommandCompleted.withoutMessage();
             } else {
                 return optionalMapWorld.get();

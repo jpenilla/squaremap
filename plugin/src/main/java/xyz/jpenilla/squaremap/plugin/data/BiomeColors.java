@@ -88,24 +88,24 @@ public final class BiomeColors {
         MAP_FOLIAGE = init(imgFoliage);
     }
 
-    private final ChunkSnapshotCache chunkSnapshotCache;
-    private final BiomeCache biomeCache;
-
-    private final MapWorld world;
-
+    private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
     private final Reference2IntMap<Biome> grassColors = new Reference2IntOpenHashMap<>();
     private final Reference2IntMap<Biome> foliageColors = new Reference2IntOpenHashMap<>();
     private final Reference2IntMap<Biome> waterColors = new Reference2IntOpenHashMap<>();
-
-    private final BlockPos.MutableBlockPos sharedBlockPos = new BlockPos.MutableBlockPos();
+    private final MapWorld world;
+    private final ChunkSnapshotCache chunkSnapshotCache;
+    private final BiomeCache biomeCache;
 
     public BiomeColors(final MapWorld world) {
         this.world = world;
         this.chunkSnapshotCache = ChunkSnapshotCache.sized(this.world.serverLevel(), CHUNK_SNAPSHOT_CACHE_SIZE);
         this.biomeCache = BiomeCache.sized(this.world.serverLevel(), this.chunkSnapshotCache, BLOCKPOS_BIOME_CACHE_SIZE);
 
-        final Registry<Biome> biomeRegistry = biomeRegistry(world.serverLevel());
-        for (final Biome biome : biomeRegistry) {
+        this.initBiomeColorMaps();
+    }
+
+    private void initBiomeColorMaps() {
+        for (final Biome biome : biomeRegistry(this.world.serverLevel())) {
             float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
             float humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
             this.grassColors.put(
@@ -126,13 +126,13 @@ public final class BiomeColors {
             );
         }
 
-        world.advanced().COLOR_OVERRIDES_BIOME_FOLIAGE.forEach((key, value) -> this.foliageColors.put(key, value.intValue()));
-        world.advanced().COLOR_OVERRIDES_BIOME_GRASS.forEach((key, value) -> this.grassColors.put(key, value.intValue()));
-        world.advanced().COLOR_OVERRIDES_BIOME_WATER.forEach((key, value) -> this.waterColors.put(key, value.intValue()));
+        this.foliageColors.putAll(this.world.advanced().COLOR_OVERRIDES_BIOME_FOLIAGE);
+        this.grassColors.putAll(this.world.advanced().COLOR_OVERRIDES_BIOME_GRASS);
+        this.waterColors.putAll(this.world.advanced().COLOR_OVERRIDES_BIOME_WATER);
     }
 
     public int modifyColorFromBiome(int color, final ChunkSnapshot chunk, final BlockPos pos) {
-        this.chunkSnapshotCache.put(chunk.pos().toLong(), chunk);
+        this.chunkSnapshotCache.put(chunk);
 
         final BlockState data = chunk.getBlockState(pos);
         final Material mat = data.getMaterial();
@@ -218,9 +218,9 @@ public final class BiomeColors {
         // Sampling in the y direction as well would improve output, however would complicate caching (low priority, PRs accepted)
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
-                this.sharedBlockPos.set(x, pos.getY(), z);
-                final Biome biome = this.biome(this.sharedBlockPos);
-                rgb = colorSampler.sample(biome, this.sharedBlockPos);
+                this.mutablePos.set(x, pos.getY(), z);
+                final Biome biome = this.biome(this.mutablePos);
+                rgb = colorSampler.sample(biome, this.mutablePos);
                 r += (rgb >> 16) & 0xFF;
                 g += (rgb >> 8) & 0xFF;
                 b += rgb & 0xFF;
@@ -369,11 +369,11 @@ public final class BiomeColors {
         int size,
         Long2ObjectLinkedOpenHashMap<ChunkSnapshot> cache
     ) {
-        public void put(long pos, ChunkSnapshot snapshot) {
+        public void put(final ChunkSnapshot snapshot) {
             if (this.cache.size() >= this.size()) {
                 this.cache.removeLast();
             }
-            this.cache.putAndMoveToFirst(pos, snapshot);
+            this.cache.putAndMoveToFirst(snapshot.pos().toLong(), snapshot);
         }
 
         public @Nullable ChunkSnapshot snapshot(final ChunkPos chunkPos) {

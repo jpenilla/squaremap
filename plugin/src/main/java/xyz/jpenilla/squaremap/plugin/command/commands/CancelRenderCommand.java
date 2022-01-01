@@ -34,11 +34,11 @@ public final class CancelRenderCommand extends SquaremapCommand {
         final CommandSender sender = context.getSender();
         final MapWorld world = CommandUtil.resolveWorld(context);
         if (!world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS, Template.template("world", world.name()));
+            Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS, Template.template("world", world.identifier().asString()));
             return;
         }
 
-        Lang.send(sender, Lang.CANCELLED_RENDER, Template.template("world", world.name()));
+        Lang.send(sender, Lang.CANCELLED_RENDER, Template.template("world", world.identifier().asString()));
         world.stopRender();
         world.finishedRender();
     }

@@ -118,9 +118,9 @@ public abstract class AbstractRender implements Runnable {
 
             if (finished) {
                 this.mapWorld.finishedRender();
-                Logging.info(Lang.LOG_FINISHED_RENDERING, Template.template("world", this.world.getName()));
+                Logging.info(Lang.LOG_FINISHED_RENDERING, Template.template("world", this.mapWorld.identifier().asString()));
             } else {
-                Logging.info(Lang.LOG_CANCELLED_RENDERING, Template.template("world", this.world.getName()));
+                Logging.info(Lang.LOG_CANCELLED_RENDERING, Template.template("world", this.mapWorld.identifier().asString()));
             }
         }
     }

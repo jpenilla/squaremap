@@ -36,12 +36,12 @@ public final class FullRenderCommand extends SquaremapCommand {
         final CommandSender sender = context.getSender();
         final MapWorld world = CommandUtil.resolveWorld(context);
         if (world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.template("world", world.name()));
+            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.template("world", world.identifier().asString()));
             return;
         }
 
         if (sender instanceof Player) {
-            Lang.send(sender, Lang.LOG_STARTED_FULLRENDER, Template.template("world", world.name()));
+            Lang.send(sender, Lang.LOG_STARTED_FULLRENDER, Template.template("world", world.identifier().asString()));
         }
         world.startRender(new FullRender(world));
     }

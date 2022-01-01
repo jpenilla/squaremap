@@ -136,7 +136,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
                 }
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.warn(String.format("Failed to deserialize render progress for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to deserialize render progress for world '%s'", this.identifier()), e);
         }
         return null;
     }
@@ -145,7 +145,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
         try {
             Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
         } catch (IOException e) {
-            Logging.warn(String.format("Failed to serialize render progress for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to serialize render progress for world '%s'", this.identifier()), e);
         }
     }
 
@@ -153,7 +153,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
         try {
             Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
         } catch (IOException e) {
-            Logging.warn(String.format("Failed to serialize dirty chunks for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to serialize dirty chunks for world '%s'", this.identifier()), e);
         }
     }
 
@@ -171,7 +171,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
                 }
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.identifier()), e);
         }
     }
 
@@ -278,7 +278,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
         try {
             Files.deleteIfExists(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME));
         } catch (IOException e) {
-            Logging.warn(String.format("Failed to delete render progress data for world '%s'", this.name()), e);
+            Logging.warn(String.format("Failed to delete render progress data for world '%s'", this.identifier()), e);
         }
     }
 
@@ -337,7 +337,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
     }
 
     private @NonNull IllegalStateException failedToCreateDataDirectory(final @NonNull Throwable cause) {
-        return new IllegalStateException(String.format("Failed to create data directory for world '%s'", this.name()), cause);
+        return new IllegalStateException(String.format("Failed to create data directory for world '%s'", this.identifier()), cause);
     }
 
     //@Override

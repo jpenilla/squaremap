@@ -1,13 +1,17 @@
 package xyz.jpenilla.squaremap.plugin.command.commands;
 
-import cloud.commandframework.bukkit.parsers.WorldArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.paper.argument.KeyedWorldArgument;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Stream;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -26,12 +30,12 @@ public final class ResetMapCommand extends SquaremapCommand {
     @Override
     public void register() {
         this.commands.registerSubcommand(builder ->
-                builder.literal("resetmap")
-                        .argument(WorldArgument.of("world"))
-                        .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.RESETMAP_COMMAND_DESCRIPTION))
-                        .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
-                        .permission("squaremap.command.resetmap")
-                        .handler(this::executeResetMap));
+            builder.literal("resetmap")
+                .argument(KeyedWorldArgument.<CommandSender>builder("world").withSuggestionsProvider(ResetMapCommand::suggestWorldKeys))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.RESETMAP_COMMAND_DESCRIPTION))
+                .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
+                .permission("squaremap.command.resetmap")
+                .handler(this::executeResetMap));
     }
 
     private void executeResetMap(final @NonNull CommandContext<CommandSender> context) {
@@ -43,6 +47,18 @@ public final class ResetMapCommand extends SquaremapCommand {
         } catch (IOException e) {
             throw new IllegalStateException("Could not reset map", e);
         }
-        Lang.send(sender, Lang.SUCCESSFULLY_RESET_MAP, Template.template("world", world.getName()));
+        Lang.send(sender, Lang.SUCCESSFULLY_RESET_MAP, Template.template("world", world.getKey().asString()));
+    }
+
+    private static List<String> suggestWorldKeys(@NonNull CommandContext<CommandSender> ctx, @NonNull String input) {
+        return Bukkit.getWorlds().stream()
+            .flatMap(mapWorld -> {
+                final NamespacedKey identifier = mapWorld.getKey();
+                if (!input.isBlank() && identifier.value().startsWith(input)) {
+                    return Stream.of(identifier.value(), identifier.asString());
+                }
+                return Stream.of(identifier.asString());
+            })
+            .toList();
     }
 }

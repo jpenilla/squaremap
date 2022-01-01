@@ -47,11 +47,11 @@ public final class RadiusRenderCommand extends SquaremapCommand {
         }
 
         if (world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.template("world", world.name()));
+            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.template("world", world.identifier().asString()));
             return;
         }
 
-        Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER, Template.template("world", world.name()));
+        Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER, Template.template("world", world.identifier().asString()));
         world.startRender(new RadiusRender(center, radius));
     }
 }

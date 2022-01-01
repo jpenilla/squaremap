@@ -37,9 +37,9 @@ public final class PauseRenderCommand extends SquaremapCommand {
         world.pauseRenders(!world.rendersPaused());
 
         if (world.rendersPaused()) {
-            Lang.send(sender, Lang.PAUSED_RENDER, Template.template("world", world.name()));
+            Lang.send(sender, Lang.PAUSED_RENDER, Template.template("world", world.identifier().asString()));
         } else {
-            Lang.send(sender, Lang.UNPAUSED_RENDER, Template.template("world", world.name()));
+            Lang.send(sender, Lang.UNPAUSED_RENDER, Template.template("world", world.identifier().asString()));
         }
     }
 

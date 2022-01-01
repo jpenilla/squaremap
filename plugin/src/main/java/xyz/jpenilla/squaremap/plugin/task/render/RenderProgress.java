@@ -97,7 +97,7 @@ public final class RenderProgress extends TimerTask {
 
         Logging.info(
             (totalRegions > 0 ? Lang.LOG_RENDER_PROGRESS_WITH_REGIONS : Lang.LOG_RENDER_PROGRESS),
-            template("world", this.render.world.getName()),
+            template("world", this.render.mapWorld.identifier().asString()),
             template("current_regions", text(curRegions)),
             template("total_regions", text(totalRegions)),
             template("current_chunks", text(curChunks)),

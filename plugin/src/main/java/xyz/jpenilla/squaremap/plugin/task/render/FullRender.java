@@ -39,7 +39,7 @@ public final class FullRender extends AbstractRender {
 
         Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.getRenderProgress();
         if (resumedMap != null) {
-            Logging.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", this.world.getName()));
+            Logging.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", this.mapWorld.identifier().asString()));
 
             regions = resumedMap;
 
@@ -47,7 +47,7 @@ public final class FullRender extends AbstractRender {
             this.curRegions.set(count);
             this.curChunks.set(this.countCompletedChunks(regions));
         } else {
-            Logging.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", this.world.getName()));
+            Logging.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", this.mapWorld.identifier().asString()));
 
             // find all region files
             Logging.info(Lang.LOG_SCANNING_REGION_FILES);
