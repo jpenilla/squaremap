@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.network;
+package xyz.jpenilla.squaremap.paper.network;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -14,8 +14,8 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.network.Constants;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.listener.PlayerListener;
+import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.listener.PlayerListener;
 
 public final class Network {
     public static final String CHANNEL = "squaremap:client";

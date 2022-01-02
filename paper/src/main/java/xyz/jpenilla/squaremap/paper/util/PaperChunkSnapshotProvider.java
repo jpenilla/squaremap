@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.util;
+package xyz.jpenilla.squaremap.paper.util;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.server.level.ServerLevel;

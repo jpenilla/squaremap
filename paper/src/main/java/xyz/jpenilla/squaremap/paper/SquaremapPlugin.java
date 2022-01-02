@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin;
+package xyz.jpenilla.squaremap.paper;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
@@ -36,16 +36,16 @@ import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
 import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.common.util.BiomeSpecialEffectsAccess;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.plugin.command.PaperCommander;
-import xyz.jpenilla.squaremap.plugin.command.PaperCommands;
-import xyz.jpenilla.squaremap.plugin.listener.MapUpdateListeners;
-import xyz.jpenilla.squaremap.plugin.listener.PlayerListener;
-import xyz.jpenilla.squaremap.plugin.listener.WorldEventListener;
-import xyz.jpenilla.squaremap.plugin.network.Network;
-import xyz.jpenilla.squaremap.plugin.task.UpdatePlayers;
-import xyz.jpenilla.squaremap.plugin.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.plugin.util.CraftBukkitReflection;
-import xyz.jpenilla.squaremap.plugin.util.PaperChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.paper.command.PaperCommander;
+import xyz.jpenilla.squaremap.paper.command.PaperCommands;
+import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
+import xyz.jpenilla.squaremap.paper.listener.PlayerListener;
+import xyz.jpenilla.squaremap.paper.listener.WorldEventListener;
+import xyz.jpenilla.squaremap.paper.network.Network;
+import xyz.jpenilla.squaremap.paper.task.UpdatePlayers;
+import xyz.jpenilla.squaremap.paper.task.UpdateWorldData;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
 
 public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatform {
     private static SquaremapPlugin instance;

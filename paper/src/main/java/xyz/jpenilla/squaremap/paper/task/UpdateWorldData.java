@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.task;
+package xyz.jpenilla.squaremap.paper.task;
 
 import com.google.gson.Gson;
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
+import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 
 public class UpdateWorldData extends BukkitRunnable {
     private final Gson gson = new Gson();

@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.util;
+package xyz.jpenilla.squaremap.paper.util;
 
 import java.lang.reflect.Method;
 import java.util.List;

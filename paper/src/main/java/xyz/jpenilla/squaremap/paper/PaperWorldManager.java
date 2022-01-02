@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin;
+package xyz.jpenilla.squaremap.paper;
 
 import java.util.Collections;
 import java.util.Map;
@@ -15,7 +15,7 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
+import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 
 public final class PaperWorldManager implements WorldManager {
     private final Map<WorldIdentifier, PaperMapWorld> worlds = new ConcurrentHashMap<>();

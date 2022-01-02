@@ -1,13 +1,13 @@
-package xyz.jpenilla.squaremap.plugin.data;
+package xyz.jpenilla.squaremap.paper.data;
 
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.task.UpdateMarkers;
-import xyz.jpenilla.squaremap.plugin.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.task.UpdateMarkers;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class PaperMapWorld extends MapWorldInternal {
     private final UpdateMarkers updateMarkersTask;

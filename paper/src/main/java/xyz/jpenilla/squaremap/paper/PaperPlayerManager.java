@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin;
+package xyz.jpenilla.squaremap.paper;
 
 import java.util.HashSet;
 import java.util.Set;

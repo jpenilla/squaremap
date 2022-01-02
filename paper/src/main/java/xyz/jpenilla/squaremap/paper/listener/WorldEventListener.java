@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.listener;
+package xyz.jpenilla.squaremap.paper.listener;
 
 import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.bukkit.event.EventHandler;
@@ -8,7 +8,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
 
 public final class WorldEventListener implements Listener {
     private final SquaremapPlugin plugin;

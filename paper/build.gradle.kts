@@ -43,7 +43,7 @@ squaremapPlatform {
 }
 
 bukkit {
-  main = "xyz.jpenilla.squaremap.plugin.SquaremapPlugin"
+  main = "xyz.jpenilla.squaremap.paper.SquaremapPlugin"
   name = rootProject.name
   apiVersion = "1.18"
   website = providers.gradleProperty("githubUrl").forUseAtConfigurationTime().get()

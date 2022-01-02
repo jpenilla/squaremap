@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.task;
+package xyz.jpenilla.squaremap.paper.task;
 
 import com.google.gson.Gson;
 import java.awt.Color;
@@ -28,8 +28,8 @@ import xyz.jpenilla.squaremap.api.marker.Polygon;
 import xyz.jpenilla.squaremap.api.marker.Polyline;
 import xyz.jpenilla.squaremap.api.marker.Rectangle;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
+import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 
 public final class UpdateMarkers extends BukkitRunnable {
     private static final Gson GSON = new Gson();

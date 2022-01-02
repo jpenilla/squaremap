@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.task;
+package xyz.jpenilla.squaremap.paper.task;
 
 import com.google.gson.Gson;
 import io.papermc.paper.text.PaperComponents;
@@ -17,7 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.HtmlComponentSerializer;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
 
 public class UpdatePlayers extends BukkitRunnable {
     private final SquaremapPlugin plugin;

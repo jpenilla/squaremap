@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.listener;
+package xyz.jpenilla.squaremap.paper.listener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import xyz.jpenilla.squaremap.plugin.network.Network;
+import xyz.jpenilla.squaremap.paper.network.Network;
 
 public final class PlayerListener implements Listener {
     public static final Set<UUID> clientUsers = new HashSet<>();

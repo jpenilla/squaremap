@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.command;
+package xyz.jpenilla.squaremap.paper.command;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;

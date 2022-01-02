@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.config;
+package xyz.jpenilla.squaremap.paper.config;
 
 import java.util.HashMap;
 import java.util.Map;

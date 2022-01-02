@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.listener;
+package xyz.jpenilla.squaremap.paper.listener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +42,8 @@ import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.util.Numbers;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.config.PaperAdvanced;
+import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.config.PaperAdvanced;
 
 public final class MapUpdateListeners {
 
