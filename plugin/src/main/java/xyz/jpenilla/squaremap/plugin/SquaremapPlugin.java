@@ -32,6 +32,7 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.command.Commander;
+import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
 import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.common.util.BiomeSpecialEffectsAccess;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
@@ -177,6 +178,11 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
                 brigManager.setNativeNumberSuggestions(false);
                 brigManager.registerMapping(
                     new TypeToken<MapWorldArgument.Parser<Commander>>() {
+                    },
+                    builder -> builder.toConstant(DimensionArgument.dimension()).cloudSuggestions()
+                );
+                brigManager.registerMapping(
+                    new TypeToken<LevelArgument.Parser<Commander>>() {
                     },
                     builder -> builder.toConstant(DimensionArgument.dimension()).cloudSuggestions()
                 );
