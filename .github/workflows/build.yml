@@ -18,10 +18,10 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            plugin/.gradle/caches/paperweight
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+            paper/.gradle/caches/paperweight
+          key: ${{ runner.os }}-gradle1-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle1-
       - name: "build"
         run: ./gradlew build
       - name: "determine status"
