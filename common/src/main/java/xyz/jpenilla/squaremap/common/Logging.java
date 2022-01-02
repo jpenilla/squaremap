@@ -1,21 +1,15 @@
 package xyz.jpenilla.squaremap.common;
 
 import java.util.function.Supplier;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.Config;
+import xyz.jpenilla.squaremap.common.util.Components;
 
 @DefaultQualifier(NonNull.class)
 public final class Logging {
-    private static final PlainTextComponentSerializer PLAIN_SERIALIZER = PlainTextComponentSerializer.builder()
-        .flattener(SquaremapCommon.instance().platform().componentFlattener())
-        .build();
-
     private Logging() {
     }
 
@@ -49,11 +43,8 @@ public final class Logging {
 
     public static void info(final String miniMessage, final Template... placeholders) {
         logger().info(
-            PLAIN_SERIALIZER.serialize(
-                MiniMessage.miniMessage().deserialize(
-                    miniMessage,
-                    TemplateResolver.templates(placeholders)
-                )
+            Components.plainSerializer().serialize(
+                Components.miniMessage(miniMessage, placeholders)
             )
         );
     }

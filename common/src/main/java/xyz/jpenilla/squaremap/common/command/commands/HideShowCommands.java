@@ -5,7 +5,6 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -14,6 +13,7 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
+import xyz.jpenilla.squaremap.common.util.Components;
 
 public final class HideShowCommands extends SquaremapCommand {
     private final Function<String, CommandArgument<Commander, ?>> playerArgument;
@@ -33,25 +33,25 @@ public final class HideShowCommands extends SquaremapCommand {
     public void register() {
         this.commands.registerSubcommand(builder ->
             builder.literal("hide")
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.HIDE_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.HIDE_COMMAND_DESCRIPTION))
                 .permission("squaremap.command.hide")
                 .handler(this::executeHide));
         this.commands.registerSubcommand(builder ->
             builder.literal("hide")
                 .argument(this.playerArgument.apply("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.HIDE_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.HIDE_COMMAND_DESCRIPTION))
                 .permission("squaremap.command.hide.others")
                 .handler(this::executeHide));
 
         this.commands.registerSubcommand(builder ->
             builder.literal("show")
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.SHOW_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.SHOW_COMMAND_DESCRIPTION))
                 .permission("squaremap.command.show")
                 .handler(this::executeShow));
         this.commands.registerSubcommand(builder ->
             builder.literal("show")
                 .argument(this.playerArgument.apply("player"), CommandUtil.description(Lang.OPTIONAL_PLAYER_ARGUMENT_DESCRIPTION))
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.SHOW_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.SHOW_COMMAND_DESCRIPTION))
                 .permission("squaremap.command.show.others")
                 .handler(this::executeShow));
     }

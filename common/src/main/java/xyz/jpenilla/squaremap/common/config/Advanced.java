@@ -20,7 +20,7 @@ public final class Advanced extends AbstractConfig {
         config.readConfig(Advanced.class, null);
 
         // todo - replace hack
-        final Class<?> bukkitAdvancedClass = ReflectionUtil.findClass("xyz.jpenilla.squaremap.plugin.config.BukkitAdvanced");
+        final Class<?> bukkitAdvancedClass = ReflectionUtil.findClass("xyz.jpenilla.squaremap.plugin.config.PaperAdvanced");
         if (bukkitAdvancedClass != null) {
             config.readConfig(bukkitAdvancedClass, null);
         }

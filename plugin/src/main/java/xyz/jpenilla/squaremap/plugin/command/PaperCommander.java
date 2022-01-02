@@ -9,10 +9,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 
-public class BukkitCommander implements Commander, ForwardingAudience.Single {
+public class PaperCommander implements Commander, ForwardingAudience.Single {
     private final CommandSender sender;
 
-    public BukkitCommander(final @NonNull CommandSender sender) {
+    public PaperCommander(final @NonNull CommandSender sender) {
         this.sender = sender;
     }
 
@@ -25,7 +25,7 @@ public class BukkitCommander implements Commander, ForwardingAudience.Single {
         return this.sender;
     }
 
-    public static final class Player extends BukkitCommander implements PlayerCommander {
+    public static final class Player extends PaperCommander implements PlayerCommander {
         public Player(final org.bukkit.entity.@NonNull Player sender) {
             super(sender);
         }

@@ -6,7 +6,6 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -16,6 +15,7 @@ import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.util.Components;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.event.ClickEvent.runCommand;
@@ -35,14 +35,14 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
             .permission("squaremap.command.progresslogging");
 
         this.commands.register(progressLogging
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().deserialize(Lang.PROGRESSLOGGING_COMMAND_DESCRIPTION))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.PROGRESSLOGGING_COMMAND_DESCRIPTION))
             .handler(this::executePrint));
         this.commands.register(progressLogging.literal("toggle")
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().deserialize(Lang.PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION))
             .handler(this::executeToggle));
         this.commands.register(progressLogging.literal("rate")
             .argument(IntegerArgument.<Commander>newBuilder("seconds").withMin(1))
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().deserialize(Lang.PROGRESSLOGGING_RATE_COMMAND_DESCRIPTION))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.PROGRESSLOGGING_RATE_COMMAND_DESCRIPTION))
             .handler(this::executeRate));
     }
 

@@ -9,9 +9,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -20,6 +18,7 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
@@ -220,11 +219,11 @@ public final class Lang {
     }
 
     public static Component parse(final String miniMessage) {
-        return MiniMessage.miniMessage().deserialize(miniMessage);
+        return Components.miniMessage(miniMessage);
     }
 
     public static Component parse(final String miniMessage, final Template... placeholders) {
-        return MiniMessage.miniMessage().deserialize(miniMessage, TemplateResolver.templates(placeholders));
+        return Components.miniMessage(miniMessage, placeholders);
     }
 
     public static void send(final Audience recipient, final String miniMessage, final Template... placeholders) {

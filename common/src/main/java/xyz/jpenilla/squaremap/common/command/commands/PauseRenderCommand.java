@@ -2,7 +2,6 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -12,6 +11,7 @@ import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
+import xyz.jpenilla.squaremap.common.util.Components;
 
 public final class PauseRenderCommand extends SquaremapCommand {
     public PauseRenderCommand(final @NonNull Commands commands) {
@@ -23,7 +23,7 @@ public final class PauseRenderCommand extends SquaremapCommand {
         this.commands.registerSubcommand(builder ->
             builder.literal("pauserender")
                 .argument(MapWorldArgument.optional("world"), CommandUtil.description(Lang.OPTIONAL_WORLD_ARGUMENT_DESCRIPTION))
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.PAUSE_RENDER_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.PAUSE_RENDER_COMMAND_DESCRIPTION))
                 .permission("squaremap.command.pauserender")
                 .handler(this::executePauseRender));
     }

@@ -6,9 +6,9 @@ import cloud.commandframework.bukkit.parsers.location.Location2DArgument;
 import cloud.commandframework.bukkit.parsers.selector.SinglePlayerSelectorArgument;
 import cloud.commandframework.context.CommandContext;
 import java.util.List;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -21,9 +21,10 @@ import xyz.jpenilla.squaremap.common.command.commands.HideShowCommands;
 import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.util.Components;
 
-public final class BukkitCommands {
-    private BukkitCommands() {
+public final class PaperCommands {
+    private PaperCommands() {
     }
 
     public static void register(final @NonNull SquaremapCommon common) {
@@ -39,23 +40,19 @@ public final class BukkitCommands {
                     return new BlockPos(loc.getBlockX(), 0, loc.getBlockZ());
                 }
             ),
-            new HideShowCommands(
-                common.commands(),
-                SinglePlayerSelectorArgument::of,
-                (name, context) -> ((CraftPlayer) BukkitCommands.resolvePlayer(name, context)).getHandle()
-            )
+            new HideShowCommands(common.commands(), SinglePlayerSelectorArgument::of, PaperCommands::resolvePlayer)
         ).forEach(SquaremapCommand::register);
     }
 
-    private static @NonNull Player resolvePlayer(final @NonNull String argName, final @NonNull CommandContext<Commander> context) {
+    private static @NonNull ServerPlayer resolvePlayer(final @NonNull String argName, final @NonNull CommandContext<Commander> context) {
         final Commander sender = context.getSender();
         final SinglePlayerSelector selector = context.getOrDefault(argName, null);
 
         if (selector == null) {
             if (sender instanceof PlayerCommander player) {
-                return player.player().getBukkitEntity();
+                return player.player();
             }
-            throw CommandCompleted.withMessage(MiniMessage.miniMessage().deserialize(Lang.CONSOLE_MUST_SPECIFY_PLAYER));
+            throw CommandCompleted.withMessage(Components.miniMessage(Lang.CONSOLE_MUST_SPECIFY_PLAYER));
         }
 
         final Player targetPlayer = selector.getPlayer();
@@ -64,6 +61,6 @@ public final class BukkitCommands {
             throw CommandCompleted.withoutMessage();
         }
 
-        return targetPlayer;
+        return ((CraftPlayer) targetPlayer).getHandle();
     }
 }

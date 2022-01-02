@@ -43,7 +43,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.config.BukkitAdvanced;
+import xyz.jpenilla.squaremap.plugin.config.PaperAdvanced;
 
 public final class MapUpdateListeners {
 
@@ -88,7 +88,7 @@ public final class MapUpdateListeners {
     }
 
     private <E extends Event> void registerListener(final @NonNull Class<E> eventClass, final @NonNull Consumer<E> eventConsumer) {
-        if (!BukkitAdvanced.listenerEnabled(eventClass)) {
+        if (!PaperAdvanced.listenerEnabled(eventClass)) {
             return;
         }
         final Listener listener = new Listener() {};

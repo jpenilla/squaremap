@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -32,6 +30,10 @@ import xyz.jpenilla.squaremap.common.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.util.Components;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 
 @DefaultQualifier(NonNull.class)
 public final class Commands {
@@ -66,10 +68,10 @@ public final class Commands {
     private void registerExceptionHandlers() {
         new MinecraftExceptionHandler<Commander>()
             .withDefaultHandlers()
-            .withDecorator(component -> Component.text()
-                .append(MiniMessage.miniMessage().parse(Lang.COMMAND_PREFIX)
-                    .hoverEvent(MiniMessage.miniMessage().parse(Lang.CLICK_FOR_HELP))
-                    .clickEvent(ClickEvent.runCommand(String.format("/%s help", Config.MAIN_COMMAND_LABEL))))
+            .withDecorator(component -> text()
+                .append(Components.miniMessage(Lang.COMMAND_PREFIX)
+                    .hoverEvent(Components.miniMessage(Lang.CLICK_FOR_HELP))
+                    .clickEvent(runCommand(String.format("/%s help", Config.MAIN_COMMAND_LABEL))))
                 .append(component)
                 .build())
             .apply(this.commandManager, AudienceProvider.nativeAudience());

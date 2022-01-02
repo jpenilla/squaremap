@@ -9,7 +9,6 @@ import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
@@ -17,6 +16,7 @@ import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
+import xyz.jpenilla.squaremap.common.util.Components;
 
 public final class HelpCommand extends SquaremapCommand {
     private final MinecraftHelp<Commander> minecraftHelp;
@@ -55,7 +55,7 @@ public final class HelpCommand extends SquaremapCommand {
 
         this.commands.registerSubcommand(builder ->
             builder.literal("help")
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.HELP_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.HELP_COMMAND_DESCRIPTION))
                 .argument(helpQueryArgument, CommandUtil.description(Lang.HELP_QUERY_ARGUMENT_DESCRIPTION))
                 .permission("squaremap.command.help")
                 .handler(this::executeHelp));

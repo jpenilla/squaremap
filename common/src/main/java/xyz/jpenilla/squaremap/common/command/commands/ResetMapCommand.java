@@ -5,7 +5,6 @@ import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import java.io.IOException;
 import java.nio.file.Path;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -14,6 +13,7 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
 import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 public final class ResetMapCommand extends SquaremapCommand {
@@ -26,7 +26,7 @@ public final class ResetMapCommand extends SquaremapCommand {
         this.commands.registerSubcommand(builder ->
             builder.literal("resetmap")
                 .argument(LevelArgument.of("world"))
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().parse(Lang.RESETMAP_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.RESETMAP_COMMAND_DESCRIPTION))
                 .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
                 .permission("squaremap.command.resetmap")
                 .handler(this::executeResetMap));

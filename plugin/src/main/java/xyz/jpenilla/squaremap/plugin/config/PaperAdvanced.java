@@ -32,7 +32,10 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Advanced;
 
 @SuppressWarnings("unused")
-public class BukkitAdvanced {
+public final class PaperAdvanced {
+    private PaperAdvanced() {
+    }
+
     private static final Map<Class<? extends Event>, Boolean> EVENT_LISTENER_TOGGLES = new HashMap<>();
 
     public static boolean listenerEnabled(final @NonNull Class<? extends Event> eventClass) {

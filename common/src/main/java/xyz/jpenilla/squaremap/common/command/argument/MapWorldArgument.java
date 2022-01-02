@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -21,6 +20,7 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.util.Components;
 
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.failure;
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.success;
@@ -163,8 +163,8 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
         @Override
         public String getMessage() {
             return switch (this.reason) {
-                case NO_SUCH_WORLD -> MiniMessage.miniMessage().stripTokens(Lang.NO_SUCH_WORLD.replace("<world>", this.input));
-                case MAP_NOT_ENABLED -> MiniMessage.miniMessage().stripTokens(Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("<world>", this.input));
+                case NO_SUCH_WORLD -> Components.miniMessage().stripTokens(Lang.NO_SUCH_WORLD.replace("<world>", this.input));
+                case MAP_NOT_ENABLED -> Components.miniMessage().stripTokens(Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("<world>", this.input));
             };
         }
 

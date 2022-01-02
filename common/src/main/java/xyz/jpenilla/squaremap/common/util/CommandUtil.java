@@ -3,9 +3,7 @@ package xyz.jpenilla.squaremap.common.util;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import java.util.Optional;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.minimessage.template.TemplateResolver;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -35,12 +33,12 @@ public final class CommandUtil {
                 return optionalMapWorld.get();
             }
         } else {
-            throw CommandCompleted.withMessage(MiniMessage.miniMessage().deserialize(Lang.CONSOLE_MUST_SPECIFY_WORLD));
+            throw CommandCompleted.withMessage(Components.miniMessage(Lang.CONSOLE_MUST_SPECIFY_WORLD));
         }
     }
 
     public static @NonNull RichDescription description(final @NonNull String miniMessage, @NonNull Template @NonNull ... placeholders) {
-        return RichDescription.of(MiniMessage.miniMessage().deserialize(miniMessage, TemplateResolver.templates(placeholders)));
+        return RichDescription.of(Components.miniMessage(miniMessage, placeholders));
     }
 
 }

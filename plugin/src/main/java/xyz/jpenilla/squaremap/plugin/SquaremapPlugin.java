@@ -35,8 +35,8 @@ import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.common.util.BiomeSpecialEffectsAccess;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.plugin.command.BukkitCommander;
-import xyz.jpenilla.squaremap.plugin.command.BukkitCommands;
+import xyz.jpenilla.squaremap.plugin.command.PaperCommander;
+import xyz.jpenilla.squaremap.plugin.command.PaperCommands;
 import xyz.jpenilla.squaremap.plugin.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.plugin.listener.PlayerListener;
 import xyz.jpenilla.squaremap.plugin.listener.WorldEventListener;
@@ -71,7 +71,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         }
 
         this.common = new SquaremapCommon(this);
-        BukkitCommands.register(this.common);
+        PaperCommands.register(this.common);
         this.getServer().getServicesManager().register(Squaremap.class, this.common.api(), this, ServicePriority.Normal);
 
         Network.register();
@@ -160,11 +160,11 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
                 CommandExecutionCoordinator.simpleCoordinator(),
                 sender -> {
                     if (sender instanceof Player player) {
-                        return new BukkitCommander.Player(player);
+                        return new PaperCommander.Player(player);
                     }
-                    return new BukkitCommander(sender);
+                    return new PaperCommander(sender);
                 },
-                commander -> ((BukkitCommander) commander).sender()
+                commander -> ((PaperCommander) commander).sender()
             );
         } catch (final Exception ex) {
             throw new RuntimeException("Failed to initialize command manager", ex);
