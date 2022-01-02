@@ -15,7 +15,6 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.network.Constants;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
 import xyz.jpenilla.squaremap.plugin.listener.PlayerListener;
 
 public final class Network {
@@ -60,10 +59,7 @@ public final class Network {
         final Map<WorldIdentifier, MapWorldInternal> mapWorlds = SquaremapPlugin.getInstance().worldManager().worlds();
         out.writeInt(mapWorlds.size());
 
-        mapWorlds.forEach(($, w) -> {
-            if (!(w instanceof PaperMapWorld mapWorld)) { // todo
-                return;
-            }
+        mapWorlds.forEach(($, mapWorld) -> {
             out.writeUTF(mapWorld.identifier().asString());
             out.writeUTF(mapWorld.name());
             out.writeInt(mapWorld.config().ZOOM_MAX);
