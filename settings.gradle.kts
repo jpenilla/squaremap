@@ -1,24 +1,24 @@
 pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://papermc.io/repo/repository/maven-public/")
-        maven("https://repo.spongepowered.org/repository/maven-public/")
-    }
+  repositories {
+    gradlePluginPortal()
+    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://repo.spongepowered.org/repository/maven-public/")
+  }
 }
 
 rootProject.name = "squaremap"
 
 setupSubproject("squaremap-api") {
-    projectDir = file("api")
+  projectDir = file("api")
 }
 setupSubproject("squaremap-common") {
-    projectDir = file("common")
+  projectDir = file("common")
 }
-setupSubproject("squaremap-plugin") {
-    projectDir = file("plugin")
+setupSubproject("squaremap-paper") {
+  projectDir = file("paper")
 }
 
 inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {
-    include(name)
-    project(":$name").apply(block)
+  include(name)
+  project(":$name").apply(block)
 }
