@@ -4,6 +4,7 @@ plugins {
 
 minecraft {
     version("1.18.1")
+    accessWideners(layout.projectDirectory.dir("src/main/resources/common.accesswidener"))
 }
 
 dependencies {

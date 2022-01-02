@@ -38,8 +38,9 @@ import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.BiomeColors;
 import xyz.jpenilla.squaremap.plugin.data.Image;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
-import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
 import xyz.jpenilla.squaremap.plugin.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.plugin.util.PaperChunkSnapshot;
 
 public abstract class AbstractRender implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -451,7 +452,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private @Nullable ChunkSnapshot chunkSnapshot(final ServerLevel level, final int x, final int z) {
-        final CompletableFuture<ChunkSnapshot> future = ChunkSnapshot.asyncSnapshot(level, x, z, false);
+        final CompletableFuture<ChunkSnapshot> future = PaperChunkSnapshot.asyncSnapshot(level, x, z, false);
         while (!future.isDone()) {
             if (this.cancelled) {
                 return null;

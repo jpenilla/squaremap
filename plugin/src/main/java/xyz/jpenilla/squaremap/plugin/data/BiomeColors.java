@@ -33,8 +33,9 @@ import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.FieldGetter;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.Proxies;
 import xyz.jpenilla.squaremap.common.util.Colors;
-import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
+import xyz.jpenilla.squaremap.plugin.util.PaperChunkSnapshot;
 
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
@@ -385,7 +386,7 @@ public final class BiomeColors {
                 return cached;
             }
 
-            @Nullable final ChunkSnapshot chunk = ChunkSnapshot.asyncSnapshot(this.level(), chunkPos.x, chunkPos.z, true)
+            @Nullable final ChunkSnapshot chunk = PaperChunkSnapshot.asyncSnapshot(this.level(), chunkPos.x, chunkPos.z, true)
                 // todo respect cancellation
                 .join();
             if (chunk == null) {

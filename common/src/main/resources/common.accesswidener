@@ -1,0 +1,5 @@
+accessWidener	v1	named
+
+# Any AWs declared here must be applied on all platforms (in one way or another)
+
+accessible method net/minecraft/world/level/chunk/PalettedContainer get (I)Ljava/lang/Object;

@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.util;
+package xyz.jpenilla.squaremap.common.util;
 
 import java.util.Map;
 import net.minecraft.core.BlockPos;
@@ -28,7 +28,6 @@ record ChunkSnapshotImpl(
     DimensionType dimensionType,
     ChunkPos pos
 ) implements ChunkSnapshot {
-    @SuppressWarnings("deprecation")
     static final PalettedContainer<BlockState> EMPTY_SECTION_BLOCK_STATES = new PalettedContainer<>(
         Block.BLOCK_STATE_REGISTRY,
         Blocks.AIR.defaultBlockState(),
