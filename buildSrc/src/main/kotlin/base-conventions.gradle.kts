@@ -3,7 +3,6 @@ import net.kyori.indra.IndraExtension
 plugins {
   id("java-library")
   id("net.kyori.indra")
-  id("net.kyori.indra.publishing")
   id("net.kyori.indra.git")
 }
 
