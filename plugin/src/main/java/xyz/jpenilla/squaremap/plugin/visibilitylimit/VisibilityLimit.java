@@ -7,10 +7,10 @@ import org.bukkit.util.BlockVector;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
-import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
-import xyz.jpenilla.squaremap.plugin.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.plugin.util.Numbers;
 
 public final class VisibilityLimit implements xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityLimit {
     private static final int REGION_SIZE_CHUNKS = Numbers.regionToChunk(1);

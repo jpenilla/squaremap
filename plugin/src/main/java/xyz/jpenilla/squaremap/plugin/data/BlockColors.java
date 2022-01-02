@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.plugin.util.Colors;
+import xyz.jpenilla.squaremap.common.util.Colors;
 
 @DefaultQualifier(NonNull.class)
 public final class BlockColors {

@@ -8,14 +8,14 @@ import java.util.concurrent.CompletableFuture;
 import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
-import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.plugin.data.Image;
-import xyz.jpenilla.squaremap.plugin.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.plugin.util.Numbers;
-import xyz.jpenilla.squaremap.plugin.util.iterator.ChunkSpiralIterator;
 import xyz.jpenilla.squaremap.plugin.visibilitylimit.VisibilityLimit;
 
 public final class RadiusRender extends AbstractRender {
@@ -61,7 +61,7 @@ public final class RadiusRender extends AbstractRender {
 
         this.progress = RenderProgress.printProgress(this, null);
 
-        ChunkSpiralIterator spiral = new ChunkSpiralIterator(this.centerX, this.centerZ, this.radius);
+        final SpiralIterator<ChunkCoordinate> spiral = SpiralIterator.chunk(this.centerX, this.centerZ, this.radius);
         final Map<RegionCoordinate, Image> images = new HashMap<>();
         final Multimap<RegionCoordinate, CompletableFuture<Void>> futures = ArrayListMultimap.create();
 

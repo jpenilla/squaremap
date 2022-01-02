@@ -6,7 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.visibilitylimit.VisibilityShape;
-import xyz.jpenilla.squaremap.plugin.util.Numbers;
+import xyz.jpenilla.squaremap.common.util.Numbers;
 
 /**
  * A visibility limit that follows the world border.

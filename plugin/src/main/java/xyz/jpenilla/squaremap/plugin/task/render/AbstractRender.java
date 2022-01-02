@@ -28,18 +28,18 @@ import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.Pair;
+import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.BiomeColors;
-import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.plugin.data.Image;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
-import xyz.jpenilla.squaremap.plugin.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
-import xyz.jpenilla.squaremap.plugin.util.Colors;
-import xyz.jpenilla.squaremap.plugin.util.Numbers;
-import xyz.jpenilla.squaremap.plugin.util.ReflectionUtil;
-import xyz.jpenilla.squaremap.plugin.util.Util;
+import xyz.jpenilla.squaremap.plugin.util.CraftBukkitReflection;
 
 public abstract class AbstractRender implements Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -74,7 +74,7 @@ public abstract class AbstractRender implements Runnable {
         this.mapWorld = mapWorld;
         this.executor = executor;
         this.world = mapWorld.bukkit();
-        this.level = ReflectionUtil.CraftBukkit.serverLevel(this.world);
+        this.level = CraftBukkitReflection.serverLevel(this.world);
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
             ? new ConcurrentHashMap<>()
             : null; // this should be null if we are not mapping biomes
@@ -151,16 +151,12 @@ public abstract class AbstractRender implements Runnable {
         for (int chunkX = startX; chunkX < startX + 32; chunkX++) {
             futures.add(this.mapChunkColumn(image, chunkX, startZ));
         }
-        final List<Exception> exceptions = new ArrayList<>();
         for (final CompletableFuture<Void> future : futures) {
             try {
                 future.join();
             } catch (final Exception ex) {
-                exceptions.add(ex);
+                LOGGER.warn("Exception mapping region {}", region, ex);
             }
-        }
-        for (final Exception exception : exceptions) {
-            LOGGER.warn("Exception mapping region {}", region, exception);
         }
         if (!this.cancelled) {
             this.mapWorld.saveImage(image);

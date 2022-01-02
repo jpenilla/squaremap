@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.util;
+package xyz.jpenilla.squaremap.common.util;
 
 import java.util.ArrayDeque;
 import java.util.concurrent.ThreadLocalRandom;
@@ -16,23 +16,20 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 
 @DefaultQualifier(NonNull.class)
-public final class HtmlComponentSerializer {
+final class HtmlComponentSerializerImpl implements HtmlComponentSerializer {
     private static final PolicyFactory SANITIZER = Sanitizers.STYLES.and(Sanitizers.FORMATTING);
 
     private final ComponentFlattener flattener;
 
-    private HtmlComponentSerializer(final ComponentFlattener flattener) {
+    HtmlComponentSerializerImpl(final ComponentFlattener flattener) {
         this.flattener = flattener;
     }
 
+    @Override
     public String serialize(final ComponentLike componentLike) {
         final HtmlFlattener state = new HtmlFlattener();
         this.flattener.flatten(componentLike.asComponent(), state);
         return SANITIZER.sanitize(state.toString());
-    }
-
-    public static HtmlComponentSerializer withFlattener(final ComponentFlattener flattener) {
-        return new HtmlComponentSerializer(flattener);
     }
 
     private static final class HtmlFlattener implements FlattenerListener {

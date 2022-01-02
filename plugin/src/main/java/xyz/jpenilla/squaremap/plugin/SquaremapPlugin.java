@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Squaremap;
 import xyz.jpenilla.squaremap.api.SquaremapProvider;
+import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.plugin.api.PlayerManager;
 import xyz.jpenilla.squaremap.plugin.api.SpawnIconProvider;
 import xyz.jpenilla.squaremap.plugin.api.SquaremapApiProvider;
@@ -26,7 +27,6 @@ import xyz.jpenilla.squaremap.plugin.network.Network;
 import xyz.jpenilla.squaremap.plugin.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.plugin.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
-import xyz.jpenilla.squaremap.plugin.util.ReflectionUtil;
 
 public final class SquaremapPlugin extends JavaPlugin {
     private static SquaremapPlugin instance;

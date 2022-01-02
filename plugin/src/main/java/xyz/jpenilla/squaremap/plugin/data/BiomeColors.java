@@ -32,8 +32,8 @@ import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.FieldGetter;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.Proxies;
+import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.plugin.util.ChunkSnapshot;
-import xyz.jpenilla.squaremap.plugin.util.Colors;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
@@ -205,6 +205,7 @@ public final class BiomeColors {
         return this.waterColors.getInt(this.biome(pos));
     }
 
+    @FunctionalInterface
     interface ColorSampler {
         int sample(Biome biome, BlockPos pos);
     }

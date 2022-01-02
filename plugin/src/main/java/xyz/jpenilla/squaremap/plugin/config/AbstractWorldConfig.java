@@ -11,7 +11,7 @@ import org.bukkit.World;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.WorldManager;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
-import xyz.jpenilla.squaremap.plugin.util.ReflectionUtil;
+import xyz.jpenilla.squaremap.plugin.util.CraftBukkitReflection;
 
 @SuppressWarnings("unused")
 abstract class AbstractWorldConfig {
@@ -20,7 +20,7 @@ abstract class AbstractWorldConfig {
     final AbstractConfig parent;
 
     AbstractWorldConfig(final World world, final AbstractConfig parent) {
-        this.world = ReflectionUtil.CraftBukkit.serverLevel(world);
+        this.world = CraftBukkitReflection.serverLevel(world);
         this.worldName = world.getName();
         this.parent = parent;
     }

@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.util;
+package xyz.jpenilla.squaremap.common.util;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;

@@ -19,6 +19,7 @@ import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
 import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
+import xyz.jpenilla.squaremap.plugin.util.CraftBukkitReflection;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 
 public final class ResetMapCommand extends SquaremapCommand {
@@ -41,7 +42,7 @@ public final class ResetMapCommand extends SquaremapCommand {
     private void executeResetMap(final @NonNull CommandContext<CommandSender> context) {
         final CommandSender sender = context.getSender();
         final World world = context.get("world");
-        final Path worldTilesDir = FileUtil.getAndCreateTilesDirectory(world);
+        final Path worldTilesDir = FileUtil.getAndCreateTilesDirectory(CraftBukkitReflection.serverLevel(world));
         try {
             FileUtil.deleteSubdirectories(worldTilesDir);
         } catch (IOException e) {

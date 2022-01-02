@@ -1,19 +1,20 @@
-package xyz.jpenilla.squaremap.plugin.api;
+package xyz.jpenilla.squaremap.common;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.api.Registry;
 
+@DefaultQualifier(NonNull.class)
 public final class LayerRegistry implements Registry<LayerProvider> {
-
     private final Map<Key, LayerProvider> layerProviders = new ConcurrentHashMap<>();
 
     @Override
-    public void register(@NonNull Key key, @NonNull LayerProvider value) {
+    public void register(final Key key, final LayerProvider value) {
         if (this.hasEntry(key)) {
             throw layerAlreadyRegistered(key);
         }
@@ -21,7 +22,7 @@ public final class LayerRegistry implements Registry<LayerProvider> {
     }
 
     @Override
-    public void unregister(@NonNull Key key) {
+    public void unregister(final Key key) {
         final LayerProvider removed = this.layerProviders.remove(key);
         if (removed == null) {
             throw noLayerRegistered(key);
@@ -29,12 +30,12 @@ public final class LayerRegistry implements Registry<LayerProvider> {
     }
 
     @Override
-    public boolean hasEntry(@NonNull Key key) {
+    public boolean hasEntry(final Key key) {
         return this.layerProviders.containsKey(key);
     }
 
     @Override
-    public @NonNull LayerProvider get(@NonNull Key key) {
+    public LayerProvider get(final Key key) {
         final LayerProvider provider = this.layerProviders.get(key);
         if (provider == null) {
             throw noLayerRegistered(key);
@@ -43,18 +44,17 @@ public final class LayerRegistry implements Registry<LayerProvider> {
     }
 
     @Override
-    public @NonNull Iterable<Pair<Key, LayerProvider>> entries() {
+    public Iterable<Pair<Key, LayerProvider>> entries() {
         return this.layerProviders.entrySet().stream()
             .map(entry -> Pair.of(entry.getKey(), entry.getValue()))
             .toList();
     }
 
-    private static @NonNull IllegalArgumentException noLayerRegistered(final @NonNull Key key) {
+    private static IllegalArgumentException noLayerRegistered(final Key key) {
         return new IllegalArgumentException(String.format("No LayerProvider registered for key '%s'", key.getKey()));
     }
 
-    private static @NonNull IllegalArgumentException layerAlreadyRegistered(final @NonNull Key key) {
+    private static IllegalArgumentException layerAlreadyRegistered(final Key key) {
         throw new IllegalArgumentException(String.format("LayerProvider already registered for key '%s'", key.getKey()));
     }
-
 }

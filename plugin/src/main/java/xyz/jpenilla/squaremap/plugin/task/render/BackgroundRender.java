@@ -9,12 +9,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.plugin.Logging;
-import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.plugin.data.Image;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
-import xyz.jpenilla.squaremap.plugin.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.plugin.util.Util;
 
 public final class BackgroundRender extends AbstractRender {
 

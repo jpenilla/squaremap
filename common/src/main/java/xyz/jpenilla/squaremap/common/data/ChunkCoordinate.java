@@ -1,8 +1,8 @@
-package xyz.jpenilla.squaremap.plugin.data;
+package xyz.jpenilla.squaremap.common.data;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.plugin.util.Numbers;
+import xyz.jpenilla.squaremap.common.util.Numbers;
 
 @DefaultQualifier(NonNull.class)
 public record ChunkCoordinate(int x, int z) {

@@ -4,13 +4,13 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import java.util.Map;
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_18_R1.map.CraftMapRenderer;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.config.Config;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
@@ -55,7 +55,7 @@ public final class Network {
 
         out.writeUTF(Config.WEB_ADDRESS);
 
-        Map<UUID, MapWorld> mapWorlds = SquaremapPlugin.getInstance().worldManager().worlds();
+        final Map<WorldIdentifier, MapWorld> mapWorlds = SquaremapPlugin.getInstance().worldManager().worlds();
         out.writeInt(mapWorlds.size());
 
         mapWorlds.forEach(($, mapWorld) -> {

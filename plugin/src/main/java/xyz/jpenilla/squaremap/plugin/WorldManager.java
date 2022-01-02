@@ -3,19 +3,19 @@ package xyz.jpenilla.squaremap.plugin;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.api.BukkitAdapter;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
 
 public final class WorldManager {
+    private final Map<WorldIdentifier, MapWorld> worlds = new ConcurrentHashMap<>();
 
-    private final Map<UUID, MapWorld> worlds = new ConcurrentHashMap<>();
-
-    public @NonNull Map<UUID, MapWorld> worlds() {
+    public @NonNull Map<WorldIdentifier, MapWorld> worlds() {
         return Collections.unmodifiableMap(this.worlds);
     }
 
@@ -28,13 +28,7 @@ public final class WorldManager {
     }
 
     public @NonNull MapWorld getWorld(final @NonNull World world) {
-        final MapWorld w = this.worlds.get(world.getUID());
-        if (w != null) {
-            return w;
-        }
-        final MapWorld mapWorld = MapWorld.forWorld(world);
-        this.worlds.put(world.getUID(), mapWorld);
-        return mapWorld;
+        return this.worlds.computeIfAbsent(BukkitAdapter.worldIdentifier(world), $ -> MapWorld.forWorld(world));
     }
 
     public void start() {
@@ -48,12 +42,11 @@ public final class WorldManager {
 
     public void worldUnloaded(final @NonNull World world) {
         this.getWorldIfEnabled(world).ifPresent(MapWorld::shutdown);
-        this.worlds.remove(world.getUID());
+        this.worlds.remove(BukkitAdapter.worldIdentifier(world));
     }
 
     public void shutdown() {
         this.worlds.values().forEach(MapWorld::shutdown);
         this.worlds.clear();
     }
-
 }

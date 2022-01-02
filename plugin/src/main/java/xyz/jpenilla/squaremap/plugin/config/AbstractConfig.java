@@ -21,7 +21,7 @@ import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 
 import static java.util.Objects.requireNonNull;
-import static xyz.jpenilla.squaremap.plugin.util.Util.rethrow;
+import static xyz.jpenilla.squaremap.common.util.Util.rethrow;
 
 @SuppressWarnings({"unused", "SameParameterValue"})
 abstract class AbstractConfig {

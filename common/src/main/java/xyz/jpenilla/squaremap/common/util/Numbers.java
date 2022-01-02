@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.util;
+package xyz.jpenilla.squaremap.common.util;
 
 public final class Numbers {
     private Numbers() {

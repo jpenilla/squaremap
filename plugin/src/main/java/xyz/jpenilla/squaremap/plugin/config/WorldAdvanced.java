@@ -16,9 +16,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.plugin.data.BiomeColors;
-import xyz.jpenilla.squaremap.plugin.util.Colors;
-import xyz.jpenilla.squaremap.plugin.util.Util;
 
 @SuppressWarnings("unused")
 public final class WorldAdvanced extends AbstractWorldConfig {

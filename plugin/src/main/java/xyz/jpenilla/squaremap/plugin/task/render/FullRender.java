@@ -9,13 +9,13 @@ import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
 import xyz.jpenilla.squaremap.plugin.data.MapWorld;
-import xyz.jpenilla.squaremap.plugin.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
-import xyz.jpenilla.squaremap.plugin.util.Numbers;
-import xyz.jpenilla.squaremap.plugin.util.iterator.RegionSpiralIterator;
 import xyz.jpenilla.squaremap.plugin.visibilitylimit.VisibilityLimit;
 
 public final class FullRender extends AbstractRender {
@@ -54,8 +54,8 @@ public final class FullRender extends AbstractRender {
             final List<RegionCoordinate> regionFiles = this.getRegions();
 
             // setup a spiral iterator
-            Location spawn = this.world.getSpawnLocation();
-            RegionSpiralIterator spiral = new RegionSpiralIterator(
+            final Location spawn = this.world.getSpawnLocation();
+            final SpiralIterator<RegionCoordinate> spiral = SpiralIterator.region(
                 Numbers.blockToRegion(spawn.getBlockX()),
                 Numbers.blockToRegion(spawn.getBlockZ()),
                 this.maxRadius
@@ -139,7 +139,7 @@ public final class FullRender extends AbstractRender {
     private List<RegionCoordinate> getRegions() {
         final List<RegionCoordinate> regions = new ArrayList<>();
 
-        for (final Path path : FileUtil.getRegionFiles(this.world)) {
+        for (final Path path : FileUtil.getRegionFiles(this.level)) {
             if (path.toFile().length() == 0) {
                 continue;
             }

@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.util;
+package xyz.jpenilla.squaremap.common.util;
 
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;

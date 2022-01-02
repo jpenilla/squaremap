@@ -21,15 +21,14 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.config.Config;
 import xyz.jpenilla.squaremap.plugin.config.Lang;
 
-public class FileUtil {
+public final class FileUtil {
     public static Path PLUGIN_DIR;
     public static Path WEB_DIR;
     public static Path LOCALE_DIR;
@@ -46,17 +45,17 @@ public class FileUtil {
         TILES_DIR = WEB_DIR.resolve("tiles");
     }
 
-    private static Path getRegionFolder(World world) {
+    private static Path getRegionFolder(final ServerLevel level) {
         return LevelStorageSource
             .getStorageFolder(
-                world.getWorldFolder().toPath(),
-                ((CraftWorld) world).getHandle().getTypeKey()
+                level.getWorld().getWorldFolder().toPath(),
+                level.getTypeKey()
             )
             .resolve("region");
     }
 
-    public static Path[] getRegionFiles(World world) {
-        final Path regionFolder = getRegionFolder(world);
+    public static Path[] getRegionFiles(final ServerLevel level) {
+        final Path regionFolder = getRegionFolder(level);
         Logging.debug(() -> "Listing region files for directory '" + regionFolder + "'...");
         try (final Stream<Path> stream = Files.list(regionFolder)) {
             return stream.filter(file -> file.getFileName().toString().endsWith(".mca")).toArray(Path[]::new);
@@ -65,8 +64,8 @@ public class FileUtil {
         }
     }
 
-    public static Path getAndCreateTilesDirectory(World world) {
-        final Path dir = TILES_DIR.resolve(world.getName());
+    public static Path getAndCreateTilesDirectory(final ServerLevel level) {
+        final Path dir = TILES_DIR.resolve(level.getWorld().getName());
         if (!Files.exists(dir)) {
             try {
                 Files.createDirectories(dir);

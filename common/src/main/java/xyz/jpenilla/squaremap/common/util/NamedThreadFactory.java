@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.util;
+package xyz.jpenilla.squaremap.common.util;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;

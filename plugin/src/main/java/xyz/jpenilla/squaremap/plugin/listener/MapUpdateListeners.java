@@ -40,10 +40,10 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.config.Advanced;
-import xyz.jpenilla.squaremap.plugin.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.plugin.util.Numbers;
 
 public final class MapUpdateListeners {
 

@@ -30,9 +30,14 @@ import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.LayerRegistry;
+import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.RecordTypeAdapterFactory;
+import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.plugin.Logging;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.api.LayerRegistry;
 import xyz.jpenilla.squaremap.plugin.api.SpawnIconProvider;
 import xyz.jpenilla.squaremap.plugin.api.WorldBorderProvider;
 import xyz.jpenilla.squaremap.plugin.config.WorldAdvanced;
@@ -41,11 +46,8 @@ import xyz.jpenilla.squaremap.plugin.task.UpdateMarkers;
 import xyz.jpenilla.squaremap.plugin.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.plugin.task.render.BackgroundRender;
 import xyz.jpenilla.squaremap.plugin.task.render.FullRender;
-import xyz.jpenilla.squaremap.plugin.util.Colors;
+import xyz.jpenilla.squaremap.plugin.util.CraftBukkitReflection;
 import xyz.jpenilla.squaremap.plugin.util.FileUtil;
-import xyz.jpenilla.squaremap.plugin.util.RecordTypeAdapterFactory;
-import xyz.jpenilla.squaremap.plugin.util.ReflectionUtil;
-import xyz.jpenilla.squaremap.plugin.util.Util;
 import xyz.jpenilla.squaremap.plugin.visibilitylimit.VisibilityLimit;
 
 public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
@@ -55,7 +57,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
         .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
         .enableComplexMapKeySerialization()
         .create();
-    private static final Map<UUID, LayerRegistry> LAYER_REGISTRIES = new HashMap<>();
+    private static final Map<WorldIdentifier, LayerRegistry> LAYER_REGISTRIES = new HashMap<>();
 
     private final ServerLevel level;
     private final org.bukkit.World world;
@@ -76,7 +78,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
 
     private MapWorld(final org.bukkit.@NonNull World world) {
         this.world = world;
-        this.level = ReflectionUtil.CraftBukkit.serverLevel(world);
+        this.level = CraftBukkitReflection.serverLevel(world);
 
         this.imageIOexecutor = Executors.newSingleThreadExecutor(
             Util.squaremapThreadFactory("imageio", this.level)
@@ -100,7 +102,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
             throw this.failedToCreateDataDirectory(e);
         }
 
-        this.tilesPath = FileUtil.getAndCreateTilesDirectory(this.bukkit());
+        this.tilesPath = FileUtil.getAndCreateTilesDirectory(this.serverLevel());
 
         this.startBackgroundRender();
 
@@ -327,13 +329,7 @@ public final class MapWorld implements xyz.jpenilla.squaremap.api.MapWorld {
 
     @Override
     public @NonNull Registry<LayerProvider> layerRegistry() {
-        final LayerRegistry registry = LAYER_REGISTRIES.get(this.uuid());
-        if (registry == null) {
-            final LayerRegistry newRegistry = new LayerRegistry();
-            LAYER_REGISTRIES.put(this.uuid(), newRegistry);
-            return newRegistry;
-        }
-        return registry;
+        return LAYER_REGISTRIES.computeIfAbsent(this.identifier(), $ -> new LayerRegistry());
     }
 
     private @NonNull IllegalStateException failedToCreateDataDirectory(final @NonNull Throwable cause) {
