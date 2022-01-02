@@ -11,12 +11,12 @@ import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.config.Config;
+import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
 import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
-import xyz.jpenilla.squaremap.plugin.config.Config;
-import xyz.jpenilla.squaremap.plugin.config.Lang;
-import xyz.jpenilla.squaremap.plugin.data.MapWorld;
+import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.event.ClickEvent.runCommand;
@@ -60,7 +60,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         Config.toggleProgressLogging();
 
         context.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().worlds().values()
-            .forEach(MapWorld::restartRenderProgressLogging);
+            .forEach(w -> ((PaperMapWorld) w).restartRenderProgressLogging());
 
         final Component message;
         if (Config.PROGRESS_LOGGING) {
@@ -81,7 +81,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         Config.setLoggingInterval(seconds);
 
         context.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().worlds().values()
-            .forEach(MapWorld::restartRenderProgressLogging);
+            .forEach(w -> ((PaperMapWorld) w).restartRenderProgressLogging());
 
         context.getSender().sendMessage(Lang.parse(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Template.template("seconds", Integer.toString(seconds))));
     }

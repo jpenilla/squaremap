@@ -11,24 +11,24 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.plugin.config.Lang;
-import xyz.jpenilla.squaremap.plugin.data.MapWorld;
+import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
 
 public final class CommandUtil {
     private CommandUtil() {
     }
 
-    public static @NonNull MapWorld resolveWorld(final @NonNull CommandContext<CommandSender> context) {
+    public static @NonNull PaperMapWorld resolveWorld(final @NonNull CommandContext<CommandSender> context) {
         final CommandSender sender = context.getSender();
-        final MapWorld world = context.getOrDefault("world", null);
+        final PaperMapWorld world = context.getOrDefault("world", null);
         if (world != null) {
             return world;
         }
         if (sender instanceof final Player player) {
             final World bukkit = player.getWorld();
-            Optional<MapWorld> optionalMapWorld = SquaremapPlugin.getInstance().worldManager().getWorldIfEnabled(bukkit);
+            Optional<PaperMapWorld> optionalMapWorld = SquaremapPlugin.getInstance().worldManager().getWorldIfEnabled(bukkit);
             if (optionalMapWorld.isEmpty()) {
                 Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Template.template("world", bukkit.getKey().asString()));
                 throw CommandCompleted.withoutMessage();

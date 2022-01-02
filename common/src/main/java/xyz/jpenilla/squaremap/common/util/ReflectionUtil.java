@@ -43,6 +43,14 @@ public final class ReflectionUtil {
         }
     }
 
+    public static @Nullable Class<?> findClass(final @NonNull String className) {
+        try {
+            return Class.forName(className);
+        } catch (final ClassNotFoundException ignore) {
+            return null;
+        }
+    }
+
     public static @NonNull Class<?> needClass(final @NonNull String className) {
         try {
             return Class.forName(className);

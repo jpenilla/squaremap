@@ -12,6 +12,7 @@ dependencies {
 
     api(platform("net.kyori:adventure-bom:4.9.3"))
     api("net.kyori:adventure-api")
+    api("net.kyori:adventure-text-serializer-plain")
     api("net.kyori:adventure-text-minimessage:4.2.0-SNAPSHOT") {
         isTransitive = false // we depend on adventure separately
     }

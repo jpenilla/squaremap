@@ -23,6 +23,8 @@ import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.config.Config;
+import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.plugin.command.commands.CancelRenderCommand;
@@ -37,8 +39,6 @@ import xyz.jpenilla.squaremap.plugin.command.commands.ReloadCommand;
 import xyz.jpenilla.squaremap.plugin.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.plugin.command.commands.ShowCommand;
 import xyz.jpenilla.squaremap.plugin.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.plugin.config.Config;
-import xyz.jpenilla.squaremap.plugin.config.Lang;
 
 @DefaultQualifier(NonNull.class)
 public final class Commands {

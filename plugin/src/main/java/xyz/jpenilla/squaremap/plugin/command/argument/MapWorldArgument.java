@@ -14,25 +14,26 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
-import xyz.jpenilla.squaremap.plugin.config.Lang;
-import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
-import xyz.jpenilla.squaremap.plugin.data.MapWorld;
+import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
 
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.failure;
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.success;
 
 /**
- * cloud argument type that parses {@link MapWorld}
+ * cloud argument type that parses {@link PaperMapWorld}
  *
  * @param <C> Command sender type
  */
 @DefaultQualifier(NonNull.class)
-public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
+public class MapWorldArgument<C> extends CommandArgument<C, PaperMapWorld> {
 
     protected MapWorldArgument(
         final boolean required,
@@ -41,7 +42,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
         final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
         final ArgumentDescription defaultDescription
     ) {
-        super(required, name, new Parser<>(), defaultValue, MapWorld.class, suggestionsProvider, defaultDescription);
+        super(required, name, new Parser<>(), defaultValue, PaperMapWorld.class, suggestionsProvider, defaultDescription);
     }
 
     /**
@@ -89,9 +90,9 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
         return MapWorldArgument.<C>builder(name).asOptionalWithDefault(defaultValue).build();
     }
 
-    public static final class Builder<C> extends CommandArgument.TypedBuilder<C, MapWorld, Builder<C>> {
+    public static final class Builder<C> extends CommandArgument.TypedBuilder<C, PaperMapWorld, Builder<C>> {
         private Builder(final String name) {
-            super(MapWorld.class, name);
+            super(PaperMapWorld.class, name);
         }
 
         @Override
@@ -107,10 +108,10 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
     }
 
 
-    public static final class Parser<C> implements ArgumentParser<C, MapWorld> {
+    public static final class Parser<C> implements ArgumentParser<C, PaperMapWorld> {
 
         @Override
-        public ArgumentParseResult<MapWorld> parse(final CommandContext<C> commandContext, final Queue<String> inputQueue) {
+        public ArgumentParseResult<PaperMapWorld> parse(final CommandContext<C> commandContext, final Queue<String> inputQueue) {
             final @Nullable String input = inputQueue.peek();
             if (input == null) {
                 return failure(new NoInputProvidedException(Parser.class, commandContext));
@@ -126,7 +127,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorld> {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
-            final WorldConfig worldConfig = WorldConfig.get(world);
+            final WorldConfig worldConfig = WorldConfig.get(((CraftWorld) world).getHandle());
             if (!worldConfig.MAP_ENABLED) {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.MAP_NOT_ENABLED));
             }

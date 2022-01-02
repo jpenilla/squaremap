@@ -6,12 +6,12 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
 import xyz.jpenilla.squaremap.plugin.command.Commands;
 import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.plugin.command.argument.MapWorldArgument;
-import xyz.jpenilla.squaremap.plugin.config.Lang;
-import xyz.jpenilla.squaremap.plugin.data.MapWorld;
+import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
 import xyz.jpenilla.squaremap.plugin.util.CommandUtil;
 
 public final class PauseRenderCommand extends SquaremapCommand {
@@ -32,7 +32,7 @@ public final class PauseRenderCommand extends SquaremapCommand {
 
     private void executePauseRender(final @NonNull CommandContext<CommandSender> context) {
         final CommandSender sender = context.getSender();
-        final MapWorld world = CommandUtil.resolveWorld(context);
+        final PaperMapWorld world = CommandUtil.resolveWorld(context);
 
         world.pauseRenders(!world.rendersPaused());
 

@@ -11,12 +11,13 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.HtmlComponentSerializer;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
-import xyz.jpenilla.squaremap.plugin.util.FileUtil;
 
 public class UpdatePlayers extends BukkitRunnable {
     private final SquaremapPlugin plugin;
@@ -32,7 +33,7 @@ public class UpdatePlayers extends BukkitRunnable {
         List<Object> players = new ArrayList<>();
 
         Bukkit.getWorlds().forEach(world -> {
-            WorldConfig worldConfig = WorldConfig.get(world);
+            WorldConfig worldConfig = WorldConfig.get(((CraftWorld) world).getHandle());
 
             world.getPlayers().forEach(player -> {
                 if (worldConfig.PLAYER_TRACKER_HIDE_SPECTATORS && player.getGameMode() == GameMode.SPECTATOR) {

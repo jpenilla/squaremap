@@ -11,9 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.config.Config;
+import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.network.Constants;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.config.Config;
-import xyz.jpenilla.squaremap.plugin.data.MapWorld;
+import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
 import xyz.jpenilla.squaremap.plugin.listener.PlayerListener;
 
 public final class Network {
@@ -55,10 +57,13 @@ public final class Network {
 
         out.writeUTF(Config.WEB_ADDRESS);
 
-        final Map<WorldIdentifier, MapWorld> mapWorlds = SquaremapPlugin.getInstance().worldManager().worlds();
+        final Map<WorldIdentifier, MapWorldInternal> mapWorlds = SquaremapPlugin.getInstance().worldManager().worlds();
         out.writeInt(mapWorlds.size());
 
-        mapWorlds.forEach(($, mapWorld) -> {
+        mapWorlds.forEach(($, w) -> {
+            if (!(w instanceof PaperMapWorld mapWorld)) { // todo
+                return;
+            }
             out.writeUTF(mapWorld.identifier().asString());
             out.writeUTF(mapWorld.name());
             out.writeInt(mapWorld.config().ZOOM_MAX);

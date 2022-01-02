@@ -27,16 +27,16 @@ import xyz.jpenilla.squaremap.api.marker.MultiPolygon;
 import xyz.jpenilla.squaremap.api.marker.Polygon;
 import xyz.jpenilla.squaremap.api.marker.Polyline;
 import xyz.jpenilla.squaremap.api.marker.Rectangle;
+import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.data.MapWorld;
-import xyz.jpenilla.squaremap.plugin.util.FileUtil;
+import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
 
 public final class UpdateMarkers extends BukkitRunnable {
+    private static final Gson GSON = new Gson();
 
-    private final MapWorld mapWorld;
-    private final Gson gson = new Gson();
+    private final PaperMapWorld mapWorld;
 
-    public UpdateMarkers(final @NonNull MapWorld mapWorld) {
+    public UpdateMarkers(final @NonNull PaperMapWorld mapWorld) {
         this.mapWorld = mapWorld;
     }
 
@@ -83,7 +83,7 @@ public final class UpdateMarkers extends BukkitRunnable {
 
         Bukkit.getServer().getScheduler().runTaskAsynchronously(SquaremapPlugin.getInstance(), () -> {
             Path file = this.mapWorld.tilesPath().resolve("markers.json");
-            FileUtil.write(this.gson.toJson(layers), file);
+            FileUtil.write(GSON.toJson(layers), file);
         });
     }
 

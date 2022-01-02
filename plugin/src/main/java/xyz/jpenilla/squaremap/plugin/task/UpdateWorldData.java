@@ -8,12 +8,12 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
+import xyz.jpenilla.squaremap.common.config.Config;
+import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.config.Config;
-import xyz.jpenilla.squaremap.plugin.config.Lang;
-import xyz.jpenilla.squaremap.plugin.config.WorldConfig;
-import xyz.jpenilla.squaremap.plugin.data.MapWorld;
-import xyz.jpenilla.squaremap.plugin.util.FileUtil;
+import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
 
 public class UpdateWorldData extends BukkitRunnable {
     private final Gson gson = new Gson();
@@ -23,7 +23,7 @@ public class UpdateWorldData extends BukkitRunnable {
         List<Object> worlds = new ArrayList<>();
 
         Bukkit.getWorlds().forEach(world -> {
-            final MapWorld mapWorld = SquaremapPlugin.getInstance().worldManager().getWorldIfEnabled(world)
+            final PaperMapWorld mapWorld = SquaremapPlugin.getInstance().worldManager().getWorldIfEnabled(world)
                 .orElse(null);
             if (mapWorld == null) {
                 return;
