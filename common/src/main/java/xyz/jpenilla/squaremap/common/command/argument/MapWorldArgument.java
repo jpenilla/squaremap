@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.command.argument;
+package xyz.jpenilla.squaremap.common.command.argument;
 
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.arguments.CommandArgument;
@@ -11,30 +11,27 @@ import java.util.Queue;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
-import xyz.jpenilla.squaremap.plugin.command.Commands;
-import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
+import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.failure;
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.success;
 
 /**
- * cloud argument type that parses {@link PaperMapWorld}
+ * cloud argument type that parses {@link MapWorldInternal}
  *
  * @param <C> Command sender type
  */
 @DefaultQualifier(NonNull.class)
-public class MapWorldArgument<C> extends CommandArgument<C, PaperMapWorld> {
-
+public class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
     protected MapWorldArgument(
         final boolean required,
         final String name,
@@ -42,7 +39,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, PaperMapWorld> {
         final @Nullable BiFunction<CommandContext<C>, String, List<String>> suggestionsProvider,
         final ArgumentDescription defaultDescription
     ) {
-        super(required, name, new Parser<>(), defaultValue, PaperMapWorld.class, suggestionsProvider, defaultDescription);
+        super(required, name, new Parser<>(), defaultValue, MapWorldInternal.class, suggestionsProvider, defaultDescription);
     }
 
     /**
@@ -90,9 +87,9 @@ public class MapWorldArgument<C> extends CommandArgument<C, PaperMapWorld> {
         return MapWorldArgument.<C>builder(name).asOptionalWithDefault(defaultValue).build();
     }
 
-    public static final class Builder<C> extends CommandArgument.TypedBuilder<C, PaperMapWorld, Builder<C>> {
+    public static final class Builder<C> extends CommandArgument.TypedBuilder<C, MapWorldInternal, Builder<C>> {
         private Builder(final String name) {
-            super(PaperMapWorld.class, name);
+            super(MapWorldInternal.class, name);
         }
 
         @Override
@@ -107,38 +104,37 @@ public class MapWorldArgument<C> extends CommandArgument<C, PaperMapWorld> {
         }
     }
 
-
-    public static final class Parser<C> implements ArgumentParser<C, PaperMapWorld> {
+    public static final class Parser<C> implements ArgumentParser<C, MapWorldInternal> {
 
         @Override
-        public ArgumentParseResult<PaperMapWorld> parse(final CommandContext<C> commandContext, final Queue<String> inputQueue) {
+        public ArgumentParseResult<MapWorldInternal> parse(final CommandContext<C> commandContext, final Queue<String> inputQueue) {
             final @Nullable String input = inputQueue.peek();
             if (input == null) {
                 return failure(new NoInputProvidedException(Parser.class, commandContext));
             }
 
-            final @Nullable NamespacedKey key = NamespacedKey.fromString(input);
+            final @Nullable ResourceLocation key = ResourceLocation.tryParse(input);
             if (key == null) {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
-            final @Nullable World world = Bukkit.getWorld(key);
+            final @Nullable ServerLevel world = commandContext.get(Commands.PLATFORM).level(WorldIdentifier.parse(key.toString()));
             if (world == null) {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
-            final WorldConfig worldConfig = WorldConfig.get(((CraftWorld) world).getHandle());
+            final WorldConfig worldConfig = WorldConfig.get(world);
             if (!worldConfig.MAP_ENABLED) {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.MAP_NOT_ENABLED));
             }
 
             inputQueue.remove();
-            return success(commandContext.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().getWorld(world));
+            return success(commandContext.get(Commands.PLATFORM).worldManager().getWorldIfEnabled(world).orElseThrow());
         }
 
         @Override
         public List<String> suggestions(final CommandContext<C> commandContext, final String input) {
-            return commandContext.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().worlds().values().stream()
+            return commandContext.get(Commands.PLATFORM).worldManager().worlds().values().stream()
                 .flatMap(mapWorld -> {
                     final WorldIdentifier identifier = mapWorld.identifier();
                     if (!input.isBlank() && identifier.value().startsWith(input)) {

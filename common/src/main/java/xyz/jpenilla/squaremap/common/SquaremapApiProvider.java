@@ -1,12 +1,10 @@
-package xyz.jpenilla.squaremap.plugin;
+package xyz.jpenilla.squaremap.common;
 
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Optional;
-import org.bukkit.NamespacedKey;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.PlayerManager;
@@ -16,24 +14,23 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 public final class SquaremapApiProvider implements Squaremap {
-    private final SquaremapPlugin plugin;
+    private final SquaremapPlatform platform;
     private final IconRegistry iconRegistry;
 
-    public SquaremapApiProvider(final @NonNull SquaremapPlugin plugin) {
-        this.plugin = plugin;
+    public SquaremapApiProvider(final @NonNull SquaremapPlatform platform) {
+        this.platform = platform;
         this.iconRegistry = new IconRegistry();
     }
 
     @Override
     public @NonNull Collection<MapWorld> mapWorlds() {
-        return Collections.unmodifiableCollection(this.plugin.worldManager().worlds().values());
+        return Collections.unmodifiableCollection(this.platform.worldManager().worlds().values());
     }
 
     @Override
     public @NonNull Optional<MapWorld> getWorldIfEnabled(@NonNull WorldIdentifier identifier) {
-        final NamespacedKey bukkitKey = Objects.requireNonNull(NamespacedKey.fromString(identifier.asString()));
-        return Optional.ofNullable(this.plugin.getServer().getWorld(bukkitKey))
-            .flatMap(w -> this.plugin.worldManager().getWorldIfEnabled(w));
+        return Optional.ofNullable(this.platform.level(identifier))
+            .flatMap(w -> this.platform.worldManager().getWorldIfEnabled(w));
     }
 
     @Override
@@ -43,7 +40,7 @@ public final class SquaremapApiProvider implements Squaremap {
 
     @Override
     public @NonNull PlayerManager playerManager() {
-        return this.plugin.playerManager();
+        return this.platform.playerManager();
     }
 
     @Override

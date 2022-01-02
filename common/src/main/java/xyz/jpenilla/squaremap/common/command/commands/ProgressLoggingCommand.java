@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.command.commands;
+package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.IntegerArgument;
@@ -8,15 +8,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.Template;
-import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.command.Commander;
+import xyz.jpenilla.squaremap.common.command.Commands;
+import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.command.Commands;
-import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
-import xyz.jpenilla.squaremap.plugin.data.PaperMapWorld;
+import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.event.ClickEvent.runCommand;
@@ -25,13 +24,13 @@ import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 @DefaultQualifier(NonNull.class)
 public final class ProgressLoggingCommand extends SquaremapCommand {
-    public ProgressLoggingCommand(final SquaremapPlugin plugin, final Commands commands) {
-        super(plugin, commands);
+    public ProgressLoggingCommand(final Commands commands) {
+        super(commands);
     }
 
     @Override
     public void register() {
-        final Command.Builder<CommandSender> progressLogging = this.commands.rootBuilder()
+        final Command.Builder<Commander> progressLogging = this.commands.rootBuilder()
             .literal("progresslogging")
             .permission("squaremap.command.progresslogging");
 
@@ -42,12 +41,12 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().deserialize(Lang.PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION))
             .handler(this::executeToggle));
         this.commands.register(progressLogging.literal("rate")
-            .argument(IntegerArgument.<CommandSender>newBuilder("seconds").withMin(1))
+            .argument(IntegerArgument.<Commander>newBuilder("seconds").withMin(1))
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, MiniMessage.miniMessage().deserialize(Lang.PROGRESSLOGGING_RATE_COMMAND_DESCRIPTION))
             .handler(this::executeRate));
     }
 
-    private void executePrint(final CommandContext<CommandSender> context) {
+    private void executePrint(final CommandContext<Commander> context) {
         Lang.send(
             context.getSender(),
             Lang.PROGRESSLOGGING_STATUS_MESSAGE,
@@ -56,11 +55,11 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         );
     }
 
-    private void executeToggle(final CommandContext<CommandSender> context) {
+    private void executeToggle(final CommandContext<Commander> context) {
         Config.toggleProgressLogging();
 
-        context.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().worlds().values()
-            .forEach(w -> ((PaperMapWorld) w).restartRenderProgressLogging());
+        context.get(Commands.PLATFORM).worldManager().worlds().values()
+            .forEach(MapWorldInternal::restartRenderProgressLogging);
 
         final Component message;
         if (Config.PROGRESS_LOGGING) {
@@ -76,12 +75,12 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
             .clickEvent(runCommand("/" + Config.MAIN_COMMAND_LABEL + " progresslogging toggle"));
     }
 
-    private void executeRate(final CommandContext<CommandSender> context) {
+    private void executeRate(final CommandContext<Commander> context) {
         final int seconds = context.get("seconds");
         Config.setLoggingInterval(seconds);
 
-        context.get(Commands.PLUGIN_INSTANCE_KEY).worldManager().worlds().values()
-            .forEach(w -> ((PaperMapWorld) w).restartRenderProgressLogging());
+        context.get(Commands.PLATFORM).worldManager().worlds().values()
+            .forEach(MapWorldInternal::restartRenderProgressLogging);
 
         context.getSender().sendMessage(Lang.parse(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Template.template("seconds", Integer.toString(seconds))));
     }

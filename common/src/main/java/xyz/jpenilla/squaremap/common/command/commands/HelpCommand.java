@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.command.commands;
+package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.CommandHelpHandler;
 import cloud.commandframework.arguments.standard.StringArgument;
@@ -10,21 +10,19 @@ import java.util.stream.Collectors;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import xyz.jpenilla.squaremap.common.command.Commander;
+import xyz.jpenilla.squaremap.common.command.Commands;
+import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
-import xyz.jpenilla.squaremap.plugin.SquaremapPlugin;
-import xyz.jpenilla.squaremap.plugin.command.Commands;
-import xyz.jpenilla.squaremap.plugin.command.SquaremapCommand;
-import xyz.jpenilla.squaremap.plugin.util.CommandUtil;
+import xyz.jpenilla.squaremap.common.util.CommandUtil;
 
 public final class HelpCommand extends SquaremapCommand {
+    private final MinecraftHelp<Commander> minecraftHelp;
 
-    private final MinecraftHelp<CommandSender> minecraftHelp;
-
-    public HelpCommand(final @NonNull SquaremapPlugin plugin, final @NonNull Commands commands) {
-        super(plugin, commands);
+    public HelpCommand(final @NonNull Commands commands) {
+        super(commands);
         this.minecraftHelp = new MinecraftHelp<>(
             String.format("/%s help", Config.MAIN_COMMAND_LABEL),
             AudienceProvider.nativeAudience(),
@@ -43,11 +41,11 @@ public final class HelpCommand extends SquaremapCommand {
     @Override
     public void register() {
         final var commandHelpHandler = this.commands.commandManager().getCommandHelpHandler();
-        final var helpQueryArgument = StringArgument.<CommandSender>newBuilder("query")
+        final var helpQueryArgument = StringArgument.<Commander>newBuilder("query")
             .greedy()
             .asOptional()
             .withSuggestionsProvider((context, input) -> {
-                final var indexHelpTopic = (CommandHelpHandler.IndexHelpTopic<CommandSender>) commandHelpHandler.queryHelp(context.getSender(), "");
+                final var indexHelpTopic = (CommandHelpHandler.IndexHelpTopic<Commander>) commandHelpHandler.queryHelp(context.getSender(), "");
                 return indexHelpTopic.getEntries()
                     .stream()
                     .map(CommandHelpHandler.VerboseHelpEntry::getSyntaxString)
@@ -63,11 +61,10 @@ public final class HelpCommand extends SquaremapCommand {
                 .handler(this::executeHelp));
     }
 
-    private void executeHelp(final @NonNull CommandContext<CommandSender> context) {
+    private void executeHelp(final @NonNull CommandContext<Commander> context) {
         this.minecraftHelp.queryCommands(
             context.<String>getOptional("query").orElse(""),
             context.getSender()
         );
     }
-
 }

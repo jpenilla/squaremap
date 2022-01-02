@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin.command.exception;
+package xyz.jpenilla.squaremap.common.command.exception;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;

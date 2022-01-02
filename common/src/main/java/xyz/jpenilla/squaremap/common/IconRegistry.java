@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.plugin;
+package xyz.jpenilla.squaremap.common;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

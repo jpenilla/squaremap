@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import net.minecraft.server.level.ServerLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
@@ -21,6 +23,11 @@ public final class PaperWorldManager implements WorldManager {
     @Override
     public @NonNull Map<WorldIdentifier, MapWorldInternal> worlds() {
         return Collections.unmodifiableMap(this.worlds);
+    }
+
+    @Override
+    public @NonNull Optional<MapWorldInternal> getWorldIfEnabled(final @NonNull ServerLevel level) {
+        return this.getWorldIfEnabled(level.getWorld()).map(Function.identity());
     }
 
     public @NonNull Optional<PaperMapWorld> getWorldIfEnabled(final @NonNull World world) {

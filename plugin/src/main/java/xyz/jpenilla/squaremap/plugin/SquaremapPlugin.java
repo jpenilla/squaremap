@@ -1,14 +1,18 @@
 package xyz.jpenilla.squaremap.plugin;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.brigadier.CloudBrigadierManager;
+import cloud.commandframework.bukkit.CloudBukkitCapabilities;
+import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.paper.PaperCommandManager;
+import io.leangen.geantyref.TypeToken;
 import io.papermc.paper.text.PaperComponents;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.imageio.ImageIO;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
+import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.logging.log4j.Logger;
@@ -16,25 +20,23 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.Squaremap;
-import xyz.jpenilla.squaremap.api.SquaremapProvider;
-import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.config.Advanced;
-import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
-import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
-import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
+import xyz.jpenilla.squaremap.common.command.Commander;
+import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.common.util.BiomeSpecialEffectsAccess;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
-import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
-import xyz.jpenilla.squaremap.plugin.command.Commands;
+import xyz.jpenilla.squaremap.plugin.command.BukkitCommander;
+import xyz.jpenilla.squaremap.plugin.command.BukkitCommands;
 import xyz.jpenilla.squaremap.plugin.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.plugin.listener.PlayerListener;
 import xyz.jpenilla.squaremap.plugin.listener.WorldEventListener;
@@ -47,7 +49,6 @@ import xyz.jpenilla.squaremap.plugin.util.PaperChunkSnapshotProvider;
 public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatform {
     private static SquaremapPlugin instance;
     private SquaremapCommon common;
-    private Squaremap squaremap;
     private PaperWorldManager worldManager;
     private PaperPlayerManager playerManager;
     private UpdateWorldData updateWorldData;
@@ -70,31 +71,12 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         }
 
         this.common = new SquaremapCommon(this);
-
-        Config.reload();
-
-        // this has to load after config.yml in order to know if web dir should be overwritten
-        // but also before advanced.yml to ensure foliage.png and grass.png are already on disk
-        FileUtil.extract("/web/", FileUtil.WEB_DIR.toFile(), Config.UPDATE_WEB_DIR);
-        FileUtil.extract("/locale/", FileUtil.LOCALE_DIR.toFile(), false);
-
-        Advanced.reload();
-        Lang.reload();
-
-        new Commands(this);
-
-        this.start();
-        this.setupApi();
-
-        try {
-            this.api().iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
-        } catch (IOException e) {
-            Logging.logger().warn("Failed to register spawn icon", e);
-        }
+        BukkitCommands.register(this.common);
+        this.getServer().getServicesManager().register(Squaremap.class, this.common.api(), this, ServicePriority.Normal);
 
         Network.register();
 
-        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         new Metrics(this, 13571); // https://bstats.org/plugin/bukkit/squaremap/13571
     }
@@ -102,15 +84,17 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     @Override
     public void onDisable() {
         Network.unregister();
-        this.shutdownApi();
-        this.stop();
+
+        this.getServer().getServicesManager().unregister(Squaremap.class, this.common.api());
+        this.common.shutdown();
     }
 
     public static SquaremapPlugin getInstance() {
         return instance;
     }
 
-    public void start() {
+    @Override
+    public void startCallback() {
         this.playerManager = new PaperPlayerManager();
 
         this.updatePlayers = new UpdatePlayers(this);
@@ -124,17 +108,13 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
 
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();
+
         this.worldEventListener = new WorldEventListener(this);
         this.getServer().getPluginManager().registerEvents(this.worldEventListener, this);
-
-        if (Config.HTTPD_ENABLED) {
-            IntegratedServer.startServer();
-        } else {
-            Logging.info(Lang.LOG_INTERNAL_WEB_DISABLED);
-        }
     }
 
-    public void stop() {
+    @Override
+    public void stopCallback() {
         if (this.mapUpdateListeners != null) {
             this.mapUpdateListeners.unregister();
             this.mapUpdateListeners = null;
@@ -145,16 +125,13 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
             this.worldEventListener = null;
         }
 
-        if (Config.HTTPD_ENABLED) {
-            IntegratedServer.stopServer();
-        }
-
         if (this.updatePlayers != null) {
             if (!this.updatePlayers.isCancelled()) {
                 this.updatePlayers.cancel();
             }
             this.updatePlayers = null;
         }
+
         if (this.updateWorldData != null) {
             if (!this.updateWorldData.isCancelled()) {
                 this.updateWorldData.cancel();
@@ -175,29 +152,51 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     }
 
     @Override
+    public @NonNull CommandManager<Commander> createCommandManager() {
+        final PaperCommandManager<Commander> mgr;
+        try {
+            mgr = new PaperCommandManager<>(
+                this,
+                CommandExecutionCoordinator.simpleCoordinator(),
+                sender -> {
+                    if (sender instanceof Player player) {
+                        return new BukkitCommander.Player(player);
+                    }
+                    return new BukkitCommander(sender);
+                },
+                commander -> ((BukkitCommander) commander).sender()
+            );
+        } catch (final Exception ex) {
+            throw new RuntimeException("Failed to initialize command manager", ex);
+        }
+
+        if (mgr.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+            mgr.registerBrigadier();
+            final @Nullable CloudBrigadierManager<Commander, ?> brigManager = mgr.brigadierManager();
+            if (brigManager != null) {
+                brigManager.setNativeNumberSuggestions(false);
+                brigManager.registerMapping(
+                    new TypeToken<MapWorldArgument.Parser<Commander>>() {
+                    },
+                    builder -> builder.toConstant(DimensionArgument.dimension()).cloudSuggestions()
+                );
+            }
+        }
+
+        if (mgr.queryCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+            mgr.registerAsynchronousCompletions();
+        }
+
+        return mgr;
+    }
+
+    @Override
     public @NonNull PaperWorldManager worldManager() {
         return this.worldManager;
     }
 
-    private void setupApi() {
-        this.squaremap = new SquaremapApiProvider(this);
-        this.getServer().getServicesManager().register(Squaremap.class, this.squaremap, this, ServicePriority.Normal);
-        final Method register = ReflectionUtil.needMethod(SquaremapProvider.class, List.of("register"), Squaremap.class);
-        ReflectionUtil.invokeOrThrow(register, null, this.squaremap);
-    }
-
-    private void shutdownApi() {
-        this.getServer().getServicesManager().unregister(Squaremap.class, this.squaremap);
-        final Method unregister = ReflectionUtil.needMethod(SquaremapProvider.class, List.of("unregister"));
-        ReflectionUtil.invokeOrThrow(unregister, null);
-        this.squaremap = null;
-    }
-
-    public @NonNull Squaremap api() {
-        return this.squaremap;
-    }
-
-    public PaperPlayerManager playerManager() {
+    @Override
+    public @NonNull PaperPlayerManager playerManager() {
         return this.playerManager;
     }
 
@@ -242,6 +241,15 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
             levels.add(((CraftWorld) world).getHandle());
         }
         return levels;
+    }
+
+    @Override
+    public @Nullable ServerLevel level(final @NonNull WorldIdentifier identifier) {
+        final @Nullable World world = Bukkit.getWorld(BukkitAdapter.namespacedKey(identifier));
+        if (world == null) {
+            return null;
+        }
+        return ((CraftWorld) world).getHandle();
     }
 
     @Override
