@@ -21,6 +21,7 @@ import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.common.util.Util;
 
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.failure;
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.success;
@@ -118,7 +119,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
-            final @Nullable ServerLevel world = commandContext.get(Commands.PLATFORM).level(WorldIdentifier.parse(key.toString()));
+            final @Nullable ServerLevel world = commandContext.get(Commands.PLATFORM).level(Util.worldIdentifier(key));
             if (world == null) {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }

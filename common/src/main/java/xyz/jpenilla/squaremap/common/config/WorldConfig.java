@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.util.Util;
 
 @SuppressWarnings("unused")
 public final class WorldConfig extends AbstractWorldConfig {
@@ -20,7 +21,7 @@ public final class WorldConfig extends AbstractWorldConfig {
 
     public static WorldConfig get(final @NonNull ServerLevel world) {
         return CONFIG_MAP.computeIfAbsent(
-            WorldIdentifier.parse(world.dimension().location().toString()),
+            Util.worldIdentifier(world),
             $ -> new WorldConfig(world, Config.config)
         );
     }

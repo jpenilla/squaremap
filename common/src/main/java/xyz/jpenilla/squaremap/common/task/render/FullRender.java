@@ -18,22 +18,25 @@ import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimit;
 
 public final class FullRender extends AbstractRender {
+    private final int wait;
     private int maxRadius = 0;
     private int totalChunks;
     private int totalRegions;
 
-    public FullRender(final @NonNull MapWorldInternal world) {
+    public FullRender(final @NonNull MapWorldInternal world, final int wait) {
         super(world);
+        this.wait = wait;
+    }
+
+    public FullRender(final @NonNull MapWorldInternal world) {
+        this(world, 0);
     }
 
     @Override
     protected void render() {
-        /* TODO
-        while (Bukkit.getCurrentTick() < 20) {
-            // server is not running yet
-            sleep(1000);
+        if (this.wait > 0) {
+            sleep(this.wait * 1000);
         }
-         */
 
         // order preserved map of regions with boolean to signify if it was already scanned
         final Map<RegionCoordinate, Boolean> regions;

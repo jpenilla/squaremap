@@ -4,8 +4,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +17,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
-import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -106,19 +103,19 @@ public final class BiomeColors {
             float humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
             this.grassColors.put(
                 biome,
-                SquaremapCommon.instance().platform().biomeSpecialEffectsAccess().grassColor(biome)
+                biome.getSpecialEffects().getGrassColorOverride()
                     .orElse(getDefaultGrassColor(temperature, humidity))
                     .intValue()
             );
             this.foliageColors.put(
                 biome,
-                SquaremapCommon.instance().platform().biomeSpecialEffectsAccess().foliageColor(biome)
+                biome.getSpecialEffects().getFoliageColorOverride()
                     .orElse(Colors.mix(Colors.leavesMapColor(), getDefaultFoliageColor(temperature, humidity), 0.85f))
                     .intValue()
             );
             this.waterColors.put(
                 biome,
-                SquaremapCommon.instance().platform().biomeSpecialEffectsAccess().waterColor(biome)
+                biome.getSpecialEffects().getWaterColor()
             );
         }
 
@@ -238,10 +235,8 @@ public final class BiomeColors {
         return world.registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY);
     }
 
-    private final Reference2ObjectMap<Biome, BiomeSpecialEffects.GrassColorModifier> grassColorModifiers = new Reference2ObjectOpenHashMap<>();
-
     private int modifiedGrassColor(final Biome biome, final BlockPos pos, final int color) {
-        return switch (this.grassColorModifiers.computeIfAbsent(biome, SquaremapCommon.instance().platform().biomeSpecialEffectsAccess()::grassColorModifier)) {
+        return switch (biome.getSpecialEffects().getGrassColorModifier()) {
             case NONE -> color;
             case SWAMP -> modifiedSwampGrassColor(pos);
             case DARK_FOREST -> (color & 0xFEFEFE) + 2634762 >> 1;

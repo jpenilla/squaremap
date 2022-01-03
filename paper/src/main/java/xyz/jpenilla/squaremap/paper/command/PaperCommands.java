@@ -1,19 +1,23 @@
 package xyz.jpenilla.squaremap.paper.command;
 
+import cloud.commandframework.CommandManager;
+import cloud.commandframework.bukkit.CloudBukkitCapabilities;
 import cloud.commandframework.bukkit.arguments.selector.SinglePlayerSelector;
 import cloud.commandframework.bukkit.parsers.location.Location2D;
 import cloud.commandframework.bukkit.parsers.location.Location2DArgument;
 import cloud.commandframework.bukkit.parsers.selector.SinglePlayerSelectorArgument;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.paper.PaperCommandManager;
 import java.util.List;
 import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
+import xyz.jpenilla.squaremap.common.command.BrigadierSetup;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -22,9 +26,40 @@ import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class PaperCommands {
     private PaperCommands() {
+    }
+
+    public static CommandManager<Commander> createCommandManager(final SquaremapPlugin plugin) {
+        final PaperCommandManager<Commander> mgr;
+        try {
+            mgr = new PaperCommandManager<>(
+                plugin,
+                CommandExecutionCoordinator.simpleCoordinator(),
+                sender -> {
+                    if (sender instanceof Player player) {
+                        return new PaperCommander.Player(player);
+                    }
+                    return new PaperCommander(sender);
+                },
+                commander -> ((PaperCommander) commander).sender()
+            );
+        } catch (final Exception ex) {
+            throw new RuntimeException("Failed to initialize command manager", ex);
+        }
+
+        if (mgr.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+            BrigadierSetup.setup(mgr);
+        }
+
+        if (mgr.queryCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+            mgr.registerAsynchronousCompletions();
+        }
+
+        return mgr;
     }
 
     public static void register(final @NonNull SquaremapCommon common) {
@@ -61,6 +96,6 @@ public final class PaperCommands {
             throw CommandCompleted.withoutMessage();
         }
 
-        return ((CraftPlayer) targetPlayer).getHandle();
+        return CraftBukkitReflection.serverPlayer(targetPlayer);
     }
 }

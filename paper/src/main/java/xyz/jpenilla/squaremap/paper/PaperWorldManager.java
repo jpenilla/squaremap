@@ -8,7 +8,6 @@ import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
@@ -16,6 +15,7 @@ import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class PaperWorldManager implements WorldManager {
     private final Map<WorldIdentifier, PaperMapWorld> worlds = new ConcurrentHashMap<>();
@@ -31,7 +31,7 @@ public final class PaperWorldManager implements WorldManager {
     }
 
     public @NonNull Optional<PaperMapWorld> getWorldIfEnabled(final @NonNull World world) {
-        if (WorldConfig.get(((CraftWorld) world).getHandle()).MAP_ENABLED) {
+        if (WorldConfig.get(CraftBukkitReflection.serverLevel(world)).MAP_ENABLED) {
             return Optional.of(this.getWorld(world));
         } else {
             return Optional.empty();
@@ -44,7 +44,7 @@ public final class PaperWorldManager implements WorldManager {
 
     public void start() {
         Bukkit.getWorlds().forEach(world -> {
-            WorldConfig config = WorldConfig.get(((CraftWorld) world).getHandle());
+            WorldConfig config = WorldConfig.get(CraftBukkitReflection.serverLevel(world));
             if (config.MAP_ENABLED) {
                 this.getWorld(world);
             }

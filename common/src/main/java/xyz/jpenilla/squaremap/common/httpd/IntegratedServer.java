@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import net.kyori.adventure.text.minimessage.Template;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
@@ -59,14 +58,10 @@ public class IntegratedServer {
                 .build();
             server.start();
 
-            Logging.info(
-                Lang.LOG_INTERNAL_WEB_STARTED,
-                Template.template("bind", Config.HTTPD_BIND),
-                Template.template("port", Integer.toString(Config.HTTPD_PORT))
-            );
+            Logging.logger().info(Lang.LOG_INTERNAL_WEB_STARTED.replace("<bind>", Config.HTTPD_BIND).replace("<port>", String.valueOf(Config.HTTPD_PORT)));
         } catch (Exception e) {
             server = null;
-            Logging.severe(Lang.LOG_INTERNAL_WEB_START_ERROR, e);
+            Logging.logger().error(Lang.LOG_INTERNAL_WEB_START_ERROR, e);
         }
     }
 
@@ -78,6 +73,6 @@ public class IntegratedServer {
 
         server.stop();
         server = null;
-        Logging.info(Lang.LOG_INTERNAL_WEB_STOPPED);
+        Logging.logger().info(Lang.LOG_INTERNAL_WEB_STOPPED);
     }
 }

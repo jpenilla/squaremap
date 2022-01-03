@@ -1,29 +1,22 @@
 package xyz.jpenilla.squaremap.paper;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.brigadier.CloudBrigadierManager;
-import cloud.commandframework.bukkit.CloudBukkitCapabilities;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
-import cloud.commandframework.paper.PaperCommandManager;
-import io.leangen.geantyref.TypeToken;
 import io.papermc.paper.text.PaperComponents;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
-import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.BukkitAdapter;
@@ -32,18 +25,14 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.command.Commander;
-import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
-import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
-import xyz.jpenilla.squaremap.common.util.BiomeSpecialEffectsAccess;
+import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
+import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.paper.command.PaperCommander;
 import xyz.jpenilla.squaremap.paper.command.PaperCommands;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.PlayerListener;
 import xyz.jpenilla.squaremap.paper.listener.WorldEventListener;
-import xyz.jpenilla.squaremap.paper.network.Network;
-import xyz.jpenilla.squaremap.paper.task.UpdatePlayers;
-import xyz.jpenilla.squaremap.paper.task.UpdateWorldData;
+import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
 
@@ -52,8 +41,8 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     private SquaremapCommon common;
     private PaperWorldManager worldManager;
     private PaperPlayerManager playerManager;
-    private UpdateWorldData updateWorldData;
-    private UpdatePlayers updatePlayers;
+    private BukkitRunnable updateWorldData;
+    private BukkitRunnable updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
     private WorldEventListener worldEventListener;
 
@@ -75,7 +64,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         PaperCommands.register(this.common);
         this.getServer().getServicesManager().register(Squaremap.class, this.common.api(), this, ServicePriority.Normal);
 
-        Network.register();
+        PaperNetworking.register(this);
 
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
@@ -84,7 +73,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
 
     @Override
     public void onDisable() {
-        Network.unregister();
+        PaperNetworking.unregister(this);
 
         this.getServer().getServicesManager().unregister(Squaremap.class, this.common.api());
         this.common.shutdown();
@@ -98,10 +87,24 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     public void startCallback() {
         this.playerManager = new PaperPlayerManager();
 
-        this.updatePlayers = new UpdatePlayers(this);
+        this.updatePlayers = new BukkitRunnable() {
+            private final UpdatePlayers updatePlayers = new UpdatePlayers(SquaremapPlugin.this);
+
+            @Override
+            public void run() {
+                this.updatePlayers.run();
+            }
+        };
         this.updatePlayers.runTaskTimer(this, 20, 20);
 
-        this.updateWorldData = new UpdateWorldData();
+        this.updateWorldData = new BukkitRunnable() {
+            private final UpdateWorldData updateWorldData = new UpdateWorldData();
+
+            @Override
+            public void run() {
+                this.updateWorldData.run();
+            }
+        };
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
         this.worldManager = new PaperWorldManager();
@@ -153,47 +156,18 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     }
 
     @Override
+    public int maxPlayers() {
+        return Bukkit.getMaxPlayers();
+    }
+
+    @Override
+    public @NonNull String version() {
+        return this.getDescription().getVersion();
+    }
+
+    @Override
     public @NonNull CommandManager<Commander> createCommandManager() {
-        final PaperCommandManager<Commander> mgr;
-        try {
-            mgr = new PaperCommandManager<>(
-                this,
-                CommandExecutionCoordinator.simpleCoordinator(),
-                sender -> {
-                    if (sender instanceof Player player) {
-                        return new PaperCommander.Player(player);
-                    }
-                    return new PaperCommander(sender);
-                },
-                commander -> ((PaperCommander) commander).sender()
-            );
-        } catch (final Exception ex) {
-            throw new RuntimeException("Failed to initialize command manager", ex);
-        }
-
-        if (mgr.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
-            mgr.registerBrigadier();
-            final @Nullable CloudBrigadierManager<Commander, ?> brigManager = mgr.brigadierManager();
-            if (brigManager != null) {
-                brigManager.setNativeNumberSuggestions(false);
-                brigManager.registerMapping(
-                    new TypeToken<MapWorldArgument.Parser<Commander>>() {
-                    },
-                    builder -> builder.toConstant(DimensionArgument.dimension()).cloudSuggestions()
-                );
-                brigManager.registerMapping(
-                    new TypeToken<LevelArgument.Parser<Commander>>() {
-                    },
-                    builder -> builder.toConstant(DimensionArgument.dimension()).cloudSuggestions()
-                );
-            }
-        }
-
-        if (mgr.queryCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
-            mgr.registerAsynchronousCompletions();
-        }
-
-        return mgr;
+        return PaperCommands.createCommandManager(this);
     }
 
     @Override
@@ -236,7 +210,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     }
 
     @Override
-    public @NonNull String tilesDirNameForWorld(final @NonNull ServerLevel level) {
+    public @NonNull String webNameForWorld(final @NonNull ServerLevel level) {
         return level.getWorld().getName();
     }
 
@@ -244,7 +218,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     public @NonNull Collection<ServerLevel> levels() {
         final List<ServerLevel> levels = new ArrayList<>();
         for (final World world : Bukkit.getWorlds()) {
-            levels.add(((CraftWorld) world).getHandle());
+            levels.add(CraftBukkitReflection.serverLevel(world));
         }
         return levels;
     }
@@ -255,16 +229,11 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         if (world == null) {
             return null;
         }
-        return ((CraftWorld) world).getHandle();
+        return CraftBukkitReflection.serverLevel(world);
     }
 
     @Override
     public @NonNull Path regionFileDirectory(final @NonNull ServerLevel level) {
         return LevelStorageSource.getStorageFolder(level.getWorld().getWorldFolder().toPath(), level.getTypeKey()).resolve("region");
-    }
-
-    @Override
-    public @NonNull BiomeSpecialEffectsAccess biomeSpecialEffectsAccess() {
-        return CraftBukkitReflection.BiomeSpecialEffectsHelper.get();
     }
 }

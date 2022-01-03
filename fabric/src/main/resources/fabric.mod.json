@@ -1,0 +1,34 @@
+{
+    "schemaVersion": 1,
+    "id": "squaremap",
+    "version": "${version}",
+    "name": "squaremap",
+    "description": "${description}",
+    "authors": [
+        "jmp"
+    ],
+    "contact": {
+        "homepage": "${github_url}",
+        "sources": "${github_url}",
+        "issues": "${github_url}issues/"
+    },
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "xyz.jpenilla.squaremap.fabric.SquaremapFabricInitializer"
+        ]
+    },
+    "license": [
+        "MIT"
+    ],
+    "mixins": [
+        "squaremap-fabric.mixins.json"
+    ],
+    "accessWidener": "squaremap-fabric.accesswidener",
+    "depends": {
+        "fabric": "*",
+        "fabricloader": ">=0.12.12",
+        "minecraft": "1.18.x",
+        "cloud": "*"
+    }
+}

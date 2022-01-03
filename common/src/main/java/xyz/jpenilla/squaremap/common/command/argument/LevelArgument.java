@@ -15,8 +15,8 @@ import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.command.Commands;
+import xyz.jpenilla.squaremap.common.util.Util;
 
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.failure;
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.success;
@@ -80,7 +80,7 @@ public class LevelArgument<C> extends CommandArgument<C, ServerLevel> {
                 return failure(new MapWorldArgument.MapWorldParseException(input, MapWorldArgument.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
-            final @Nullable ServerLevel world = commandContext.get(Commands.PLATFORM).level(WorldIdentifier.parse(key.toString()));
+            final @Nullable ServerLevel world = commandContext.get(Commands.PLATFORM).level(Util.worldIdentifier(key));
             if (world == null) {
                 return failure(new MapWorldArgument.MapWorldParseException(input, MapWorldArgument.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }

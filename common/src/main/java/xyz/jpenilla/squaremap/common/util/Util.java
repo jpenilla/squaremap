@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 
 import static java.util.Objects.requireNonNull;
 
@@ -48,5 +49,14 @@ public final class Util {
             throw new IllegalArgumentException("No such entry '" + location + "' in registry '" + registry.key() + "'");
         }
         return requireNonNull(registry.get(location));
+    }
+
+    public static WorldIdentifier worldIdentifier(final ServerLevel level) {
+        final ResourceLocation location = level.dimension().location();
+        return worldIdentifier(location);
+    }
+
+    public static WorldIdentifier worldIdentifier(final ResourceLocation location) {
+        return WorldIdentifier.create(location.getNamespace(), location.getPath());
     }
 }

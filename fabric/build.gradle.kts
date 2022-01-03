@@ -1,0 +1,78 @@
+plugins {
+  `platform-conventions`
+  id("quiet-fabric-loom") version "0.10-SNAPSHOT"
+}
+
+val minecraftVersion = "1.18.1"
+
+val squaremap: Configuration by configurations.creating
+configurations.implementation {
+  extendsFrom(squaremap)
+}
+
+dependencies {
+  minecraft("com.mojang", "minecraft", minecraftVersion)
+  mappings(loom.officialMojangMappings())
+  modImplementation("net.fabricmc", "fabric-loader", "0.12.12")
+  modImplementation("net.fabricmc.fabric-api:fabric-api:0.44.0+1.18")
+
+  squaremap(project(":squaremap-common")) {
+    exclude("cloud.commandframework", "cloud-core")
+    exclude("cloud.commandframework", "cloud-minecraft-extras")
+    exclude("io.leangen.geantyref")
+  }
+
+  modImplementation("net.kyori:adventure-platform-fabric:5.0.0") {
+    exclude("ca.stellardrift", "colonel")
+  }
+  include("net.kyori:adventure-platform-fabric:5.0.0")
+
+  modImplementation("cloud.commandframework:cloud-fabric:1.6.1")
+  include("cloud.commandframework:cloud-fabric:1.6.1")
+  include(implementation("cloud.commandframework:cloud-minecraft-extras:1.6.1") {
+    isTransitive = false // we depend on adventure separately
+  })
+}
+
+squaremapPlatform {
+  productionJar.set(tasks.remapJar.flatMap { it.archiveFile })
+}
+
+val mergeAccessWideners = tasks.register("mergeAccessWideners", MergeAccessWideners::class) {
+  aw.from(
+    project(":squaremap-common").layout.projectDirectory
+      .file("src/main/resources/squaremap-common.accesswidener")
+  )
+
+  merged.set(layout.buildDirectory.file("squaremap-fabric.accesswidener"))
+}
+
+loom {
+  accessWidenerPath.set(mergeAccessWideners.flatMap { it.merged })
+}
+
+tasks {
+  validateAccessWidener {
+    dependsOn(mergeAccessWideners) // loom moment
+  }
+  shadowJar {
+    from(mergeAccessWideners.flatMap { it.merged })
+    configurations = listOf(squaremap)
+  }
+  processResources {
+    val props = mapOf(
+      "version" to project.version,
+      "github_url" to rootProject.providers.gradleProperty("githubUrl")
+        .forUseAtConfigurationTime().get(),
+      "description" to project.description,
+    )
+    inputs.properties(props)
+    filesMatching("fabric.mod.json") {
+      expand(props)
+    }
+  }
+  remapJar {
+    input.set(shadowJar.flatMap { it.archiveFile })
+    archiveFileName.set("${project.name}-mc$minecraftVersion-${project.version}.jar")
+  }
+}

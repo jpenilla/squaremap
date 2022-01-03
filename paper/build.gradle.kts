@@ -5,37 +5,33 @@ plugins {
   id("xyz.jpenilla.run-paper") version "1.0.6"
 }
 
+val minecraftVersion = "1.18.1"
+
 dependencies {
-  paperDevBundle("1.18.1-R0.1-SNAPSHOT")
+  paperDevBundle("$minecraftVersion-R0.1-SNAPSHOT")
 
   implementation(project(":squaremap-api"))
   implementation(project(":squaremap-common"))
 
   implementation("cloud.commandframework:cloud-paper")
   implementation("org.bstats:bstats-bukkit:2.2.1")
-  implementation("xyz.jpenilla:reflection-remapper:0.1.0-SNAPSHOT")
 }
 
 configurations.mojangMappedServer {
   exclude("org.yaml", "snakeyaml")
 }
 
-tasks.shadowJar {
-  minimize {
-    exclude { it.moduleName == "squaremap-api" }
-    exclude(dependency("io.undertow:.*:.*")) // does not like being minimized _or_ relocated (xnio errors)
+tasks {
+  shadowJar {
+    listOf(
+      "cloud.commandframework",
+      "io.leangen.geantyref",
+      "org.bstats",
+    ).forEach(::reloc)
   }
-  listOf(
-    "cloud.commandframework",
-    "io.leangen.geantyref",
-    "net.kyori.adventure.text.minimessage",
-    "org.bstats",
-    "xyz.jpenilla.reflectionremapper",
-    "net.fabricmc.mappingio",
-    "org.owasp.html",
-    "org.spongepowered.configurate",
-    "org.yaml.snakeyaml",
-  ).forEach { relocate(it, "squaremap.libraries.$it") }
+  reobfJar {
+    outputJar.set(layout.buildDirectory.file("libs/${base.archivesName.get()}-mc$minecraftVersion-$version.jar"))
+  }
 }
 
 squaremapPlatform {

@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.paper.task;
+package xyz.jpenilla.squaremap.common.task;
 
 import com.google.gson.Gson;
 import java.awt.Color;
@@ -10,9 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
-import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
@@ -27,16 +26,15 @@ import xyz.jpenilla.squaremap.api.marker.MultiPolygon;
 import xyz.jpenilla.squaremap.api.marker.Polygon;
 import xyz.jpenilla.squaremap.api.marker.Polyline;
 import xyz.jpenilla.squaremap.api.marker.Rectangle;
+import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
-import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
-import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 
-public final class UpdateMarkers extends BukkitRunnable {
+public final class UpdateMarkers implements Runnable {
     private static final Gson GSON = new Gson();
 
-    private final PaperMapWorld mapWorld;
+    private final MapWorldInternal mapWorld;
 
-    public UpdateMarkers(final @NonNull PaperMapWorld mapWorld) {
+    public UpdateMarkers(final @NonNull MapWorldInternal mapWorld) {
         this.mapWorld = mapWorld;
     }
 
@@ -81,10 +79,8 @@ public final class UpdateMarkers extends BukkitRunnable {
             }
         });
 
-        Bukkit.getServer().getScheduler().runTaskAsynchronously(SquaremapPlugin.getInstance(), () -> {
-            Path file = this.mapWorld.tilesPath().resolve("markers.json");
-            FileUtil.write(GSON.toJson(layers), file);
-        });
+        Path file = this.mapWorld.tilesPath().resolve("markers.json");
+        ForkJoinPool.commonPool().execute(() -> FileUtil.write(GSON.toJson(layers), file));
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {

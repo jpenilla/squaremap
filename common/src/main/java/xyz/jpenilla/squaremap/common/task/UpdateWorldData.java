@@ -1,29 +1,32 @@
-package xyz.jpenilla.squaremap.paper.task;
+package xyz.jpenilla.squaremap.common.task;
 
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitRunnable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import xyz.jpenilla.squaremap.common.SquaremapCommon;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
-import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
-import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 
-public class UpdateWorldData extends BukkitRunnable {
-    private final Gson gson = new Gson();
+public final class UpdateWorldData implements Runnable {
+    private static final Gson GSON = new Gson();
 
     @Override
     public void run() {
         List<Object> worlds = new ArrayList<>();
 
-        Bukkit.getWorlds().forEach(world -> {
-            final PaperMapWorld mapWorld = SquaremapPlugin.getInstance().worldManager().getWorldIfEnabled(world)
+        final SquaremapPlatform platform = SquaremapCommon.instance().platform();
+        platform.levels().forEach(world -> {
+            final MapWorldInternal mapWorld = platform.worldManager().getWorldIfEnabled(world)
                 .orElse(null);
             if (mapWorld == null) {
                 return;
@@ -31,9 +34,9 @@ public class UpdateWorldData extends BukkitRunnable {
             final WorldConfig worldConfig = mapWorld.config();
 
             Map<String, Object> spawn = new HashMap<>();
-            Location loc = world.getSpawnLocation();
-            spawn.put("x", loc.getBlockX());
-            spawn.put("z", loc.getBlockZ());
+            final BlockPos loc = world.getSharedSpawnPos();
+            spawn.put("x", loc.getX());
+            spawn.put("z", loc.getZ());
 
             Map<String, Object> playerTracker = new HashMap<>();
             playerTracker.put("enabled", worldConfig.PLAYER_TRACKER_ENABLED);
@@ -64,14 +67,17 @@ public class UpdateWorldData extends BukkitRunnable {
             settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
             settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
 
-            FileUtil.write(this.gson.toJson(settings), mapWorld.tilesPath().resolve("settings.json"));
+            FileUtil.write(GSON.toJson(settings), mapWorld.tilesPath().resolve("settings.json"));
 
             Map<String, Object> worldsList = new HashMap<>();
-            worldsList.put("name", world.getName());
+            //worldsList.put("name", world.getName());
+            worldsList.put("name", SquaremapCommon.instance().platform().webNameForWorld(world));
             worldsList.put("display_name", worldConfig.MAP_DISPLAY_NAME
-                    .replace("{world}", world.getName()));
+                .replace("{world}", SquaremapCommon.instance().platform().configNameForWorld(world)));
+            //.replace("{world}", world.getName()));
             worldsList.put("icon", worldConfig.MAP_ICON);
-            worldsList.put("type", world.getEnvironment().name().toLowerCase());
+            //worldsList.put("type", world.getEnvironment().name().toLowerCase());
+            worldsList.put("type", environment(world));
             worldsList.put("order", worldConfig.MAP_ORDER);
             worlds.add(worldsList);
         });
@@ -98,6 +104,19 @@ public class UpdateWorldData extends BukkitRunnable {
         map.put("worlds", worlds);
         map.put("ui", ui);
 
-        FileUtil.write(this.gson.toJson(map), FileUtil.TILES_DIR.resolve("settings.json"));
+        FileUtil.write(GSON.toJson(map), FileUtil.TILES_DIR.resolve("settings.json"));
+    }
+
+    // replicate bukkit "environment"
+    private static String environment(final ServerLevel level) {
+        final ResourceKey<Level> dimensionKey = level.dimension();
+        if (dimensionKey == Level.NETHER) {
+            return "nether";
+        } else if (dimensionKey == Level.END) {
+            return "the_end";
+        } else if (dimensionKey == Level.OVERWORLD) {
+            return "normal";
+        }
+        return "custom";
     }
 }

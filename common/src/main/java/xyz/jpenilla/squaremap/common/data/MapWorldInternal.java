@@ -89,7 +89,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.blockColors = new BlockColors(this);
 
         this.dataPath = SquaremapCommon.instance().platform().dataDirectory().resolve("data").resolve(
-            SquaremapCommon.instance().platform().tilesDirNameForWorld(this.level)
+            SquaremapCommon.instance().platform().webNameForWorld(this.level)
         );
         try {
             if (!Files.exists(this.dataPath)) {
@@ -117,7 +117,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.deserializeDirtyChunks();
 
         if (this.getRenderProgress() != null) {
-            this.startRender(new FullRender(this));
+            this.startRender(new FullRender(this, 2));
         }
     }
 
@@ -195,9 +195,13 @@ public abstract class MapWorldInternal implements MapWorld {
     }
 
     public void chunkModified(final @NonNull ChunkCoordinate coord) {
-        if (this.visibilityLimit().shouldRenderChunk(coord)) {
-            this.modifiedChunks.add(coord);
+        if (!this.config().BACKGROUND_RENDER_ENABLED) {
+            return;
         }
+        if (!this.visibilityLimit().shouldRenderChunk(coord)) {
+            return;
+        }
+        this.modifiedChunks.add(coord);
     }
 
     public boolean hasModifiedChunks() {
@@ -305,7 +309,7 @@ public abstract class MapWorldInternal implements MapWorld {
 
     @Override
     public @NonNull WorldIdentifier identifier() {
-        return WorldIdentifier.parse(this.level.dimension().location().toString());
+        return Util.worldIdentifier(this.level);
     }
 
     @Override
