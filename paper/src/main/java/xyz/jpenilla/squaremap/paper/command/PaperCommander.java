@@ -4,10 +4,10 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public class PaperCommander implements Commander, ForwardingAudience.Single {
     private final CommandSender sender;
@@ -36,7 +36,7 @@ public class PaperCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public @NonNull ServerPlayer player() {
-            return ((CraftPlayer) this.bukkit()).getHandle();
+            return CraftBukkitReflection.serverPlayer(this.bukkit());
         }
     }
 }

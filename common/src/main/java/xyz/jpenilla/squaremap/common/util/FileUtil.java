@@ -59,7 +59,7 @@ public final class FileUtil {
     }
 
     public static Path getAndCreateTilesDirectory(final ServerLevel level) {
-        final Path dir = TILES_DIR.resolve(SquaremapCommon.instance().platform().tilesDirNameForWorld(level));
+        final Path dir = TILES_DIR.resolve(SquaremapCommon.instance().platform().webNameForWorld(level));
         if (!Files.exists(dir)) {
             try {
                 Files.createDirectories(dir);

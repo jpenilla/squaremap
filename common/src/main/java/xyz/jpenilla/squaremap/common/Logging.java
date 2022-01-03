@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.common;
 
 import java.util.function.Supplier;
 import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -43,9 +44,15 @@ public final class Logging {
 
     public static void info(final String miniMessage, final Template... placeholders) {
         logger().info(
-            Components.plainSerializer().serialize(
+            plainSerializer().serialize(
                 Components.miniMessage(miniMessage, placeholders)
             )
         );
+    }
+
+    private static PlainTextComponentSerializer plainSerializer() {
+        return PlainTextComponentSerializer.builder()
+            .flattener(SquaremapCommon.instance().platform().componentFlattener())
+            .build();
     }
 }

@@ -30,7 +30,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
 
     public static WorldAdvanced get(final @NonNull ServerLevel world) {
         return CONFIG_MAP.computeIfAbsent(
-            WorldIdentifier.parse(world.dimension().location().toString()),
+            Util.worldIdentifier(world),
             $ -> new WorldAdvanced(world, Advanced.config)
         );
     }

@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.paper.listener;
 
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -9,6 +8,7 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class WorldEventListener implements Listener {
     private final SquaremapPlugin plugin;
@@ -20,7 +20,7 @@ public final class WorldEventListener implements Listener {
     // Use low priority to load world before other plugins load listeners
     @EventHandler(priority = EventPriority.LOW)
     public void handleWorldLoad(final @NonNull WorldLoadEvent event) {
-        WorldConfig.get(((CraftWorld) event.getWorld()).getHandle());
+        WorldConfig.get(CraftBukkitReflection.serverLevel(event.getWorld()));
         this.plugin.worldManager().getWorldIfEnabled(event.getWorld());
     }
 

@@ -91,7 +91,8 @@ public final class MapUpdateListeners {
         if (!PaperAdvanced.listenerEnabled(eventClass)) {
             return;
         }
-        final Listener listener = new Listener() {};
+        final Listener listener = new Listener() {
+        };
         this.registeredListeners.add(listener);
         Bukkit.getPluginManager().registerEvent(
             eventClass,
@@ -158,6 +159,11 @@ public final class MapUpdateListeners {
     }
 
     private static boolean locationVisible(final @NonNull Location loc) {
+        if (loc.getWorld().hasCeiling()) {
+            // heightmap will just give us the roof
+            return true;
+        }
+
         return loc.getY() >= loc.getWorld().getHighestBlockYAt(loc) - 10;
     }
 

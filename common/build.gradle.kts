@@ -4,7 +4,7 @@ plugins {
 
 minecraft {
   version("1.18.1")
-  accessWideners(layout.projectDirectory.dir("src/main/resources/common.accesswidener"))
+  accessWideners(layout.projectDirectory.dir("src/main/resources/squaremap-common.accesswidener"))
 }
 
 dependencies {
@@ -19,6 +19,7 @@ dependencies {
 
   api(platform("cloud.commandframework:cloud-bom:1.6.1"))
   api("cloud.commandframework:cloud-core")
+  compileOnly("cloud.commandframework:cloud-brigadier")
   api("cloud.commandframework:cloud-minecraft-extras") {
     isTransitive = false // we depend on adventure separately
   }

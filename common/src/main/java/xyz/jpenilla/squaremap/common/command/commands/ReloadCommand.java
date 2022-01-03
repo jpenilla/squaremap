@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -40,12 +41,9 @@ public final class ReloadCommand extends SquaremapCommand {
 
         common.start();
 
-        /* TODO
-        final PluginDescriptionFile desc = this.plugin.getDescription();
         Lang.send(sender, Lang.PLUGIN_RELOADED,
-            Template.template("name", desc.getName()),
-            Template.template("version", desc.getVersion())
+            Template.template("name", "squaremap"),
+            Template.template("version", common.platform().version())
         );
-         */
     }
 }

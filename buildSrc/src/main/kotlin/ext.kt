@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.kyori.indra.git.IndraGitExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.the
@@ -12,4 +13,8 @@ fun Project.decorateVersion() {
   } else {
     versionString
   }
+}
+
+fun ShadowJar.reloc(pkg: String) {
+  relocate(pkg, "squaremap.libraries.$pkg")
 }
