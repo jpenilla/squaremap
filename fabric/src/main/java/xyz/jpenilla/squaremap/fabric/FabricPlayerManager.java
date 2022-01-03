@@ -21,7 +21,7 @@ public final class FabricPlayerManager implements PlayerManagerInternal {
 
     public void hide(final @NonNull ServerPlayer player, boolean persistent) {
         if (persistent) {
-            //pdc(player).set(key, PersistentDataType.BYTE, (byte) 1);
+            hiddenComponent(player).hidden(true);
         }
         this.tempHidden.add(player.getUUID());
     }
@@ -33,7 +33,7 @@ public final class FabricPlayerManager implements PlayerManagerInternal {
 
     public void show(final @NonNull ServerPlayer player, boolean persistent) {
         if (persistent) {
-            //pdc(player).set(key, PersistentDataType.BYTE, (byte) 0);
+            hiddenComponent(player).hidden(false);
         }
         this.tempHidden.remove(player.getUUID());
     }
@@ -64,16 +64,14 @@ public final class FabricPlayerManager implements PlayerManagerInternal {
         return player;
     }
 
-    /*
-    private static PersistentDataContainer pdc(Player player) {
-        return player.getPersistentDataContainer();
+    private static SquaremapComponentInitializer.@NonNull HiddenComponent hiddenComponent(final ServerPlayer player) {
+        return SquaremapComponentInitializer.HIDDEN.get(player);
     }
-     */
 
     @Override
     public boolean hidden(final @NonNull ServerPlayer player) {
-        return this.tempHidden.contains(player.getUUID());
-        // || pdc(player).getOrDefault(key, PersistentDataType.BYTE, (byte) 0) != (byte) 0;
+        return this.tempHidden.contains(player.getUUID())
+            || hiddenComponent(player).hidden();
     }
 
     @Override
