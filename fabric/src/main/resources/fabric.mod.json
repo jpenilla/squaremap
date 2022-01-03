@@ -16,6 +16,14 @@
     "entrypoints": {
         "main": [
             "xyz.jpenilla.squaremap.fabric.SquaremapFabricInitializer"
+        ],
+        "cardinal-components": [
+            "xyz.jpenilla.squaremap.fabric.SquaremapComponentInitializer"
+        ]
+    },
+    "custom": {
+        "cardinal-components": [
+            "squaremap:hidden"
         ]
     },
     "license": [

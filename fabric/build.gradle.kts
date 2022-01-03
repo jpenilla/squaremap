@@ -10,6 +10,14 @@ configurations.implementation {
   extendsFrom(squaremap)
 }
 
+repositories {
+  maven("https://ladysnake.jfrog.io/artifactory/mods/") {
+    mavenContent {
+      includeGroup("io.github.onyxstudios.Cardinal-Components-API")
+    }
+  }
+}
+
 dependencies {
   minecraft("com.mojang", "minecraft", minecraftVersion)
   mappings(loom.officialMojangMappings())
@@ -32,6 +40,11 @@ dependencies {
   include(implementation("cloud.commandframework:cloud-minecraft-extras:1.6.1") {
     isTransitive = false // we depend on adventure separately
   })
+
+  modImplementation("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:4.0.1")
+  include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:4.0.1")
+  modImplementation("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:4.0.1")
+  include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:4.0.1")
 }
 
 squaremapPlatform {
