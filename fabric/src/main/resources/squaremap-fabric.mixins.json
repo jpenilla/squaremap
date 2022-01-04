@@ -10,5 +10,5 @@
     ],
     "injectors": {
         "defaultRequire": 1
-  }
+    }
 }
