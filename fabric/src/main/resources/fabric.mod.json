@@ -23,7 +23,7 @@
     },
     "custom": {
         "cardinal-components": [
-            "squaremap:hidden"
+            "squaremap:player_component"
         ]
     },
     "license": [
