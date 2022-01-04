@@ -6,7 +6,7 @@
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jpenilla/squaremap/Build)](https://github.com/jpenilla/squaremap/actions)
 [![Discord](https://img.shields.io/discord/390942438061113344?color=8C9CFE&label=discord&logo=discord&logoColor=white)](https://discord.gg/PHpuzZS)
 
-squaremap (formerly known as Pl3xMap) is a minimalistic and lightweight live world map viewer for Paper servers.
+squaremap (formerly known as Pl3xMap) is a minimalistic and lightweight live world map viewer for Minecraft servers.
 
 </div>
 
