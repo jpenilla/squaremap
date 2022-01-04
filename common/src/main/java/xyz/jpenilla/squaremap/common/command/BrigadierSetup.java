@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.command;
 
-import cloud.commandframework.CommandManager;
 import cloud.commandframework.brigadier.BrigadierManagerHolder;
 import cloud.commandframework.brigadier.CloudBrigadierManager;
 import io.leangen.geantyref.TypeToken;
@@ -18,12 +17,8 @@ public final class BrigadierSetup {
     private BrigadierSetup() {
     }
 
-    public static void setup(final CommandManager<Commander> manager) {
-        if (!(manager instanceof BrigadierManagerHolder<?> brigadierManagerHolder)) {
-            throw new IllegalArgumentException();
-        }
-
-        @SuppressWarnings("unchecked") final @Nullable CloudBrigadierManager<Commander, ?> brigManager = (CloudBrigadierManager<Commander, ?>) brigadierManagerHolder.brigadierManager();
+    public static void setup(final BrigadierManagerHolder<Commander> manager) {
+        final @Nullable CloudBrigadierManager<Commander, ?> brigManager = manager.brigadierManager();
         requireNonNull(brigManager);
 
         brigManager.setNativeNumberSuggestions(false);
