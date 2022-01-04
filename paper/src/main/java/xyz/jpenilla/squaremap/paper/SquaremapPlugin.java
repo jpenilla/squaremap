@@ -74,7 +74,6 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     @Override
     public void onDisable() {
         PaperNetworking.unregister(this);
-
         this.getServer().getServicesManager().unregister(Squaremap.class, this.common.api());
         this.common.shutdown();
     }
@@ -178,10 +177,6 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     @Override
     public @NonNull PaperPlayerManager playerManager() {
         return this.playerManager;
-    }
-
-    public SquaremapCommon common() {
-        return this.common;
     }
 
     @Override

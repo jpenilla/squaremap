@@ -13,21 +13,21 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public class SquaremapComponentInitializer implements EntityComponentInitializer {
-    public static final ComponentKey<HiddenComponent> HIDDEN =
-        ComponentRegistryV3.INSTANCE.getOrCreate(new ResourceLocation("squaremap:hidden"), HiddenComponent.class);
+    public static final ComponentKey<PlayerComponent> SQUAREMAP_PLAYER_COMPONENT =
+        ComponentRegistryV3.INSTANCE.getOrCreate(new ResourceLocation("squaremap:player_component"), PlayerComponent.class);
 
     @Override
     public void registerEntityComponentFactories(final EntityComponentFactoryRegistry registry) {
-        registry.registerForPlayers(HIDDEN, player -> new HiddenComponentImpl(), RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerForPlayers(SQUAREMAP_PLAYER_COMPONENT, player -> new PlayerComponentImpl(), RespawnCopyStrategy.ALWAYS_COPY);
     }
 
-    public interface HiddenComponent extends ComponentV3 {
+    public interface PlayerComponent extends ComponentV3 {
         boolean hidden();
 
         void hidden(boolean hidden);
     }
 
-    private static final class HiddenComponentImpl implements HiddenComponent {
+    private static final class PlayerComponentImpl implements PlayerComponent {
         private static final String HIDDEN_KEY = "hidden";
 
         private boolean hidden;
