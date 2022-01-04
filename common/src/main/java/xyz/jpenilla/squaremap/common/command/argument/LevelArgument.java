@@ -85,6 +85,7 @@ public class LevelArgument<C> extends CommandArgument<C, ServerLevel> {
                 return failure(new MapWorldArgument.MapWorldParseException(input, MapWorldArgument.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
+            inputQueue.remove();
             return success(world);
         }
 
