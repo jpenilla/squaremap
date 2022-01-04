@@ -59,7 +59,7 @@ public final class Networking {
 
         mapWorlds.forEach(($, mapWorld) -> {
             out.writeUTF(mapWorld.identifier().asString());
-            out.writeUTF(mapWorld.name());
+            out.writeUTF(SquaremapCommon.instance().platform().webNameForWorld(mapWorld.serverLevel()));
             out.writeInt(mapWorld.config().ZOOM_MAX);
             out.writeInt(mapWorld.config().ZOOM_DEFAULT);
             out.writeInt(mapWorld.config().ZOOM_EXTRA);
