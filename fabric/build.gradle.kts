@@ -51,25 +51,12 @@ squaremapPlatform {
   productionJar.set(tasks.remapJar.flatMap { it.archiveFile })
 }
 
-val mergeAccessWideners = tasks.register("mergeAccessWideners", MergeAccessWideners::class) {
-  aw.from(
-    project(":squaremap-common").layout.projectDirectory
-      .file("src/main/resources/squaremap-common.accesswidener")
-  )
-
-  merged.set(layout.buildDirectory.file("squaremap-fabric.accesswidener"))
-}
-
 loom {
-  accessWidenerPath.set(mergeAccessWideners.flatMap { it.merged })
+  accessWidenerPath.set(layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener"))
 }
 
 tasks {
-  validateAccessWidener {
-    dependsOn(mergeAccessWideners) // loom moment
-  }
   shadowJar {
-    from(mergeAccessWideners.flatMap { it.merged })
     configurations = listOf(squaremap)
   }
   processResources {
