@@ -8,7 +8,7 @@ public final class Advanced extends AbstractConfig {
         super("advanced.yml");
     }
 
-    public static Advanced config; // todo - remove public
+    static Advanced config;
     static int version;
 
     public static void reload() {
@@ -26,5 +26,9 @@ public final class Advanced extends AbstractConfig {
         }
 
         WorldAdvanced.reload();
+    }
+
+    public static Advanced config() {
+        return config;
     }
 }
