@@ -44,7 +44,7 @@ public abstract class AbstractConfig {
         }
     }
 
-    public final void readConfig(Class<?> clazz, Object instance) { // todo reduce access
+    final void readConfig(Class<?> clazz, Object instance) {
         for (final Method method : clazz.getDeclaredMethods()) {
             if (!Modifier.isPrivate(method.getModifiers()) || method.getParameterTypes().length != 0 || method.getReturnType() != Void.TYPE) {
                 continue;
@@ -87,7 +87,7 @@ public abstract class AbstractConfig {
         return this.node(path).getString(def);
     }
 
-    public final boolean getBoolean(String path, boolean def) { // todo - protected
+    public final boolean getBoolean(String path, boolean def) {
         return this.node(path).getBoolean(def);
     }
 

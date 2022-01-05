@@ -66,7 +66,7 @@ public final class PaperAdvanced {
             ChunkPopulateEvent.class
         );
         for (final Class<? extends Event> clazz : defaultOn) {
-            EVENT_LISTENER_TOGGLES.put(clazz, Advanced.config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), true));
+            EVENT_LISTENER_TOGGLES.put(clazz, Advanced.config().getBoolean("settings.event-listeners." + clazz.getSimpleName(), true));
         }
 
         final Set<Class<? extends Event>> defaultOff = Set.of(
@@ -80,7 +80,7 @@ public final class PaperAdvanced {
             ChunkLoadEvent.class
         );
         for (final Class<? extends Event> clazz : defaultOff) {
-            EVENT_LISTENER_TOGGLES.put(clazz, Advanced.config.getBoolean("settings.event-listeners." + clazz.getSimpleName(), false));
+            EVENT_LISTENER_TOGGLES.put(clazz, Advanced.config().getBoolean("settings.event-listeners." + clazz.getSimpleName(), false));
         }
     }
 }
