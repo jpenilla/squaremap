@@ -52,6 +52,7 @@ public final class PaperCommands {
         }
 
         if (mgr.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
+            mgr.registerBrigadier();
             BrigadierSetup.setup(mgr);
         }
 
