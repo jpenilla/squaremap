@@ -48,9 +48,9 @@ import static java.util.Objects.requireNonNull;
 public final class SquaremapFabricInitializer implements ModInitializer, SquaremapPlatform {
     private static final Logger LOGGER = LogManager.getLogger("squaremap");
 
-    private final UpdateWorldData updateWorldData = new UpdateWorldData();
     private @MonotonicNonNull SquaremapCommon common;
     private @Nullable UpdatePlayers updatePlayers;
+    private @Nullable UpdateWorldData updateWorldData;
     private @Nullable MinecraftServer minecraftServer;
     private @Nullable FabricWorldManager worldManager;
     private @Nullable FabricPlayerManager playerManager;
@@ -100,8 +100,8 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
         }
 
         this.playerManager = new FabricPlayerManager();
-
         this.updatePlayers = new UpdatePlayers(this);
+        this.updateWorldData = new UpdateWorldData();
     }
 
     @Override
@@ -111,13 +111,9 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
             this.worldManager = null;
         }
 
-        if (this.updatePlayers != null) {
-            this.updatePlayers = null;
-        }
-
-        if (this.playerManager != null) {
-            this.playerManager = null;
-        }
+        this.updatePlayers = null;
+        this.updateWorldData = null;
+        this.playerManager = null;
     }
 
     public MinecraftServer server() {
@@ -210,10 +206,14 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
         public void onEndTick(final MinecraftServer server) {
             if (this.tick % 20 == 0) {
                 if (this.tick % 100 == 0) {
-                    SquaremapFabricInitializer.this.updateWorldData.run();
+                    if (SquaremapFabricInitializer.this.updateWorldData != null) {
+                        SquaremapFabricInitializer.this.updateWorldData.run();
+                    }
                 }
 
-                SquaremapFabricInitializer.this.updatePlayers.run();
+                if (SquaremapFabricInitializer.this.updatePlayers != null) {
+                    SquaremapFabricInitializer.this.updatePlayers.run();
+                }
 
                 if (SquaremapFabricInitializer.this.worldManager != null) {
                     for (final MapWorldInternal mapWorld : SquaremapFabricInitializer.this.worldManager.worlds().values()) {
