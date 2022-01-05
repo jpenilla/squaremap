@@ -18,6 +18,8 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
+            .gradle/caches/VanillaGradle
+            .gradle/loom-cache
             paper/.gradle/caches/paperweight
           key: ${{ runner.os }}-gradle1-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
