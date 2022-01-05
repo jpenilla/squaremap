@@ -33,7 +33,7 @@ public final class FabricChunkSnapshotProvider implements ChunkSnapshotProvider 
     ) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable LevelChunk chunk = fullChunkIfGenerated(level, x, z);
-            if (chunk == null) {
+            if (chunk == null || chunk.isEmpty()) {
                 return null;
             }
             return ChunkSnapshot.snapshot(chunk, biomesOnly);
