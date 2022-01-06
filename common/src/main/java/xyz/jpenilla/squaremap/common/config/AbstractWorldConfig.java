@@ -12,13 +12,16 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
 @SuppressWarnings("unused")
 public abstract class AbstractWorldConfig {
+    public static final String DOT = "____dot____";
+
     final String worldName;
     protected final ServerLevel world;
     protected final AbstractConfig parent;
 
     protected AbstractWorldConfig(final ServerLevel world, final AbstractConfig parent) {
         this.world = world;
-        this.worldName = SquaremapCommon.instance().platform().configNameForWorld(world);
+        this.worldName = SquaremapCommon.instance().platform().configNameForWorld(world)
+            .replace(".", DOT); // replace '.' as we later split on it (see AbstractConfig.splitPath)
         this.parent = parent;
     }
 

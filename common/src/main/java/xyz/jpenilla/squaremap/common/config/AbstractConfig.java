@@ -148,6 +148,14 @@ public abstract class AbstractConfig {
     }
 
     static Object[] splitPath(final String path) {
-        return path.split("\\.");
+        final String[] split = path.split("\\.");
+        // replace AbstractWorldConfig.DOT back to '.' after split
+        for (int i = 0; i < split.length; i++) {
+            final String s = split[i];
+            if (s.contains(AbstractWorldConfig.DOT)) {
+                split[i] = s.replace(AbstractWorldConfig.DOT, ".");
+            }
+        }
+        return split;
     }
 }
