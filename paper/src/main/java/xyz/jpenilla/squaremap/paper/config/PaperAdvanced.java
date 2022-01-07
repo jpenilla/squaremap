@@ -1,7 +1,7 @@
 package xyz.jpenilla.squaremap.paper.config;
 
-import java.util.HashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import java.util.Set;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -36,18 +36,19 @@ public final class PaperAdvanced {
     private PaperAdvanced() {
     }
 
-    private static final Map<Class<? extends Event>, Boolean> EVENT_LISTENER_TOGGLES = new HashMap<>();
+    private static final Object2BooleanMap<Class<? extends Event>> EVENT_LISTENER_TOGGLES = new Object2BooleanOpenHashMap<>();
 
     public static boolean listenerEnabled(final @NonNull Class<? extends Event> eventClass) {
-        final Boolean enabled = EVENT_LISTENER_TOGGLES.get(eventClass);
-        if (enabled == null) {
+        if (!EVENT_LISTENER_TOGGLES.containsKey(eventClass)) {
             Logging.logger().warn(String.format("No configuration option found for event listener: %s, the listener will not be enabled.", eventClass.getSimpleName()));
             return false;
         }
-        return enabled;
+        return EVENT_LISTENER_TOGGLES.getBoolean(eventClass);
     }
 
     private static void listenerToggles() {
+        EVENT_LISTENER_TOGGLES.clear();
+
         final Set<Class<? extends Event>> defaultOn = Set.of(
             BlockPlaceEvent.class,
             BlockBreakEvent.class,

@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.core.Registry;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -58,5 +59,11 @@ public final class Util {
 
     public static WorldIdentifier worldIdentifier(final ResourceLocation location) {
         return WorldIdentifier.create(location.getNamespace(), location.getPath());
+    }
+
+    public static byte[] raw(final FriendlyByteBuf buf) {
+        final byte[] data = new byte[buf.readableBytes()];
+        buf.readBytes(data);
+        return data;
     }
 }

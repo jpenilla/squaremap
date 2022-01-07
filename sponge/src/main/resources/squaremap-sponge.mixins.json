@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "minVersion": "0.8.4",
+    "package": "xyz.jpenilla.squaremap.sponge.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        "ChunkMapAccess"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

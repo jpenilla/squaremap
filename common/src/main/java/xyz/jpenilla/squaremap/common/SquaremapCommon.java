@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import javax.imageio.ImageIO;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -17,6 +19,9 @@ import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
+
+import static net.kyori.adventure.text.minimessage.Template.template;
+import static xyz.jpenilla.squaremap.common.util.Components.miniMessage;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapCommon {
@@ -60,6 +65,24 @@ public final class SquaremapCommon {
             IntegratedServer.stopServer();
         }
         this.platform.stopCallback();
+    }
+
+    public void reload(final Audience audience) {
+        this.stop();
+
+        Config.reload();
+        Advanced.reload();
+        Lang.reload();
+        FileUtil.reload();
+
+        this.start();
+
+        final Component success = miniMessage(
+            Lang.PLUGIN_RELOADED,
+            template("name", "squaremap"),
+            template("version", this.platform().version())
+        );
+        audience.sendMessage(success);
     }
 
     public void setupApi() {

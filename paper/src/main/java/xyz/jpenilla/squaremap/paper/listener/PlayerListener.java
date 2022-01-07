@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.paper.listener;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -17,9 +16,6 @@ public final class PlayerListener implements Listener {
 
     @EventHandler
     public void handlePlayerChangedWorld(final @NonNull PlayerChangedWorldEvent event) {
-        Player player = event.getPlayer();
-        if (Networking.CLIENT_USERS.contains(player.getUniqueId())) {
-            Networking.sendUpdateWorld(CraftBukkitReflection.serverPlayer(player));
-        }
+        Networking.worldChanged(CraftBukkitReflection.serverPlayer(event.getPlayer()));
     }
 }

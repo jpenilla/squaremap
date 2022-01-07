@@ -33,14 +33,17 @@ repositories {
   maven("https://maven.fabricmc.net/") {
     mavenContent { includeGroup("net.fabricmc") }
   }
+  /*
   maven("https://repo.incendo.org/content/repositories/snapshots/") {
     mavenContent {
       includeGroup("cloud.commandframework")
       snapshotsOnly()
     }
   }
+   */
   maven("https://repo.jpenilla.xyz/snapshots/") {
     mavenContent {
+      includeGroup("cloud.commandframework")
       includeGroup("xyz.jpenilla")
       snapshotsOnly()
     }

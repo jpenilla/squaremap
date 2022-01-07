@@ -27,9 +27,13 @@ public interface SquaremapPlatform {
 
     ComponentFlattener componentFlattener();
 
-    String configNameForWorld(ServerLevel level);
+    default String configNameForWorld(final ServerLevel level) {
+        return level.dimension().location().toString();
+    }
 
-    String webNameForWorld(ServerLevel level);
+    default String webNameForWorld(final ServerLevel level) {
+        return level.dimension().location().toString().replace(":", "_");
+    }
 
     Collection<ServerLevel> levels();
 

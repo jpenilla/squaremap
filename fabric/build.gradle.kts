@@ -35,9 +35,9 @@ dependencies {
   }
   include("net.kyori:adventure-platform-fabric:5.0.0")
 
-  modImplementation("cloud.commandframework:cloud-fabric:1.6.1")
-  include("cloud.commandframework:cloud-fabric:1.6.1")
-  include(implementation("cloud.commandframework:cloud-minecraft-extras:1.6.1") {
+  modImplementation("cloud.commandframework:cloud-fabric:1.7.0-SNAPSHOT")
+  include("cloud.commandframework:cloud-fabric:1.7.0-SNAPSHOT")
+  include(implementation("cloud.commandframework:cloud-minecraft-extras:1.7.0-SNAPSHOT") {
     isTransitive = false // we depend on adventure separately
   })
 

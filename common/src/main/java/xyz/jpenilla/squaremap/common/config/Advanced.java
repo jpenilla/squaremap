@@ -24,6 +24,10 @@ public final class Advanced extends AbstractConfig {
         if (bukkitAdvancedClass != null) {
             config.readConfig(bukkitAdvancedClass, null);
         }
+        final Class<?> spongeAdvancedClass = ReflectionUtil.findClass("xyz.jpenilla.squaremap.sponge.config.SpongeAdvanced");
+        if (spongeAdvancedClass != null) {
+            config.readConfig(spongeAdvancedClass, null);
+        }
 
         WorldAdvanced.reload();
     }

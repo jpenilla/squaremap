@@ -30,12 +30,7 @@ public final class FabricCommands {
     public static CommandManager<Commander> createCommandManager() {
         final FabricServerCommandManager<Commander> mgr = new FabricServerCommandManager<>(
             CommandExecutionCoordinator.simpleCoordinator(),
-            stack -> {
-                if (stack.getEntity() instanceof ServerPlayer) {
-                    return new FabricCommander.Player(stack);
-                }
-                return new FabricCommander(stack);
-            },
+            FabricCommander::from,
             commander -> ((FabricCommander) commander).stack()
         );
 

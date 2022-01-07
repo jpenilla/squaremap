@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.fabric.util;
+package xyz.jpenilla.squaremap.common.util;
 
 import com.mojang.datafixers.util.Either;
 import java.util.concurrent.CompletableFuture;
@@ -13,15 +13,12 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.fabric.mixin.ChunkMapAccess;
 
 @DefaultQualifier(NonNull.class)
-public final class FabricChunkSnapshotProvider implements ChunkSnapshotProvider {
-    private static final FabricChunkSnapshotProvider INSTANCE = new FabricChunkSnapshotProvider();
+public final class VanillaChunkSnapshotProvider implements ChunkSnapshotProvider {
+    private static final VanillaChunkSnapshotProvider INSTANCE = new VanillaChunkSnapshotProvider();
 
-    private FabricChunkSnapshotProvider() {
+    private VanillaChunkSnapshotProvider() {
     }
 
     @Override
@@ -46,7 +43,7 @@ public final class FabricChunkSnapshotProvider implements ChunkSnapshotProvider 
         final ChunkPos chunkPos = new ChunkPos(x, z);
         final ChunkMapAccess chunkMap = (ChunkMapAccess) level.getChunkSource().chunkMap;
 
-        final ChunkHolder visibleChunk = chunkMap.getVisibleChunkIfPresent(chunkPos.toLong());
+        final ChunkHolder visibleChunk = chunkMap.squaremap$getVisibleChunkIfPresent(chunkPos.toLong());
         if (visibleChunk != null) {
             final @Nullable ChunkAccess chunk = fullIfPresent(visibleChunk);
             if (chunk != null) {
@@ -54,7 +51,7 @@ public final class FabricChunkSnapshotProvider implements ChunkSnapshotProvider 
             }
         }
 
-        final ChunkHolder unloadingChunk = chunkMap.pendingUnloads().get(chunkPos.toLong());
+        final ChunkHolder unloadingChunk = chunkMap.squaremap$pendingUnloads().get(chunkPos.toLong());
         if (unloadingChunk != null) {
             final @Nullable ChunkAccess chunk = fullIfPresent(unloadingChunk);
             if (chunk != null) {
@@ -62,7 +59,7 @@ public final class FabricChunkSnapshotProvider implements ChunkSnapshotProvider 
             }
         }
 
-        final CompoundTag chunkTag = chunkMap.readChunk(chunkPos);
+        final CompoundTag chunkTag = chunkMap.squaremap$readChunk(chunkPos);
         if (chunkTag != null && chunkTag.contains("Status", Tag.TAG_STRING)) {
             if (ChunkStatus.FULL.getName().equals(chunkTag.getString("Status"))) {
                 return (LevelChunk) level.getChunkSource()
@@ -81,7 +78,7 @@ public final class FabricChunkSnapshotProvider implements ChunkSnapshotProvider 
         return future.getNow(ChunkHolder.UNLOADED_CHUNK).left().orElse(null);
     }
 
-    public static FabricChunkSnapshotProvider get() {
+    public static VanillaChunkSnapshotProvider get() {
         return INSTANCE;
     }
 }
