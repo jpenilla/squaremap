@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,6 +39,10 @@ public final class FabricMapUpdates {
         if (pos.getY() >= height - 10) {
             mark(level, new ChunkCoordinate(pos.getX() >> 4, pos.getZ() >> 4));
         }
+    }
+
+    public static void mark(final ServerLevel level, final ChunkPos chunk) {
+        mark(level, new ChunkCoordinate(chunk.x, chunk.z));
     }
 
     public static void mark(final ServerLevel level, final ChunkCoordinate chunk) {
