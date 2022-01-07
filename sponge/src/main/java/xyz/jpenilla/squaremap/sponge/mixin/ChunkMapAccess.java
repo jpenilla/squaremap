@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.fabric.mixin;
+package xyz.jpenilla.squaremap.sponge.mixin;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import net.minecraft.nbt.CompoundTag;

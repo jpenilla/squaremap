@@ -110,8 +110,12 @@ public final class Networking {
         send(player, out);
     }
 
-    public static void sendUpdateWorld(final ServerPlayer player) {
-        ByteArrayDataOutput out = out();
+    public static void worldChanged(final ServerPlayer player) {
+        if (!CLIENT_USERS.contains(player.getUUID())) {
+            return;
+        }
+
+        final ByteArrayDataOutput out = out();
         out.writeInt(Constants.UPDATE_WORLD);
         out.writeInt(Constants.PROTOCOL);
         out.writeInt(Constants.RESPONSE_SUCCESS);

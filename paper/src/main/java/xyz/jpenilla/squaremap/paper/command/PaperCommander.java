@@ -44,6 +44,13 @@ public class PaperCommander implements Commander, ForwardingAudience.Single {
         return Objects.hash(this.sender);
     }
 
+    public static PaperCommander from(final CommandSender sender) {
+        if (sender instanceof org.bukkit.entity.Player player) {
+            return new Player(player);
+        }
+        return new PaperCommander(sender);
+    }
+
     public static final class Player extends PaperCommander implements PlayerCommander {
         public Player(final org.bukkit.entity.@NonNull Player sender) {
             super(sender);

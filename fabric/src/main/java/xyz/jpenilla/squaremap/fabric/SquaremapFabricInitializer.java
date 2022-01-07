@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -29,17 +28,17 @@ import xyz.jpenilla.squaremap.common.PlayerManagerInternal;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.WorldManager;
+import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.network.Networking;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.common.util.VanillaChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.fabric.command.FabricCommands;
 import xyz.jpenilla.squaremap.fabric.data.FabricMapWorld;
 import xyz.jpenilla.squaremap.fabric.network.FabricNetworking;
-import xyz.jpenilla.squaremap.fabric.util.FabricChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.fabric.util.FabricMapUpdates;
 
 import static java.util.Objects.requireNonNull;
@@ -52,7 +51,7 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
     private @Nullable MinecraftServer minecraftServer;
-    private @Nullable FabricWorldManager worldManager;
+    private @Nullable WorldManagerImpl<FabricMapWorld> worldManager;
     private @Nullable FabricPlayerManager playerManager;
 
     @Override
@@ -86,15 +85,12 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
             }
         });
 
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
-            Networking.CLIENT_USERS.remove(handler.player.getUUID()));
-
         ServerTickEvents.END_SERVER_TICK.register(new TickEndListener());
     }
 
     @Override
     public void startCallback() {
-        this.worldManager = new FabricWorldManager();
+        this.worldManager = new WorldManagerImpl<>(FabricMapWorld::new);
         if (this.minecraftServer != null) {
             this.worldManager.start(this.server());
         }
@@ -133,7 +129,7 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
 
     @Override
     public ChunkSnapshotProvider chunkSnapshotProvider() {
-        return FabricChunkSnapshotProvider.get();
+        return VanillaChunkSnapshotProvider.get();
     }
 
     @Override
@@ -154,16 +150,6 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     @Override
     public ComponentFlattener componentFlattener() {
         return FabricServerAudiences.of(this.server()).flattener();
-    }
-
-    @Override
-    public String configNameForWorld(final ServerLevel level) {
-        return level.dimension().location().toString();
-    }
-
-    @Override
-    public String webNameForWorld(final ServerLevel level) {
-        return level.dimension().location().toString().replace(":", "_");
     }
 
     @Override

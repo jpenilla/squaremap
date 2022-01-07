@@ -21,7 +21,7 @@ abstract class ServerPlayerMixin {
         )
     )
     void injectTeleportTo(ServerLevel serverLevel, double d, double e, double f, float g, float h, CallbackInfo ci) {
-        Networking.sendUpdateWorld((ServerPlayer) (Object) this);
+        Networking.worldChanged((ServerPlayer) (Object) this);
     }
 
     @Inject(
@@ -33,6 +33,6 @@ abstract class ServerPlayerMixin {
         )
     )
     void injectChangeDimension(ServerLevel serverLevel, CallbackInfoReturnable<Entity> cir) {
-        Networking.sendUpdateWorld((ServerPlayer) (Object) this);
+        Networking.worldChanged((ServerPlayer) (Object) this);
     }
 }

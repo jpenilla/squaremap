@@ -1,10 +1,10 @@
 plugins {
-  id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
+  id("org.spongepowered.gradle.vanilla")
 }
 
 minecraft {
   version("1.18.1")
-  accessWideners(layout.projectDirectory.dir("src/main/resources/squaremap-common.accesswidener"))
+  accessWideners(layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))
 }
 
 dependencies {
@@ -17,7 +17,7 @@ dependencies {
     isTransitive = false // we depend on adventure separately
   }
 
-  api(platform("cloud.commandframework:cloud-bom:1.6.1"))
+  api(platform("cloud.commandframework:cloud-bom:1.7.0-SNAPSHOT"))
   api("cloud.commandframework:cloud-core")
   compileOnly("cloud.commandframework:cloud-brigadier")
   api("cloud.commandframework:cloud-minecraft-extras") {

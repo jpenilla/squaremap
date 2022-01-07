@@ -39,12 +39,7 @@ public final class PaperCommands {
             mgr = new PaperCommandManager<>(
                 plugin,
                 CommandExecutionCoordinator.simpleCoordinator(),
-                sender -> {
-                    if (sender instanceof Player player) {
-                        return new PaperCommander.Player(player);
-                    }
-                    return new PaperCommander(sender);
-                },
+                PaperCommander::from,
                 commander -> ((PaperCommander) commander).sender()
             );
         } catch (final Exception ex) {
