@@ -34,25 +34,15 @@ public final class Logging {
         logger().warn(msg, t);
     }
 
-    public static void severe(String msg) {
-        logger().error(msg);
-    }
-
     public static void severe(String msg, Throwable t) {
         logger().error(msg, t);
     }
 
     public static void info(final String miniMessage, final Template... placeholders) {
         logger().info(
-            plainSerializer().serialize(
+            PlainTextComponentSerializer.plainText().serialize(
                 Components.miniMessage(miniMessage, placeholders)
             )
         );
-    }
-
-    private static PlainTextComponentSerializer plainSerializer() {
-        return PlainTextComponentSerializer.builder()
-            .flattener(SquaremapCommon.instance().platform().componentFlattener())
-            .build();
     }
 }
