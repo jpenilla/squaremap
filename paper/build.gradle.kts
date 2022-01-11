@@ -1,20 +1,19 @@
 plugins {
   `platform-conventions`
-  id("io.papermc.paperweight.userdev") version "1.3.3"
-  id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
-  id("xyz.jpenilla.run-paper") version "1.0.6"
+  id("io.papermc.paperweight.userdev")
+  id("net.minecrell.plugin-yml.bukkit")
+  id("xyz.jpenilla.run-paper")
 }
 
-val minecraftVersion = "1.18.1"
+val minecraftVersion = libs.versions.minecraft.forUseAtConfigurationTime().get()
 
 dependencies {
   paperDevBundle("$minecraftVersion-R0.1-SNAPSHOT")
 
-  implementation(project(":squaremap-api"))
-  implementation(project(":squaremap-common"))
+  implementation(projects.squaremapCommon)
 
-  implementation("cloud.commandframework:cloud-paper")
-  implementation("org.bstats:bstats-bukkit:2.2.1")
+  implementation(libs.cloudPaper)
+  implementation(libs.bStatsBukkit)
 }
 
 configurations.mojangMappedServer {

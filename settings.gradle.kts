@@ -1,3 +1,5 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
   repositories {
     gradlePluginPortal()
@@ -7,6 +9,10 @@ pluginManagement {
     maven("https://maven.quiltmc.org/repository/release/")
     maven("https://repo.jpenilla.xyz/snapshots/")
   }
+}
+
+plugins {
+  id("ca.stellardrift.polyglot-version-catalogs") version "5.0.0"
 }
 
 rootProject.name = "squaremap"

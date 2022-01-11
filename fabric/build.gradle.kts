@@ -1,9 +1,9 @@
 plugins {
   `platform-conventions`
-  id("quiet-fabric-loom") version "0.10-SNAPSHOT"
+  id("quiet-fabric-loom")
 }
 
-val minecraftVersion = "1.18.1"
+val minecraftVersion = libs.versions.minecraft.forUseAtConfigurationTime().get()
 
 val squaremap: Configuration by configurations.creating
 configurations.implementation {
@@ -19,32 +19,33 @@ repositories {
 }
 
 dependencies {
-  minecraft("com.mojang", "minecraft", minecraftVersion)
+  minecraft(libs.fabricMinecraft)
   mappings(loom.officialMojangMappings())
-  modImplementation("net.fabricmc", "fabric-loader", "0.12.12")
-  modImplementation("net.fabricmc.fabric-api:fabric-api:0.44.0+1.18")
+  modImplementation(libs.fabricLoader)
+  modImplementation(libs.fabricApi)
 
-  squaremap(project(":squaremap-common")) {
+  squaremap(projects.squaremapCommon) {
     exclude("cloud.commandframework", "cloud-core")
     exclude("cloud.commandframework", "cloud-minecraft-extras")
     exclude("io.leangen.geantyref")
   }
 
-  modImplementation("net.kyori:adventure-platform-fabric:5.0.0") {
+  modImplementation(libs.adventurePlatformFabric) {
     exclude("ca.stellardrift", "colonel")
   }
-  include("net.kyori:adventure-platform-fabric:5.0.0")
+  include(libs.adventurePlatformFabric)
 
-  modImplementation("cloud.commandframework:cloud-fabric:1.7.0-SNAPSHOT")
-  include("cloud.commandframework:cloud-fabric:1.7.0-SNAPSHOT")
-  include(implementation("cloud.commandframework:cloud-minecraft-extras:1.7.0-SNAPSHOT") {
+  modImplementation(libs.cloudFabric)
+  include(libs.cloudFabric)
+  implementation(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately
-  })
+  }
+  include(libs.cloudMinecraftExtras)
 
-  modImplementation("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:4.0.1")
-  include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:4.0.1")
-  modImplementation("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:4.0.1")
-  include("io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:4.0.1")
+  modImplementation(libs.cardinalComponentsBase)
+  include(libs.cardinalComponentsBase)
+  modImplementation(libs.cardinalComponentsEntity)
+  include(libs.cardinalComponentsEntity)
 }
 
 squaremapPlatform {
