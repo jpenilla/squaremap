@@ -3,11 +3,11 @@ import org.spongepowered.plugin.metadata.model.PluginDependency
 
 plugins {
   `platform-conventions`
-  id("org.spongepowered.gradle.plugin") version "2.0.0"
+  id("org.spongepowered.gradle.plugin")
   id("org.spongepowered.gradle.vanilla")
 }
 
-val minecraftVersion = "1.18.1"
+val minecraftVersion = libs.versions.minecraft.forUseAtConfigurationTime().get()
 
 minecraft {
   version(minecraftVersion)
@@ -15,14 +15,14 @@ minecraft {
 }
 
 dependencies {
-  implementation(project(":squaremap-common")) {
+  implementation(projects.squaremapCommon) {
     exclude("io.leangen.geantyref")
   }
-  implementation("cloud.commandframework:cloud-sponge") {
+  implementation(libs.cloudSponge) {
     exclude("io.leangen.geantyref")
   }
 
-  compileOnly("org.spongepowered:mixin:0.8.4")
+  compileOnly(libs.mixin)
 }
 
 sponge {

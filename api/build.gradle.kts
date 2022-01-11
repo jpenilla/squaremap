@@ -7,8 +7,8 @@ java {
 }
 
 dependencies {
-  compileOnly("io.papermc.paper", "paper-api", "1.18.1-R0.1-SNAPSHOT")
-  compileOnlyApi("org.checkerframework", "checker-qual", "3.21.0")
+  compileOnly(libs.paperApi)
+  compileOnlyApi(libs.checkerQual)
 }
 
 indra {

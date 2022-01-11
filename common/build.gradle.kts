@@ -3,34 +3,34 @@ plugins {
 }
 
 minecraft {
-  version("1.18.1")
+  version(libs.versions.minecraft.forUseAtConfigurationTime().get())
   accessWideners(layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))
 }
 
 dependencies {
-  api(project(":squaremap-api"))
+  api(projects.squaremapApi)
 
-  api(platform("net.kyori:adventure-bom:4.9.3"))
-  compileOnlyApi("net.kyori:adventure-api")
-  compileOnlyApi("net.kyori:adventure-text-serializer-plain")
-  api("net.kyori:adventure-text-minimessage:4.2.0-SNAPSHOT") {
+  api(platform(libs.adventureBom))
+  compileOnlyApi(libs.adventureApi)
+  compileOnlyApi(libs.adventureTextSerializerPlain)
+  api(libs.miniMessage) {
     isTransitive = false // we depend on adventure separately
   }
 
-  api(platform("cloud.commandframework:cloud-bom:1.7.0-SNAPSHOT"))
-  api("cloud.commandframework:cloud-core")
-  compileOnly("cloud.commandframework:cloud-brigadier")
-  api("cloud.commandframework:cloud-minecraft-extras") {
+  api(platform(libs.cloudBom))
+  api(libs.cloudCore)
+  compileOnly(libs.cloudBrigadier)
+  api(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately
   }
 
-  api(platform("org.spongepowered:configurate-bom:4.1.2"))
-  api("org.spongepowered:configurate-yaml")
+  api(platform(libs.configurateBom))
+  api(libs.configurateYaml)
 
-  api("io.undertow:undertow-core:2.2.14.Final")
-  compileOnlyApi("org.jboss.logging:jboss-logging-annotations:2.2.1.Final")
+  api(libs.undertow)
+  compileOnlyApi(libs.jBossLoggingAnnotations)
 
-  api("com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20211018.2") {
+  api(libs.htmlSanitizer) {
     isTransitive = false // depends on guava, provided by mc at runtime
   }
 }
