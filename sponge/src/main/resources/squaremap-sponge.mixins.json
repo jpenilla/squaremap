@@ -4,6 +4,7 @@
     "package": "xyz.jpenilla.squaremap.sponge.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "ChunkHolderMixin",
         "ChunkMapAccess"
     ],
     "injectors": {
