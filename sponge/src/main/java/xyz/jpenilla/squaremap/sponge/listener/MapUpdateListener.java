@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -114,29 +115,19 @@ public final class MapUpdateListener {
     }
 
     public final class BlockTriggers {
-        private final boolean blockPlace;
-        private final boolean blockBreak;
-        private final boolean blockModify;
-        private final boolean blockGrowth;
-        private final boolean blockDecay;
+        private final boolean blockPlace = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_PLACE);
+        private final boolean blockBreak = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_BREAK);
+        private final boolean blockModify = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_MODIFY);
+        private final boolean blockGrowth = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_GROWTH);
+        private final boolean blockDecay = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_DECAY);
 
-        private final boolean liquidSpread;
-        private final boolean liquidDecay;
+        private final boolean liquidSpread = SpongeAdvanced.listenerEnabled(SpongeAdvanced.LIQUID_SPREAD);
+        private final boolean liquidDecay = SpongeAdvanced.listenerEnabled(SpongeAdvanced.LIQUID_DECAY);
 
-        private final boolean disabled;
+        private final boolean disabled = Stream.of(this.blockPlace, this.blockBreak, this.blockModify,
+            this.blockGrowth, this.blockDecay, this.liquidSpread, this.liquidDecay).noneMatch(b -> b);
 
         private BlockTriggers() {
-            this.blockPlace = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_PLACE);
-            this.blockBreak = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_BREAK);
-            this.blockModify = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_MODIFY);
-            this.blockGrowth = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_GROWTH);
-            this.blockDecay = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_DECAY);
-
-            this.liquidSpread = SpongeAdvanced.listenerEnabled(SpongeAdvanced.LIQUID_SPREAD);
-            this.liquidDecay = SpongeAdvanced.listenerEnabled(SpongeAdvanced.LIQUID_DECAY);
-
-            this.disabled = !this.blockPlace && !this.blockBreak && !this.blockModify &&
-                !this.blockGrowth && !this.blockDecay && !this.liquidSpread && !this.liquidDecay;
         }
 
         @Listener(order = Order.POST)
