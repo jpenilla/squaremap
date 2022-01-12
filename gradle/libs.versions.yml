@@ -141,7 +141,7 @@ dependencies:
         name: cardinal-components-entity
         version: { ref: cardinalComponents }
 
-    # build-logic
+    # buildSrc
     indraCommon:
         group: net.kyori
         name: indra-common
