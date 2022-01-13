@@ -33,7 +33,6 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.PlayerManagerInternal;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.WorldManager;
@@ -172,7 +171,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
     }
 
     @Override
-    public PlayerManagerInternal playerManager() {
+    public SpongePlayerManager playerManager() {
         return this.playerManager;
     }
 

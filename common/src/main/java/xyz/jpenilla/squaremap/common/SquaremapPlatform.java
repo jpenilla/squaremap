@@ -44,7 +44,7 @@ public interface SquaremapPlatform {
         return DimensionType.getStorageFolder(level.dimension(), worldPath).resolve("region");
     }
 
-    PlayerManagerInternal playerManager();
+    PlayerManagerImpl playerManager();
 
     void startCallback();
 

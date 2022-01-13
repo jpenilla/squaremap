@@ -24,7 +24,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.PlayerManagerInternal;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.WorldManager;
@@ -176,7 +175,7 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     }
 
     @Override
-    public PlayerManagerInternal playerManager() {
+    public FabricPlayerManager playerManager() {
         return this.playerManager;
     }
 

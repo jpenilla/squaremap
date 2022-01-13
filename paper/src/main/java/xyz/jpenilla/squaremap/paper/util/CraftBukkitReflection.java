@@ -62,4 +62,14 @@ public final class CraftBukkitReflection {
             throw new RuntimeException(ex);
         }
     }
+
+    private static final Method BUKKIT_PLAYER = ReflectionUtil.needMethod(ServerPlayer.class, List.of("getBukkitEntity"));
+
+    public static @NonNull Player player(final @NonNull ServerPlayer player) {
+        try {
+            return (Player) BUKKIT_PLAYER.invoke(player);
+        } catch (final ReflectiveOperationException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }
