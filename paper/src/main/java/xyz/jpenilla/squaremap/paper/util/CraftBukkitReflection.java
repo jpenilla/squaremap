@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -47,6 +48,16 @@ public final class CraftBukkitReflection {
     public static @NonNull ServerPlayer serverPlayer(final @NonNull Player player) {
         try {
             return (ServerPlayer) CRAFT_PLAYER_GET_HANDLE.invoke(player);
+        } catch (final ReflectiveOperationException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private static final Method LEVEL_GET_WORLD = ReflectionUtil.needMethod(Level.class, List.of("getWorld"));
+
+    public static @NonNull World world(final @NonNull ServerLevel level) {
+        try {
+            return (World) LEVEL_GET_WORLD.invoke(level);
         } catch (final ReflectiveOperationException ex) {
             throw new RuntimeException(ex);
         }

@@ -9,6 +9,7 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.task.UpdateMarkers;
 import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class PaperMapWorld extends MapWorldInternal {
     private final BukkitRunnable updateMarkersTask;
@@ -38,7 +39,7 @@ public final class PaperMapWorld extends MapWorldInternal {
     }
 
     public @NonNull World bukkit() {
-        return this.serverLevel().getWorld();
+        return CraftBukkitReflection.world(this.serverLevel());
     }
 
     @Override

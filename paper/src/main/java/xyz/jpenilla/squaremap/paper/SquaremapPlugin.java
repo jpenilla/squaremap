@@ -201,12 +201,12 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
 
     @Override
     public @NonNull String configNameForWorld(final @NonNull ServerLevel level) {
-        return level.getWorld().getName();
+        return CraftBukkitReflection.world(level).getName();
     }
 
     @Override
     public @NonNull String webNameForWorld(final @NonNull ServerLevel level) {
-        return level.getWorld().getName();
+        return CraftBukkitReflection.world(level).getName();
     }
 
     @Override
@@ -229,6 +229,6 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
 
     @Override
     public @NonNull Path regionFileDirectory(final @NonNull ServerLevel level) {
-        return LevelStorageSource.getStorageFolder(level.getWorld().getWorldFolder().toPath(), level.getTypeKey()).resolve("region");
+        return LevelStorageSource.getStorageFolder(CraftBukkitReflection.world(level).getWorldFolder().toPath(), level.getTypeKey()).resolve("region");
     }
 }
