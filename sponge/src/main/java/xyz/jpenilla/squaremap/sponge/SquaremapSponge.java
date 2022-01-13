@@ -11,7 +11,6 @@ import java.util.List;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -88,9 +87,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
     @Override
     public void startCallback() {
         this.worldManager = new WorldManagerImpl<>(SpongeMapWorld::new);
-        if (this.game.isServerAvailable()) {
-            this.worldManager.start((MinecraftServer) this.game.server());
-        }
+        this.worldManager.start(this);
 
         this.playerManager = new SpongePlayerManager();
 

@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
@@ -47,12 +46,9 @@ public class WorldManagerImpl<W extends MapWorldInternal> implements WorldManage
         );
     }
 
-    public void start(final MinecraftServer server) {
-        for (final ServerLevel level : server.getAllLevels()) {
-            WorldConfig config = WorldConfig.get(level);
-            if (config.MAP_ENABLED) {
-                this.getWorld(level);
-            }
+    public void start(final SquaremapPlatform platform) {
+        for (final ServerLevel level : platform.levels()) {
+            this.getWorldIfEnabled(level);
         }
     }
 

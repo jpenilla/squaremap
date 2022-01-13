@@ -107,7 +107,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
         this.worldManager = new PaperWorldManager();
-        this.worldManager.start();
+        this.worldManager.start(this);
 
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();

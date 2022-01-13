@@ -89,9 +89,7 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     @Override
     public void startCallback() {
         this.worldManager = new WorldManagerImpl<>(FabricMapWorld::new);
-        if (this.minecraftServer != null) {
-            this.worldManager.start(this.server());
-        }
+        this.worldManager.start(this);
 
         this.playerManager = new FabricPlayerManager();
         this.updatePlayers = new UpdatePlayers(this);
