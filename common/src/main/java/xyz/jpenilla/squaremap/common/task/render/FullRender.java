@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.Logging;
@@ -43,7 +42,7 @@ public final class FullRender extends AbstractRender {
 
         Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.getRenderProgress();
         if (resumedMap != null) {
-            Logging.info(Lang.LOG_RESUMED_RENDERING, Template.template("world", this.mapWorld.identifier().asString()));
+            Logging.info(Lang.LOG_RESUMED_RENDERING, "world", this.mapWorld.identifier().asString());
 
             regions = resumedMap;
 
@@ -51,10 +50,10 @@ public final class FullRender extends AbstractRender {
             this.curRegions.set(count);
             this.curChunks.set(this.countCompletedChunks(regions));
         } else {
-            Logging.info(Lang.LOG_STARTED_FULLRENDER, Template.template("world", this.mapWorld.identifier().asString()));
+            Logging.info(Lang.LOG_STARTED_FULLRENDER, "world", this.mapWorld.identifier().asString());
 
             // find all region files
-            Logging.info(Lang.LOG_SCANNING_REGION_FILES);
+            Logging.logger().info(Lang.LOG_SCANNING_REGION_FILES);
             final List<RegionCoordinate> regionFiles = this.getRegions();
 
             // setup a spiral iterator
@@ -97,7 +96,7 @@ public final class FullRender extends AbstractRender {
         this.totalRegions = regions.size();
         this.totalChunks = regions.keySet().stream().mapToInt(visibility::countChunksInRegion).sum();
 
-        Logging.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, Template.template("total", Integer.toString(regions.size())));
+        Logging.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, "total", regions.size());
 
         this.progress = RenderProgress.printProgress(this, null);
 

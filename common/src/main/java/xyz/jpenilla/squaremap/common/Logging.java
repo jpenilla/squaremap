@@ -1,13 +1,10 @@
 package xyz.jpenilla.squaremap.common;
 
 import java.util.function.Supplier;
-import net.kyori.adventure.text.minimessage.Template;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.util.Components;
 
 @DefaultQualifier(NonNull.class)
 public final class Logging {
@@ -24,25 +21,24 @@ public final class Logging {
         }
     }
 
-    public static void debug(final String msg) {
-        if (Config.DEBUG_MODE) {
-            logger().info("[DEBUG] " + msg);
+    public static void error(final String message, final Throwable thr, final Object... replacements) {
+        logger().error(replace(message, replacements), thr);
+    }
+
+    public static void info(final String message, final Object... replacements) {
+        logger().info(replace(message, replacements));
+    }
+
+    public static String replace(String message, final Object... replacements) {
+        if (replacements.length == 0) {
+            return message;
         }
-    }
-
-    public static void warn(String msg, Throwable t) {
-        logger().warn(msg, t);
-    }
-
-    public static void severe(String msg, Throwable t) {
-        logger().error(msg, t);
-    }
-
-    public static void info(final String miniMessage, final Template... placeholders) {
-        logger().info(
-            PlainTextComponentSerializer.plainText().serialize(
-                Components.miniMessage(miniMessage, placeholders)
-            )
-        );
+        if ((replacements.length & 1) != 0) {
+            throw new IllegalArgumentException("Invalid length for replacements array (expected to be divisible by 2)");
+        }
+        for (int i = 0; i < replacements.length; i += 2) {
+            message = message.replace('<' + replacements[i].toString() + '>', replacements[i + 1].toString());
+        }
+        return message;
     }
 }

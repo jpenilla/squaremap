@@ -58,7 +58,7 @@ public class IntegratedServer {
                 .build();
             server.start();
 
-            Logging.logger().info(Lang.LOG_INTERNAL_WEB_STARTED.replace("<bind>", Config.HTTPD_BIND).replace("<port>", String.valueOf(Config.HTTPD_PORT)));
+            Logging.info(Lang.LOG_INTERNAL_WEB_STARTED, "bind", Config.HTTPD_BIND, "port", Config.HTTPD_PORT);
         } catch (Exception e) {
             server = null;
             Logging.logger().error(Lang.LOG_INTERNAL_WEB_START_ERROR, e);

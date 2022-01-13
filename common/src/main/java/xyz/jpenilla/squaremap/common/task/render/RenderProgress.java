@@ -15,9 +15,6 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
 
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.minimessage.Template.template;
-
 @DefaultQualifier(NonNull.class)
 public final class RenderProgress extends TimerTask {
     private static final int ROLLING_AVG_SIZE = 20;
@@ -97,15 +94,15 @@ public final class RenderProgress extends TimerTask {
 
         Logging.info(
             (totalRegions > 0 ? Lang.LOG_RENDER_PROGRESS_WITH_REGIONS : Lang.LOG_RENDER_PROGRESS),
-            template("world", this.render.mapWorld.identifier().asString()),
-            template("current_regions", text(curRegions)),
-            template("total_regions", text(totalRegions)),
-            template("current_chunks", text(curChunks)),
-            template("total_chunks", text(this.render.totalChunks())),
-            template("percent", percentStr),
-            template("elapsed", elapsedStr),
-            template("eta", etaStr),
-            template("rate", rateStr)
+            "world", this.render.mapWorld.identifier().asString(),
+            "current_regions", curRegions,
+            "total_regions", totalRegions,
+            "current_chunks", curChunks,
+            "total_chunks", this.render.totalChunks(),
+            "percent", percentStr,
+            "elapsed", elapsedStr,
+            "eta", etaStr,
+            "rate", rateStr
         );
     }
 

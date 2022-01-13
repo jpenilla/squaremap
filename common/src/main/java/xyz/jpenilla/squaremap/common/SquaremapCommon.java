@@ -56,7 +56,7 @@ public final class SquaremapCommon {
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.startServer();
         } else {
-            Logging.info(Lang.LOG_INTERNAL_WEB_DISABLED);
+            Logging.logger().info(Lang.LOG_INTERNAL_WEB_DISABLED);
         }
     }
 

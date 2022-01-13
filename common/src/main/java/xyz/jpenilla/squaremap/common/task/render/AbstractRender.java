@@ -11,7 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -115,9 +114,9 @@ public abstract class AbstractRender implements Runnable {
 
             if (finished) {
                 this.mapWorld.finishedRender();
-                Logging.info(Lang.LOG_FINISHED_RENDERING, Template.template("world", this.mapWorld.identifier().asString()));
+                Logging.info(Lang.LOG_FINISHED_RENDERING, "world", this.mapWorld.identifier().asString());
             } else {
-                Logging.info(Lang.LOG_CANCELLED_RENDERING, Template.template("world", this.mapWorld.identifier().asString()));
+                Logging.info(Lang.LOG_CANCELLED_RENDERING, "world", this.mapWorld.identifier().asString());
             }
         }
     }

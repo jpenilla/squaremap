@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import net.kyori.adventure.text.minimessage.Template;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.Logging;
@@ -57,7 +56,7 @@ public final class RadiusRender extends AbstractRender {
 
     @Override
     protected void render() {
-        Logging.info(Lang.LOG_STARTED_RADIUSRENDER, Template.template("world", this.mapWorld.identifier().asString()));
+        Logging.info(Lang.LOG_STARTED_RADIUSRENDER, "world", this.mapWorld.identifier().asString());
 
         this.progress = RenderProgress.printProgress(this, null);
 

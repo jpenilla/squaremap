@@ -64,7 +64,7 @@ public final class FileUtil {
             try {
                 Files.createDirectories(dir);
             } catch (IOException e) {
-                Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR.replace("{path}", dir.toAbsolutePath().toString()), e);
+                Logging.error(Lang.LOG_COULD_NOT_CREATE_DIR, e, "path", dir.toAbsolutePath());
             }
         }
         return dir;
@@ -102,7 +102,7 @@ public final class FileUtil {
             throw new IllegalStateException("don't know how to handle extracting from " + dirURL);
         }
 
-        Logging.debug("Extracting " + inDir + " directory from jar...");
+        Logging.debug(() -> "Extracting " + inDir + " directory from jar...");
         try (final ZipFile jar = ((JarURLConnection) dirURL.openConnection()).getJarFile()) {
             final Enumeration<? extends ZipEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
@@ -114,18 +114,18 @@ public final class FileUtil {
                 final String filename = name.substring(path.length());
                 final File file = new File(outDir, filename);
                 if (!replace && file.exists()) {
-                    Logging.debug("  exists   " + name);
+                    Logging.debug(() -> "  exists   " + name);
                     continue;
                 }
                 if (entry.isDirectory()) {
                     if (!file.exists()) {
                         final boolean result = file.mkdir();
-                        Logging.debug((result ? "  creating " : "  unable to create ") + name);
+                        Logging.debug(() -> (result ? "  creating " : "  unable to create ") + name);
                     } else {
-                        Logging.debug("  exists   " + name);
+                        Logging.debug(() -> "  exists   " + name);
                     }
                 } else {
-                    Logging.debug("  writing  " + name);
+                    Logging.debug(() -> "  writing  " + name);
                     try (
                         final InputStream inputStream = jar.getInputStream(entry);
                         final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))
@@ -136,12 +136,12 @@ public final class FileUtil {
                             outputStream.write(buffer, 0, readCount);
                         }
                     } catch (IOException e) {
-                        Logging.severe("Failed to extract file (" + name + ") from jar!", e);
+                        Logging.logger().error("Failed to extract file ({}) from jar!", name, e);
                     }
                 }
             }
         } catch (IOException e) {
-            Logging.severe("Failed to extract directory '" + inDir + "' from jar to '" + outDir + "'", e);
+            Logging.logger().error("Failed to extract directory '{}' from jar to '{}'", inDir, outDir, e);
         }
     }
 

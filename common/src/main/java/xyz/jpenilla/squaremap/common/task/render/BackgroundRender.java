@@ -60,12 +60,10 @@ public final class BackgroundRender extends AbstractRender {
         if (!futures.isEmpty()) {
             CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
             this.biomeColors.clear();
-            Logging.debug(
-                String.format(
-                    "Finished background render cycle in %.2f seconds",
-                    (double) (System.currentTimeMillis() - time) / 1000.0D
-                )
-            );
+            Logging.debug(() -> String.format(
+                "Finished background render cycle in %.2f seconds",
+                (double) (System.currentTimeMillis() - time) / 1000.0D
+            ));
         }
     }
 }

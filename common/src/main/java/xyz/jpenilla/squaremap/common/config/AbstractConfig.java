@@ -54,9 +54,9 @@ public abstract class AbstractConfig {
                 method.setAccessible(true);
                 method.invoke(instance);
             } catch (InvocationTargetException ex) {
-                Logging.severe("Error invoking " + method, ex.getCause());
+                Logging.logger().error("Error invoking {}", method, ex.getCause());
             } catch (final Exception ex) {
-                Logging.severe("Error invoking " + method, ex);
+                Logging.logger().error("Error invoking {}", method, ex);
             }
         }
 
@@ -67,7 +67,7 @@ public abstract class AbstractConfig {
         try {
             this.loader.save(this.config);
         } catch (final IOException ex) {
-            Logging.severe("Could not save " + this.configFile, ex);
+            Logging.logger().error("Could not save {}", this.configFile, ex);
         }
     }
 

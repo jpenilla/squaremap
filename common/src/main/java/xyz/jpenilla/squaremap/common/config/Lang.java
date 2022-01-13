@@ -187,7 +187,7 @@ public final class Lang {
         try {
             field.set(null, getString(langKey.value(), (String) field.get(null)));
         } catch (IllegalAccessException e) {
-            Logging.warn("Failed to load " + Config.LANGUAGE_FILE, e);
+            Logging.logger().warn("Failed to load {}", Config.LANGUAGE_FILE, e);
         }
     }
 

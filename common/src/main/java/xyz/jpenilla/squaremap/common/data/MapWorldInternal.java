@@ -132,7 +132,7 @@ public abstract class MapWorldInternal implements MapWorld {
                 }
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.warn(String.format("Failed to deserialize render progress for world '%s'", this.identifier()), e);
+            Logging.logger().warn("Failed to deserialize render progress for world '{}'", this.identifier().asString(), e);
         }
         return null;
     }
@@ -141,7 +141,7 @@ public abstract class MapWorldInternal implements MapWorld {
         try {
             Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
         } catch (IOException e) {
-            Logging.warn(String.format("Failed to serialize render progress for world '%s'", this.identifier()), e);
+            Logging.logger().warn("Failed to serialize render progress for world '{}'", this.identifier().asString(), e);
         }
     }
 
@@ -149,7 +149,7 @@ public abstract class MapWorldInternal implements MapWorld {
         try {
             Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
         } catch (IOException e) {
-            Logging.warn(String.format("Failed to serialize dirty chunks for world '%s'", this.identifier()), e);
+            Logging.logger().warn("Failed to serialize dirty chunks for world '{}'", this.identifier().asString(), e);
         }
     }
 
@@ -167,7 +167,7 @@ public abstract class MapWorldInternal implements MapWorld {
                 }
             }
         } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.warn(String.format("Failed to deserialize dirty chunks for world '%s'", this.identifier()), e);
+            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}'", this.identifier().asString(), e);
         }
     }
 
@@ -256,7 +256,7 @@ public abstract class MapWorldInternal implements MapWorld {
         try {
             Files.deleteIfExists(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME));
         } catch (IOException e) {
-            Logging.warn(String.format("Failed to delete render progress data for world '%s'", this.identifier()), e);
+            Logging.logger().warn("Failed to delete render progress data for world '{}'", this.identifier().asString(), e);
         }
     }
 

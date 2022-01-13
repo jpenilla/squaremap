@@ -44,7 +44,7 @@ public final class Image {
             try {
                 Files.createDirectories(dir);
             } catch (final IOException e) {
-                Logging.severe(Lang.LOG_COULD_NOT_CREATE_DIR.replace("<path>", dir.toAbsolutePath().toString()), e);
+                Logging.error(Lang.LOG_COULD_NOT_CREATE_DIR, e, "path", dir.toAbsolutePath());
                 continue;
             }
 
@@ -66,7 +66,7 @@ public final class Image {
                     } catch (final IOException x) {
                         ex.addSuppressed(x);
                     }
-                    Logging.severe(this.replaceXZ(Lang.LOG_COULD_NOT_READ_REGION), ex);
+                    Logging.logger().error(this.replaceXZ(Lang.LOG_COULD_NOT_READ_REGION), ex);
                     continue;
                 }
             } else {
@@ -107,13 +107,12 @@ public final class Image {
                     ImageIO.write(image, "png", file.toFile());
                 }
             } catch (final IOException ex) {
-                Logging.severe(this.replaceXZ(Lang.LOG_COULD_NOT_SAVE_REGION), ex);
+                Logging.logger().error(this.replaceXZ(Lang.LOG_COULD_NOT_SAVE_REGION), ex);
             }
         }
     }
 
     private String replaceXZ(final String s) {
-        return s.replace("<x>", Integer.toString(this.region.x()))
-            .replace("<z>", Integer.toString(this.region.z()));
+        return Logging.replace(s, "x", this.region.x(), "z", this.region.z());
     }
 }
