@@ -31,7 +31,7 @@ import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.paper.command.PaperCommands;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.PlayerListener;
-import xyz.jpenilla.squaremap.paper.listener.WorldEventListener;
+import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
@@ -44,7 +44,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     private BukkitRunnable updateWorldData;
     private BukkitRunnable updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
-    private WorldEventListener worldEventListener;
+    private WorldLoadListener worldLoadListener;
 
     public SquaremapPlugin() {
         instance = this;
@@ -112,8 +112,8 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         this.mapUpdateListeners = new MapUpdateListeners(this);
         this.mapUpdateListeners.register();
 
-        this.worldEventListener = new WorldEventListener(this);
-        this.getServer().getPluginManager().registerEvents(this.worldEventListener, this);
+        this.worldLoadListener = new WorldLoadListener(this);
+        this.getServer().getPluginManager().registerEvents(this.worldLoadListener, this);
     }
 
     @Override
@@ -123,9 +123,9 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
             this.mapUpdateListeners = null;
         }
 
-        if (this.worldEventListener != null) {
-            HandlerList.unregisterAll(this.worldEventListener);
-            this.worldEventListener = null;
+        if (this.worldLoadListener != null) {
+            HandlerList.unregisterAll(this.worldLoadListener);
+            this.worldLoadListener = null;
         }
 
         if (this.updatePlayers != null) {

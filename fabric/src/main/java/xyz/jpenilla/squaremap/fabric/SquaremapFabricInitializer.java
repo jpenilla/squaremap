@@ -26,7 +26,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
@@ -132,7 +131,7 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     }
 
     @Override
-    public WorldManager worldManager() {
+    public WorldManagerImpl<FabricMapWorld> worldManager() {
         return this.worldManager;
     }
 

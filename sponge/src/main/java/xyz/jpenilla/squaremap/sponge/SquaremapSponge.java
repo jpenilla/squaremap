@@ -26,8 +26,6 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.RefreshGameEvent;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
-import org.spongepowered.api.event.world.LoadWorldEvent;
-import org.spongepowered.api.event.world.UnloadWorldEvent;
 import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
@@ -35,10 +33,8 @@ import org.spongepowered.plugin.builtin.jvm.Plugin;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.command.Commander;
-import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
@@ -48,6 +44,7 @@ import xyz.jpenilla.squaremap.common.util.VanillaChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.sponge.command.SpongeCommands;
 import xyz.jpenilla.squaremap.sponge.data.SpongeMapWorld;
 import xyz.jpenilla.squaremap.sponge.listener.MapUpdateListener;
+import xyz.jpenilla.squaremap.sponge.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.sponge.network.SpongeNetwork;
 
 @DefaultQualifier(NonNull.class)
@@ -62,6 +59,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
     private @Nullable SpongePlayerManager playerManager;
     private @Nullable ScheduledTask updateWorlds;
     private @Nullable ScheduledTask updatePlayers;
+    private @Nullable WorldLoadListener worldLoadListener;
 
     @Inject
     public SquaremapSponge(
@@ -78,17 +76,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
     }
 
     @Listener
-    public void worldLoad(final LoadWorldEvent event) {
-        WorldConfig.get((ServerLevel) event.world());
-        this.worldManager.getWorld((ServerLevel) event.world());
-    }
-
-    @Listener
-    public void worldUnload(final UnloadWorldEvent event) {
-        this.worldManager.worldUnloaded((ServerLevel) event.world());
-    }
-
-    @Listener
     public void gameLoaded(final StartedEngineEvent<Server> event) {
         this.scheduleTasks();
     }
@@ -96,6 +83,56 @@ public final class SquaremapSponge implements SquaremapPlatform {
     @Listener
     public void shutdown(final StoppingEngineEvent<Server> event) {
         this.common.shutdown();
+    }
+
+    @Override
+    public void startCallback() {
+        this.worldManager = new WorldManagerImpl<>(SpongeMapWorld::new);
+        if (this.game.isServerAvailable()) {
+            this.worldManager.start((MinecraftServer) this.game.server());
+        }
+
+        this.playerManager = new SpongePlayerManager();
+
+        if (this.game.isServerAvailable()) {
+            this.scheduleTasks();
+        }
+
+        this.mapUpdateListener = new MapUpdateListener(this);
+        this.mapUpdateListener.register();
+
+        this.worldLoadListener = new WorldLoadListener(this);
+        this.game.eventManager().registerListeners(this.pluginContainer, this.worldLoadListener);
+    }
+
+    @Override
+    public void stopCallback() {
+        if (this.updatePlayers != null) {
+            this.updatePlayers.cancel();
+            this.updatePlayers = null;
+        }
+
+        if (this.updateWorlds != null) {
+            this.updateWorlds.cancel();
+            this.updateWorlds = null;
+        }
+
+        if (this.worldManager != null) {
+            this.worldManager.shutdown();
+            this.worldManager = null;
+        }
+
+        this.playerManager = null;
+
+        if (this.mapUpdateListener != null) {
+            this.mapUpdateListener.unregister();
+            this.mapUpdateListener = null;
+        }
+
+        if (this.worldLoadListener != null) {
+            this.game.eventManager().unregisterListeners(this.worldLoadListener);
+            this.worldLoadListener = null;
+        }
     }
 
     @Listener
@@ -128,7 +165,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
     }
 
     @Override
-    public WorldManager worldManager() {
+    public WorldManagerImpl<SpongeMapWorld> worldManager() {
         return this.worldManager;
     }
 
@@ -173,48 +210,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
     @Override
     public SpongePlayerManager playerManager() {
         return this.playerManager;
-    }
-
-    @Override
-    public void startCallback() {
-        this.worldManager = new WorldManagerImpl<>(SpongeMapWorld::new);
-        if (this.game.isServerAvailable()) {
-            this.worldManager.start((MinecraftServer) this.game.server());
-        }
-
-        this.playerManager = new SpongePlayerManager();
-
-        if (this.game.isServerAvailable()) {
-            this.scheduleTasks();
-        }
-
-        this.mapUpdateListener = new MapUpdateListener(this);
-        this.mapUpdateListener.register();
-    }
-
-    @Override
-    public void stopCallback() {
-        if (this.updatePlayers != null) {
-            this.updatePlayers.cancel();
-            this.updatePlayers = null;
-        }
-
-        if (this.updateWorlds != null) {
-            this.updateWorlds.cancel();
-            this.updateWorlds = null;
-        }
-
-        if (this.worldManager != null) {
-            this.worldManager.shutdown();
-            this.worldManager = null;
-        }
-
-        this.playerManager = null;
-
-        if (this.mapUpdateListener != null) {
-            this.mapUpdateListener.unregister();
-            this.mapUpdateListener = null;
-        }
     }
 
     private void scheduleTasks() {

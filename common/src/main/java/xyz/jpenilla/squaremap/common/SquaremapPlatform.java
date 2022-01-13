@@ -17,15 +17,31 @@ import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 
 @DefaultQualifier(NonNull.class)
 public interface SquaremapPlatform {
-    ChunkSnapshotProvider chunkSnapshotProvider();
+    void startCallback();
 
-    WorldManager worldManager();
-
-    Path dataDirectory();
+    void stopCallback();
 
     Logger logger();
 
+    Path dataDirectory();
+
+    WorldManager worldManager();
+
+    ChunkSnapshotProvider chunkSnapshotProvider();
+
     ComponentFlattener componentFlattener();
+
+    Collection<ServerLevel> levels();
+
+    @Nullable ServerLevel level(WorldIdentifier identifier);
+
+    PlayerManagerImpl playerManager();
+
+    CommandManager<Commander> createCommandManager();
+
+    int maxPlayers();
+
+    String version();
 
     default String configNameForWorld(final ServerLevel level) {
         return level.dimension().location().toString();
@@ -35,24 +51,8 @@ public interface SquaremapPlatform {
         return level.dimension().location().toString().replace(":", "_");
     }
 
-    Collection<ServerLevel> levels();
-
-    @Nullable ServerLevel level(WorldIdentifier identifier);
-
     default Path regionFileDirectory(final ServerLevel level) {
         final Path worldPath = level.getServer().getWorldPath(LevelResource.ROOT);
         return DimensionType.getStorageFolder(level.dimension(), worldPath).resolve("region");
     }
-
-    PlayerManagerImpl playerManager();
-
-    void startCallback();
-
-    void stopCallback();
-
-    int maxPlayers();
-
-    String version();
-
-    CommandManager<Commander> createCommandManager();
 }
