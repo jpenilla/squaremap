@@ -1,10 +1,6 @@
 package xyz.jpenilla.squaremap.sponge.config;
 
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import java.util.Set;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Advanced;
 
 @SuppressWarnings("unused")
@@ -12,50 +8,33 @@ public final class SpongeAdvanced {
     private SpongeAdvanced() {
     }
 
-    public static final String CHUNK_GENERATION = "chunk-generation";
-    public static final String CHUNK_LOAD = "chunk-load";
+    public static boolean CHUNK_GENERATION = true;
+    public static boolean CHUNK_LOAD = false;
 
-    public static final String BLOCK_PLACE = "block-place";
-    public static final String BLOCK_BREAK = "block-break";
-    public static final String BLOCK_MODIFY = "block-modify";
-    public static final String BLOCK_GROWTH = "block-growth";
-    public static final String BLOCK_DECAY = "block-decay";
+    public static boolean BLOCK_PLACE = true;
+    public static boolean BLOCK_BREAK = true;
+    public static boolean BLOCK_MODIFY = true;
+    public static boolean BLOCK_GROWTH = true;
+    public static boolean BLOCK_DECAY = true;
 
-    public static final String LIQUID_SPREAD = "liquid-spread";
-    public static final String LIQUID_DECAY = "liquid-decay";
+    public static boolean LIQUID_SPREAD = true;
+    public static boolean LIQUID_DECAY = true;
 
-    private static final Object2BooleanMap<String> UPDATE_TRIGGERS = new Object2BooleanOpenHashMap<>();
-
-    public static boolean listenerEnabled(final @NonNull String key) {
-        if (!UPDATE_TRIGGERS.containsKey(key)) {
-            Logging.logger().warn(String.format("No configuration option found for update trigger: %s, it will not be enabled.", key));
-            return false;
-        }
-        return UPDATE_TRIGGERS.getBoolean(key);
+    private static boolean listenerEnabled(final @NonNull String key, final boolean def) {
+        return Advanced.config().getBoolean("settings.map-update-triggers." + key, def);
     }
 
     private static void listenerToggles() {
-        UPDATE_TRIGGERS.clear();
+        CHUNK_GENERATION = listenerEnabled("chunk-generation", CHUNK_GENERATION);
+        CHUNK_LOAD = listenerEnabled("chunk-load", CHUNK_LOAD);
 
-        final Set<String> defaultOn = Set.of(
-            BLOCK_PLACE,
-            BLOCK_BREAK,
-            BLOCK_MODIFY,
-            BLOCK_GROWTH,
-            BLOCK_DECAY,
-            CHUNK_GENERATION,
-            LIQUID_SPREAD,
-            LIQUID_DECAY
-        );
-        for (final String name : defaultOn) {
-            UPDATE_TRIGGERS.put(name, Advanced.config().getBoolean("settings.map-update-triggers." + name, true));
-        }
+        BLOCK_PLACE = listenerEnabled("block-place", BLOCK_PLACE);
+        BLOCK_BREAK = listenerEnabled("block-break", BLOCK_BREAK);
+        BLOCK_MODIFY = listenerEnabled("block-modify", BLOCK_MODIFY);
+        BLOCK_GROWTH = listenerEnabled("block-growth", BLOCK_GROWTH);
+        BLOCK_DECAY = listenerEnabled("block-decay", BLOCK_DECAY);
 
-        final Set<String> defaultOff = Set.of(
-            CHUNK_LOAD
-        );
-        for (final String name : defaultOff) {
-            UPDATE_TRIGGERS.put(name, Advanced.config().getBoolean("settings.map-update-triggers." + name, false));
-        }
+        LIQUID_SPREAD = listenerEnabled("liquid-spread", LIQUID_SPREAD);
+        LIQUID_DECAY = listenerEnabled("liquid-decay", LIQUID_DECAY);
     }
 }

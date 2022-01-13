@@ -20,7 +20,7 @@ abstract class ChunkHolderMixin {
         at = @At("TAIL")
     )
     void chunkGenerated(ImposterProtoChunk imposter, CallbackInfo ci) {
-        if (!SpongeAdvanced.listenerEnabled(SpongeAdvanced.CHUNK_GENERATION)) {
+        if (!SpongeAdvanced.CHUNK_GENERATION) {
             return;
         }
 

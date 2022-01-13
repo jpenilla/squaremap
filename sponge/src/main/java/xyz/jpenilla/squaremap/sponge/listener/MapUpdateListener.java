@@ -62,8 +62,8 @@ public final class MapUpdateListener {
         }
     }
 
-    private <E extends Event> void registerListener(final String toggleKey, final Class<E> clazz, final Consumer<E> consumer) {
-        if (!SpongeAdvanced.listenerEnabled(toggleKey)) {
+    private <E extends Event> void registerListener(final boolean enabled, final Class<E> clazz, final Consumer<E> consumer) {
+        if (!enabled) {
             return;
         }
         this.registerListener(clazz, consumer);
@@ -117,17 +117,8 @@ public final class MapUpdateListener {
     }
 
     public final class BlockTriggers {
-        private final boolean blockPlace = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_PLACE);
-        private final boolean blockBreak = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_BREAK);
-        private final boolean blockModify = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_MODIFY);
-        private final boolean blockGrowth = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_GROWTH);
-        private final boolean blockDecay = SpongeAdvanced.listenerEnabled(SpongeAdvanced.BLOCK_DECAY);
-
-        private final boolean liquidSpread = SpongeAdvanced.listenerEnabled(SpongeAdvanced.LIQUID_SPREAD);
-        private final boolean liquidDecay = SpongeAdvanced.listenerEnabled(SpongeAdvanced.LIQUID_DECAY);
-
-        private final boolean disabled = Stream.of(this.blockPlace, this.blockBreak, this.blockModify,
-            this.blockGrowth, this.blockDecay, this.liquidSpread, this.liquidDecay).noneMatch(b -> b);
+        private final boolean disabled = Stream.of(SpongeAdvanced.BLOCK_PLACE, SpongeAdvanced.BLOCK_BREAK, SpongeAdvanced.BLOCK_MODIFY,
+            SpongeAdvanced.BLOCK_GROWTH, SpongeAdvanced.BLOCK_DECAY, SpongeAdvanced.LIQUID_SPREAD, SpongeAdvanced.LIQUID_DECAY).noneMatch(b -> b);
 
         private BlockTriggers() {
         }
@@ -142,31 +133,31 @@ public final class MapUpdateListener {
             for (final BlockTransactionReceipt receipt : event.receipts()) {
                 final Operation operation = receipt.operation();
                 if (operation == Operations.PLACE.get()) {
-                    if (!this.blockPlace) {
+                    if (!SpongeAdvanced.BLOCK_PLACE) {
                         continue;
                     }
                 } else if (operation == Operations.BREAK.get()) {
-                    if (!this.blockBreak) {
+                    if (!SpongeAdvanced.BLOCK_BREAK) {
                         continue;
                     }
                 } else if (operation == Operations.MODIFY.get()) {
-                    if (!this.blockModify) {
+                    if (!SpongeAdvanced.BLOCK_MODIFY) {
                         continue;
                     }
                 } else if (operation == Operations.GROWTH.get()) {
-                    if (!this.blockGrowth) {
+                    if (!SpongeAdvanced.BLOCK_GROWTH) {
                         continue;
                     }
                 } else if (operation == Operations.DECAY.get()) {
-                    if (!this.blockDecay) {
+                    if (!SpongeAdvanced.BLOCK_DECAY) {
                         continue;
                     }
                 } else if (operation == Operations.LIQUID_SPREAD.get()) {
-                    if (!this.liquidSpread) {
+                    if (!SpongeAdvanced.LIQUID_SPREAD) {
                         continue;
                     }
                 } else if (operation == Operations.LIQUID_DECAY.get()) {
-                    if (!this.liquidDecay) {
+                    if (!SpongeAdvanced.LIQUID_DECAY) {
                         continue;
                     }
                 } else {
