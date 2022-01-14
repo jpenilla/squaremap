@@ -14,7 +14,7 @@ import xyz.jpenilla.squaremap.common.PlayerManagerImpl;
 
 @DefaultQualifier(NonNull.class)
 public final class SpongePlayerManager extends PlayerManagerImpl {
-    private static final Key<Value<Boolean>> HIDDEN_KEY = Key.from(ResourceKey.of("squaremap", "hidden"), Boolean.class);
+    public static final Key<Value<Boolean>> HIDDEN_KEY = Key.from(ResourceKey.of("squaremap", "hidden"), Boolean.class);
 
     @Override
     protected boolean persistentHidden(final ServerPlayer player) {

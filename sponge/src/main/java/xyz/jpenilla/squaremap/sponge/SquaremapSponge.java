@@ -21,8 +21,11 @@ import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.SystemSubject;
 import org.spongepowered.api.config.ConfigDir;
+import org.spongepowered.api.data.DataRegistration;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.RefreshGameEvent;
+import org.spongepowered.api.event.lifecycle.RegisterDataEvent;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.scheduler.ScheduledTask;
@@ -72,6 +75,11 @@ public final class SquaremapSponge implements SquaremapPlatform {
         this.common = new SquaremapCommon(this);
         SpongeCommands.register(this.common);
         this.game.eventManager().registerListeners(this.pluginContainer, new SpongeNetwork());
+    }
+
+    @Listener
+    public void registerData(final RegisterDataEvent event) {
+        event.register(DataRegistration.of(SpongePlayerManager.HIDDEN_KEY, ServerPlayer.class));
     }
 
     @Listener
