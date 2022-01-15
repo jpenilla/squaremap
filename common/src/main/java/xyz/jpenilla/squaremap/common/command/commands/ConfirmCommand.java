@@ -27,8 +27,8 @@ public final class ConfirmCommand extends SquaremapCommand {
 
     private static @NonNull ComponentLike confirmationRequiredMessage() {
         return text()
-            .append(Lang.parse(Lang.CONFIRMATION_REQUIRED_MESSAGE, Template.template("command", Config.MAIN_COMMAND_LABEL)))
-            .hoverEvent(Lang.parse(Lang.CLICK_TO_CONFIRM))
+            .append(Components.miniMessage(Lang.CONFIRMATION_REQUIRED_MESSAGE, Template.template("command", Config.MAIN_COMMAND_LABEL)))
+            .hoverEvent(Components.miniMessage(Lang.CLICK_TO_CONFIRM))
             .clickEvent(ClickEvent.runCommand('/' + Config.MAIN_COMMAND_LABEL + " confirm"));
     }
 

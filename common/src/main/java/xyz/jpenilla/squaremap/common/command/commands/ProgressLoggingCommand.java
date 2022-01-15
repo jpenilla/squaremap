@@ -63,15 +63,15 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
 
         final Component message;
         if (Config.PROGRESS_LOGGING) {
-            message = Lang.parse(Lang.PROGRESSLOGGING_ENABLED_MESSAGE);
+            message = Components.miniMessage(Lang.PROGRESSLOGGING_ENABLED_MESSAGE);
         } else {
-            message = Lang.parse(Lang.PROGRESSLOGGING_DISABLED_MESSAGE);
+            message = Components.miniMessage(Lang.PROGRESSLOGGING_DISABLED_MESSAGE);
         }
         context.getSender().sendMessage(clickAndHover(message));
     }
 
     private static Component clickAndHover(final ComponentLike componentLike) {
-        return componentLike.asComponent().hoverEvent(Lang.parse(Lang.CLICK_TO_TOGGLE))
+        return componentLike.asComponent().hoverEvent(Components.miniMessage(Lang.CLICK_TO_TOGGLE))
             .clickEvent(runCommand("/" + Config.MAIN_COMMAND_LABEL + " progresslogging toggle"));
     }
 
@@ -82,6 +82,6 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         context.get(Commands.PLATFORM).worldManager().worlds().values()
             .forEach(MapWorldInternal::restartRenderProgressLogging);
 
-        context.getSender().sendMessage(Lang.parse(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Template.template("seconds", Integer.toString(seconds))));
+        context.getSender().sendMessage(Components.miniMessage(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Template.template("seconds", Integer.toString(seconds))));
     }
 }

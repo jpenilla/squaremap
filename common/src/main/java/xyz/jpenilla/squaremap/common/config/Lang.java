@@ -8,7 +8,6 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Arrays;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.Template;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -218,20 +217,12 @@ public final class Lang {
         return config.node(AbstractConfig.splitPath(path)).getString(def);
     }
 
-    public static Component parse(final String miniMessage) {
-        return Components.miniMessage(miniMessage);
-    }
-
-    public static Component parse(final String miniMessage, final Template... placeholders) {
-        return Components.miniMessage(miniMessage, placeholders);
-    }
-
     public static void send(final Audience recipient, final String miniMessage, final Template... placeholders) {
-        recipient.sendMessage(parse(miniMessage, placeholders));
+        recipient.sendMessage(Components.miniMessage(miniMessage, placeholders));
     }
 
     public static void send(final Audience recipient, final String miniMessage) {
-        recipient.sendMessage(parse(miniMessage));
+        recipient.sendMessage(Components.miniMessage(miniMessage));
     }
 
     @Target(ElementType.FIELD)
