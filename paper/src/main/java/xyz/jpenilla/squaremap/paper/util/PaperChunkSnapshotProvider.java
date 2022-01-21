@@ -1,6 +1,8 @@
 package xyz.jpenilla.squaremap.paper.util;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -23,16 +25,16 @@ public final class PaperChunkSnapshotProvider implements ChunkSnapshotProvider {
         final int z,
         final boolean biomesOnly
     ) {
-        return level.getChunkSource().getChunkAtAsynchronously(x, z, false, true)
-            .thenApply(either -> either.left()
-                .map(chunk -> {
-                    final LevelChunk levelChunk = (LevelChunk) chunk;
-                    if (levelChunk.isEmpty()) {
-                        return null;
-                    }
-                    return ChunkSnapshot.snapshot(levelChunk, biomesOnly);
-                })
-                .orElse(null));
+        final Supplier<CompletableFuture<@Nullable ChunkSnapshot>> futureSupplier = () -> level.getChunkSource()
+            .getChunkAtAsynchronously(x, z, false, true)
+            .thenApply(either -> {
+                final @Nullable LevelChunk chunk = (LevelChunk) either.left().orElse(null);
+                if (chunk == null || chunk.isEmpty()) {
+                    return null;
+                }
+                return ChunkSnapshot.snapshot(chunk, biomesOnly);
+            });
+        return CompletableFuture.supplyAsync(futureSupplier, level.getServer()).thenCompose(Function.identity());
     }
 
     public static PaperChunkSnapshotProvider get() {
