@@ -92,11 +92,29 @@ public abstract class AbstractConfig {
     }
 
     protected final int getInt(String path, int def) {
-        return this.node(path).getInt(def);
+        final ConfigurationNode node = this.node(path);
+        // manually set default (see getInt(int) impl)
+        if (node.virtual()) {
+            try {
+                node.set(def);
+            } catch (final SerializationException e) {
+                rethrow(e);
+            }
+        }
+        return node.getInt(def);
     }
 
     protected final double getDouble(String path, double def) {
-        return this.node(path).getDouble(def);
+        final ConfigurationNode node = this.node(path);
+        // manually set default (see getDouble(double) impl)
+        if (node.virtual()) {
+            try {
+                node.set(def);
+            } catch (final SerializationException e) {
+                rethrow(e);
+            }
+        }
+        return node.getDouble(def);
     }
 
     protected final <T> T get(TypeToken<T> type, final String path, T def) {
