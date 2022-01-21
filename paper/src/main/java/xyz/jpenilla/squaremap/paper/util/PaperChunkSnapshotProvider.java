@@ -26,7 +26,7 @@ public final class PaperChunkSnapshotProvider implements ChunkSnapshotProvider {
         final boolean biomesOnly
     ) {
         final Supplier<CompletableFuture<@Nullable ChunkSnapshot>> futureSupplier = () -> level.getChunkSource()
-            .getChunkAtAsynchronously(x, z, false, true)
+            .getChunkAtAsynchronously(x, z, false, false)
             .thenApply(either -> {
                 final @Nullable LevelChunk chunk = (LevelChunk) either.left().orElse(null);
                 if (chunk == null || chunk.isEmpty()) {
