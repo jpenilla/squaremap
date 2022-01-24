@@ -38,13 +38,11 @@ public final class MapUpdateListener {
 
     public void register() {
         this.registerListeners(new BlockTriggers());
-        /* https://github.com/SpongePowered/Sponge/issues/3582
         this.registerListener(
             SpongeAdvanced.CHUNK_GENERATION,
             ChunkEvent.Generated.class,
             event -> this.mark(this.world(event.worldKey()), event.chunkPosition())
         );
-         */
         this.registerListener(
             SpongeAdvanced.CHUNK_LOAD,
             ChunkEvent.Load.class,
