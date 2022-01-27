@@ -73,7 +73,6 @@ tasks {
     }
   }
   remapJar {
-    input.set(shadowJar.flatMap { it.archiveFile })
     archiveFileName.set("${project.name}-mc$minecraftVersion-${project.version}.jar")
   }
 }
