@@ -208,7 +208,7 @@ public final class BiomeColors {
             final @Nullable ChunkSnapshot chunk = this.chunkSnapshotCache.snapshot(chunkPos);
 
             final BiomeManager.NoiseBiomeSource noiseBiomeSource = chunk == null
-                ? this.level // no chunk exists, this will get from the chunk generator
+                ? this.level::getUncachedNoiseBiome // no chunk exists, this will get from the chunk generator
                 : chunk;
 
             return noiseBiomeSource.getNoiseBiome(quartX, quartY, quartZ);
