@@ -39,10 +39,10 @@ public final class SpiralIterator<T> implements Iterator<T> {
         }
 
         switch (this.direction) {
-            case DOWN -> this.z += 1;
-            case LEFT -> this.x -= 1;
-            case UP -> this.z -= 1;
-            case RIGHT -> this.x += 1;
+            case DOWN -> this.z++;
+            case LEFT -> this.x--;
+            case UP -> this.z--;
+            case RIGHT -> this.x++;
         }
 
         this.stepCount++;

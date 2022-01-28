@@ -222,28 +222,14 @@ public final class SquaremapSponge implements SquaremapPlatform {
             Task.builder()
                 .plugin(this.pluginContainer)
                 .interval(Duration.ofSeconds(5))
-                .execute(new Runnable() {
-                    private final UpdateWorldData updateWorldData = new UpdateWorldData();
-
-                    @Override
-                    public void run() {
-                        this.updateWorldData.run();
-                    }
-                })
+                .execute(new UpdateWorldData())
                 .build()
         );
         this.updatePlayers = this.game.server().scheduler().submit(
             Task.builder()
                 .plugin(this.pluginContainer)
                 .interval(Duration.ofSeconds(1))
-                .execute(new Runnable() {
-                    private final UpdatePlayers updatePlayers = new UpdatePlayers(SquaremapSponge.this);
-
-                    @Override
-                    public void run() {
-                        this.updatePlayers.run();
-                    }
-                })
+                .execute(new UpdatePlayers(this))
                 .build()
         );
     }

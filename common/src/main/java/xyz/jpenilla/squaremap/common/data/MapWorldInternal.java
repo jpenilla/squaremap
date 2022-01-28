@@ -64,6 +64,7 @@ public abstract class MapWorldInternal implements MapWorld {
     private final ScheduledExecutorService executor;
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final BlockColors blockColors;
+    private final LevelBiomeColorData levelBiomeColorData;
     private final VisibilityLimit visibilityLimit;
 
     private volatile boolean pauseRenders = false;
@@ -87,6 +88,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.advancedWorldConfig = WorldAdvanced.get(this.level);
 
         this.blockColors = new BlockColors(this);
+        this.levelBiomeColorData = LevelBiomeColorData.create(this);
 
         this.dataPath = SquaremapCommon.instance().platform().dataDirectory().resolve("data").resolve(
             SquaremapCommon.instance().platform().webNameForWorld(this.level)
@@ -315,6 +317,10 @@ public abstract class MapWorldInternal implements MapWorld {
     @Override
     public @NonNull String name() {
         return this.identifier().asString();
+    }
+
+    public LevelBiomeColorData levelBiomeColorData() {
+        return this.levelBiomeColorData;
     }
 
     private @NonNull IllegalStateException failedToCreateDataDirectory(final @NonNull Throwable cause) {

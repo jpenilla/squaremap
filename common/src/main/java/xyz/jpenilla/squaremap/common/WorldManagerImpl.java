@@ -7,11 +7,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
 
+@DefaultQualifier(NonNull.class)
 public class WorldManagerImpl<W extends MapWorldInternal> implements WorldManager {
     private final Map<WorldIdentifier, W> worlds = new ConcurrentHashMap<>();
     private final Function<ServerLevel, W> factory;
@@ -23,11 +25,11 @@ public class WorldManagerImpl<W extends MapWorldInternal> implements WorldManage
     }
 
     @Override
-    public @NonNull Map<WorldIdentifier, MapWorldInternal> worlds() {
+    public Map<WorldIdentifier, MapWorldInternal> worlds() {
         return Collections.unmodifiableMap(this.worlds);
     }
 
-    public @NonNull Optional<MapWorldInternal> getWorldIfEnabled(final @NonNull ServerLevel world) {
+    public Optional<MapWorldInternal> getWorldIfEnabled(final ServerLevel world) {
         if (WorldConfig.get(world).MAP_ENABLED) {
             return Optional.of(this.getWorld(world));
         } else {
@@ -35,11 +37,11 @@ public class WorldManagerImpl<W extends MapWorldInternal> implements WorldManage
         }
     }
 
-    private @NonNull W create(final @NonNull ServerLevel world) {
+    private W create(final ServerLevel world) {
         return this.factory.apply(world);
     }
 
-    public @NonNull W getWorld(final @NonNull ServerLevel world) {
+    public W getWorld(final ServerLevel world) {
         return this.worlds.computeIfAbsent(
             Util.worldIdentifier(world),
             $ -> this.create(world)
@@ -52,7 +54,7 @@ public class WorldManagerImpl<W extends MapWorldInternal> implements WorldManage
         }
     }
 
-    public void worldUnloaded(final @NonNull ServerLevel world) {
+    public void worldUnloaded(final ServerLevel world) {
         this.getWorldIfEnabled(world).ifPresent(MapWorldInternal::shutdown);
         this.worlds.remove(Util.worldIdentifier(world));
     }

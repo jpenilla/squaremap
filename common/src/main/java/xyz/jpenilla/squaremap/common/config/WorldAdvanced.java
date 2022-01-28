@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.data.BiomeColors;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Util;
 
@@ -85,7 +84,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_FOLIAGE = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeFoliageSettings() {
-        final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
+        final Registry<Biome> registry = Util.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
         this.get(
             new TypeToken<>() {
@@ -106,7 +105,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_GRASS = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeGrassSettings() {
-        final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
+        final Registry<Biome> registry = Util.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_GRASS.clear();
         this.get(
             new TypeToken<Map<String, String>>() {
@@ -122,7 +121,7 @@ public final class WorldAdvanced extends AbstractWorldConfig {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_WATER = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeWaterSettings() {
-        final Registry<Biome> registry = BiomeColors.biomeRegistry(this.world);
+        final Registry<Biome> registry = Util.biomeRegistry(this.world);
         this.COLOR_OVERRIDES_BIOME_WATER.clear();
         this.get(
             new TypeToken<Map<String, String>>() {

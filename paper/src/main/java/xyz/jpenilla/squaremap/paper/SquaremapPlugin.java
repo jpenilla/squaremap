@@ -9,6 +9,7 @@ import java.util.List;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelStorageSource;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -33,11 +34,13 @@ import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.PlayerListener;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
+import xyz.jpenilla.squaremap.paper.util.BukkitRunnableAdapter;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
 
 public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatform {
-    private static SquaremapPlugin instance;
+    private static final Logger LOGGER = LogManager.getLogger("squaremap");
+    private static SquaremapPlugin INSTANCE;
     private SquaremapCommon common;
     private PaperWorldManager worldManager;
     private PaperPlayerManager playerManager;
@@ -47,7 +50,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     private WorldLoadListener worldLoadListener;
 
     public SquaremapPlugin() {
-        instance = this;
+        INSTANCE = this;
     }
 
     @Override
@@ -79,31 +82,17 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     }
 
     public static SquaremapPlugin getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override
     public void startCallback() {
         this.playerManager = new PaperPlayerManager();
 
-        this.updatePlayers = new BukkitRunnable() {
-            private final UpdatePlayers updatePlayers = new UpdatePlayers(SquaremapPlugin.this);
-
-            @Override
-            public void run() {
-                this.updatePlayers.run();
-            }
-        };
+        this.updatePlayers = new BukkitRunnableAdapter(new UpdatePlayers(this));
         this.updatePlayers.runTaskTimer(this, 20, 20);
 
-        this.updateWorldData = new BukkitRunnable() {
-            private final UpdateWorldData updateWorldData = new UpdateWorldData();
-
-            @Override
-            public void run() {
-                this.updateWorldData.run();
-            }
-        };
+        this.updateWorldData = new BukkitRunnableAdapter(new UpdateWorldData());
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
         this.worldManager = new PaperWorldManager();
@@ -191,7 +180,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
 
     @Override
     public @NonNull Logger logger() {
-        return this.getLog4JLogger();
+        return LOGGER;
     }
 
     @Override

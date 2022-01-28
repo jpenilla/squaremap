@@ -2,18 +2,10 @@ package xyz.jpenilla.squaremap.common.data;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Set;
-import javax.imageio.ImageIO;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.QuartPos;
-import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
@@ -27,7 +19,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
 import xyz.jpenilla.squaremap.common.util.Colors;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
@@ -63,65 +54,17 @@ public final class BiomeColors {
         Material.REPLACEABLE_WATER_PLANT
     );
 
-    private static final int[] MAP_GRASS;
-    private static final int[] MAP_FOLIAGE;
-
-    static {
-        final File imagesDir = FileUtil.WEB_DIR.resolve("images").toFile();
-        final BufferedImage imgGrass;
-        final BufferedImage imgFoliage;
-        try {
-            imgGrass = ImageIO.read(new File(imagesDir, "grass.png"));
-            imgFoliage = ImageIO.read(new File(imagesDir, "foliage.png"));
-        } catch (final IOException e) {
-            throw new IllegalStateException("Failed to read biome images", e);
-        }
-
-        MAP_GRASS = init(imgGrass);
-        MAP_FOLIAGE = init(imgFoliage);
-    }
-
     private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
-    private final Reference2IntMap<Biome> grassColors = new Reference2IntOpenHashMap<>();
-    private final Reference2IntMap<Biome> foliageColors = new Reference2IntOpenHashMap<>();
-    private final Reference2IntMap<Biome> waterColors = new Reference2IntOpenHashMap<>();
+    private final LevelBiomeColorData colorData;
     private final MapWorldInternal world;
     private final ChunkSnapshotCache chunkSnapshotCache;
     private final BiomeCache biomeCache;
 
     public BiomeColors(final MapWorldInternal world) {
         this.world = world;
+        this.colorData = world.levelBiomeColorData();
         this.chunkSnapshotCache = ChunkSnapshotCache.sized(this.world.serverLevel(), CHUNK_SNAPSHOT_CACHE_SIZE);
         this.biomeCache = BiomeCache.sized(this.world.serverLevel(), this.chunkSnapshotCache, BLOCKPOS_BIOME_CACHE_SIZE);
-
-        this.initBiomeColorMaps();
-    }
-
-    private void initBiomeColorMaps() {
-        for (final Biome biome : biomeRegistry(this.world.serverLevel())) {
-            float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
-            float humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
-            this.grassColors.put(
-                biome,
-                biome.getSpecialEffects().getGrassColorOverride()
-                    .orElse(getDefaultGrassColor(temperature, humidity))
-                    .intValue()
-            );
-            this.foliageColors.put(
-                biome,
-                biome.getSpecialEffects().getFoliageColorOverride()
-                    .orElse(Colors.mix(Colors.leavesMapColor(), getDefaultFoliageColor(temperature, humidity), 0.85f))
-                    .intValue()
-            );
-            this.waterColors.put(
-                biome,
-                biome.getSpecialEffects().getWaterColor()
-            );
-        }
-
-        this.foliageColors.putAll(this.world.advanced().COLOR_OVERRIDES_BIOME_FOLIAGE);
-        this.grassColors.putAll(this.world.advanced().COLOR_OVERRIDES_BIOME_GRASS);
-        this.waterColors.putAll(this.world.advanced().COLOR_OVERRIDES_BIOME_WATER);
     }
 
     public int modifyColorFromBiome(int color, final ChunkSnapshot chunk, final BlockPos pos) {
@@ -143,36 +86,6 @@ public final class BiomeColors {
         return color;
     }
 
-    private static int[] init(final BufferedImage image) {
-        final int[] map = new int[256 * 256];
-        for (int x = 0; x < 256; ++x) {
-            for (int y = 0; y < 256; ++y) {
-                final int color = image.getRGB(x, y);
-                final int r = color >> 16 & 0xFF;
-                final int g = color >> 8 & 0xFF;
-                final int b = color & 0xFF;
-                map[x + y * 256] = (0xFF << 24) | (r << 16) | (g << 8) | b;
-            }
-        }
-        return map;
-    }
-
-    private static int getDefaultGrassColor(double temperature, double humidity) {
-        int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
-        int i = (int) ((1.0 - temperature) * 255.0);
-        int k = j << 8 | i;
-        if (k > MAP_GRASS.length) {
-            return 0;
-        }
-        return MAP_GRASS[k];
-    }
-
-    private static int getDefaultFoliageColor(double temperature, double humidity) {
-        int i = (int) ((1.0 - temperature) * 255.0);
-        int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
-        return MAP_FOLIAGE[(j << 8 | i)];
-    }
-
     private int grass(final BlockPos pos) {
         if (this.world.config().MAP_BIOMES_BLEND > 0) {
             return this.sampleNeighbors(pos, this.world.config().MAP_BIOMES_BLEND, this::grassColorSampler);
@@ -181,21 +94,21 @@ public final class BiomeColors {
     }
 
     private int grassColorSampler(final Biome biome, final BlockPos pos) {
-        return modifiedGrassColor(biome, pos, this.grassColors.getInt(biome));
+        return this.modifiedGrassColor(biome, pos, this.colorData.grassColors().getInt(biome));
     }
 
     private int foliage(final BlockPos pos) {
         if (this.world.config().MAP_BIOMES_BLEND > 0) {
-            return this.sampleNeighbors(pos, this.world.config().MAP_BIOMES_BLEND, (biome, b) -> this.foliageColors.getInt(biome));
+            return this.sampleNeighbors(pos, this.world.config().MAP_BIOMES_BLEND, (biome, b) -> this.colorData.foliageColors().getInt(biome));
         }
-        return this.foliageColors.getInt(this.biome(pos));
+        return this.colorData.foliageColors().getInt(this.biome(pos));
     }
 
     private int water(final BlockPos pos) {
         if (this.world.config().MAP_BIOMES_BLEND > 0) {
-            return this.sampleNeighbors(pos, this.world.config().MAP_BIOMES_BLEND, (biome, b) -> this.waterColors.getInt(biome));
+            return this.sampleNeighbors(pos, this.world.config().MAP_BIOMES_BLEND, (biome, b) -> this.colorData.waterColors().getInt(biome));
         }
-        return this.waterColors.getInt(this.biome(pos));
+        return this.colorData.waterColors().getInt(this.biome(pos));
     }
 
     @FunctionalInterface
@@ -229,10 +142,6 @@ public final class BiomeColors {
 
     private Biome biome(final BlockPos pos) {
         return this.biomeCache.biome(pos);
-    }
-
-    public static Registry<Biome> biomeRegistry(ServerLevel world) {
-        return world.registryAccess().ownedRegistryOrThrow(Registry.BIOME_REGISTRY);
     }
 
     private int modifiedGrassColor(final Biome biome, final BlockPos pos, final int color) {

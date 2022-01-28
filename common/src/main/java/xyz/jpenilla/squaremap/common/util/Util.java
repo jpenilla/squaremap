@@ -4,9 +4,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.CommonLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
@@ -65,5 +68,13 @@ public final class Util {
         final byte[] data = new byte[buf.readableBytes()];
         buf.readBytes(data);
         return data;
+    }
+
+    public static Registry<Biome> biomeRegistry(final CommonLevelAccessor level) {
+        return biomeRegistry(level.registryAccess());
+    }
+
+    public static Registry<Biome> biomeRegistry(final RegistryAccess registryAccess) {
+        return registryAccess.ownedRegistryOrThrow(Registry.BIOME_REGISTRY);
     }
 }
