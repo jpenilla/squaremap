@@ -110,8 +110,7 @@ public final class VisibilityLimit implements xyz.jpenilla.squaremap.api.visibil
     }
 
     private void parseWorldBorderShape(final Map<String, String> visibilityLimit) {
-        Object enabled = visibilityLimit.get("enabled");
-        if (enabled != null && enabled.equals(Boolean.TRUE)) {
+        if (Boolean.parseBoolean(visibilityLimit.get("enabled"))) {
             this.shapes.add(new WorldBorderShape());
         }
     }

@@ -163,7 +163,9 @@ public abstract class AbstractRender implements Runnable {
         return CompletableFuture.runAsync(() -> {
             int[] lastY = new int[16];
             for (int chunkZ = startChunkZ; chunkZ < startChunkZ + 32; chunkZ++) {
-                if (this.cancelled) return;
+                if (this.cancelled) {
+                    return;
+                }
                 if (!this.mapWorld.visibilityLimit().shouldRenderChunk(chunkX, chunkZ)) {
                     // skip rendering this chunk in the chunk column - it's outside the visibility limit
                     // (this chunk was already excluded from the chunk count, so not incrementing that is on purpose)
