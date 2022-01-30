@@ -18,6 +18,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -71,12 +72,12 @@ public final class FileUtil {
     }
 
     public static void deleteSubdirectories(Path dir) throws IOException {
-        try (Stream<Path> files = Files.list(dir)) {
+        try (final Stream<Path> files = Files.list(dir)) {
             files.forEach(path -> {
                 try {
                     deleteDirectory(path);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (final IOException e) {
+                    Logging.logger().warn("Failed to delete directory {}", path, e);
                 }
             });
         }
@@ -145,17 +146,19 @@ public final class FileUtil {
         }
     }
 
-    public static void write(String str, Path file) {
-        ForkJoinPool.commonPool().execute(() -> {
-            try {
-                replaceFile(file, str);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+    public static void writeString(final Path file, final Supplier<String> string) {
+        ForkJoinPool.commonPool().execute(() -> writeString0(file, string.get()));
     }
 
-    private static void replaceFile(Path path, String str) throws IOException {
+    private static void writeString0(final Path path, final String string) {
+        try {
+            replaceFile(path, string);
+        } catch (final IOException ex) {
+            Logging.logger().warn("Failed to write file {}", path, ex);
+        }
+    }
+
+    private static void replaceFile(final Path path, final String str) throws IOException {
         final Path tmp = path.resolveSibling("." + path.getFileName().toString() + ".tmp");
 
         try {

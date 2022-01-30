@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -71,7 +70,7 @@ public class UpdatePlayers implements Runnable {
         map.put("players", players);
         map.put("max", this.platform.maxPlayers());
 
-        ForkJoinPool.commonPool().execute(() -> FileUtil.write(GSON.toJson(map), FileUtil.TILES_DIR.resolve("players.json")));
+        FileUtil.writeString(FileUtil.TILES_DIR.resolve("players.json"), () -> GSON.toJson(map));
     }
 
     private static int armorPoints(final ServerPlayer player) {

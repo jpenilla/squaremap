@@ -67,7 +67,7 @@ public final class UpdateWorldData implements Runnable {
             settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
             settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
 
-            FileUtil.write(GSON.toJson(settings), mapWorld.tilesPath().resolve("settings.json"));
+            FileUtil.writeString(mapWorld.tilesPath().resolve("settings.json"), () -> GSON.toJson(settings));
 
             Map<String, Object> worldsList = new HashMap<>();
             //worldsList.put("name", world.getName());
@@ -104,7 +104,7 @@ public final class UpdateWorldData implements Runnable {
         map.put("worlds", worlds);
         map.put("ui", ui);
 
-        FileUtil.write(GSON.toJson(map), FileUtil.TILES_DIR.resolve("settings.json"));
+        FileUtil.writeString(FileUtil.TILES_DIR.resolve("settings.json"), () -> GSON.toJson(map));
     }
 
     // replicate bukkit "environment"

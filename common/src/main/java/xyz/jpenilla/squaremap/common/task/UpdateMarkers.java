@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Key;
@@ -80,7 +79,7 @@ public final class UpdateMarkers implements Runnable {
         });
 
         Path file = this.mapWorld.tilesPath().resolve("markers.json");
-        ForkJoinPool.commonPool().execute(() -> FileUtil.write(GSON.toJson(layers), file));
+        FileUtil.writeString(file, () -> GSON.toJson(layers));
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {

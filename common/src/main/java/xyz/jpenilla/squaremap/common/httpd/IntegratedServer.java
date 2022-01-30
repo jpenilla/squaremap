@@ -21,37 +21,43 @@ public class IntegratedServer {
 
     public static void startServer() {
         try {
-            ResourceHandler resourceHandler = new ResourceHandler(PathResourceManager.builder()
-                .setBase(Paths.get(FileUtil.WEB_DIR.toFile().getAbsolutePath()))
-                .setETagFunction((path) -> {
-                    try {
-                        BasicFileAttributes attr = Files.readAttributes(path, BasicFileAttributes.class);
+            final ResourceHandler resourceHandler = new ResourceHandler(
+                PathResourceManager.builder()
+                    .setBase(Paths.get(FileUtil.WEB_DIR.toFile().getAbsolutePath()))
+                    .setETagFunction((path) -> {
+                        final BasicFileAttributes attr;
+                        try {
+                            attr = Files.readAttributes(path, BasicFileAttributes.class);
+                        } catch (final IOException e) {
+                            Logging.logger().warn("Failed to read file attributes for {}", path, e);
+                            return null;
+                        }
                         long time = attr.lastModifiedTime().toMillis();
                         return new ETag(false, Long.toString(time));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
+                    })
+                    .build(),
+                exchange -> {
+                    String url = exchange.getRelativePath();
+                    if (url.startsWith("/tiles") && url.endsWith(".png")) {
+                        exchange.setStatusCode(200);
+                        return;
                     }
-                })
-                .build(), exchange -> {
-                String url = exchange.getRelativePath();
-                if (url.startsWith("/tiles") && url.endsWith(".png")) {
-                    exchange.setStatusCode(200);
-                    return;
+                    exchange.setStatusCode(404);
+                    if (UndertowLogger.PREDICATE_LOGGER.isDebugEnabled()) {
+                        UndertowLogger.PREDICATE_LOGGER.debugf("Response code set to [%s] for %s.", 404, exchange);
+                    }
                 }
-                exchange.setStatusCode(404);
-                if (UndertowLogger.PREDICATE_LOGGER.isDebugEnabled()) {
-                    UndertowLogger.PREDICATE_LOGGER.debugf("Response code set to [%s] for %s.", 404, exchange);
-                }
-            });
+            );
 
             server = Undertow.builder()
                 .setServerOption(UndertowOptions.ENABLE_HTTP2, true)
                 .addHttpListener(Config.HTTPD_PORT, Config.HTTPD_BIND)
                 .setHandler(exchange -> {
                     if (exchange.getRelativePath().startsWith("/tiles")) {
-                        exchange.getResponseHeaders().put(Headers.CACHE_CONTROL,
-                            "max-age=0, must-revalidate, no-cache");
+                        exchange.getResponseHeaders().put(
+                            Headers.CACHE_CONTROL,
+                            "max-age=0, must-revalidate, no-cache"
+                        );
                     }
                     resourceHandler.handleRequest(exchange);
                 })

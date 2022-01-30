@@ -263,7 +263,7 @@ public abstract class AbstractRender implements Runnable {
 
     private int effectiveMaxHeight(final ChunkSnapshot chunk) {
         return this.mapWorld.config().MAP_MAX_HEIGHT == -1
-            ? chunk.dimensionType().logicalHeight()
+            ? chunk.getMaxBuildHeight()
             : this.mapWorld.config().MAP_MAX_HEIGHT;
     }
 
