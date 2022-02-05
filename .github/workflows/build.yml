@@ -26,6 +26,11 @@ jobs:
             ${{ runner.os }}-gradle1-
       - name: "build"
         run: ./gradlew build
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: Squaremap
+          path: /build/libs/**.jar
       - name: "determine status"
         run: |
           if [ "$(./gradlew properties | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
