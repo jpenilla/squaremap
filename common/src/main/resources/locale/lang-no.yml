@@ -1,0 +1,79 @@
+render-in-progress: <red>En rendring pågår allerede på <world>
+render-not-in-progress: <red>Ingen rendring kjører for <world>
+cancelled-render: <green>Rendring ble kansellert for <world>
+successfully-reset-map: <green>Vellykket tilbakestilling av kart for <world>
+paused-renders: <green>Satt rendring på pause for <world>
+unpaused-renders: <green>Fortsetter rendring av verden <world>
+command:
+    message:
+        console-must-specify-player: <red>Du må spesifisere en spiller når du kjører denne kommandoen fra konsollen
+        player-not-found-for-input: <red>Ingen spiller funnet for input '<input>'
+        console-must-specify-world: <red>Du må spesifisere verden når du kjører denne kommandoen fra konsollen
+        no-such-world: <red>Ingen slik verden '<world>'
+        map-not-enabled-for-world: <red>Kart er ikke aktivert for verden '<world>'
+        confirmation-required: <red>Bekreftelse påkrevd. Bekreft ved å bruke /<command> confirm.
+        no-pending-commands: <red>Du har ingen ventende kommandoer.
+        progresslogging:
+            enabled: <green>Logging av rendringsfremdrift er aktivert.
+            disabled: <green>Logging av rendringsfremdrift er deaktivert.
+            set-rate: <green>Loggintervall for rendringsfremdrift er satt til </green><seconds> sekunder
+            statusmessage: 'Logg for rendringsfremdrift: <enabled>, intervall: <green><seconds></green> sekunder'
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
+    description:
+        help: Få hjelp til squaremap kommandoer
+        resetmap: Tilbakestiller kartet på en spesifisert verden
+        confirm: Bekreft en ventende kommando
+        reload: Laster inn plugin på nytt
+        full-render: Starter en fullstendig rendring for den angitte verden
+        cancel-render: Kansellerer en rendring for den angitte verden
+        pause-render: Pauser alle rendring for den angitte verden
+        radius-render: Starter en radiusrendring
+        progresslogging:
+            status: Viser gjeldende innstillinger for logging av rendringsfremdrift
+            toggle: Slår på eller av logging av fremdrift
+            rate: Angir intervallet i sekunder for logging av rendringsfremdrift
+        hide: Skjul en spiller fra kartvisningen
+        show: Vis en spiller på kartvisningen
+    argument:
+        optional-world: Sett standard til spillernes nåværende verden hvis ikke angitt
+        optional-center: Sett standard til (<white>0<gray>,</gray> 0</white>) hvis uspesifisert
+        optional-player: Sett standard til den utførende spilleren hvis uspesifisert (konsollen må spesifisere en spiller)
+        help-query: Hjelp spørring
+    hide:
+        already-hidden: <red><player> er allerede skjult fra kartet
+        hidden: <green><player> er nå skjult fra kartet
+    show:
+        not-hidden: <red><player> er ikke skjult fra kartet
+        shown: <green><player> er ikke lenger skjult fra kartet
+click-for-help: Klikk for å få hjelp
+click-to-confirm: Klikk for å bekrefte
+click-to-toggle: Klikk for å veksle
+ui:
+    page-title: squaremap - {world}
+    coordinates: Koordinater<br/>{x}, {z}
+    sidebar:
+        player-list: Spillere ({cur}/{max})
+        world-list: Verdener
+    layers:
+        player-tracker: Spillere
+        world-spawn: Startpunkt
+        world-border: Verdensgrense
+plugin-reloaded: <green><name> v<version> lastet på nytt
+log:
+    started-full-render: Startet full rendring for <world>
+    started-radius-render: Startet radiusrendring for <world>
+    scanning-region-files: Skanner regionfiler... (dette kan ta et øyeblikk)
+    found-total-region-files: Funnet <total> regionfiler
+    finished-rendering: Fullført rendring av kart for <world>
+    cancelled-rendering: Rendring av kart for <world> har blitt avbrutt
+    resumed-rendering: Rendring av kart for <world> har blitt gjenopptatt
+    scanning-region-progress: '(<percent>) Verden: <world> Chunks: <current_chunks>/<total_chunks> Forløpt: <elapsed> ETA: <eta> Rate: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) Verden: <world> Regioner: <current_regions>/<total_regions> Chunks: <current_chunks>/<total_chunks> Forløpt: <elapsed> ETA: <eta> Rate: <rate> cps'
+    internal-web-disabled: Intern webserver er deaktivert i config.yml
+    internal-web-started: Intern webserver kjører på <bind>:<port>
+    internal-web-stopped: Intern webserver stoppet
+    internal-web-start-error: Intern webserver kunne ikke starte
+    could-not-create-directory: Kunne ikke opprette mappe! <path>
+    could-not-read-region: Kunne ikke lese kartbilde for region <x>,<z> (bildet ødelagt?). Den vil bli overskrevet.
+    could-not-save-region: Kunne ikke lagre kartet for regionen <x>,<z>
+    internal-web-not-running: Det oppsto en feil med den interne webserveren
