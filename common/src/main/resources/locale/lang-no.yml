@@ -50,7 +50,7 @@ click-to-confirm: Klikk for å bekrefte
 click-to-toggle: Klikk for å veksle
 ui:
     page-title: squaremap - {world}
-    coordinates: Coordinates<br/>{x}, {z}
+    coordinates: Koordinater<br/>{x}, {z}
     sidebar:
         player-list: Spillere ({cur}/{max})
         world-list: Verdener
@@ -62,7 +62,7 @@ plugin-reloaded: <green><name> v<version> lastet på nytt
 log:
     started-full-render: Startet full rendring for <world>
     started-radius-render: Startet radiusrendring for <world>
-    scanning-region-files: Skanner regionfiler... (this may take a moment)
+    scanning-region-files: Skanner regionfiler... (dette kan ta et øyeblikk)
     found-total-region-files: Funnet <total> regionfiler
     finished-rendering: Fullført rendring av kart for <world>
     cancelled-rendering: Rendring av kart for <world> har blitt avbrutt
