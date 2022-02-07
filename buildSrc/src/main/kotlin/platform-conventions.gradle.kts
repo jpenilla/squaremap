@@ -8,6 +8,15 @@ val platformExt = extensions.create("squaremapPlatform", SquaremapPlatformExtens
 decorateVersion()
 
 tasks {
+  jar {
+    manifest {
+      attributes(
+        "squaremap-version" to project.version,
+        "squaremap-commit" to lastCommitHash(),
+        "squaremap-branch" to currentBranch(),
+      )
+    }
+  }
   shadowJar {
     from(rootProject.projectDir.resolve("LICENSE")) {
       rename { "LICENSE_${rootProject.name}" }

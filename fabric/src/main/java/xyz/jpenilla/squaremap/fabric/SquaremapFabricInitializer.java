@@ -59,6 +59,7 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
         this.registerLifecycleListeners();
         FabricMapUpdates.registerListeners();
         FabricNetworking.register();
+        this.common.updateCheck();
     }
 
     private void registerLifecycleListeners() {

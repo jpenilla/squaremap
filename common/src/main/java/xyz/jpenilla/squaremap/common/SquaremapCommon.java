@@ -3,6 +3,7 @@ package xyz.jpenilla.squaremap.common;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 import javax.imageio.ImageIO;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -19,6 +20,7 @@ import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
+import xyz.jpenilla.squaremap.common.util.UpdateChecker;
 
 import static net.kyori.adventure.text.minimessage.Template.template;
 import static xyz.jpenilla.squaremap.common.util.Components.miniMessage;
@@ -85,12 +87,19 @@ public final class SquaremapCommon {
         audience.sendMessage(success);
     }
 
+    public void updateCheck() {
+        if (!Config.UPDATE_CHECKER) {
+            return;
+        }
+        ForkJoinPool.commonPool().execute(() -> new UpdateChecker(this.platform.logger(), "jpenilla/squaremap").checkVersion());
+    }
+
     public void setupApi() {
         this.squaremap = new SquaremapApiProvider(this.platform);
 
         try {
             this.squaremap.iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(FileUtil.WEB_DIR.resolve("images/icon/spawn.png").toFile()));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Logging.logger().warn("Failed to register spawn icon", e);
         }
 

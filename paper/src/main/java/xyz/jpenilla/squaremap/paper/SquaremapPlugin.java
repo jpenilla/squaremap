@@ -72,6 +72,8 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         new Metrics(this, 13571); // https://bstats.org/plugin/bukkit/squaremap/13571
+
+        this.getServer().getScheduler().runTask(this, this.common::updateCheck);
     }
 
     @Override

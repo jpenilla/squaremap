@@ -170,6 +170,19 @@ public final class Lang {
     @LangKey("log.internal-web-not-running")
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "An error occurred with the internal webserver";
 
+    @LangKey("log.update-checker.fetching-version-information")
+    public static String UPDATE_CHECKER_FETCHING_VERSION_INFORMATION = "Fetching version information...";
+    @LangKey("log.update-checker.behind-branch")
+    public static String UPDATE_CHECKER_BEHIND_BRANCH = "squaremap is <behind> version(s) behind branch '<branch>'!";
+    @LangKey("log.update-checker.download-dev-builds")
+    public static String UPDATE_CHECKER_DOWNLOAD_DEV_BUILDS = "Download dev builds from <link>";
+    @LangKey("log.update-checker.unknown-commit")
+    public static String UPDATE_CHECKER_UNKNOWN_COMMIT = "Unknown commit '<commit>', cannot check for updates.";
+    @LangKey("log.update-checker.behind-releases")
+    public static String UPDATE_CHECKER_BEHIND_RELEASES = "squaremap is <behind> version(s) out of date.";
+    @LangKey("log.update-checker.download-release")
+    public static String UPDATE_CHECKER_DOWNLOAD_RELEASE = "Download the latest release (<latest>) from <link>";
+
     private static void init() {
         Arrays.stream(Lang.class.getDeclaredFields())
             .filter(Lang::annotatedString)

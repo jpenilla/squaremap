@@ -85,6 +85,12 @@ public final class SquaremapSponge implements SquaremapPlatform {
     @Listener
     public void gameLoaded(final StartedEngineEvent<Server> event) {
         this.scheduleTasks();
+        this.game.server().scheduler().submit(
+            Task.builder()
+                .plugin(this.pluginContainer)
+                .execute(this.common::updateCheck)
+                .build()
+        );
     }
 
     @Listener
