@@ -11,17 +11,6 @@ configure<IndraExtension> {
     minimumToolchain(17)
     target(17)
   }
-
-  configurePublications {
-    pom {
-      developers {
-        developer {
-          id.set("jmp")
-          timezone.set("America/Los Angeles")
-        }
-      }
-    }
-  }
 }
 
 repositories {

@@ -10,5 +10,6 @@ repositories {
 dependencies {
   implementation(libs.vanillaGradle)
   implementation(libs.indraCommon)
+  implementation(libs.indraPublishingSonatype)
   implementation(libs.shadow)
 }

@@ -1,5 +1,5 @@
 plugins {
-  base
+  `parent-conventions`
 }
 
 allprojects {

@@ -51,8 +51,8 @@ squaremap provides simple APIs to draw markers, shapes, icons, and etc. on rende
 Maven
 ```xml
 <repository>
-    <id>squaremap-snapshots</id>
-    <url>https://repo.jpenilla.xyz/snapshots/</url>
+    <id>sonatype-snapshots</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 </repository>
 ```
 ```xml
@@ -67,7 +67,7 @@ Maven
 Gradle
 ```kotlin
 repositories {
-    maven("https://repo.jpenilla.xyz/snapshots/")
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
 }
 ```
 ```kotlin

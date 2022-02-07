@@ -1,6 +1,8 @@
 plugins {
-  id("net.kyori.indra.publishing")
+  `publishing-conventions`
 }
+
+description = "API for extending squaremap, a minimalistic and lightweight world map viewer for Minecraft servers"
 
 java {
   disableAutoTargetJvm()
@@ -15,6 +17,4 @@ indra {
   javaVersions {
     target(8)
   }
-
-  publishSnapshotsTo("jmp", "https://repo.jpenilla.xyz/snapshots/")
 }
