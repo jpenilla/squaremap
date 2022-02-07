@@ -29,12 +29,4 @@ public interface MapWorld {
      */
     @NonNull WorldIdentifier identifier();
 
-    /**
-     * Get the map visibility limit of the world. Only these regions are drawn,
-     * even if more chunks exist on disk.
-     *
-     * @return The visibility limit.
-     */
-    //@NonNull VisibilityLimit visibilityLimit();
-
 }

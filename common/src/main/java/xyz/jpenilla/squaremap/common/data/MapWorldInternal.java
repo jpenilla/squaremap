@@ -45,7 +45,7 @@ import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.RecordTypeAdapterFactory;
 import xyz.jpenilla.squaremap.common.util.Util;
-import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimit;
+import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
 public abstract class MapWorldInternal implements MapWorld {
@@ -65,7 +65,7 @@ public abstract class MapWorldInternal implements MapWorld {
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final BlockColors blockColors;
     private final LevelBiomeColorData levelBiomeColorData;
-    private final VisibilityLimit visibilityLimit;
+    private final VisibilityLimitImpl visibilityLimit;
 
     private volatile boolean pauseRenders = false;
     private WorldConfig worldConfig;
@@ -113,7 +113,7 @@ public abstract class MapWorldInternal implements MapWorld {
             this.layerRegistry().register(WorldBorderProvider.WORLDBORDER_KEY, new WorldBorderProvider(this));
         }
 
-        this.visibilityLimit = new VisibilityLimit(this);
+        this.visibilityLimit = new VisibilityLimitImpl(this);
         this.visibilityLimit.parse(this.config().VISIBILITY_LIMITS);
 
         this.deserializeDirtyChunks();
@@ -327,8 +327,14 @@ public abstract class MapWorldInternal implements MapWorld {
         return new IllegalStateException(String.format("Failed to create data directory for world '%s'", this.identifier()), cause);
     }
 
+    /**
+     * Get the map visibility limit of the world. Only these regions are drawn,
+     * even if more chunks exist on disk.
+     *
+     * @return The visibility limit.
+     */
     //@Override
-    public @NonNull VisibilityLimit visibilityLimit() {
+    public @NonNull VisibilityLimitImpl visibilityLimit() {
         return this.visibilityLimit;
     }
 

@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.util;
 
-import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -13,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -94,7 +94,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
 
     private Releases fetchReleases() throws IOException {
         final JsonArray result;
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://api.github.com/repos/%s/releases".formatted(this.githubRepo)).openStream(), Charsets.UTF_8))) {
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://api.github.com/repos/%s/releases".formatted(this.githubRepo)).openStream(), StandardCharsets.UTF_8))) {
             result = GSON.fromJson(reader, JsonArray.class);
         }
 
@@ -116,7 +116,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
             if (connection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 return new Distance.UnknownCommit();
             }
-            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), Charsets.UTF_8))) {
+            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 final JsonObject response = GSON.fromJson(reader, JsonObject.class);
                 final String status = response.get("status").getAsString();
                 return switch (status) {

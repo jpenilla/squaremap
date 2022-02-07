@@ -15,7 +15,7 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
-import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimit;
+import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 public final class RadiusRender extends AbstractRender {
     private final int centerX;
@@ -33,7 +33,7 @@ public final class RadiusRender extends AbstractRender {
 
     private int countTotalChunks() {
         int count = 0;
-        VisibilityLimit visibility = this.mapWorld.visibilityLimit();
+        VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
         for (int chunkX = this.centerX - this.radius; chunkX <= this.centerX + this.radius; chunkX++) {
             for (int chunkZ = this.centerZ - this.radius; chunkZ <= this.centerZ + this.radius; chunkZ++) {
                 if (visibility.shouldRenderChunk(chunkX, chunkZ)) {

@@ -14,7 +14,7 @@ import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
-import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimit;
+import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 public final class FullRender extends AbstractRender {
     private final int wait;
@@ -92,7 +92,7 @@ public final class FullRender extends AbstractRender {
             return;
         }
 
-        VisibilityLimit visibility = this.mapWorld.visibilityLimit();
+        VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
         this.totalRegions = regions.size();
         this.totalChunks = regions.keySet().stream().mapToInt(visibility::countChunksInRegion).sum();
 
@@ -122,7 +122,7 @@ public final class FullRender extends AbstractRender {
     }
 
     private int countCompletedChunks(final Map<RegionCoordinate, Boolean> regions) {
-        final VisibilityLimit visibility = this.mapWorld.visibilityLimit();
+        final VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
         return regions.entrySet().stream()
             .filter(Map.Entry::getValue)
             .mapToInt(entry -> visibility.countChunksInRegion(entry.getKey()))
