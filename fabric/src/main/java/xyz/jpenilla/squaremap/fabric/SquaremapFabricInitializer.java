@@ -94,7 +94,7 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
 
         this.playerManager = new FabricPlayerManager();
         this.updatePlayers = new UpdatePlayers(this);
-        this.updateWorldData = new UpdateWorldData();
+        this.updateWorldData = new UpdateWorldData(this);
     }
 
     @Override

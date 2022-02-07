@@ -9,7 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
@@ -17,16 +19,22 @@ import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
+@DefaultQualifier(NonNull.class)
 public final class UpdateWorldData implements Runnable {
     private static final Gson GSON = new Gson();
+
+    private final SquaremapPlatform platform;
+
+    public UpdateWorldData(final SquaremapPlatform platform) {
+        this.platform = platform;
+    }
 
     @Override
     public void run() {
         List<Object> worlds = new ArrayList<>();
 
-        final SquaremapPlatform platform = SquaremapCommon.instance().platform();
-        platform.levels().forEach(world -> {
-            final MapWorldInternal mapWorld = platform.worldManager().getWorldIfEnabled(world)
+        this.platform.levels().forEach(world -> {
+            final @Nullable MapWorldInternal mapWorld = this.platform.worldManager().getWorldIfEnabled(world)
                 .orElse(null);
             if (mapWorld == null) {
                 return;
@@ -71,9 +79,9 @@ public final class UpdateWorldData implements Runnable {
 
             Map<String, Object> worldsList = new HashMap<>();
             //worldsList.put("name", world.getName());
-            worldsList.put("name", SquaremapCommon.instance().platform().webNameForWorld(world));
+            worldsList.put("name", this.platform.webNameForWorld(world));
             worldsList.put("display_name", worldConfig.MAP_DISPLAY_NAME
-                .replace("{world}", SquaremapCommon.instance().platform().configNameForWorld(world)));
+                .replace("{world}", this.platform.configNameForWorld(world)));
             //.replace("{world}", world.getName()));
             worldsList.put("icon", worldConfig.MAP_ICON);
             //worldsList.put("type", world.getEnvironment().name().toLowerCase());

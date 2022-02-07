@@ -228,7 +228,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
             Task.builder()
                 .plugin(this.pluginContainer)
                 .interval(Duration.ofSeconds(5))
-                .execute(new UpdateWorldData())
+                .execute(new UpdateWorldData(this))
                 .build()
         );
         this.updatePlayers = this.game.server().scheduler().submit(

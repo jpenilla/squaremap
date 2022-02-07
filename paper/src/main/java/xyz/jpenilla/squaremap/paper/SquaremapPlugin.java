@@ -94,7 +94,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         this.updatePlayers = new BukkitRunnableAdapter(new UpdatePlayers(this));
         this.updatePlayers.runTaskTimer(this, 20, 20);
 
-        this.updateWorldData = new BukkitRunnableAdapter(new UpdateWorldData());
+        this.updateWorldData = new BukkitRunnableAdapter(new UpdateWorldData(this));
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
         this.worldManager = new PaperWorldManager();
