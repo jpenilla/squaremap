@@ -25,11 +25,6 @@ public final class PaperMapWorld extends MapWorldInternal {
     }
 
     @Override
-    public String name() {
-        return this.bukkit().getName();
-    }
-
-    @Override
     public WorldIdentifier identifier() {
         return BukkitAdapter.worldIdentifier(this.bukkit());
     }

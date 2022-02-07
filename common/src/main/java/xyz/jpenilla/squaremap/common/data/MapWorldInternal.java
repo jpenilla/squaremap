@@ -314,11 +314,6 @@ public abstract class MapWorldInternal implements MapWorld {
         return Util.worldIdentifier(this.level);
     }
 
-    @Override
-    public @NonNull String name() {
-        return this.identifier().asString();
-    }
-
     public LevelBiomeColorData levelBiomeColorData() {
         return this.levelBiomeColorData;
     }

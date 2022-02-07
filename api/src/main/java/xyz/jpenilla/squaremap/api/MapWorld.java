@@ -15,14 +15,6 @@ public interface MapWorld {
     @NonNull Registry<LayerProvider> layerRegistry();
 
     /**
-     * Get the name of this world. Depending on the implementation,
-     * this may be the same as the {@link WorldIdentifier#asString()} of {@link #identifier()}.
-     *
-     * @return name
-     */
-    @NonNull String name();
-
-    /**
      * Get the identifier of this world.
      *
      * @return identifier
