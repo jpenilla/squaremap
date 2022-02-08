@@ -9,6 +9,7 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.util.Util;
 
 @SuppressWarnings("unused")
 public abstract class AbstractWorldConfig {
@@ -26,7 +27,7 @@ public abstract class AbstractWorldConfig {
     ) {
         this.configClass = worldConfigClass;
         this.world = level;
-        this.worldName = SquaremapCommon.instance().platform().configNameForWorld(level)
+        this.worldName = Util.levelConfigName(level)
             .replace(".", DOT); // replace '.' as we later split on it (see AbstractConfig.splitPath)
         this.parent = parent;
     }

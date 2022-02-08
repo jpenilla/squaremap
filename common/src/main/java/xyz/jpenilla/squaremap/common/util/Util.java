@@ -55,6 +55,14 @@ public final class Util {
         return requireNonNull(registry.get(location));
     }
 
+    public static String levelConfigName(final ServerLevel level) {
+        return level.dimension().location().toString();
+    }
+
+    public static String levelWebName(final ServerLevel level) {
+        return level.dimension().location().toString().replace(":", "_");
+    }
+
     public static WorldIdentifier worldIdentifier(final ServerLevel level) {
         final ResourceLocation location = level.dimension().location();
         return worldIdentifier(location);

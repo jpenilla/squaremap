@@ -91,13 +91,13 @@ public abstract class MapWorldInternal implements MapWorld {
         this.levelBiomeColorData = LevelBiomeColorData.create(this);
 
         this.dataPath = SquaremapCommon.instance().platform().dataDirectory().resolve("data").resolve(
-            SquaremapCommon.instance().platform().webNameForWorld(this.level)
+            Util.levelWebName(this.level)
         );
         try {
             if (!Files.exists(this.dataPath)) {
                 Files.createDirectories(this.dataPath);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw this.failedToCreateDataDirectory(e);
         }
 

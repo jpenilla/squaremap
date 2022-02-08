@@ -114,4 +114,8 @@ public final class Config extends AbstractConfig {
         PROGRESS_LOGGING_INTERVAL = config.getInt("settings.render-progress-logging.interval-seconds", 1);
     }
 
+    public static Config config() {
+        return config;
+    }
+
 }
