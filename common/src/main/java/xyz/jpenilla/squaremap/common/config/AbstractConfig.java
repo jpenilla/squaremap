@@ -9,12 +9,14 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.List;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.loader.ConfigurationLoader;
 import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
@@ -28,8 +30,10 @@ public abstract class AbstractConfig {
     final Path configFile;
     final ConfigurationNode config;
     private final ConfigurationLoader<CommentedConfigurationNode> loader;
+    private final Class<? extends AbstractConfig> configClass;
 
-    protected AbstractConfig(String filename) {
+    protected AbstractConfig(final Class<? extends AbstractConfig> configClass, final String filename) {
+        this.configClass = configClass;
         this.configFile = SquaremapCommon.instance().platform().dataDirectory().resolve(filename);
 
         this.loader = YamlConfigurationLoader.builder()
@@ -42,9 +46,29 @@ public abstract class AbstractConfig {
         } catch (final ConfigurateException ex) {
             throw new RuntimeException("Could not load config.yml, exception occurred (are there syntax errors?)", ex);
         }
+
+        this.upgradeConfig();
     }
 
-    final void readConfig(Class<?> clazz, Object instance) {
+    protected void addVersions(final ConfigurationTransformation.VersionedBuilder versionedBuilder) {
+    }
+
+    private ConfigUpgrader createUpgrader() {
+        return new ConfigUpgrader(builder -> {
+            builder.versionKey("config-version");
+            builder.addVersion(1, ConfigurationTransformation.empty());
+            this.addVersions(builder);
+        });
+    }
+
+    private void upgradeConfig() {
+        final ConfigUpgrader.UpgradeResult<@NonNull ConfigurationNode> result = this.createUpgrader().upgrade(this.config);
+        if (result.didUpgrade()) {
+            Logging.debug(() -> "Upgraded %s from %s to %s".formatted(this.configClass.getName(), result.originalVersion(), result.newVersion()));
+        }
+    }
+
+    final void readConfig(final Class<?> clazz, final Object instance) {
         for (final Method method : clazz.getDeclaredMethods()) {
             if (!Modifier.isPrivate(method.getModifiers()) || method.getParameterTypes().length != 0 || method.getReturnType() != Void.TYPE) {
                 continue;
@@ -53,7 +77,7 @@ public abstract class AbstractConfig {
             try {
                 method.setAccessible(true);
                 method.invoke(instance);
-            } catch (InvocationTargetException ex) {
+            } catch (final InvocationTargetException ex) {
                 Logging.logger().error("Error invoking {}", method, ex.getCause());
             } catch (final Exception ex) {
                 Logging.logger().error("Error invoking {}", method, ex);

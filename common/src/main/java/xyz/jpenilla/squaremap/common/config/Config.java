@@ -2,22 +2,34 @@ package xyz.jpenilla.squaremap.common.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.spongepowered.configurate.NodePath;
+import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 
 @SuppressWarnings("unused")
 public final class Config extends AbstractConfig {
     private Config() {
-        super("config.yml");
+        super(Config.class, "config.yml");
+    }
+
+    @Override
+    protected void addVersions(final ConfigurationTransformation.VersionedBuilder versionedBuilder) {
+        final ConfigurationTransformation oneToTwo = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("settings", "image-quality", "compress-images"), (path, node) -> {
+                final double d = node.getDouble();
+                node.raw(null);
+                node.node("enabled").set(d != 0.0D);
+                node.node("value").set(d == 0.0D ? d : 1.0D - d);
+                return null;
+            })
+            .build();
+
+        versionedBuilder.addVersion(2, oneToTwo);
     }
 
     static Config config;
-    static int version;
 
     public static void reload() {
         config = new Config();
-
-        version = config.getInt("config-version", 1);
-        config.set("config-version", 1);
-
         config.readConfig(Config.class, null);
 
         WorldConfig.reload();
@@ -44,11 +56,13 @@ public final class Config extends AbstractConfig {
     }
 
     public static boolean COMPRESS_IMAGES = false;
-    public static float COMPRESSION_RATIO = 0.0F;
+    private static double COMPRESSION_RATIO_CONFIG = 0.0F;
+    public static float COMPRESSION_RATIO;
 
     private static void imageQualitySettings() {
-        COMPRESS_IMAGES = config.getBoolean("settings.image-quality.compress-images", COMPRESS_IMAGES);
-        COMPRESSION_RATIO = (float) config.getDouble("settings.image-quality.compress-images", COMPRESSION_RATIO);
+        COMPRESS_IMAGES = config.getBoolean("settings.image-quality.compress-images.enabled", COMPRESS_IMAGES);
+        COMPRESSION_RATIO_CONFIG = config.getDouble("settings.image-quality.compress-images.value", COMPRESSION_RATIO_CONFIG);
+        COMPRESSION_RATIO = (float) (1.0D - COMPRESSION_RATIO_CONFIG);
     }
 
     public static boolean HTTPD_ENABLED = true;

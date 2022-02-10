@@ -17,10 +17,16 @@ public abstract class AbstractWorldConfig {
     final String worldName;
     protected final ServerLevel world;
     protected final AbstractConfig parent;
+    private final Class<? extends AbstractWorldConfig> configClass;
 
-    protected AbstractWorldConfig(final ServerLevel world, final AbstractConfig parent) {
-        this.world = world;
-        this.worldName = SquaremapCommon.instance().platform().configNameForWorld(world)
+    protected AbstractWorldConfig(
+        final Class<? extends AbstractWorldConfig> worldConfigClass,
+        final ServerLevel level,
+        final AbstractConfig parent
+    ) {
+        this.configClass = worldConfigClass;
+        this.world = level;
+        this.worldName = SquaremapCommon.instance().platform().configNameForWorld(level)
             .replace(".", DOT); // replace '.' as we later split on it (see AbstractConfig.splitPath)
         this.parent = parent;
     }
@@ -35,6 +41,10 @@ public abstract class AbstractWorldConfig {
         }
     }
      */
+
+    protected final void init() {
+        this.parent.readConfig(this.configClass, this);
+    }
 
     protected final boolean getBoolean(String path, boolean def) {
         if (this.virtual(this.wrapPath(path))) {

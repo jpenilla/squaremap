@@ -34,13 +34,9 @@ public final class WorldAdvanced extends AbstractWorldConfig {
         );
     }
 
-    private WorldAdvanced(final ServerLevel world, final AbstractConfig parent) {
-        super(world, parent);
+    private WorldAdvanced(final ServerLevel level, final Advanced parent) {
+        super(WorldAdvanced.class, level, parent);
         this.init();
-    }
-
-    void init() {
-        this.parent.readConfig(WorldAdvanced.class, this);
     }
 
     public final Set<Block> invisibleBlocks = new HashSet<>();

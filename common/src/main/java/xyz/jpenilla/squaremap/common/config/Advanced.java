@@ -5,18 +5,13 @@ import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
     private Advanced() {
-        super("advanced.yml");
+        super(Advanced.class, "advanced.yml");
     }
 
     static Advanced config;
-    static int version;
 
     public static void reload() {
         config = new Advanced();
-
-        version = config.getInt("config-version", 1);
-        config.set("config-version", 1);
-
         config.readConfig(Advanced.class, null);
 
         // todo - replace hack

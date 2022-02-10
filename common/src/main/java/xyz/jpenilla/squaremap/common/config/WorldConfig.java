@@ -26,13 +26,9 @@ public final class WorldConfig extends AbstractWorldConfig {
         );
     }
 
-    private WorldConfig(final ServerLevel world, final AbstractConfig parent) {
-        super(world, parent);
+    private WorldConfig(final ServerLevel world, final Config parent) {
+        super(WorldConfig.class, world, parent);
         this.init();
-    }
-
-    void init() {
-        this.parent.readConfig(WorldConfig.class, this);
     }
 
     public boolean MAP_ENABLED = true;
