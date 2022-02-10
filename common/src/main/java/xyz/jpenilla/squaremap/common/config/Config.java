@@ -8,7 +8,7 @@ import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 @SuppressWarnings("unused")
 public final class Config extends AbstractConfig {
     private Config() {
-        super(Config.class, "config.yml");
+        super(Config.class, "config.yml", 2);
     }
 
     @Override

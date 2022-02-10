@@ -31,8 +31,10 @@ public abstract class AbstractConfig {
     final ConfigurationNode config;
     private final ConfigurationLoader<CommentedConfigurationNode> loader;
     private final Class<? extends AbstractConfig> configClass;
+    private final int latestVersion;
 
-    protected AbstractConfig(final Class<? extends AbstractConfig> configClass, final String filename) {
+    protected AbstractConfig(final Class<? extends AbstractConfig> configClass, final String filename, final int latestVersion) {
+        this.latestVersion = latestVersion;
         this.configClass = configClass;
         this.configFile = SquaremapCommon.instance().platform().dataDirectory().resolve(filename);
 
@@ -62,6 +64,15 @@ public abstract class AbstractConfig {
     }
 
     private void upgradeConfig() {
+        final ConfigurationNode versionNode = this.config.node("config-version");
+        if (versionNode.virtual()) {
+            try {
+                versionNode.set(this.latestVersion);
+            } catch (final SerializationException e) {
+                rethrow(e);
+            }
+            return;
+        }
         final ConfigUpgrader.UpgradeResult<@NonNull ConfigurationNode> result = this.createUpgrader().upgrade(this.config);
         if (result.didUpgrade()) {
             Logging.debug(() -> "Upgraded %s from %s to %s".formatted(this.configClass.getName(), result.originalVersion(), result.newVersion()));

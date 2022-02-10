@@ -5,7 +5,7 @@ import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
     private Advanced() {
-        super(Advanced.class, "advanced.yml");
+        super(Advanced.class, "advanced.yml", 1);
     }
 
     static Advanced config;
