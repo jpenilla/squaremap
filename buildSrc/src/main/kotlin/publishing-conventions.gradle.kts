@@ -5,8 +5,8 @@ plugins {
 
 signing {
   useInMemoryPgpKeys(
-    providers.gradleProperty("signingKey").forUseAtConfigurationTime().orNull,
-    providers.gradleProperty("signingPassword").forUseAtConfigurationTime().orNull
+    providers.gradleProperty("signingKey").orNull,
+    providers.gradleProperty("signingPassword").orNull
   )
 }
 
