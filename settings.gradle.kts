@@ -12,6 +12,19 @@ pluginManagement {
   includeBuild("build-logic")
 }
 
+buildscript {
+  configurations.all {
+    resolutionStrategy {
+      eachDependency {
+        if (requested.group == "com.google.code.gson" && requested.name == "gson") {
+          useVersion("2.8.9")
+          because("loom needs 2.8.9, polyglot version catalogs adds 2.8.0 to classpath, force 2.8.9 to avoid issues")
+        }
+      }
+    }
+  }
+}
+
 plugins {
   id("ca.stellardrift.polyglot-version-catalogs") version "5.0.0"
 }

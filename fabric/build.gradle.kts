@@ -13,7 +13,7 @@ configurations.implementation {
 repositories {
   maven("https://ladysnake.jfrog.io/artifactory/mods/") {
     mavenContent {
-      includeGroup("io.github.onyxstudios.Cardinal-Components-API")
+      includeGroup("dev.onyxstudios.cardinal-components-api")
     }
   }
 }
