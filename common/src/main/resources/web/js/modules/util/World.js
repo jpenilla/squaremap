@@ -21,7 +21,9 @@ class World {
         // load and draw markers
         if (P.tick_count % this.marker_update_interval == 0) {
             P.getJSON(`tiles/${this.name}/markers.json`, (json) => {
-                this.markers(json);
+                if (this === P.worldList.curWorld) {
+                    this.markers(json);
+                }
             });
         }
     }
