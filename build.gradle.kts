@@ -1,5 +1,5 @@
 plugins {
-  `parent-conventions`
+  id("parent-conventions")
 }
 
 allprojects {

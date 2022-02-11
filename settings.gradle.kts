@@ -9,6 +9,7 @@ pluginManagement {
     maven("https://maven.quiltmc.org/repository/release/")
     maven("https://repo.jpenilla.xyz/snapshots/")
   }
+  includeBuild("build-logic")
 }
 
 plugins {

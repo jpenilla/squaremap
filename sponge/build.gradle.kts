@@ -2,12 +2,12 @@ import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
 
 plugins {
-  `platform-conventions`
+  id("platform-conventions")
   id("org.spongepowered.gradle.plugin")
   id("org.spongepowered.gradle.vanilla")
 }
 
-val minecraftVersion = libs.versions.minecraft.forUseAtConfigurationTime().get()
+val minecraftVersion = libs.versions.minecraft.get()
 
 minecraft {
   version(minecraftVersion)

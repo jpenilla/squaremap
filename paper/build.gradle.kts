@@ -1,11 +1,11 @@
 plugins {
-  `platform-conventions`
+  id("platform-conventions")
   id("io.papermc.paperweight.userdev")
   id("net.minecrell.plugin-yml.bukkit")
   id("xyz.jpenilla.run-paper")
 }
 
-val minecraftVersion = libs.versions.minecraft.forUseAtConfigurationTime().get()
+val minecraftVersion = libs.versions.minecraft.get()
 
 dependencies {
   paperDevBundle("$minecraftVersion-R0.1-SNAPSHOT")
@@ -41,6 +41,6 @@ bukkit {
   main = "xyz.jpenilla.squaremap.paper.SquaremapPlugin"
   name = rootProject.name
   apiVersion = "1.18"
-  website = providers.gradleProperty("githubUrl").forUseAtConfigurationTime().get()
+  website = providers.gradleProperty("githubUrl").get()
   authors = listOf("jmp")
 }

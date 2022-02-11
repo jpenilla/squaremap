@@ -2,7 +2,7 @@ import ca.stellardrift.build.configurate.ConfigFormats
 import ca.stellardrift.build.configurate.catalog.PolyglotVersionCatalogExtension
 
 plugins {
-  id("ca.stellardrift.polyglot-version-catalogs")
+  id("ca.stellardrift.polyglot-version-catalogs") version "5.0.0"
 }
 
 extensions.configure<PolyglotVersionCatalogExtension> {

@@ -1,9 +1,9 @@
 plugins {
-  `platform-conventions`
+  id("platform-conventions")
   id("quiet-fabric-loom")
 }
 
-val minecraftVersion = libs.versions.minecraft.forUseAtConfigurationTime().get()
+val minecraftVersion = libs.versions.minecraft.get()
 
 val squaremap: Configuration by configurations.creating
 configurations.implementation {
@@ -63,8 +63,7 @@ tasks {
   processResources {
     val props = mapOf(
       "version" to project.version,
-      "github_url" to rootProject.providers.gradleProperty("githubUrl")
-        .forUseAtConfigurationTime().get(),
+      "github_url" to rootProject.providers.gradleProperty("githubUrl").get(),
       "description" to project.description,
     )
     inputs.properties(props)

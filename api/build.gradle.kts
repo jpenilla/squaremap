@@ -1,5 +1,5 @@
 plugins {
-  `publishing-conventions`
+  id("publishing-conventions")
 }
 
 description = "API for extending squaremap, a minimalistic and lightweight world map viewer for Minecraft servers"
