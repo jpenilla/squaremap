@@ -48,18 +48,15 @@ Leaflet (the web ui frontend) is licensed under [2-clause BSD License](https://g
 squaremap provides simple APIs to draw markers, shapes, icons, and etc. on rendered maps. Javadocs are hosted on the maven repository alongside the binaries, and should be automatically downloaded by your IDE. 
 
 ### Dependency Information
+
+Releases are published to Maven Central, snapshots are available on the Sonatype snapshots repo: `https://s01.oss.sonatype.org/content/repositories/snapshots/`
+
 Maven
-```xml
-<repository>
-    <id>sonatype-snapshots</id>
-    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-</repository>
-```
 ```xml
 <dependency>
     <groupId>xyz.jpenilla</groupId>
     <artifactId>squaremap-api</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -67,12 +64,11 @@ Maven
 Gradle
 ```kotlin
 repositories {
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    mavenCentral()
 }
-```
-```kotlin
+
 dependencies {
-    compileOnly("xyz.jpenilla", "squaremap-api", "1.1.0-SNAPSHOT")
+    compileOnly("xyz.jpenilla", "squaremap-api", "1.1.0")
 }
 ```
 
