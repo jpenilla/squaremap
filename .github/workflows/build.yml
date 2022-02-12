@@ -1,5 +1,11 @@
 name: Build
-on: [ push, pull_request ]
+on:
+  push:
+    branches: "*"
+    tags-ignore: [ "*" ]
+  pull_request:
+  release:
+    types: [ released ]
 jobs:
   build:
     # Only run on PRs if the source branch is on someone else's repo
