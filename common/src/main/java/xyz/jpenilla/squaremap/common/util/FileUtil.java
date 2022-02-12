@@ -45,12 +45,8 @@ public final class FileUtil {
         TILES_DIR = WEB_DIR.resolve("tiles");
     }
 
-    private static Path getRegionFolder(final ServerLevel level) {
-        return SquaremapCommon.instance().platform().regionFileDirectory(level);
-    }
-
     public static Path[] getRegionFiles(final ServerLevel level) {
-        final Path regionFolder = getRegionFolder(level);
+        final Path regionFolder = SquaremapCommon.instance().platform().regionFileDirectory(level);
         Logging.debug(() -> "Listing region files for directory '" + regionFolder + "'...");
         try (final Stream<Path> stream = Files.list(regionFolder)) {
             return stream.filter(file -> file.getFileName().toString().endsWith(".mca")).toArray(Path[]::new);
@@ -60,11 +56,11 @@ public final class FileUtil {
     }
 
     public static Path getAndCreateTilesDirectory(final ServerLevel level) {
-        final Path dir = TILES_DIR.resolve(SquaremapCommon.instance().platform().webNameForWorld(level));
+        final Path dir = TILES_DIR.resolve(Util.levelWebName(level));
         if (!Files.exists(dir)) {
             try {
                 Files.createDirectories(dir);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 Logging.error(Lang.LOG_COULD_NOT_CREATE_DIR, e, "path", dir.toAbsolutePath());
             }
         }
@@ -84,7 +80,7 @@ public final class FileUtil {
     }
 
     public static void deleteDirectory(Path dir) throws IOException {
-        try (Stream<Path> walk = Files.walk(dir)) {
+        try (final Stream<Path> walk = Files.walk(dir)) {
             //noinspection ResultOfMethodCallIgnored
             walk.sorted(Comparator.reverseOrder())
                 .map(Path::toFile)

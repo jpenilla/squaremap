@@ -10,12 +10,15 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration;
 
 @DefaultQualifier(NonNull.class)
 public record WorldLoadListener(SquaremapPlugin plugin) implements Listener {
     // Use low priority to load world before other plugins load listeners
     @EventHandler(priority = EventPriority.LOW)
     public void handleWorldLoad(final WorldLoadEvent event) {
+        WorldNameToKeyMigration.migrate(CraftBukkitReflection.serverLevel(event.getWorld()));
+
         WorldConfig.get(CraftBukkitReflection.serverLevel(event.getWorld()));
         this.plugin.worldManager().getWorldIfEnabled(event.getWorld());
     }

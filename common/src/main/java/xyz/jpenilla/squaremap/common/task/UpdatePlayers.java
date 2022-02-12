@@ -15,6 +15,7 @@ import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.HtmlComponentSerializer;
+import xyz.jpenilla.squaremap.common.util.Util;
 
 public class UpdatePlayers implements Runnable {
     private static final Gson GSON = new Gson();
@@ -50,7 +51,7 @@ public class UpdatePlayers implements Runnable {
                     playerEntry.put("display_name", htmlComponentSerializer.serialize(this.platform.playerManager().displayName(player)));
                 }
                 playerEntry.put("uuid", player.getUUID().toString().replace("-", ""));
-                playerEntry.put("world", this.platform.webNameForWorld(world));
+                playerEntry.put("world", Util.levelWebName(world));
                 if (worldConfig.PLAYER_TRACKER_ENABLED) {
                     playerEntry.put("x", Mth.floor(playerLoc.x()));
                     playerEntry.put("z", Mth.floor(playerLoc.z()));

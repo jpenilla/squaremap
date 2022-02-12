@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.List;
+import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -21,6 +22,7 @@ import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
+import xyz.jpenilla.squaremap.common.util.Util;
 
 import static java.util.Objects.requireNonNull;
 import static xyz.jpenilla.squaremap.common.util.Util.rethrow;
@@ -190,6 +192,22 @@ public abstract class AbstractConfig {
         final Type type = TypeFactory.parameterizedClass(List.class, elementType.getType());
         final @Nullable List<V> ret = node.virtual() ? null : (List<V>) node.get(type);
         return ret == null ? storeDefault(node, type, def) : ret;
+    }
+
+    public final void migrateLevelSection(final ServerLevel level, final String oldName) {
+        final ConfigurationNode oldNode = this.config.node("world-settings", oldName);
+        if (oldNode.virtual()) {
+            return;
+        }
+        final String configName = Util.levelConfigName(level);
+        final ConfigurationNode newNode = this.config.node("world-settings", configName);
+        try {
+            newNode.set(oldNode);
+            oldNode.set(null);
+        } catch (final SerializationException e) {
+            rethrow(e);
+        }
+        this.save();
     }
 
     private static <V> V storeDefault(final ConfigurationNode node, final Type type, final V defValue) throws SerializationException {

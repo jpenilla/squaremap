@@ -18,6 +18,7 @@ import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
+import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
 public final class UpdateWorldData implements Runnable {
@@ -79,9 +80,9 @@ public final class UpdateWorldData implements Runnable {
 
             Map<String, Object> worldsList = new HashMap<>();
             //worldsList.put("name", world.getName());
-            worldsList.put("name", this.platform.webNameForWorld(world));
+            worldsList.put("name", Util.levelWebName(world));
             worldsList.put("display_name", worldConfig.MAP_DISPLAY_NAME
-                .replace("{world}", this.platform.configNameForWorld(world)));
+                .replace("{world}", Util.levelConfigName(world)));
             //.replace("{world}", world.getName()));
             worldsList.put("icon", worldConfig.MAP_ICON);
             //worldsList.put("type", world.getEnvironment().name().toLowerCase());

@@ -43,14 +43,6 @@ public interface SquaremapPlatform {
 
     String version();
 
-    default String configNameForWorld(final ServerLevel level) {
-        return level.dimension().location().toString();
-    }
-
-    default String webNameForWorld(final ServerLevel level) {
-        return level.dimension().location().toString().replace(":", "_");
-    }
-
     default Path regionFileDirectory(final ServerLevel level) {
         final Path worldPath = level.getServer().getWorldPath(LevelResource.ROOT);
         return DimensionType.getStorageFolder(level.dimension(), worldPath).resolve("region");
