@@ -31,7 +31,13 @@ squaremap hooks into your Minecraft server as a plugin or mod on a [supported pl
 
 ## Downloads
 
-Downloads can be obtained from the [releases](https://github.com/jpenilla/squaremap/releases) section.
+Release downloads can be obtained from the [releases](https://github.com/jpenilla/squaremap/releases) section.
+
+<details>
+<summary>Development builds</summary>
+
+> Development builds are available at https://jenkins.jpenilla.xyz/job/squaremap/
+</details>
 
 ## Demo
 
