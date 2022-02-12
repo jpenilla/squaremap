@@ -31,7 +31,7 @@ squaremap hooks into your Minecraft server as a plugin or mod on a [supported pl
 
 ## Downloads
 
-Release downloads can be obtained from the [releases](https://github.com/jpenilla/squaremap/releases) section.
+Downloads can be obtained from the [releases](https://github.com/jpenilla/squaremap/releases) section.
 
 <details>
 <summary>Development builds</summary>
@@ -55,7 +55,15 @@ squaremap provides simple APIs to draw markers, shapes, icons, and etc. on rende
 
 ### Dependency Information
 
-Releases are published to Maven Central, snapshots are available on the Sonatype snapshots repo: `https://s01.oss.sonatype.org/content/repositories/snapshots/`
+Releases are published to Maven Central
+
+<details>
+<summary>Using snapshot builds</summary>
+
+> Snapshot builds are available on the Sonatype snapshots maven repository: `https://s01.oss.sonatype.org/content/repositories/snapshots/`
+>
+> Consult your build tool's documentation for details on adding maven repositories to your project.
+</details>
 
 Maven
 ```xml
