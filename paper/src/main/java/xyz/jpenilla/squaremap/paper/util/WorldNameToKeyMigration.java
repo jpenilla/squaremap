@@ -4,28 +4,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import net.minecraft.server.level.ServerLevel;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
-import xyz.jpenilla.squaremap.common.config.Advanced;
-import xyz.jpenilla.squaremap.common.config.Config;
+import xyz.jpenilla.squaremap.common.config.AbstractConfig;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
+@SuppressWarnings("unused") // called using Reflection in AbstractWorldConfig constructor
 public final class WorldNameToKeyMigration {
-    public static void migrateLoaded() {
-        for (final World world : Bukkit.getWorlds()) {
-            migrate(CraftBukkitReflection.serverLevel(world));
-        }
-    }
-
-    public static void migrate(final ServerLevel level) {
+    public static void migrate(final AbstractConfig config, final ServerLevel level) {
         final String oldName = CraftBukkitReflection.world(level).getName();
-        Config.config().migrateLevelSection(level, oldName);
-        Advanced.config().migrateLevelSection(level, oldName);
+        config.migrateLevelSection(level, oldName);
         try {
             moveDirectories(level, oldName);
         } catch (final IOException ex) {

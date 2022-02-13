@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.paper.listener;
 
+import net.minecraft.server.level.ServerLevel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -10,17 +11,15 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
-import xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration;
 
 @DefaultQualifier(NonNull.class)
 public record WorldLoadListener(SquaremapPlugin plugin) implements Listener {
     // Use low priority to load world before other plugins load listeners
     @EventHandler(priority = EventPriority.LOW)
     public void handleWorldLoad(final WorldLoadEvent event) {
-        WorldNameToKeyMigration.migrate(CraftBukkitReflection.serverLevel(event.getWorld()));
-
-        WorldConfig.get(CraftBukkitReflection.serverLevel(event.getWorld()));
-        this.plugin.worldManager().getWorldIfEnabled(event.getWorld());
+        final ServerLevel level = CraftBukkitReflection.serverLevel(event.getWorld());
+        WorldConfig.get(level);
+        this.plugin.worldManager().getWorldIfEnabled(level);
     }
 
     // Use high priority to unload world after other plugins unload listeners

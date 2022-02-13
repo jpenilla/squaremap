@@ -37,7 +37,6 @@ import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 import xyz.jpenilla.squaremap.paper.util.BukkitRunnableAdapter;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration;
 
 public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatform {
     private static final Logger LOGGER = LogManager.getLogger("squaremap");
@@ -80,8 +79,10 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     @Override
     public void onDisable() {
         PaperNetworking.unregister(this);
-        this.getServer().getServicesManager().unregister(Squaremap.class, this.common.api());
-        this.common.shutdown();
+        if (this.common != null) {
+            this.getServer().getServicesManager().unregister(Squaremap.class, this.common.api());
+            this.common.shutdown();
+        }
     }
 
     public static SquaremapPlugin getInstance() {
@@ -98,7 +99,6 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         this.updateWorldData = new BukkitRunnableAdapter(new UpdateWorldData(this));
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
-        WorldNameToKeyMigration.migrateLoaded();
         this.worldManager = new PaperWorldManager();
         this.worldManager.start(this);
 

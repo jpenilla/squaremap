@@ -1,18 +1,23 @@
 package xyz.jpenilla.squaremap.common.config;
 
 import io.leangen.geantyref.TypeToken;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @SuppressWarnings("unused")
 public abstract class AbstractWorldConfig {
+    private static final @Nullable Class<?> PAPER_MIGRATION_CLASS = ReflectionUtil.findClass("xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration");
+    private static final @Nullable Method PAPER_MIGRATE_METHOD = PAPER_MIGRATION_CLASS == null ? null : ReflectionUtil.needMethod(PAPER_MIGRATION_CLASS, List.of("migrate"), AbstractConfig.class, ServerLevel.class);
     public static final String DOT = "____dot____";
 
     final String worldName;
@@ -30,6 +35,11 @@ public abstract class AbstractWorldConfig {
         this.worldName = Util.levelConfigName(level)
             .replace(".", DOT); // replace '.' as we later split on it (see AbstractConfig.splitPath)
         this.parent = parent;
+
+        // hack but works
+        if (PAPER_MIGRATE_METHOD != null) {
+            ReflectionUtil.invokeOrThrow(PAPER_MIGRATE_METHOD, null, parent, level);
+        }
     }
 
     /*
