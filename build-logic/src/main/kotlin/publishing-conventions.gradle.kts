@@ -4,10 +4,9 @@ plugins {
 }
 
 signing {
-  useInMemoryPgpKeys(
-    providers.gradleProperty("signingKey").orNull,
-    providers.gradleProperty("signingPassword").orNull
-  )
+  val signingKey: String? by project
+  val signingPassword: String? by project
+  useInMemoryPgpKeys(signingKey, signingPassword)
 }
 
 indra {
