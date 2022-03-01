@@ -5,7 +5,7 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
@@ -27,7 +27,7 @@ public final class ConfirmCommand extends SquaremapCommand {
 
     private static @NonNull ComponentLike confirmationRequiredMessage() {
         return text()
-            .append(Components.miniMessage(Lang.CONFIRMATION_REQUIRED_MESSAGE, Template.template("command", Config.MAIN_COMMAND_LABEL)))
+            .append(Components.miniMessage(Lang.CONFIRMATION_REQUIRED_MESSAGE, Placeholder.unparsed("command", Config.MAIN_COMMAND_LABEL)))
             .hoverEvent(Components.miniMessage(Lang.CLICK_TO_CONFIRM))
             .clickEvent(ClickEvent.runCommand('/' + Config.MAIN_COMMAND_LABEL + " confirm"));
     }

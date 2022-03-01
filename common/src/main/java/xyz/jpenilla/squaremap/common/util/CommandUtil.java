@@ -3,7 +3,8 @@ package xyz.jpenilla.squaremap.common.util;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import java.util.Optional;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -30,7 +31,7 @@ public final class CommandUtil {
             final ServerLevel level = player.player().getLevel();
             final Optional<MapWorldInternal> optionalMapWorld = context.get(Commands.PLATFORM).worldManager().getWorldIfEnabled(level);
             if (optionalMapWorld.isEmpty()) {
-                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Template.template("world", level.dimension().location().toString()));
+                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Placeholder.unparsed("world", level.dimension().location().toString()));
                 throw CommandCompleted.withoutMessage();
             } else {
                 return optionalMapWorld.get();
@@ -40,7 +41,7 @@ public final class CommandUtil {
         }
     }
 
-    public static RichDescription description(final String miniMessage, Template... placeholders) {
+    public static RichDescription description(final String miniMessage, TagResolver... placeholders) {
         return RichDescription.of(Components.miniMessage(miniMessage, placeholders));
     }
 }

@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.Arrays;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -230,7 +230,7 @@ public final class Lang {
         return config.node(AbstractConfig.splitPath(path)).getString(def);
     }
 
-    public static void send(final Audience recipient, final String miniMessage, final Template... placeholders) {
+    public static void send(final Audience recipient, final String miniMessage, final TagResolver... placeholders) {
         recipient.sendMessage(Components.miniMessage(miniMessage, placeholders));
     }
 

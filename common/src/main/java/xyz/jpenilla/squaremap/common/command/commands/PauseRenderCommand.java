@@ -2,7 +2,7 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
@@ -35,9 +35,9 @@ public final class PauseRenderCommand extends SquaremapCommand {
         world.pauseRenders(!world.rendersPaused());
 
         if (world.rendersPaused()) {
-            Lang.send(sender, Lang.PAUSED_RENDER, Template.template("world", world.identifier().asString()));
+            Lang.send(sender, Lang.PAUSED_RENDER, Placeholder.unparsed("world", world.identifier().asString()));
         } else {
-            Lang.send(sender, Lang.UNPAUSED_RENDER, Template.template("world", world.identifier().asString()));
+            Lang.send(sender, Lang.UNPAUSED_RENDER, Placeholder.unparsed("world", world.identifier().asString()));
         }
     }
 }

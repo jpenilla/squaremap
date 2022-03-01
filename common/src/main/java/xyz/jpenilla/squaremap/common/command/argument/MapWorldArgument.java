@@ -164,8 +164,8 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
         @Override
         public String getMessage() {
             return switch (this.reason) {
-                case NO_SUCH_WORLD -> Components.miniMessage().stripTokens(Lang.NO_SUCH_WORLD.replace("<world>", this.input));
-                case MAP_NOT_ENABLED -> Components.miniMessage().stripTokens(Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("<world>", this.input));
+                case NO_SUCH_WORLD -> Components.miniMessage().stripTags(Lang.NO_SUCH_WORLD.replace("<world>", this.input));
+                case MAP_NOT_ENABLED -> Components.miniMessage().stripTags(Lang.MAP_NOT_ENABLED_FOR_WORLD.replace("<world>", this.input));
             };
         }
 

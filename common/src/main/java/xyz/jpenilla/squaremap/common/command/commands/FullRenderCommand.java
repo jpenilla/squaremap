@@ -2,7 +2,7 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
@@ -34,12 +34,12 @@ public final class FullRenderCommand extends SquaremapCommand {
         final Commander sender = context.getSender();
         final MapWorldInternal world = CommandUtil.resolveWorld(context);
         if (world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.template("world", world.identifier().asString()));
+            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Placeholder.unparsed("world", world.identifier().asString()));
             return;
         }
 
         if (sender instanceof PlayerCommander) {
-            Lang.send(sender, Lang.LOG_STARTED_FULLRENDER, Template.template("world", world.identifier().asString()));
+            Lang.send(sender, Lang.LOG_STARTED_FULLRENDER, Placeholder.unparsed("world", world.identifier().asString()));
         }
         world.startRender(new FullRender(world));
     }

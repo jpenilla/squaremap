@@ -13,9 +13,7 @@ dependencies {
   api(platform(libs.adventureBom))
   compileOnlyApi(libs.adventureApi)
   compileOnlyApi(libs.adventureTextSerializerPlain)
-  api(libs.miniMessage) {
-    isTransitive = false // we depend on adventure separately
-  }
+  compileOnlyApi(libs.miniMessage)
 
   api(platform(libs.cloudBom))
   api(libs.cloudCore)

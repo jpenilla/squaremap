@@ -2,7 +2,7 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
@@ -32,11 +32,11 @@ public final class CancelRenderCommand extends SquaremapCommand {
         final Commander sender = context.getSender();
         final MapWorldInternal world = CommandUtil.resolveWorld(context);
         if (!world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS, Template.template("world", world.identifier().asString()));
+            Lang.send(sender, Lang.RENDER_NOT_IN_PROGRESS, Placeholder.unparsed("world", world.identifier().asString()));
             return;
         }
 
-        Lang.send(sender, Lang.CANCELLED_RENDER, Template.template("world", world.identifier().asString()));
+        Lang.send(sender, Lang.CANCELLED_RENDER, Placeholder.unparsed("world", world.identifier().asString()));
         world.stopRender();
         world.finishedRender();
     }

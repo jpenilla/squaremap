@@ -26,7 +26,6 @@ tasks {
       exclude(dependency("io.undertow:.*:.*")) // does not like being minimized _or_ relocated (xnio errors)
     }
     listOf(
-      "net.kyori.adventure.text.minimessage",
       "org.owasp.html",
       "org.spongepowered.configurate",
       "org.yaml.snakeyaml",

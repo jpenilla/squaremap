@@ -5,7 +5,7 @@ import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import java.io.IOException;
 import java.nio.file.Path;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -41,6 +41,6 @@ public final class ResetMapCommand extends SquaremapCommand {
         } catch (IOException e) {
             throw new IllegalStateException("Could not reset map", e);
         }
-        Lang.send(sender, Lang.SUCCESSFULLY_RESET_MAP, Template.template("world", world.dimension().location().toString()));
+        Lang.send(sender, Lang.SUCCESSFULLY_RESET_MAP, Placeholder.unparsed("world", world.dimension().location().toString()));
     }
 }

@@ -5,7 +5,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -60,23 +60,23 @@ public final class HideShowCommands extends SquaremapCommand {
         final ServerPlayer target = this.getPlayer.apply("player", context);
         final Commander sender = context.getSender();
         if (context.get(Commands.PLATFORM).playerManager().hidden(target.getUUID())) {
-            Lang.send(sender, Lang.PLAYER_ALREADY_HIDDEN, Template.template("player", target.getGameProfile().getName()));
+            Lang.send(sender, Lang.PLAYER_ALREADY_HIDDEN, Placeholder.unparsed("player", target.getGameProfile().getName()));
             return;
         }
 
         context.get(Commands.PLATFORM).playerManager().hide(target.getUUID(), true);
-        Lang.send(sender, Lang.PLAYER_HIDDEN, Template.template("player", target.getGameProfile().getName()));
+        Lang.send(sender, Lang.PLAYER_HIDDEN, Placeholder.unparsed("player", target.getGameProfile().getName()));
     }
 
     private void executeShow(final @NonNull CommandContext<Commander> context) {
         final ServerPlayer target = this.getPlayer.apply("player", context);
         final Commander sender = context.getSender();
         if (!context.get(Commands.PLATFORM).playerManager().hidden(target.getUUID())) {
-            Lang.send(sender, Lang.PLAYER_NOT_HIDDEN, Template.template("player", target.getGameProfile().getName()));
+            Lang.send(sender, Lang.PLAYER_NOT_HIDDEN, Placeholder.unparsed("player", target.getGameProfile().getName()));
             return;
         }
 
         context.get(Commands.PLATFORM).playerManager().show(target.getUUID(), true);
-        Lang.send(sender, Lang.PLAYER_SHOWN, Template.template("player", target.getGameProfile().getName()));
+        Lang.send(sender, Lang.PLAYER_SHOWN, Placeholder.unparsed("player", target.getGameProfile().getName()));
     }
 }

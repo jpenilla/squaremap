@@ -10,7 +10,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import java.util.List;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
@@ -88,7 +88,7 @@ public final class PaperCommands {
 
         final Player targetPlayer = selector.getPlayer();
         if (targetPlayer == null) {
-            Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Template.template("input", selector.getSelector()));
+            Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Placeholder.unparsed("input", selector.getSelector()));
             throw CommandCompleted.withoutMessage();
         }
 

@@ -15,9 +15,8 @@ versions:
     checkerQual: 3.21.2
     cloud: 1.7.0-SNAPSHOT
     configurate: 4.1.2
-    adventure: 4.9.3
+    adventure: 4.10.0
     adventurePlatformFabric: 5.1.0
-    miniMessage: 4.2.0-SNAPSHOT
     paperApi: 1.18.1-R0.1-SNAPSHOT
     bStats: 3.0.0
     fabricApi: 0.47.8+1.18.2
@@ -44,7 +43,6 @@ dependencies:
     miniMessage:
         group: net.kyori
         name: adventure-text-minimessage
-        version: { ref: miniMessage }
     adventurePlatformFabric:
         group: net.kyori
         name: adventure-platform-fabric

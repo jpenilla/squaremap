@@ -6,7 +6,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -50,8 +50,8 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         Lang.send(
             context.getSender(),
             Lang.PROGRESSLOGGING_STATUS_MESSAGE,
-            Template.template("seconds", Integer.toString(Config.PROGRESS_LOGGING_INTERVAL)),
-            Template.template("enabled", clickAndHover(Config.PROGRESS_LOGGING ? text("✔", GREEN) : text("✖", RED)))
+            Placeholder.unparsed("seconds", Integer.toString(Config.PROGRESS_LOGGING_INTERVAL)),
+            Placeholder.component("enabled", clickAndHover(Config.PROGRESS_LOGGING ? text("✔", GREEN) : text("✖", RED)))
         );
     }
 
@@ -82,6 +82,6 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         context.get(Commands.PLATFORM).worldManager().worlds().values()
             .forEach(MapWorldInternal::restartRenderProgressLogging);
 
-        context.getSender().sendMessage(Components.miniMessage(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Template.template("seconds", Integer.toString(seconds))));
+        context.getSender().sendMessage(Components.miniMessage(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Placeholder.unparsed("seconds", Integer.toString(seconds))));
     }
 }

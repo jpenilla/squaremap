@@ -7,6 +7,7 @@ import java.util.concurrent.ForkJoinPool;
 import javax.imageio.ImageIO;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -22,7 +23,6 @@ import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.UpdateChecker;
 
-import static net.kyori.adventure.text.minimessage.Template.template;
 import static xyz.jpenilla.squaremap.common.util.Components.miniMessage;
 
 @DefaultQualifier(NonNull.class)
@@ -81,8 +81,8 @@ public final class SquaremapCommon {
 
         final Component success = miniMessage(
             Lang.PLUGIN_RELOADED,
-            template("name", "squaremap"),
-            template("version", this.platform().version())
+            Placeholder.unparsed("name", "squaremap"),
+            Placeholder.unparsed("version", this.platform().version())
         );
         audience.sendMessage(success);
     }

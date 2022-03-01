@@ -6,7 +6,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -57,11 +57,11 @@ public final class RadiusRenderCommand extends SquaremapCommand {
         }
 
         if (world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Template.template("world", world.identifier().asString()));
+            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Placeholder.unparsed("world", world.identifier().asString()));
             return;
         }
 
-        Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER, Template.template("world", world.identifier().asString()));
+        Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER, Placeholder.unparsed("world", world.identifier().asString()));
         world.startRender(new RadiusRender(world, center, radius));
     }
 }
