@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.common.util;
 
 import java.util.Map;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
@@ -22,7 +23,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 record ChunkSnapshotImpl(
     LevelHeightAccessor heightAccessor,
     PalettedContainer<BlockState>[] states,
-    PalettedContainer<Biome>[] biomes,
+    PalettedContainer<Holder<Biome>>[] biomes,
     Map<Heightmap.Types, Heightmap> heightmaps,
     boolean[] emptySections,
     DimensionType dimensionType,
@@ -85,7 +86,7 @@ record ChunkSnapshotImpl(
     }
 
     @Override
-    public Biome getNoiseBiome(final int quartX, final int quartY, final int quartZ) {
+    public Holder<Biome> getNoiseBiome(final int quartX, final int quartY, final int quartZ) {
         final int minQuartY = QuartPos.fromBlock(this.getMinBuildHeight());
         final int maxQuartY = minQuartY + QuartPos.fromBlock(this.getHeight()) - 1;
         final int clampedQuartY = Mth.clamp(quartY, minQuartY, maxQuartY);

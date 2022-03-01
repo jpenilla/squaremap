@@ -3,6 +3,7 @@ package xyz.jpenilla.squaremap.common.util;
 import java.util.EnumMap;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
@@ -37,7 +38,7 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
         final int sectionCount = chunk.getSectionsCount();
         final LevelChunkSection[] sections = chunk.getSections();
         final PalettedContainer<BlockState>[] states = new PalettedContainer[sectionCount];
-        final PalettedContainer<Biome>[] biomes = new PalettedContainer[sectionCount];
+        final PalettedContainer<Holder<Biome>>[] biomes = new PalettedContainer[sectionCount];
 
         final boolean[] empty = new boolean[sectionCount];
         final Heightmap heightmap = new Heightmap(chunk, Heightmap.Types.WORLD_SURFACE);

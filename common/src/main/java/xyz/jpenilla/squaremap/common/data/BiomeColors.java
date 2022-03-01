@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceLinkedOpenHashMap;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -191,7 +192,7 @@ public final class BiomeColors {
                 return cached;
             }
 
-            final Biome biome = this.biomeManager.getBiome(pos);
+            final Biome biome = this.biomeManager.getBiome(pos).value();
 
             if (this.cache.size() >= this.size) {
                 this.cache.removeLast();
@@ -200,7 +201,7 @@ public final class BiomeColors {
             return biome;
         }
 
-        private Biome noiseBiome(final int quartX, final int quartY, final int quartZ) {
+        private Holder<Biome> noiseBiome(final int quartX, final int quartY, final int quartZ) {
             final ChunkPos chunkPos = new ChunkPos(
                 QuartPos.toSection(quartX),
                 QuartPos.toSection(quartZ)
