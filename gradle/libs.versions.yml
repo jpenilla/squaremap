@@ -4,7 +4,7 @@ metadata:
         - plugins
 
 plugins:
-    org.spongepowered.gradle.plugin: 2.0.0
+    org.spongepowered.gradle.plugin: 2.0.1
     xyz.jpenilla.run-paper: 1.0.6
     net.minecrell.plugin-yml.bukkit: 0.5.1
     io.papermc.paperweight.userdev: 1.3.4
@@ -12,16 +12,16 @@ plugins:
 
 versions:
     minecraft: 1.18.2
-    checkerQual: 3.21.2
+    checkerQual: 3.21.3
     cloud: 1.7.0-SNAPSHOT
     configurate: 4.1.2
     adventure: 4.10.0
-    adventurePlatformFabric: 5.1.0
-    paperApi: 1.18.1-R0.1-SNAPSHOT
+    adventurePlatformFabric: 5.2.0
+    paperApi: 1.18.2-R0.1-SNAPSHOT
     bStats: 3.0.0
     fabricApi: 0.47.8+1.18.2
     fabricLoader: 0.13.3
-    cardinalComponents: 4.1.3
+    cardinalComponents: 4.1.4
 
     # buildSrc
     indra: 2.1.1
@@ -115,7 +115,7 @@ dependencies:
     mixin:
         group: org.spongepowered
         name: mixin
-        version: 0.8.4
+        version: 0.8.5
 
     fabricApi:
         group: net.fabricmc.fabric-api
