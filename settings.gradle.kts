@@ -30,9 +30,9 @@ setupSubproject("squaremap-paper") {
 setupSubproject("squaremap-fabric") {
   projectDir = file("fabric")
 }
-//setupSubproject("squaremap-sponge") {
-//  projectDir = file("sponge")
-//}
+setupSubproject("squaremap-sponge") {
+  projectDir = file("sponge")
+}
 
 inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {
   include(name)
