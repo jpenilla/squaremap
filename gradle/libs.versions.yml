@@ -19,7 +19,7 @@ versions:
     adventurePlatformFabric: 5.2.0
     paperApi: 1.18.2-R0.1-SNAPSHOT
     bStats: 3.0.0
-    fabricApi: 0.47.8+1.18.2
+    fabricApi: 0.47.9+1.18.2
     fabricLoader: 0.13.3
     cardinalComponents: 4.1.4
 
