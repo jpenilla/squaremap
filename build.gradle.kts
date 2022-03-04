@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
   group = "xyz.jpenilla"
-  version = "1.1.2-SNAPSHOT"
+  version = "1.1.2"
   description = "Minimalistic and lightweight world map viewer for Minecraft servers"
 }
 
