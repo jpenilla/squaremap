@@ -15,26 +15,18 @@ configure<IndraExtension> {
 
 repositories {
   mavenCentral()
-  maven("https://oss.sonatype.org/content/repositories/snapshots/") {
-    mavenContent { snapshotsOnly() }
-  }
-  maven("https://papermc.io/repo/repository/maven-public/")
-  maven("https://maven.fabricmc.net/") {
-    mavenContent { includeGroup("net.fabricmc") }
-  }
-  /*
-  maven("https://repo.incendo.org/content/repositories/snapshots/") {
-    mavenContent {
-      includeGroup("cloud.commandframework")
-      snapshotsOnly()
-    }
-  }
-   */
   maven("https://repo.jpenilla.xyz/snapshots/") {
     mavenContent {
       includeGroup("cloud.commandframework")
       includeGroup("xyz.jpenilla")
       snapshotsOnly()
     }
+  }
+  maven("https://oss.sonatype.org/content/repositories/snapshots/") {
+    mavenContent { snapshotsOnly() }
+  }
+  maven("https://papermc.io/repo/repository/maven-public/")
+  maven("https://maven.fabricmc.net/") {
+    mavenContent { includeGroup("net.fabricmc") }
   }
 }
