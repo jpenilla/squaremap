@@ -2,8 +2,10 @@ package xyz.jpenilla.squaremap.common.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
+import xyz.jpenilla.squaremap.common.Logging;
 
 @SuppressWarnings("unused")
 public final class Config extends AbstractConfig {
@@ -112,6 +114,21 @@ public final class Config extends AbstractConfig {
     private static void progressLogging() {
         PROGRESS_LOGGING = config.getBoolean("settings.render-progress-logging.enabled", true);
         PROGRESS_LOGGING_INTERVAL = config.getInt("settings.render-progress-logging.interval-seconds", 1);
+    }
+
+    public static DataStorageType STORAGE_TYPE;
+
+    private static void storage() {
+        try {
+            STORAGE_TYPE = DataStorageType.valueOf(
+                config.getString("settings.storage.type", "flatfile").toUpperCase(Locale.ROOT)
+            );
+        } catch (IllegalArgumentException e) {
+            Logging.logger().error("Invalid storage type '"
+                + config.getString("settings.storage.type", "flatfile")
+                + "', falling back to flatfile.");
+            STORAGE_TYPE = DataStorageType.FLATFILE;
+        }
     }
 
     public static Config config() {

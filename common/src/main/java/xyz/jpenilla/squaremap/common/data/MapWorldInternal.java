@@ -1,19 +1,8 @@
 package xyz.jpenilla.squaremap.common.data;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,10 +21,10 @@ import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.LayerRegistry;
-import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.config.WorldAdvanced;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.data.storage.AdditionalParameters;
+import xyz.jpenilla.squaremap.common.data.storage.DataStorageHolder;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
 import xyz.jpenilla.squaremap.common.layer.WorldBorderProvider;
 import xyz.jpenilla.squaremap.common.task.render.AbstractRender;
@@ -43,22 +32,14 @@ import xyz.jpenilla.squaremap.common.task.render.BackgroundRender;
 import xyz.jpenilla.squaremap.common.task.render.FullRender;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
-import xyz.jpenilla.squaremap.common.util.RecordTypeAdapterFactory;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
 public abstract class MapWorldInternal implements MapWorld {
-    private static final String DIRTY_CHUNKS_FILE_NAME = "dirty_chunks.json";
-    private static final String RENDER_PROGRESS_FILE_NAME = "resume_render.json";
-    private static final Gson GSON = new GsonBuilder()
-        .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
-        .enableComplexMapKeySerialization()
-        .create();
     private static final Map<WorldIdentifier, LayerRegistry> LAYER_REGISTRIES = new HashMap<>();
 
     private final ServerLevel level;
-    private final Path dataPath;
     private final Path tilesPath;
     private final ExecutorService imageIOexecutor;
     private final ScheduledExecutorService executor;
@@ -90,17 +71,6 @@ public abstract class MapWorldInternal implements MapWorld {
         this.blockColors = new BlockColors(this);
         this.levelBiomeColorData = LevelBiomeColorData.create(this);
 
-        this.dataPath = SquaremapCommon.instance().platform().dataDirectory().resolve("data").resolve(
-            Util.levelWebName(this.level)
-        );
-        try {
-            if (!Files.exists(this.dataPath)) {
-                Files.createDirectories(this.dataPath);
-            }
-        } catch (final IOException e) {
-            throw this.failedToCreateDataDirectory(e);
-        }
-
         this.tilesPath = FileUtil.getAndCreateTilesDirectory(this.serverLevel());
 
         this.startBackgroundRender();
@@ -124,53 +94,22 @@ public abstract class MapWorldInternal implements MapWorld {
     }
 
     public @Nullable Map<RegionCoordinate, Boolean> getRenderProgress() {
-        try {
-            final Path file = this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME);
-            if (Files.isRegularFile(file)) {
-                final Type type = new TypeToken<LinkedHashMap<RegionCoordinate, Boolean>>() {
-                }.getType();
-                try (final BufferedReader reader = Files.newBufferedReader(file)) {
-                    return GSON.fromJson(reader, type);
-                }
-            }
-        } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.logger().warn("Failed to deserialize render progress for world '{}'", this.identifier().asString(), e);
-        }
-        return null;
+        return DataStorageHolder.getDataStorage().getRenderProgress(
+            this.identifier(),
+            new AdditionalParameters().put("levelWebName", Util.levelWebName(this.level))
+        ).join();
     }
 
     public void saveRenderProgress(Map<RegionCoordinate, Boolean> regions) {
-        try {
-            Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
-        } catch (IOException e) {
-            Logging.logger().warn("Failed to serialize render progress for world '{}'", this.identifier().asString(), e);
-        }
+        DataStorageHolder.getDataStorage().storeRenderProgress(this.identifier(), regions, new AdditionalParameters().put("levelWebName", Util.levelWebName(this.level)));
     }
 
     private void serializeDirtyChunks() {
-        try {
-            Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
-        } catch (IOException e) {
-            Logging.logger().warn("Failed to serialize dirty chunks for world '{}'", this.identifier().asString(), e);
-        }
+        DataStorageHolder.getDataStorage().storeDirtyChunks(this.identifier(), this.modifiedChunks, new AdditionalParameters().put("levelWebName", Util.levelWebName(this.level)));
     }
 
     private void deserializeDirtyChunks() {
-        try {
-            final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
-            if (Files.isRegularFile(file)) {
-                try (final BufferedReader reader = Files.newBufferedReader(file)) {
-                    this.modifiedChunks.addAll(
-                        GSON.fromJson(
-                            reader,
-                            TypeToken.getParameterized(List.class, ChunkCoordinate.class).getType()
-                        )
-                    );
-                }
-            }
-        } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}'", this.identifier().asString(), e);
-        }
+        this.modifiedChunks.addAll(DataStorageHolder.getDataStorage().getDirtyChunks(this.identifier(), new AdditionalParameters().put("levelWebName", Util.levelWebName(this.level))).join());
     }
 
     private void startBackgroundRender() {
@@ -255,11 +194,7 @@ public abstract class MapWorldInternal implements MapWorld {
     }
 
     public void finishedRender() {
-        try {
-            Files.deleteIfExists(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME));
-        } catch (IOException e) {
-            Logging.logger().warn("Failed to delete render progress data for world '{}'", this.identifier().asString(), e);
-        }
+        DataStorageHolder.getDataStorage().deleteRenderProgress(this.identifier(), new AdditionalParameters().put("levelWebName", Util.levelWebName(this.level)));
     }
 
     public void stopRender() {
