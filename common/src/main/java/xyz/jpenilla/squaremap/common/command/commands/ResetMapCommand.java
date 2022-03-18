@@ -37,9 +37,9 @@ public final class ResetMapCommand extends SquaremapCommand {
         final ServerLevel world = context.get("world");
         final Path worldTilesDir = FileUtil.getAndCreateTilesDirectory(world);
         try {
-            FileUtil.deleteSubdirectories(worldTilesDir);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not reset map", e);
+            FileUtil.deleteContentsRecursively(worldTilesDir);
+        } catch (final IOException ex) {
+            throw new RuntimeException("Could not reset map for level '" + world.dimension().location() + "'", ex);
         }
         Lang.send(sender, Lang.SUCCESSFULLY_RESET_MAP, Placeholder.unparsed("world", world.dimension().location().toString()));
     }

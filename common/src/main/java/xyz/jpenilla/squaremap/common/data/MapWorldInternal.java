@@ -90,17 +90,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.blockColors = new BlockColors(this);
         this.levelBiomeColorData = LevelBiomeColorData.create(this);
 
-        this.dataPath = SquaremapCommon.instance().platform().dataDirectory().resolve("data").resolve(
-            Util.levelWebName(this.level)
-        );
-        try {
-            if (!Files.exists(this.dataPath)) {
-                Files.createDirectories(this.dataPath);
-            }
-        } catch (final IOException e) {
-            throw this.failedToCreateDataDirectory(e);
-        }
-
+        this.dataPath = this.getAndCreateDataDirectory();
         this.tilesPath = FileUtil.getAndCreateTilesDirectory(this.serverLevel());
 
         this.startBackgroundRender();
@@ -196,7 +186,7 @@ public abstract class MapWorldInternal implements MapWorld {
         return this.backgroundRender != null;
     }
 
-    public void chunkModified(final @NonNull ChunkCoordinate coord) {
+    public void chunkModified(final ChunkCoordinate coord) {
         if (!this.config().BACKGROUND_RENDER_ENABLED) {
             return;
         }
@@ -210,22 +200,22 @@ public abstract class MapWorldInternal implements MapWorld {
         return !this.modifiedChunks.isEmpty();
     }
 
-    public @NonNull ChunkCoordinate nextModifiedChunk() {
+    public ChunkCoordinate nextModifiedChunk() {
         final Iterator<ChunkCoordinate> it = this.modifiedChunks.iterator();
         final ChunkCoordinate coord = it.next();
         it.remove();
         return coord;
     }
 
-    public @NonNull WorldConfig config() {
+    public WorldConfig config() {
         return this.worldConfig;
     }
 
-    public @NonNull WorldAdvanced advanced() {
+    public WorldAdvanced advanced() {
         return this.advancedWorldConfig;
     }
 
-    public @NonNull ServerLevel serverLevel() {
+    public ServerLevel serverLevel() {
         return this.level;
     }
 
@@ -234,7 +224,7 @@ public abstract class MapWorldInternal implements MapWorld {
     }
 
     @SuppressWarnings("ConstantConditions") // params for getMapColor are never used, check on mc update
-    public int getMapColor(final @NonNull BlockState state) {
+    public int getMapColor(final BlockState state) {
         final int special = this.blockColors.getColor(state);
         if (special != -1) {
             return special;
@@ -271,7 +261,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.startBackgroundRender();
     }
 
-    public void startRender(final @NonNull AbstractRender render) {
+    public void startRender(final AbstractRender render) {
         if (this.isRendering()) {
             throw new IllegalStateException("Already rendering");
         }
@@ -300,17 +290,17 @@ public abstract class MapWorldInternal implements MapWorld {
         this.serializeDirtyChunks();
     }
 
-    public void saveImage(final @NonNull Image image) {
+    public void saveImage(final Image image) {
         this.imageIOexecutor.submit(image::save);
     }
 
     @Override
-    public @NonNull Registry<LayerProvider> layerRegistry() {
+    public Registry<LayerProvider> layerRegistry() {
         return LAYER_REGISTRIES.computeIfAbsent(this.identifier(), $ -> new LayerRegistry());
     }
 
     @Override
-    public @NonNull WorldIdentifier identifier() {
+    public WorldIdentifier identifier() {
         return Util.worldIdentifier(this.level);
     }
 
@@ -318,8 +308,22 @@ public abstract class MapWorldInternal implements MapWorld {
         return this.levelBiomeColorData;
     }
 
-    private @NonNull IllegalStateException failedToCreateDataDirectory(final @NonNull Throwable cause) {
-        return new IllegalStateException(String.format("Failed to create data directory for world '%s'", this.identifier()), cause);
+    private Path getAndCreateDataDirectory() {
+        final Path data = SquaremapCommon.instance().platform().dataDirectory()
+            .resolve("data")
+            .resolve(Util.levelWebName(this.level));
+        try {
+            if (!Files.exists(data)) {
+                Files.createDirectories(data);
+            }
+        } catch (final IOException ex) {
+            throw this.failedToCreateDataDirectory(ex);
+        }
+        return data;
+    }
+
+    private IllegalStateException failedToCreateDataDirectory(final Throwable cause) {
+        return new IllegalStateException("Failed to create data directory for world '%s'".formatted(this.identifier()), cause);
     }
 
     /**
@@ -329,7 +333,7 @@ public abstract class MapWorldInternal implements MapWorld {
      * @return The visibility limit.
      */
     //@Override
-    public @NonNull VisibilityLimitImpl visibilityLimit() {
+    public VisibilityLimitImpl visibilityLimit() {
         return this.visibilityLimit;
     }
 

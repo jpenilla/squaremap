@@ -10,14 +10,14 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -67,24 +67,34 @@ public final class FileUtil {
         return dir;
     }
 
-    public static void deleteSubdirectories(Path dir) throws IOException {
-        try (final Stream<Path> files = Files.list(dir)) {
+    public static void deleteContentsRecursively(final Path directory) throws IOException {
+        if (!Files.isDirectory(directory)) {
+            return;
+        }
+        try (final Stream<Path> files = Files.list(directory)) {
             files.forEach(path -> {
                 try {
-                    deleteDirectory(path);
-                } catch (final IOException e) {
-                    Logging.logger().warn("Failed to delete directory {}", path, e);
+                    deleteRecursively(path);
+                } catch (final IOException ex) {
+                    Util.rethrow(ex);
                 }
             });
         }
     }
 
-    public static void deleteDirectory(Path dir) throws IOException {
-        try (final Stream<Path> walk = Files.walk(dir)) {
-            //noinspection ResultOfMethodCallIgnored
-            walk.sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .forEach(File::delete);
+    public static void deleteRecursively(final Path path) throws IOException {
+        if (!Files.exists(path)) {
+            return;
+        }
+        try (final Stream<Path> stream = Files.walk(path)) {
+            stream.sorted(Comparator.reverseOrder())
+                .forEach(file -> {
+                    try {
+                        Files.delete(file);
+                    } catch (final IOException ex) {
+                        Util.rethrow(ex);
+                    }
+                });
         }
     }
 
@@ -133,7 +143,7 @@ public final class FileUtil {
                             outputStream.write(buffer, 0, readCount);
                         }
                     } catch (IOException e) {
-                        Logging.logger().error("Failed to extract file ({}) from jar!", name, e);
+                        Logging.logger().error("Failed to extract file '{}' from jar!", name, e);
                     }
                 }
             }
@@ -143,38 +153,75 @@ public final class FileUtil {
     }
 
     public static void writeString(final Path file, final Supplier<String> string) {
-        ForkJoinPool.commonPool().execute(() -> writeString0(file, string.get()));
+        ForkJoinPool.commonPool().execute(() -> {
+            try {
+                writeString(file, string.get());
+            } catch (final IOException ex) {
+                Logging.logger().warn("Failed to write file '{}'", file, ex);
+            }
+        });
     }
 
-    private static void writeString0(final Path path, final String string) {
+    private static void writeString(final Path path, final String str) throws IOException {
+        final Path tmp = siblingTempFile(path);
+
         try {
-            replaceFile(path, string);
+            Files.writeString(tmp, str);
+            atomicMove(tmp, path, true);
         } catch (final IOException ex) {
-            Logging.logger().warn("Failed to write file {}", path, ex);
-        }
-    }
-
-    private static void replaceFile(final Path path, final String str) throws IOException {
-        final Path tmp = path.resolveSibling("." + path.getFileName().toString() + ".tmp");
-
-        try {
-            Files.writeString(tmp, str, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-        } catch (IOException e) {
             try {
                 Files.deleteIfExists(tmp);
-            } catch (IOException ignored) {
+            } catch (final IOException ex1) {
+                ex.addSuppressed(ex1);
             }
-            throw e;
+            throw ex;
         }
+    }
+
+    public static Path siblingTempFile(final Path path) {
+        return path.resolveSibling("." + System.nanoTime() + "-" + ThreadLocalRandom.current().nextInt() + "-" + path.getFileName().toString() + ".tmp");
+    }
+
+    @SuppressWarnings("BusyWait") // not busy waiting
+    public static void atomicMove(final Path from, final Path to, final boolean replaceExisting) throws IOException {
+        final int maxRetries = 2;
 
         try {
-            Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (AccessDeniedException | AtomicMoveNotSupportedException e) {
-            try {
-                Files.move(tmp, path, StandardCopyOption.REPLACE_EXISTING);
-            } catch (NoSuchFileException | AccessDeniedException ignore) {
+            atomicMoveIfPossible(from, to, replaceExisting);
+        } catch (final AccessDeniedException ex) {
+            // Sometimes because of file locking this will fail... Let's just try again and hope for the best
+            // Thanks Windows!
+            int retries = 1;
+            while (true) {
+                try {
+                    // Pause for a bit
+                    Thread.sleep(10L * retries);
+                    atomicMoveIfPossible(from, to, replaceExisting);
+                    break; // success
+                } catch (final AccessDeniedException ex1) {
+                    ex.addSuppressed(ex1);
+                    if (retries == maxRetries) {
+                        throw ex;
+                    }
+                } catch (final InterruptedException interruptedException) {
+                    ex.addSuppressed(interruptedException);
+                    Thread.currentThread().interrupt();
+                    throw ex;
+                }
+                ++retries;
             }
-        } catch (NoSuchFileException ignore) {
+        }
+    }
+
+    private static void atomicMoveIfPossible(final Path from, final Path to, final boolean replaceExisting) throws IOException {
+        final CopyOption[] options = replaceExisting
+            ? new CopyOption[]{StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING}
+            : new CopyOption[]{StandardCopyOption.ATOMIC_MOVE};
+
+        try {
+            Files.move(from, to, options);
+        } catch (final AtomicMoveNotSupportedException ex) {
+            Files.move(from, to, replaceExisting ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING} : new CopyOption[]{});
         }
     }
 }

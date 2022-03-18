@@ -23,7 +23,7 @@ public final class IconRegistry implements Registry<BufferedImage> {
         this.directory = FileUtil.WEB_DIR.resolve("images/icon/registered/");
         try {
             if (Files.exists(this.directory)) {
-                FileUtil.deleteDirectory(this.directory);
+                FileUtil.deleteRecursively(this.directory);
             }
             Files.createDirectories(this.directory);
         } catch (final IOException e) {
