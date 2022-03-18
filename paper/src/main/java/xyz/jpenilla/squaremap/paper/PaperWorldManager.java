@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.paper;
 
+import com.google.inject.Inject;
 import java.util.Optional;
 import org.bukkit.World;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -10,7 +11,8 @@ import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperWorldManager extends WorldManagerImpl<PaperMapWorld> {
-    PaperWorldManager() {
+    @Inject
+    private PaperWorldManager() {
         super(PaperMapWorld::new);
     }
 

@@ -17,8 +17,8 @@ import net.minecraft.world.level.material.Material;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Colors;
 
 @DefaultQualifier(NonNull.class)
@@ -61,10 +61,10 @@ public final class BiomeColors {
     private final ChunkSnapshotCache chunkSnapshotCache;
     private final BiomeCache biomeCache;
 
-    public BiomeColors(final MapWorldInternal world) {
+    public BiomeColors(final MapWorldInternal world, final ChunkSnapshotProvider chunkSnapshotProvider) {
         this.world = world;
         this.colorData = world.levelBiomeColorData();
-        this.chunkSnapshotCache = ChunkSnapshotCache.sized(this.world.serverLevel(), CHUNK_SNAPSHOT_CACHE_SIZE);
+        this.chunkSnapshotCache = ChunkSnapshotCache.sized(chunkSnapshotProvider, this.world.serverLevel(), CHUNK_SNAPSHOT_CACHE_SIZE);
         this.biomeCache = BiomeCache.sized(this.world.serverLevel(), this.chunkSnapshotCache, BLOCKPOS_BIOME_CACHE_SIZE);
     }
 
@@ -221,6 +221,7 @@ public final class BiomeColors {
     }
 
     private record ChunkSnapshotCache(
+        ChunkSnapshotProvider chunkSnapshotProvider,
         ServerLevel level,
         int size,
         Long2ObjectLinkedOpenHashMap<ChunkSnapshot> cache
@@ -240,8 +241,7 @@ public final class BiomeColors {
                 return cached;
             }
 
-            @Nullable final ChunkSnapshot chunk = SquaremapCommon.instance().platform().chunkSnapshotProvider()
-                .asyncSnapshot(this.level(), chunkPos.x, chunkPos.z, true)
+            @Nullable final ChunkSnapshot chunk = this.chunkSnapshotProvider.asyncSnapshot(this.level(), chunkPos.x, chunkPos.z, true)
                 // todo respect cancellation
                 .join();
             if (chunk == null) {
@@ -255,8 +255,9 @@ public final class BiomeColors {
             return chunk;
         }
 
-        public static ChunkSnapshotCache sized(final ServerLevel level, final int size) {
+        public static ChunkSnapshotCache sized(final ChunkSnapshotProvider chunkSnapshotProvider, final ServerLevel level, final int size) {
             return new ChunkSnapshotCache(
+                chunkSnapshotProvider,
                 level,
                 size,
                 new Long2ObjectLinkedOpenHashMap<>(size)

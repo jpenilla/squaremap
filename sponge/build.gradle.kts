@@ -17,6 +17,7 @@ minecraft {
 dependencies {
   implementation(projects.squaremapCommon) {
     exclude("io.leangen.geantyref")
+    exclude("com.google.inject")
   }
   implementation(libs.cloudSponge) {
     exclude("io.leangen.geantyref")

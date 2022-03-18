@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.fabric;
 
-import cloud.commandframework.CommandManager;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,8 +14,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
-import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import org.apache.logging.log4j.LogManager;
@@ -27,15 +26,14 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.WorldManagerImpl;
-import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.inject.PlatformModule;
+import xyz.jpenilla.squaremap.common.inject.VanillaChunkSnapshotProviderModule;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.common.util.VanillaChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.fabric.command.FabricCommands;
 import xyz.jpenilla.squaremap.fabric.data.FabricMapWorld;
+import xyz.jpenilla.squaremap.fabric.inject.FabricModule;
 import xyz.jpenilla.squaremap.fabric.network.FabricNetworking;
 import xyz.jpenilla.squaremap.fabric.util.FabricMapUpdates;
 
@@ -45,6 +43,7 @@ import static java.util.Objects.requireNonNull;
 public final class SquaremapFabricInitializer implements ModInitializer, SquaremapPlatform {
     private static final Logger LOGGER = LogManager.getLogger("squaremap");
 
+    private @MonotonicNonNull Injector injector;
     private @MonotonicNonNull SquaremapCommon common;
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
@@ -54,8 +53,12 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
 
     @Override
     public void onInitialize() {
-        this.common = new SquaremapCommon(this);
-        FabricCommands.register(this.common);
+        this.injector = Guice.createInjector(
+            new FabricModule(this),
+            new PlatformModule(this),
+            new VanillaChunkSnapshotProviderModule()
+        );
+        this.common = this.injector.getInstance(SquaremapCommon.class);
         this.registerLifecycleListeners();
         FabricMapUpdates.registerListeners();
         FabricNetworking.register();
@@ -88,13 +91,18 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     }
 
     @Override
+    public Injector injector() {
+        return this.injector;
+    }
+
+    @Override
     public void startCallback() {
         this.worldManager = new WorldManagerImpl<>(FabricMapWorld::new);
         this.worldManager.start(this);
 
         this.playerManager = new FabricPlayerManager();
-        this.updatePlayers = new UpdatePlayers(this);
-        this.updateWorldData = new UpdateWorldData(this);
+        this.updatePlayers = this.injector.getInstance(UpdatePlayers.class);
+        this.updateWorldData = this.injector.getInstance(UpdateWorldData.class);
     }
 
     @Override
@@ -125,11 +133,6 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     }
 
     @Override
-    public ChunkSnapshotProvider chunkSnapshotProvider() {
-        return VanillaChunkSnapshotProvider.get();
-    }
-
-    @Override
     public WorldManagerImpl<FabricMapWorld> worldManager() {
         return this.worldManager;
     }
@@ -142,11 +145,6 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     @Override
     public Logger logger() {
         return LOGGER;
-    }
-
-    @Override
-    public ComponentFlattener componentFlattener() {
-        return FabricServerAudiences.of(this.server()).flattener();
     }
 
     @Override
@@ -175,11 +173,6 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     @Override
     public FabricPlayerManager playerManager() {
         return this.playerManager;
-    }
-
-    @Override
-    public CommandManager<Commander> createCommandManager() {
-        return FabricCommands.createCommandManager();
     }
 
     private final class TickEndListener implements ServerTickEvents.EndTick {

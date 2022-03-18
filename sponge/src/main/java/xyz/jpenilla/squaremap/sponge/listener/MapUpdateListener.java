@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.sponge.listener;
 
+import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +33,8 @@ public final class MapUpdateListener {
     private final Set<Object> registrations = new HashSet<>();
     private final SquaremapSponge squaremapSponge;
 
-    public MapUpdateListener(final SquaremapSponge squaremapSponge) {
+    @Inject
+    private MapUpdateListener(final SquaremapSponge squaremapSponge) {
         this.squaremapSponge = squaremapSponge;
     }
 

@@ -1,12 +1,11 @@
 package xyz.jpenilla.squaremap.paper;
 
-import cloud.commandframework.CommandManager;
-import io.papermc.paper.text.PaperComponents;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.logging.log4j.LogManager;
@@ -25,18 +24,16 @@ import xyz.jpenilla.squaremap.api.Squaremap;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.command.Commander;
+import xyz.jpenilla.squaremap.common.inject.PlatformModule;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.paper.command.PaperCommands;
+import xyz.jpenilla.squaremap.paper.inject.PaperModule;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.PlayerListener;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 import xyz.jpenilla.squaremap.paper.util.BukkitRunnableAdapter;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
-import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
 
 public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatform {
     private static final Logger LOGGER = LogManager.getLogger("squaremap");
@@ -48,6 +45,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     private BukkitRunnable updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
     private WorldLoadListener worldLoadListener;
+    private Injector injector;
 
     public SquaremapPlugin() {
         INSTANCE = this;
@@ -63,13 +61,17 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
             return;
         }
 
-        this.common = new SquaremapCommon(this);
-        PaperCommands.register(this.common);
+        this.injector = Guice.createInjector(
+            new PaperModule(this),
+            new PlatformModule(this)
+        );
+
+        this.common = this.injector.getInstance(SquaremapCommon.class);
         this.getServer().getServicesManager().register(Squaremap.class, this.common.api(), this, ServicePriority.Normal);
 
         PaperNetworking.register(this);
 
-        this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        this.getServer().getPluginManager().registerEvents(this.injector.getInstance(PlayerListener.class), this);
 
         new Metrics(this, 13571); // https://bstats.org/plugin/bukkit/squaremap/13571
 
@@ -85,24 +87,29 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         }
     }
 
+    @Override
+    public @NonNull Injector injector() {
+        return this.injector;
+    }
+
     public static SquaremapPlugin getInstance() {
         return INSTANCE;
     }
 
     @Override
     public void startCallback() {
-        this.playerManager = new PaperPlayerManager();
+        this.playerManager = this.injector.getInstance(PaperPlayerManager.class);
 
-        this.updatePlayers = new BukkitRunnableAdapter(new UpdatePlayers(this));
+        this.updatePlayers = new BukkitRunnableAdapter(this.injector.getInstance(UpdatePlayers.class));
         this.updatePlayers.runTaskTimer(this, 20, 20);
 
-        this.updateWorldData = new BukkitRunnableAdapter(new UpdateWorldData(this));
+        this.updateWorldData = new BukkitRunnableAdapter(this.injector.getInstance(UpdateWorldData.class));
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
-        this.worldManager = new PaperWorldManager();
+        this.worldManager = this.injector.getInstance(PaperWorldManager.class);
         this.worldManager.start(this);
 
-        this.mapUpdateListeners = new MapUpdateListeners(this);
+        this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);
         this.mapUpdateListeners.register();
 
         this.worldLoadListener = new WorldLoadListener(this);
@@ -158,11 +165,6 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     }
 
     @Override
-    public @NonNull CommandManager<Commander> createCommandManager() {
-        return PaperCommands.createCommandManager(this);
-    }
-
-    @Override
     public @NonNull PaperWorldManager worldManager() {
         return this.worldManager;
     }
@@ -173,11 +175,6 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     }
 
     @Override
-    public @NonNull ChunkSnapshotProvider chunkSnapshotProvider() {
-        return PaperChunkSnapshotProvider.get();
-    }
-
-    @Override
     public @NonNull Path dataDirectory() {
         return this.getDataFolder().toPath();
     }
@@ -185,11 +182,6 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     @Override
     public @NonNull Logger logger() {
         return LOGGER;
-    }
-
-    @Override
-    public @NonNull ComponentFlattener componentFlattener() {
-        return PaperComponents.flattener();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.sponge;
 
+import com.google.inject.Inject;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,11 +11,15 @@ import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.Key;
 import org.spongepowered.api.data.value.Value;
-import xyz.jpenilla.squaremap.common.PlayerManagerImpl;
+import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 
 @DefaultQualifier(NonNull.class)
-public final class SpongePlayerManager extends PlayerManagerImpl {
+public final class SpongePlayerManager extends AbstractPlayerManager {
     public static final Key<Value<Boolean>> HIDDEN_KEY = Key.from(ResourceKey.of("squaremap", "hidden"), Boolean.class);
+
+    @Inject
+    private SpongePlayerManager() {
+    }
 
     @Override
     protected boolean persistentHidden(final ServerPlayer player) {

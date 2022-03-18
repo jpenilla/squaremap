@@ -9,6 +9,9 @@ import cloud.commandframework.keys.SimpleCloudKey;
 import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.List;
 import java.util.Objects;
@@ -36,19 +39,26 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public final class Commands {
+    public static final CloudKey<Injector> INJECTOR = SimpleCloudKey.of("squaremap-injector", TypeToken.get(Injector.class));
     public static final CloudKey<SquaremapCommon> COMMON = SimpleCloudKey.of("squaremap-common", TypeToken.get(SquaremapCommon.class));
     public static final CloudKey<SquaremapPlatform> PLATFORM = SimpleCloudKey.of("squaremap-platform", TypeToken.get(SquaremapPlatform.class));
 
     private final CommandManager<Commander> commandManager;
 
-    public Commands(final SquaremapCommon common) {
-        this.commandManager = common.platform().createCommandManager();
+    @Inject
+    private Commands(
+        final Injector injector,
+        final PlatformCommands platformCommands
+    ) {
+        this.commandManager = platformCommands.createCommandManager();
 
         this.commandManager.registerCommandPreProcessor(ctx -> {
             final CommandContext<Commander> commandContext = ctx.getCommandContext();
-            commandContext.store(COMMON, common);
-            commandContext.store(PLATFORM, common.platform());
+            commandContext.store(INJECTOR, injector);
+            commandContext.store(COMMON, injector.getInstance(SquaremapCommon.class));
+            commandContext.store(PLATFORM, injector.getInstance(SquaremapPlatform.class));
         });
 
         this.registerExceptionHandlers();
@@ -63,6 +73,8 @@ public final class Commands {
             new ResetMapCommand(this),
             new ProgressLoggingCommand(this)
         ).forEach(SquaremapCommand::register);
+
+        platformCommands.registerCommands(this);
     }
 
     private void registerExceptionHandlers() {

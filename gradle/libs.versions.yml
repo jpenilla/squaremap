@@ -22,6 +22,7 @@ versions:
     fabricApi: 0.47.9+1.18.2
     fabricLoader: 0.13.3
     cardinalComponents: 4.1.4
+    guice: 5.1.0
 
     # buildSrc
     indra: 2.1.1
@@ -30,6 +31,11 @@ versions:
     vanillaGradle: 0.2.1-SNAPSHOT
 
 dependencies:
+    guice:
+        group: com.google.inject
+        name: guice
+        version: { ref: guice }
+
     adventureBom:
         group: net.kyori
         name: adventure-bom

@@ -1,27 +1,34 @@
 package xyz.jpenilla.squaremap.common.task;
 
 import com.google.gson.Gson;
+import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.HtmlComponentSerializer;
 import xyz.jpenilla.squaremap.common.util.Util;
 
+@DefaultQualifier(NonNull.class)
 public class UpdatePlayers implements Runnable {
     private static final Gson GSON = new Gson();
     private final SquaremapPlatform platform;
 
-    public UpdatePlayers(final SquaremapPlatform platform) {
+    @Inject
+    private UpdatePlayers(final SquaremapPlatform platform) {
         this.platform = platform;
     }
 
@@ -29,7 +36,7 @@ public class UpdatePlayers implements Runnable {
     public void run() {
         List<Object> players = new ArrayList<>();
 
-        final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.platform.componentFlattener());
+        final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.platform.injector().getInstance(ComponentFlattener.class));
 
         this.platform.levels().forEach(world -> {
             WorldConfig worldConfig = WorldConfig.get(world);
@@ -75,7 +82,7 @@ public class UpdatePlayers implements Runnable {
     }
 
     private static int armorPoints(final ServerPlayer player) {
-        final AttributeInstance attribute = player.getAttribute(Attributes.ARMOR);
+        final @Nullable AttributeInstance attribute = player.getAttribute(Attributes.ARMOR);
         return attribute == null ? 0 : (int) attribute.getValue();
     }
 }

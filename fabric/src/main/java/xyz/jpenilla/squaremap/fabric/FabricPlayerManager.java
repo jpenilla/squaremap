@@ -7,11 +7,11 @@ import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.PlayerManagerImpl;
+import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 
 @DefaultQualifier(NonNull.class)
-public final class FabricPlayerManager extends PlayerManagerImpl {
+public final class FabricPlayerManager extends AbstractPlayerManager {
     private static SquaremapComponentInitializer.PlayerComponent component(final ServerPlayer player) {
         return SquaremapComponentInitializer.SQUAREMAP_PLAYER_COMPONENT.get(player);
     }

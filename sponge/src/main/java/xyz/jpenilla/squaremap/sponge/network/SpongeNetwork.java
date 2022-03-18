@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.sponge.network;
 
+import com.google.inject.Inject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -17,6 +18,10 @@ import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
 public final class SpongeNetwork {
+    @Inject
+    private SpongeNetwork() {
+    }
+
     @Listener
     public void channelRegistration(final RegisterChannelEvent event) {
         final RawDataChannel channel = event.register(

@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.common.task;
 
 import com.google.gson.Gson;
+import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,8 @@ public final class UpdateWorldData implements Runnable {
 
     private final SquaremapPlatform platform;
 
-    public UpdateWorldData(final SquaremapPlatform platform) {
+    @Inject
+    private UpdateWorldData(final SquaremapPlatform platform) {
         this.platform = platform;
     }
 

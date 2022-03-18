@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.paper.util;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -12,9 +14,9 @@ import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public final class PaperChunkSnapshotProvider implements ChunkSnapshotProvider {
-    private static final PaperChunkSnapshotProvider INSTANCE = new PaperChunkSnapshotProvider();
-
+    @Inject
     private PaperChunkSnapshotProvider() {
     }
 
@@ -35,9 +37,5 @@ public final class PaperChunkSnapshotProvider implements ChunkSnapshotProvider {
                 return ChunkSnapshot.snapshot(chunk, biomesOnly);
             });
         return CompletableFuture.supplyAsync(futureSupplier, level.getServer()).thenCompose(Function.identity());
-    }
-
-    public static PaperChunkSnapshotProvider get() {
-        return INSTANCE;
     }
 }

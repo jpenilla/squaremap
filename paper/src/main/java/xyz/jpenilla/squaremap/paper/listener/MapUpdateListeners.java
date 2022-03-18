@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.paper.listener;
 
+import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -50,7 +51,8 @@ public final class MapUpdateListeners {
     private final SquaremapPlugin plugin;
     private final List<Listener> registeredListeners = new ArrayList<>();
 
-    public MapUpdateListeners(final @NonNull SquaremapPlugin plugin) {
+    @Inject
+    private MapUpdateListeners(final @NonNull SquaremapPlugin plugin) {
         this.plugin = plugin;
     }
 

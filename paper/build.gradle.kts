@@ -26,6 +26,9 @@ tasks {
       "cloud.commandframework",
       "io.leangen.geantyref",
       "org.bstats",
+      "javax.inject",
+      "com.google.inject",
+      "org.aopalliance",
     ).forEach(::reloc)
   }
   reobfJar {

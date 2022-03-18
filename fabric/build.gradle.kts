@@ -59,6 +59,11 @@ loom {
 tasks {
   shadowJar {
     configurations = listOf(squaremap)
+    listOf(
+      "javax.inject",
+      "com.google.inject",
+      "org.aopalliance",
+    ).forEach(::reloc)
   }
   processResources {
     val props = mapOf(

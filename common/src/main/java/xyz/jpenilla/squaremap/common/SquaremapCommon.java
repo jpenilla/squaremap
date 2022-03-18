@@ -1,5 +1,8 @@
 package xyz.jpenilla.squaremap.common;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -26,15 +29,22 @@ import xyz.jpenilla.squaremap.common.util.UpdateChecker;
 import static xyz.jpenilla.squaremap.common.util.Components.miniMessage;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public final class SquaremapCommon {
     private static @MonotonicNonNull SquaremapCommon INSTANCE;
 
+    private final Injector injector;
     private final SquaremapPlatform platform;
     private final Commands commands;
     private @MonotonicNonNull SquaremapApiProvider squaremap;
 
-    public SquaremapCommon(final SquaremapPlatform platform) {
+    @Inject
+    private SquaremapCommon(
+        final Injector injector,
+        final SquaremapPlatform platform
+    ) {
         INSTANCE = this;
+        this.injector = injector;
         this.platform = platform;
 
         Config.reload();
@@ -50,7 +60,7 @@ public final class SquaremapCommon {
         this.start();
         this.setupApi();
 
-        this.commands = new Commands(this);
+        this.commands = injector.getInstance(Commands.class);
     }
 
     public void start() {
@@ -85,6 +95,10 @@ public final class SquaremapCommon {
             Placeholder.unparsed("version", this.platform().version())
         );
         audience.sendMessage(success);
+    }
+
+    public Injector injector() {
+        return this.injector;
     }
 
     public void updateCheck() {

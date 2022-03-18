@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.paper.listener;
 
+import com.google.inject.Inject;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -9,6 +10,10 @@ import xyz.jpenilla.squaremap.common.network.Networking;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class PlayerListener implements Listener {
+    @Inject
+    private PlayerListener() {
+    }
+
     @EventHandler
     public void handlePlayerQuit(final @NonNull PlayerQuitEvent event) {
         Networking.CLIENT_USERS.remove(event.getPlayer().getUniqueId());

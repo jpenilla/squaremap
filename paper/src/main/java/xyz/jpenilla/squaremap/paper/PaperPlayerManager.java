@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.paper;
 
+import com.google.inject.Inject;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,15 +12,19 @@ import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.PlayerManagerImpl;
+import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
-public final class PaperPlayerManager extends PlayerManagerImpl {
+public final class PaperPlayerManager extends AbstractPlayerManager {
     public static final NamespacedKey HIDDEN_KEY = new NamespacedKey(SquaremapPlugin.getInstance(), "hidden");
 
     private static PersistentDataContainer pdc(final ServerPlayer player) {
         return CraftBukkitReflection.player(player).getPersistentDataContainer();
+    }
+
+    @Inject
+    private PaperPlayerManager() {
     }
 
     @Override

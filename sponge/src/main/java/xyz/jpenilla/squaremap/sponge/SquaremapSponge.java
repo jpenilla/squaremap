@@ -1,16 +1,13 @@
 package xyz.jpenilla.squaremap.sponge;
 
-import cloud.commandframework.CommandManager;
 import com.google.inject.Inject;
-import java.lang.reflect.Field;
+import com.google.inject.Injector;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.flattener.ComponentFlattener;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.server.level.ServerLevel;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -36,15 +33,12 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.WorldManagerImpl;
-import xyz.jpenilla.squaremap.common.command.Commander;
+import xyz.jpenilla.squaremap.common.inject.PlatformModule;
+import xyz.jpenilla.squaremap.common.inject.VanillaChunkSnapshotProviderModule;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
-import xyz.jpenilla.squaremap.common.util.Util;
-import xyz.jpenilla.squaremap.common.util.VanillaChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.sponge.command.SpongeCommands;
 import xyz.jpenilla.squaremap.sponge.data.SpongeMapWorld;
+import xyz.jpenilla.squaremap.sponge.inject.SpongeModule;
 import xyz.jpenilla.squaremap.sponge.listener.MapUpdateListener;
 import xyz.jpenilla.squaremap.sponge.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.sponge.network.SpongeNetwork;
@@ -56,6 +50,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
     private final PluginContainer pluginContainer;
     private final Game game;
     private final SquaremapCommon common;
+    private final Injector injector;
     private @Nullable MapUpdateListener mapUpdateListener;
     private @Nullable WorldManagerImpl<SpongeMapWorld> worldManager;
     private @Nullable SpongePlayerManager playerManager;
@@ -67,14 +62,19 @@ public final class SquaremapSponge implements SquaremapPlatform {
     public SquaremapSponge(
         @ConfigDir(sharedRoot = false) final Path dataDirectory,
         final PluginContainer pluginContainer,
-        final Game game
+        final Game game,
+        final Injector injector
     ) {
         this.dataDirectory = dataDirectory;
         this.pluginContainer = pluginContainer;
         this.game = game;
-        this.common = new SquaremapCommon(this);
-        SpongeCommands.register(this.common);
-        this.game.eventManager().registerListeners(this.pluginContainer, new SpongeNetwork());
+        this.injector = injector.createChildInjector(
+            new SpongeModule(dataDirectory),
+            new PlatformModule(this),
+            new VanillaChunkSnapshotProviderModule()
+        );
+        this.common = this.injector.getInstance(SquaremapCommon.class);
+        this.game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(SpongeNetwork.class));
     }
 
     @Listener
@@ -99,17 +99,22 @@ public final class SquaremapSponge implements SquaremapPlatform {
     }
 
     @Override
+    public Injector injector() {
+        return this.injector;
+    }
+
+    @Override
     public void startCallback() {
         this.worldManager = new WorldManagerImpl<>(SpongeMapWorld::new);
         this.worldManager.start(this);
 
-        this.playerManager = new SpongePlayerManager();
+        this.playerManager = this.injector.getInstance(SpongePlayerManager.class);
 
         if (this.game.isServerAvailable()) {
             this.scheduleTasks();
         }
 
-        this.mapUpdateListener = new MapUpdateListener(this);
+        this.mapUpdateListener = this.injector.getInstance(MapUpdateListener.class);
         this.mapUpdateListener.register();
 
         this.worldLoadListener = new WorldLoadListener(this);
@@ -171,11 +176,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
     }
 
     @Override
-    public ChunkSnapshotProvider chunkSnapshotProvider() {
-        return VanillaChunkSnapshotProvider.get();
-    }
-
-    @Override
     public WorldManagerImpl<SpongeMapWorld> worldManager() {
         return this.worldManager;
     }
@@ -188,17 +188,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
     @Override
     public Logger logger() {
         return this.pluginContainer.logger();
-    }
-
-    @Override
-    public ComponentFlattener componentFlattener() {
-        final PlainTextComponentSerializer plainText = PlainTextComponentSerializer.plainText();
-        final Field flattener = ReflectionUtil.needField(plainText.getClass(), "flattener");
-        try {
-            return (ComponentFlattener) flattener.get(plainText);
-        } catch (final IllegalAccessException ex) {
-            throw Util.rethrow(ex);
-        }
     }
 
     @Override
@@ -228,14 +217,14 @@ public final class SquaremapSponge implements SquaremapPlatform {
             Task.builder()
                 .plugin(this.pluginContainer)
                 .interval(Duration.ofSeconds(5))
-                .execute(new UpdateWorldData(this))
+                .execute(this.injector.getInstance(UpdateWorldData.class))
                 .build()
         );
         this.updatePlayers = this.game.server().scheduler().submit(
             Task.builder()
                 .plugin(this.pluginContainer)
                 .interval(Duration.ofSeconds(1))
-                .execute(new UpdatePlayers(this))
+                .execute(this.injector.getInstance(UpdatePlayers.class))
                 .build()
         );
     }
@@ -248,11 +237,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
     @Override
     public String version() {
         return this.pluginContainer.metadata().version().toString();
-    }
-
-    @Override
-    public CommandManager<Commander> createCommandManager() {
-        return SpongeCommands.createCommandManager(this);
     }
 
     public Game game() {
