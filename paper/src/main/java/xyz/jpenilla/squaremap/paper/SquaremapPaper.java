@@ -37,7 +37,7 @@ import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatform {
     private static final Logger LOGGER = LogManager.getLogger("squaremap");
-    private static SquaremapPaper INSTANCE;
+    private Injector injector;
     private SquaremapCommon common;
     private PaperWorldManager worldManager;
     private PaperPlayerManager playerManager;
@@ -45,11 +45,6 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     private BukkitRunnable updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
     private WorldLoadListener worldLoadListener;
-    private Injector injector;
-
-    public SquaremapPaper() {
-        INSTANCE = this;
-    }
 
     @Override
     public void onEnable() {
@@ -90,10 +85,6 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     @Override
     public @NonNull Injector injector() {
         return this.injector;
-    }
-
-    public static SquaremapPaper instance() {
-        return INSTANCE;
     }
 
     @Override
