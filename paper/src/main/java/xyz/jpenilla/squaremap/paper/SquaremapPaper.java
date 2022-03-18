@@ -35,9 +35,9 @@ import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 import xyz.jpenilla.squaremap.paper.util.BukkitRunnableAdapter;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
-public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatform {
+public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatform {
     private static final Logger LOGGER = LogManager.getLogger("squaremap");
-    private static SquaremapPlugin INSTANCE;
+    private static SquaremapPaper INSTANCE;
     private SquaremapCommon common;
     private PaperWorldManager worldManager;
     private PaperPlayerManager playerManager;
@@ -47,7 +47,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
     private WorldLoadListener worldLoadListener;
     private Injector injector;
 
-    public SquaremapPlugin() {
+    public SquaremapPaper() {
         INSTANCE = this;
     }
 
@@ -92,7 +92,7 @@ public final class SquaremapPlugin extends JavaPlugin implements SquaremapPlatfo
         return this.injector;
     }
 
-    public static SquaremapPlugin getInstance() {
+    public static SquaremapPaper instance() {
         return INSTANCE;
     }
 

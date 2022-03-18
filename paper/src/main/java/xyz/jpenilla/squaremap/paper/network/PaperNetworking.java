@@ -4,14 +4,14 @@ import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.map.MapRenderer;
 import xyz.jpenilla.squaremap.common.network.Networking;
-import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class PaperNetworking {
     private PaperNetworking() {
     }
 
-    public static void register(final SquaremapPlugin plugin) {
+    public static void register(final SquaremapPaper plugin) {
         Bukkit.getMessenger().registerIncomingPluginChannel(
             plugin,
             Networking.CHANNEL.toString(),
@@ -33,7 +33,7 @@ public final class PaperNetworking {
         );
     }
 
-    public static void unregister(final SquaremapPlugin plugin) {
+    public static void unregister(final SquaremapPaper plugin) {
         Bukkit.getMessenger().unregisterIncomingPluginChannel(plugin, Networking.CHANNEL.toString());
     }
 }

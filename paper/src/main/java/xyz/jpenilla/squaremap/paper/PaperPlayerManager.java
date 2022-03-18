@@ -17,7 +17,7 @@ import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperPlayerManager extends AbstractPlayerManager {
-    public static final NamespacedKey HIDDEN_KEY = new NamespacedKey(SquaremapPlugin.getInstance(), "hidden");
+    public static final NamespacedKey HIDDEN_KEY = new NamespacedKey(SquaremapPaper.instance(), "hidden");
 
     private static PersistentDataContainer pdc(final ServerPlayer player) {
         return CraftBukkitReflection.player(player).getPersistentDataContainer();

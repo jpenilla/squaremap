@@ -9,7 +9,7 @@ import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.task.UpdateMarkers;
-import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.util.BukkitRunnableAdapter;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
@@ -21,7 +21,7 @@ public final class PaperMapWorld extends MapWorldInternal {
         super(level);
 
         this.updateMarkersTask = new BukkitRunnableAdapter(new UpdateMarkers(this));
-        this.updateMarkersTask.runTaskTimer(SquaremapPlugin.getInstance(), 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
+        this.updateMarkersTask.runTaskTimer(SquaremapPaper.instance(), 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
     }
 
     @Override

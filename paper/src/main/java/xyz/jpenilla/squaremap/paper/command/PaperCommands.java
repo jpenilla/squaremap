@@ -30,16 +30,16 @@ import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.util.Components;
-import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class PaperCommands implements PlatformCommands {
-    private final SquaremapPlugin plugin;
+    private final SquaremapPaper plugin;
 
     @Inject
-    private PaperCommands(final SquaremapPlugin plugin) {
+    private PaperCommands(final SquaremapPaper plugin) {
         this.plugin = plugin;
     }
 
