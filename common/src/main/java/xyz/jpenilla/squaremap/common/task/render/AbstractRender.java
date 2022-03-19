@@ -27,7 +27,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.BiomeColors;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
@@ -58,9 +57,13 @@ public abstract class AbstractRender implements Runnable {
 
     protected Pair<Timer, RenderProgress> progress = null;
 
-    public AbstractRender(final @NonNull MapWorldInternal world) {
+    protected AbstractRender(
+        final @NonNull MapWorldInternal world,
+        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider
+    ) {
         this(
             world,
+            chunkSnapshotProvider,
             Executors.newFixedThreadPool(
                 getThreads(world.config().MAX_RENDER_THREADS),
                 Util.squaremapThreadFactory("render-worker", world.serverLevel())
@@ -68,12 +71,16 @@ public abstract class AbstractRender implements Runnable {
         );
     }
 
-    public AbstractRender(final @NonNull MapWorldInternal mapWorld, final @NonNull ExecutorService executor) {
+    protected AbstractRender(
+        final @NonNull MapWorldInternal mapWorld,
+        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider,
+        final @NonNull ExecutorService executor
+    ) {
         this.futureTask = new FutureTask<>(this, null);
         this.mapWorld = mapWorld;
         this.executor = executor;
         this.level = mapWorld.serverLevel();
-        this.chunkSnapshotProvider = SquaremapCommon.instance().injector().getInstance(ChunkSnapshotProvider.class);
+        this.chunkSnapshotProvider = chunkSnapshotProvider;
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
             ? new ConcurrentHashMap<>()
             : null; // this should be null if we are not mapping biomes

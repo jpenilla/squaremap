@@ -2,11 +2,6 @@ package xyz.jpenilla.squaremap.fabric;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -15,66 +10,59 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.inject.PlatformModule;
-import xyz.jpenilla.squaremap.common.inject.VanillaChunkSnapshotProviderModule;
+import xyz.jpenilla.squaremap.common.inject.ModulesConfiguration;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.fabric.data.FabricMapWorld;
-import xyz.jpenilla.squaremap.fabric.inject.FabricModule;
+import xyz.jpenilla.squaremap.fabric.inject.module.FabricModule;
 import xyz.jpenilla.squaremap.fabric.network.FabricNetworking;
 import xyz.jpenilla.squaremap.fabric.util.FabricMapUpdates;
 
-import static java.util.Objects.requireNonNull;
-
 @DefaultQualifier(NonNull.class)
-public final class SquaremapFabricInitializer implements ModInitializer, SquaremapPlatform {
-    private static final Logger LOGGER = LogManager.getLogger("squaremap");
-
-    private @MonotonicNonNull Injector injector;
-    private @MonotonicNonNull SquaremapCommon common;
+public final class SquaremapFabric implements SquaremapPlatform {
+    private final Injector injector;
+    private final SquaremapCommon common;
+    private final FabricServerAccess serverAccess;
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
-    private @Nullable MinecraftServer minecraftServer;
-    private @Nullable WorldManagerImpl<FabricMapWorld> worldManager;
+    private @Nullable FabricWorldManager worldManager;
     private @Nullable FabricPlayerManager playerManager;
 
-    @Override
-    public void onInitialize() {
+    private SquaremapFabric() {
         this.injector = Guice.createInjector(
-            new FabricModule(this),
-            new PlatformModule(this),
-            new VanillaChunkSnapshotProviderModule()
+            ModulesConfiguration.create(this)
+                .mapWorldFactory(FabricMapWorld.Factory.class)
+                .withModule(new FabricModule(this))
+                .vanillaChunkSnapshotProvider()
+                .vanillaRegionFileDirectoryResolver()
+                .done()
         );
         this.common = this.injector.getInstance(SquaremapCommon.class);
+        this.serverAccess = this.injector.getInstance(FabricServerAccess.class);
         this.registerLifecycleListeners();
         FabricMapUpdates.registerListeners();
-        FabricNetworking.register();
+        FabricNetworking.register(this);
         this.common.updateCheck();
     }
 
     private void registerLifecycleListeners() {
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> this.minecraftServer = server);
+        ServerLifecycleEvents.SERVER_STARTED.register(this.serverAccess::setServer);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             if (server.isDedicatedServer()) {
                 this.common.shutdown();
             }
-            this.minecraftServer = null;
+            this.serverAccess.clearServer();
         });
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            ClientLifecycleEvents.CLIENT_STOPPING.register($ -> this.common.shutdown());
+            new ClientLifecycleListeners().register();
         }
 
         ServerWorldEvents.LOAD.register((server, level) -> {
@@ -91,16 +79,11 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     }
 
     @Override
-    public Injector injector() {
-        return this.injector;
-    }
-
-    @Override
     public void startCallback() {
-        this.worldManager = new WorldManagerImpl<>(FabricMapWorld::new);
-        this.worldManager.start(this);
+        this.worldManager = this.injector.getInstance(FabricWorldManager.class);
+        this.worldManager.start();
 
-        this.playerManager = new FabricPlayerManager();
+        this.playerManager = this.injector.getInstance(FabricPlayerManager.class);
         this.updatePlayers = this.injector.getInstance(UpdatePlayers.class);
         this.updateWorldData = this.injector.getInstance(UpdateWorldData.class);
     }
@@ -118,12 +101,12 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     }
 
     public MinecraftServer server() {
-        return requireNonNull(this.minecraftServer, "MinecraftServer was requested when not active");
+        return this.serverAccess.requireServer();
     }
 
     @Override
-    public int maxPlayers() {
-        return this.server().getMaxPlayers();
+    public ServerAccess serverAccess() {
+        return this.injector.getInstance(ServerAccess.class);
     }
 
     @Override
@@ -133,41 +116,8 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
     }
 
     @Override
-    public WorldManagerImpl<FabricMapWorld> worldManager() {
+    public FabricWorldManager worldManager() {
         return this.worldManager;
-    }
-
-    @Override
-    public Path dataDirectory() {
-        return FabricLoader.getInstance().getGameDir().resolve("squaremap");
-    }
-
-    @Override
-    public Logger logger() {
-        return LOGGER;
-    }
-
-    @Override
-    public Collection<ServerLevel> levels() {
-        if (this.minecraftServer == null) {
-            return List.of();
-        }
-        final List<ServerLevel> levels = new ArrayList<>();
-        for (final ServerLevel level : this.server().getAllLevels()) {
-            levels.add(level);
-        }
-        return Collections.unmodifiableList(levels);
-    }
-
-    @Override
-    public @Nullable ServerLevel level(final WorldIdentifier identifier) {
-        for (final ServerLevel level : this.server().getAllLevels()) {
-            if (level.dimension().location().getNamespace().equals(identifier.namespace())
-                && level.dimension().location().getPath().equals(identifier.value())) {
-                return level;
-            }
-        }
-        return null;
     }
 
     @Override
@@ -182,23 +132,38 @@ public final class SquaremapFabricInitializer implements ModInitializer, Squarem
         public void onEndTick(final MinecraftServer server) {
             if (this.tick % 20 == 0) {
                 if (this.tick % 100 == 0) {
-                    if (SquaremapFabricInitializer.this.updateWorldData != null) {
-                        SquaremapFabricInitializer.this.updateWorldData.run();
+                    if (SquaremapFabric.this.updateWorldData != null) {
+                        SquaremapFabric.this.updateWorldData.run();
                     }
                 }
 
-                if (SquaremapFabricInitializer.this.updatePlayers != null) {
-                    SquaremapFabricInitializer.this.updatePlayers.run();
+                if (SquaremapFabric.this.updatePlayers != null) {
+                    SquaremapFabric.this.updatePlayers.run();
                 }
 
-                if (SquaremapFabricInitializer.this.worldManager != null) {
-                    for (final MapWorldInternal mapWorld : SquaremapFabricInitializer.this.worldManager.worlds().values()) {
+                if (SquaremapFabric.this.worldManager != null) {
+                    for (final MapWorldInternal mapWorld : SquaremapFabric.this.worldManager.worlds().values()) {
                         ((FabricMapWorld) mapWorld).tickEachSecond(this.tick);
                     }
                 }
             }
 
             this.tick++;
+        }
+    }
+
+    // this must be a separate class to SquaremapFabric to avoid attempting to load client
+    // classes on the server when guice scans for methods
+    private final class ClientLifecycleListeners {
+        void register() {
+            ClientLifecycleEvents.CLIENT_STOPPING.register($ -> SquaremapFabric.this.common.shutdown());
+        }
+    }
+
+    public static final class Initializer implements ModInitializer {
+        @Override
+        public void onInitialize() {
+            new SquaremapFabric();
         }
     }
 }

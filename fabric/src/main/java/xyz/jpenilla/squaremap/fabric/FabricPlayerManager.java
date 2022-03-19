@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.fabric;
 
+import com.google.inject.Inject;
 import java.util.UUID;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.Component;
@@ -8,12 +9,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
 
 @DefaultQualifier(NonNull.class)
 public final class FabricPlayerManager extends AbstractPlayerManager {
-    private static SquaremapComponentInitializer.PlayerComponent component(final ServerPlayer player) {
-        return SquaremapComponentInitializer.SQUAREMAP_PLAYER_COMPONENT.get(player);
+    private final SquaremapFabric squaremapFabric;
+
+    @Inject
+    private FabricPlayerManager(final SquaremapFabric platform) {
+        this.squaremapFabric = platform;
     }
 
     @Override
@@ -23,7 +26,7 @@ public final class FabricPlayerManager extends AbstractPlayerManager {
 
     @Override
     public @Nullable ServerPlayer player(final UUID uuid) {
-        return ((SquaremapFabricInitializer) SquaremapCommon.instance().platform()).server().getPlayerList().getPlayer(uuid);
+        return this.squaremapFabric.server().getPlayerList().getPlayer(uuid);
     }
 
     @Override
@@ -34,5 +37,9 @@ public final class FabricPlayerManager extends AbstractPlayerManager {
     @Override
     protected void persistentHidden(final ServerPlayer player, final boolean value) {
         component(player).hidden(value);
+    }
+
+    private static SquaremapComponentInitializer.PlayerComponent component(final ServerPlayer player) {
+        return SquaremapComponentInitializer.SQUAREMAP_PLAYER_COMPONENT.get(player);
     }
 }

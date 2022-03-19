@@ -11,7 +11,7 @@ import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.task.render.FullRender;
+import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
 import xyz.jpenilla.squaremap.common.util.Components;
 
@@ -41,6 +41,9 @@ public final class FullRenderCommand extends SquaremapCommand {
         if (sender instanceof PlayerCommander) {
             Lang.send(sender, Lang.LOG_STARTED_FULLRENDER, Placeholder.unparsed("world", world.identifier().asString()));
         }
-        world.startRender(new FullRender(world));
+        world.startRender(
+            context.get(Commands.INJECTOR).getInstance(RenderFactory.class)
+                .createFullRender(world)
+        );
     }
 }

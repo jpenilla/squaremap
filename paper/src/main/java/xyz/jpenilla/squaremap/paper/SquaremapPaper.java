@@ -2,41 +2,28 @@ package xyz.jpenilla.squaremap.paper;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.storage.LevelStorageSource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.Squaremap;
-import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.inject.PlatformModule;
+import xyz.jpenilla.squaremap.common.inject.ModulesConfiguration;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.paper.inject.PaperModule;
+import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
+import xyz.jpenilla.squaremap.paper.inject.module.PaperModule;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.PlayerListener;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 import xyz.jpenilla.squaremap.paper.util.BukkitRunnableAdapter;
-import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatform {
-    private static final Logger LOGGER = LogManager.getLogger("squaremap");
     private Injector injector;
     private SquaremapCommon common;
     private PaperWorldManager worldManager;
@@ -57,8 +44,10 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         }
 
         this.injector = Guice.createInjector(
-            new PaperModule(this),
-            new PlatformModule(this)
+            ModulesConfiguration.create(this)
+                .mapWorldFactory(PaperMapWorld.Factory.class)
+                .withModule(new PaperModule(this))
+                .done()
         );
 
         this.common = this.injector.getInstance(SquaremapCommon.class);
@@ -83,11 +72,6 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     }
 
     @Override
-    public @NonNull Injector injector() {
-        return this.injector;
-    }
-
-    @Override
     public void startCallback() {
         this.playerManager = this.injector.getInstance(PaperPlayerManager.class);
 
@@ -98,7 +82,7 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
 
         this.worldManager = this.injector.getInstance(PaperWorldManager.class);
-        this.worldManager.start(this);
+        this.worldManager.start();
 
         this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);
         this.mapUpdateListeners.register();
@@ -146,8 +130,8 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     }
 
     @Override
-    public int maxPlayers() {
-        return Bukkit.getMaxPlayers();
+    public @NonNull ServerAccess serverAccess() {
+        return this.injector.getInstance(ServerAccess.class);
     }
 
     @Override
@@ -163,38 +147,5 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     @Override
     public @NonNull PaperPlayerManager playerManager() {
         return this.playerManager;
-    }
-
-    @Override
-    public @NonNull Path dataDirectory() {
-        return this.getDataFolder().toPath();
-    }
-
-    @Override
-    public @NonNull Logger logger() {
-        return LOGGER;
-    }
-
-    @Override
-    public @NonNull Collection<ServerLevel> levels() {
-        final List<ServerLevel> levels = new ArrayList<>();
-        for (final World world : Bukkit.getWorlds()) {
-            levels.add(CraftBukkitReflection.serverLevel(world));
-        }
-        return levels;
-    }
-
-    @Override
-    public @Nullable ServerLevel level(final @NonNull WorldIdentifier identifier) {
-        final @Nullable World world = Bukkit.getWorld(BukkitAdapter.namespacedKey(identifier));
-        if (world == null) {
-            return null;
-        }
-        return CraftBukkitReflection.serverLevel(world);
-    }
-
-    @Override
-    public @NonNull Path regionFileDirectory(final @NonNull ServerLevel level) {
-        return LevelStorageSource.getStorageFolder(CraftBukkitReflection.world(level).getWorldFolder().toPath(), level.getTypeKey()).resolve("region");
     }
 }

@@ -33,16 +33,15 @@ import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.LayerRegistry;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.WorldAdvanced;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
 import xyz.jpenilla.squaremap.common.layer.WorldBorderProvider;
 import xyz.jpenilla.squaremap.common.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.common.task.render.BackgroundRender;
-import xyz.jpenilla.squaremap.common.task.render.FullRender;
+import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.Colors;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.RecordTypeAdapterFactory;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
@@ -57,7 +56,9 @@ public abstract class MapWorldInternal implements MapWorld {
         .create();
     private static final Map<WorldIdentifier, LayerRegistry> LAYER_REGISTRIES = new HashMap<>();
 
+    private final SquaremapPlatform platform;
     private final ServerLevel level;
+    private final RenderFactory renderFactory;
     private final Path dataPath;
     private final Path tilesPath;
     private final ExecutorService imageIOexecutor;
@@ -73,8 +74,15 @@ public abstract class MapWorldInternal implements MapWorld {
     private @Nullable AbstractRender activeRender = null;
     private @Nullable ScheduledFuture<?> backgroundRender = null;
 
-    protected MapWorldInternal(final ServerLevel level) {
+    protected MapWorldInternal(
+        final SquaremapPlatform platform,
+        final ServerLevel level,
+        final RenderFactory renderFactory,
+        final DirectoryProvider directoryProvider
+    ) {
+        this.platform = platform;
         this.level = level;
+        this.renderFactory = renderFactory;
 
         this.imageIOexecutor = Executors.newSingleThreadExecutor(
             Util.squaremapThreadFactory("imageio", this.level)
@@ -90,8 +98,8 @@ public abstract class MapWorldInternal implements MapWorld {
         this.blockColors = new BlockColors(this);
         this.levelBiomeColorData = LevelBiomeColorData.create(this);
 
-        this.dataPath = this.getAndCreateDataDirectory();
-        this.tilesPath = FileUtil.getAndCreateTilesDirectory(this.serverLevel());
+        this.dataPath = this.getAndCreateDataDirectory(directoryProvider);
+        this.tilesPath = directoryProvider.getAndCreateTilesDirectory(this.serverLevel());
 
         this.startBackgroundRender();
 
@@ -109,7 +117,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.deserializeDirtyChunks();
 
         if (this.getRenderProgress() != null) {
-            this.startRender(new FullRender(this, 2));
+            this.startRender(this.renderFactory.createFullRender(this, 2));
         }
     }
 
@@ -170,7 +178,7 @@ public abstract class MapWorldInternal implements MapWorld {
         if (!this.config().BACKGROUND_RENDER_ENABLED) {
             return;
         }
-        final BackgroundRender render = new BackgroundRender(this);
+        final BackgroundRender render = this.renderFactory.createBackgroundRender(this);
         this.backgroundRender = this.executor.scheduleAtFixedRate(render, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
@@ -308,8 +316,8 @@ public abstract class MapWorldInternal implements MapWorld {
         return this.levelBiomeColorData;
     }
 
-    private Path getAndCreateDataDirectory() {
-        final Path data = SquaremapCommon.instance().platform().dataDirectory()
+    private Path getAndCreateDataDirectory(final DirectoryProvider directoryProvider) {
+        final Path data = directoryProvider.dataDirectory()
             .resolve("data")
             .resolve(Util.levelWebName(this.level));
         try {
@@ -346,5 +354,9 @@ public abstract class MapWorldInternal implements MapWorld {
     public void refreshConfigInstances() {
         this.worldConfig = WorldConfig.get(this.level);
         this.advancedWorldConfig = WorldAdvanced.get(this.level);
+    }
+
+    public interface Factory<W> {
+        W create(ServerLevel level);
     }
 }

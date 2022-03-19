@@ -14,19 +14,25 @@ import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
+import xyz.jpenilla.squaremap.common.AbstractWorldManager;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
 
+@DefaultQualifier(NonNull.class)
 public final class Networking {
     public static final ResourceLocation CHANNEL = new ResourceLocation("squaremap:client");
     public static final Set<UUID> CLIENT_USERS = ConcurrentHashMap.newKeySet();
 
     public static void handleIncoming(
+        final SquaremapPlatform platform,
         final byte[] bytes,
         final ServerPlayer serverPlayer,
         final Predicate<MapItemSavedData> vanillaMap
@@ -36,16 +42,16 @@ public final class Networking {
         switch (action) {
             case Constants.SERVER_DATA -> {
                 CLIENT_USERS.add(serverPlayer.getUUID());
-                Networking.sendServerData(serverPlayer);
+                Networking.sendServerData((AbstractWorldManager<?>) platform.worldManager(), serverPlayer);
             }
             case Constants.MAP_DATA -> {
                 int id = in.readInt();
-                Networking.sendMapData(serverPlayer, id, vanillaMap);
+                Networking.sendMapData(platform, serverPlayer, id, vanillaMap);
             }
         }
     }
 
-    public static void sendServerData(final ServerPlayer player) {
+    public static void sendServerData(final AbstractWorldManager<?> worldManager, final ServerPlayer player) {
         ByteArrayDataOutput out = out();
 
         out.writeInt(Constants.SERVER_DATA);
@@ -54,7 +60,7 @@ public final class Networking {
 
         out.writeUTF(Config.WEB_ADDRESS);
 
-        final Map<WorldIdentifier, MapWorldInternal> mapWorlds = SquaremapCommon.instance().platform().worldManager().worlds();
+        final Map<WorldIdentifier, MapWorldInternal> mapWorlds = worldManager.worlds();
         out.writeInt(mapWorlds.size());
 
         mapWorlds.forEach(($, mapWorld) -> {
@@ -71,24 +77,24 @@ public final class Networking {
     }
 
     private static void sendMapData(
+        final SquaremapPlatform platform,
         final ServerPlayer player,
         final int id,
         final Predicate<MapItemSavedData> vanillaMap
     ) {
-        ByteArrayDataOutput out = out();
+        final ByteArrayDataOutput out = out();
         out.writeInt(Constants.MAP_DATA);
         out.writeInt(Constants.PROTOCOL);
         out.writeInt(Constants.RESPONSE_SUCCESS);
 
-        final MapItemSavedData mapData = player.level.getMapData("map_" + id);
+        final @Nullable MapItemSavedData mapData = player.level.getMapData(MapItem.makeKey(id));
         if (mapData == null) {
             out.writeInt(Constants.ERROR_NO_SUCH_MAP);
             out.writeInt(id);
             return;
         }
 
-        final @Nullable ServerLevel world = SquaremapCommon.instance().platform()
-            .level(Util.worldIdentifier(mapData.dimension.location()));
+        final @Nullable ServerLevel world = platform.serverAccess().level(Util.worldIdentifier(mapData.dimension.location()));
         if (world == null) {
             out.writeInt(Constants.ERROR_NO_SUCH_WORLD);
             out.writeInt(id);

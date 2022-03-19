@@ -119,7 +119,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
-            final @Nullable ServerLevel world = commandContext.get(Commands.PLATFORM).level(Util.worldIdentifier(key));
+            final @Nullable ServerLevel world = commandContext.get(Commands.PLATFORM).serverAccess().level(Util.worldIdentifier(key));
             if (world == null) {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }

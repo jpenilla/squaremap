@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.common;
 
 import java.util.function.Supplier;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -8,11 +9,13 @@ import xyz.jpenilla.squaremap.common.config.Config;
 
 @DefaultQualifier(NonNull.class)
 public final class Logging {
+    private static final Logger LOGGER = LogManager.getLogger("squaremap");
+
     private Logging() {
     }
 
     public static Logger logger() {
-        return SquaremapCommon.instance().platform().logger();
+        return LOGGER;
     }
 
     public static void debug(final Supplier<String> msg) {

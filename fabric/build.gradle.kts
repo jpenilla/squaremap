@@ -73,7 +73,14 @@ tasks {
     )
     inputs.properties(props)
     filesMatching("fabric.mod.json") {
-      expand(props)
+      // filter manually to avoid trying to replace $Initializer in initializer class name...
+      filter { string ->
+        var result = string
+        for ((key, value) in props) {
+          result = result.replace("\${$key}", value.toString())
+        }
+        result
+      }
     }
   }
   remapJar {

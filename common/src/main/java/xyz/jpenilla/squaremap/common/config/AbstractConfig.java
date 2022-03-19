@@ -21,7 +21,6 @@ import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 import static java.util.Objects.requireNonNull;
@@ -35,10 +34,15 @@ public abstract class AbstractConfig {
     private final Class<? extends AbstractConfig> configClass;
     private final int latestVersion;
 
-    protected AbstractConfig(final Class<? extends AbstractConfig> configClass, final String filename, final int latestVersion) {
+    protected AbstractConfig(
+        final Path dataDirectory,
+        final Class<? extends AbstractConfig> configClass,
+        final String filename,
+        final int latestVersion
+    ) {
         this.latestVersion = latestVersion;
         this.configClass = configClass;
-        this.configFile = SquaremapCommon.instance().platform().dataDirectory().resolve(filename);
+        this.configFile = dataDirectory.resolve(filename);
 
         this.loader = YamlConfigurationLoader.builder()
             .path(this.configFile)

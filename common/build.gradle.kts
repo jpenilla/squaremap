@@ -11,7 +11,10 @@ dependencies {
   api(projects.squaremapApi)
 
   api(libs.guice) {
-    exclude("com.google.guava")
+    exclude("com.google.guava") // provided by minecraft
+  }
+  api(libs.guiceAssistedInject) {
+    exclude("com.google.guava") // provided by minecraft
   }
 
   api(platform(libs.adventureBom))

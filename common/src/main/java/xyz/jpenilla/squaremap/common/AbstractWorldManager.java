@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -14,14 +13,17 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
-public class WorldManagerImpl<W extends MapWorldInternal> implements WorldManager {
+public abstract class AbstractWorldManager<W extends MapWorldInternal> implements WorldManager {
     private final Map<WorldIdentifier, W> worlds = new ConcurrentHashMap<>();
-    private final Function<ServerLevel, W> factory;
+    private final MapWorldInternal.Factory<W> factory;
+    private final ServerAccess serverAccess;
 
-    public WorldManagerImpl(
-        final Function<ServerLevel, W> factory
+    protected AbstractWorldManager(
+        final MapWorldInternal.Factory<W> factory,
+        final ServerAccess serverAccess
     ) {
         this.factory = factory;
+        this.serverAccess = serverAccess;
     }
 
     @Override
@@ -37,19 +39,15 @@ public class WorldManagerImpl<W extends MapWorldInternal> implements WorldManage
         }
     }
 
-    private W create(final ServerLevel world) {
-        return this.factory.apply(world);
-    }
-
     public W getWorld(final ServerLevel world) {
         return this.worlds.computeIfAbsent(
             Util.worldIdentifier(world),
-            $ -> this.create(world)
+            $ -> this.factory.create(world)
         );
     }
 
-    public void start(final SquaremapPlatform platform) {
-        for (final ServerLevel level : platform.levels()) {
+    public void start() {
+        for (final ServerLevel level : this.serverAccess.levels()) {
             this.getWorldIfEnabled(level);
         }
     }

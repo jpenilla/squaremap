@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.common.task;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +17,10 @@ import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.HtmlComponentSerializer;
 import xyz.jpenilla.squaremap.common.util.Util;
@@ -25,20 +28,31 @@ import xyz.jpenilla.squaremap.common.util.Util;
 @DefaultQualifier(NonNull.class)
 public class UpdatePlayers implements Runnable {
     private static final Gson GSON = new Gson();
+    private final Injector injector;
     private final SquaremapPlatform platform;
+    private final DirectoryProvider directoryProvider;
+    private final ServerAccess serverAccess;
 
     @Inject
-    private UpdatePlayers(final SquaremapPlatform platform) {
+    private UpdatePlayers(
+        final Injector injector,
+        final SquaremapPlatform platform,
+        final DirectoryProvider directoryProvider,
+        final ServerAccess serverAccess
+    ) {
+        this.injector = injector;
         this.platform = platform;
+        this.directoryProvider = directoryProvider;
+        this.serverAccess = serverAccess;
     }
 
     @Override
     public void run() {
         List<Object> players = new ArrayList<>();
 
-        final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.platform.injector().getInstance(ComponentFlattener.class));
+        final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.injector.getInstance(ComponentFlattener.class));
 
-        this.platform.levels().forEach(world -> {
+        this.serverAccess.levels().forEach(world -> {
             WorldConfig worldConfig = WorldConfig.get(world);
 
             world.players().forEach(player -> {
@@ -76,9 +90,9 @@ public class UpdatePlayers implements Runnable {
 
         Map<String, Object> map = new HashMap<>();
         map.put("players", players);
-        map.put("max", this.platform.maxPlayers());
+        map.put("max", this.serverAccess.maxPlayers());
 
-        FileUtil.writeString(FileUtil.TILES_DIR.resolve("players.json"), () -> GSON.toJson(map));
+        FileUtil.writeStringAsync(this.directoryProvider.tilesDirectory().resolve("players.json"), () -> GSON.toJson(map));
     }
 
     private static int armorPoints(final ServerPlayer player) {

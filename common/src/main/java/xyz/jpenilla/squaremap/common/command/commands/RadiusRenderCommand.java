@@ -16,7 +16,7 @@ import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.task.render.RadiusRender;
+import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
 import xyz.jpenilla.squaremap.common.util.Components;
 
@@ -62,6 +62,9 @@ public final class RadiusRenderCommand extends SquaremapCommand {
         }
 
         Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER, Placeholder.unparsed("world", world.identifier().asString()));
-        world.startRender(new RadiusRender(world, center, radius));
+        world.startRender(
+            context.get(Commands.INJECTOR).getInstance(RenderFactory.class)
+                .createRadiusRender(world, center, radius)
+        );
     }
 }

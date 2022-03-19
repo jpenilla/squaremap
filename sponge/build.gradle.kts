@@ -47,6 +47,7 @@ tasks {
     archiveFileName.set("squaremap-sponge-mc$minecraftVersion-${project.version}.jar")
     listOf(
       "cloud.commandframework",
+      "com.google.inject.assistedinject",
     ).forEach(::reloc)
     manifest {
       attributes(

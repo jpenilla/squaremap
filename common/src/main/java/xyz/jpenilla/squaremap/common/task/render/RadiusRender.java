@@ -2,6 +2,8 @@ package xyz.jpenilla.squaremap.common.task.render;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -13,6 +15,7 @@ import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
@@ -23,8 +26,14 @@ public final class RadiusRender extends AbstractRender {
     private final int radius;
     private final int totalChunks;
 
-    public RadiusRender(final MapWorldInternal world, final @NonNull BlockPos center, int radius) {
-        super(world);
+    @AssistedInject
+    private RadiusRender(
+        @Assisted final @NonNull MapWorldInternal world,
+        @Assisted final @NonNull BlockPos center,
+        @Assisted int radius,
+        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider
+    ) {
+        super(world, chunkSnapshotProvider);
         this.radius = Numbers.blockToChunk(radius);
         this.centerX = Numbers.blockToChunk(center.getX());
         this.centerZ = Numbers.blockToChunk(center.getZ());

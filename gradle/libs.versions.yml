@@ -35,6 +35,10 @@ dependencies:
         group: com.google.inject
         name: guice
         version: { ref: guice }
+    guiceAssistedInject:
+        group: com.google.inject.extensions
+        name: guice-assistedinject
+        version: { ref: guice }
 
     adventureBom:
         group: net.kyori

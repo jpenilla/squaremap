@@ -1,17 +1,18 @@
 package xyz.jpenilla.squaremap.common.config;
 
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
-    private Advanced() {
-        super(Advanced.class, "advanced.yml", 1);
+    Advanced(final DirectoryProvider directoryProvider) {
+        super(directoryProvider.dataDirectory(), Advanced.class, "advanced.yml", 1);
     }
 
     static Advanced config;
 
-    public static void reload() {
-        config = new Advanced();
+    public static void reload(final DirectoryProvider directoryProvider) {
+        config = new Advanced(directoryProvider);
         config.readConfig(Advanced.class, null);
 
         // todo - replace hack

@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.inject;
+package xyz.jpenilla.squaremap.common.inject.module;
 
 import com.google.inject.AbstractModule;
 import org.checkerframework.checker.nullness.qual.NonNull;

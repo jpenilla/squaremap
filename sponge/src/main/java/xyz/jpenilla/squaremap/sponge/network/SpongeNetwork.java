@@ -13,13 +13,17 @@ import org.spongepowered.api.event.lifecycle.RegisterChannelEvent;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 import org.spongepowered.api.network.EngineConnectionSide;
 import org.spongepowered.api.network.channel.raw.RawDataChannel;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.network.Networking;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
 public final class SpongeNetwork {
+    private final SquaremapPlatform platform;
+
     @Inject
-    private SpongeNetwork() {
+    private SpongeNetwork(final SquaremapPlatform platform) {
+        this.platform = platform;
     }
 
     @Listener
@@ -35,6 +39,7 @@ public final class SpongeNetwork {
                     return;
                 }
                 Networking.handleIncoming(
+                    this.platform,
                     Util.raw((FriendlyByteBuf) sponge),
                     listener.getPlayer(),
                     $ -> true

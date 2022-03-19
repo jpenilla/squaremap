@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -12,16 +14,26 @@ import xyz.jpenilla.squaremap.api.PlayerManager;
 import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.Squaremap;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public final class SquaremapApiProvider implements Squaremap {
     private final SquaremapPlatform platform;
     private final IconRegistry iconRegistry;
+    private final ServerAccess serverAccess;
+    private final DirectoryProvider directoryProvider;
 
-    public SquaremapApiProvider(final SquaremapPlatform platform) {
+    @Inject
+    private SquaremapApiProvider(
+        final SquaremapPlatform platform,
+        final DirectoryProvider directoryProvider,
+        final ServerAccess serverAccess
+    ) {
         this.platform = platform;
-        this.iconRegistry = new IconRegistry();
+        this.directoryProvider = directoryProvider;
+        this.iconRegistry = new IconRegistry(directoryProvider);
+        this.serverAccess = serverAccess;
     }
 
     @Override
@@ -31,7 +43,7 @@ public final class SquaremapApiProvider implements Squaremap {
 
     @Override
     public Optional<MapWorld> getWorldIfEnabled(final WorldIdentifier identifier) {
-        return Optional.ofNullable(this.platform.level(identifier))
+        return Optional.ofNullable(this.serverAccess.level(identifier))
             .flatMap(w -> this.platform.worldManager().getWorldIfEnabled(w));
     }
 
@@ -47,6 +59,6 @@ public final class SquaremapApiProvider implements Squaremap {
 
     @Override
     public Path webDir() {
-        return FileUtil.WEB_DIR;
+        return this.directoryProvider.webDirectory();
     }
 }

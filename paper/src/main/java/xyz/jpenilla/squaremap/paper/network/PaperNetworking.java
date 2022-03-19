@@ -18,6 +18,7 @@ public final class PaperNetworking {
             (channel, player, bytes) -> {
                 final ServerPlayer serverPlayer = CraftBukkitReflection.serverPlayer(player);
                 Networking.handleIncoming(
+                    plugin,
                     bytes,
                     serverPlayer,
                     mapData -> {
