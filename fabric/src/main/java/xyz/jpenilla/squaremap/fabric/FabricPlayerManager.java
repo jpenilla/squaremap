@@ -12,11 +12,11 @@ import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 
 @DefaultQualifier(NonNull.class)
 public final class FabricPlayerManager extends AbstractPlayerManager {
-    private final SquaremapFabric squaremapFabric;
+    private final FabricServerAccess serverAccess;
 
     @Inject
-    private FabricPlayerManager(final SquaremapFabric platform) {
-        this.squaremapFabric = platform;
+    private FabricPlayerManager(final FabricServerAccess serverAccess) {
+        this.serverAccess = serverAccess;
     }
 
     @Override
@@ -26,7 +26,7 @@ public final class FabricPlayerManager extends AbstractPlayerManager {
 
     @Override
     public @Nullable ServerPlayer player(final UUID uuid) {
-        return this.squaremapFabric.server().getPlayerList().getPlayer(uuid);
+        return this.serverAccess.requireServer().getPlayerList().getPlayer(uuid);
     }
 
     @Override

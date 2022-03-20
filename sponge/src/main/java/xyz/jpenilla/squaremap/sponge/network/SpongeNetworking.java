@@ -13,17 +13,23 @@ import org.spongepowered.api.event.lifecycle.RegisterChannelEvent;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 import org.spongepowered.api.network.EngineConnectionSide;
 import org.spongepowered.api.network.channel.raw.RawDataChannel;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.network.Networking;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
-public final class SpongeNetwork {
+public final class SpongeNetworking {
     private final SquaremapPlatform platform;
+    private final ServerAccess serverAccess;
 
     @Inject
-    private SpongeNetwork(final SquaremapPlatform platform) {
+    private SpongeNetworking(
+        final SquaremapPlatform platform,
+        final ServerAccess serverAccess
+    ) {
         this.platform = platform;
+        this.serverAccess = serverAccess;
     }
 
     @Listener
@@ -40,6 +46,7 @@ public final class SpongeNetwork {
                 }
                 Networking.handleIncoming(
                     this.platform,
+                    this.serverAccess,
                     Util.raw((FriendlyByteBuf) sponge),
                     listener.getPlayer(),
                     $ -> true

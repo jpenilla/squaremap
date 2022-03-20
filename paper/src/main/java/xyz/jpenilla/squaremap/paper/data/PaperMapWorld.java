@@ -28,7 +28,7 @@ public final class PaperMapWorld extends MapWorldInternal {
         final RenderFactory renderFactory,
         final DirectoryProvider directoryProvider
     ) {
-        super(platform, level, renderFactory, directoryProvider);
+        super(level, renderFactory, directoryProvider);
 
         this.updateMarkersTask = new BukkitRunnableAdapter(new UpdateMarkers(this));
         this.updateMarkersTask.runTaskTimer(platform, 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);

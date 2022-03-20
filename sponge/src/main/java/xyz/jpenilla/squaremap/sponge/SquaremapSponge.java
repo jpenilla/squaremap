@@ -25,7 +25,6 @@ import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 import org.spongepowered.plugin.builtin.jvm.Plugin;
-import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.inject.ModulesConfiguration;
@@ -35,7 +34,7 @@ import xyz.jpenilla.squaremap.sponge.data.SpongeMapWorld;
 import xyz.jpenilla.squaremap.sponge.inject.module.SpongeModule;
 import xyz.jpenilla.squaremap.sponge.listener.MapUpdateListener;
 import xyz.jpenilla.squaremap.sponge.listener.WorldLoadListener;
-import xyz.jpenilla.squaremap.sponge.network.SpongeNetwork;
+import xyz.jpenilla.squaremap.sponge.network.SpongeNetworking;
 
 @DefaultQualifier(NonNull.class)
 @Plugin("squaremap")
@@ -69,7 +68,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
                 .done()
         );
         this.common = this.injector.getInstance(SquaremapCommon.class);
-        this.game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(SpongeNetwork.class));
+        this.game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(SpongeNetworking.class));
     }
 
     @Listener
@@ -161,15 +160,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
         this.common.reload(audience);
     }
 
-    public PluginContainer pluginContainer() {
-        return this.pluginContainer;
-    }
-
-    @Override
-    public ServerAccess serverAccess() {
-        return this.injector.getInstance(ServerAccess.class);
-    }
-
     @Override
     public SpongeWorldManager worldManager() {
         return this.worldManager;
@@ -200,9 +190,5 @@ public final class SquaremapSponge implements SquaremapPlatform {
     @Override
     public String version() {
         return this.pluginContainer.metadata().version().toString();
-    }
-
-    public Game game() {
-        return this.game;
     }
 }

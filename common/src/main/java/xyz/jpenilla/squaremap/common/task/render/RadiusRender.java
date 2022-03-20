@@ -74,7 +74,7 @@ public final class RadiusRender extends AbstractRender {
         final Multimap<RegionCoordinate, CompletableFuture<Void>> futures = ArrayListMultimap.create();
 
         while (spiral.hasNext()) {
-            ChunkCoordinate chunkCoord = spiral.next();
+            final ChunkCoordinate chunkCoord = spiral.next();
             final RegionCoordinate region = chunkCoord.regionCoordinate();
 
             // ignore chunks within the radius that are outside the visibility limit
@@ -82,11 +82,7 @@ public final class RadiusRender extends AbstractRender {
                 continue;
             }
 
-            Image image = images.get(region);
-            if (image == null) {
-                image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
-                images.put(region, image);
-            }
+            final Image image = images.computeIfAbsent(region, r -> new Image(r, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX));
 
             futures.put(region, this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));
         }

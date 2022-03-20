@@ -40,7 +40,7 @@ public final class FabricModule extends AbstractModule {
     }
 
     @Provides
-    public ComponentFlattener componentFlattener(final SquaremapFabric platform) {
-        return FabricServerAudiences.of(platform.server()).flattener();
+    public ComponentFlattener componentFlattener(final FabricServerAccess serverAccess) {
+        return FabricServerAudiences.of(serverAccess.requireServer()).flattener();
     }
 }

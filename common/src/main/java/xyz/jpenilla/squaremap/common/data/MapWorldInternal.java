@@ -33,7 +33,6 @@ import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.LayerRegistry;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.WorldAdvanced;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
@@ -56,7 +55,6 @@ public abstract class MapWorldInternal implements MapWorld {
         .create();
     private static final Map<WorldIdentifier, LayerRegistry> LAYER_REGISTRIES = new HashMap<>();
 
-    private final SquaremapPlatform platform;
     private final ServerLevel level;
     private final RenderFactory renderFactory;
     private final Path dataPath;
@@ -75,12 +73,10 @@ public abstract class MapWorldInternal implements MapWorld {
     private @Nullable ScheduledFuture<?> backgroundRender = null;
 
     protected MapWorldInternal(
-        final SquaremapPlatform platform,
         final ServerLevel level,
         final RenderFactory renderFactory,
         final DirectoryProvider directoryProvider
     ) {
-        this.platform = platform;
         this.level = level;
         this.renderFactory = renderFactory;
 

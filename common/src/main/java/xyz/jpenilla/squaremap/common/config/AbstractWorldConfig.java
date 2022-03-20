@@ -125,7 +125,7 @@ public abstract class AbstractWorldConfig {
         final Function<ServerLevel, C> factory
     ) {
         configMap.clear();
-        SquaremapCommon.instance().platform().serverAccess().levels().forEach(factory::apply);
+        SquaremapCommon.instance().serverAccess().levels().forEach(factory::apply);
         final WorldManager worldManager = SquaremapCommon.instance().platform().worldManager();
         if (worldManager == null) {
             return;

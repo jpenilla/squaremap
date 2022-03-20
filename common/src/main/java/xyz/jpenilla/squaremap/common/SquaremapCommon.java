@@ -128,6 +128,10 @@ public final class SquaremapCommon {
         return this.platform;
     }
 
+    public ServerAccess serverAccess() {
+        return this.injector.getInstance(ServerAccess.class);
+    }
+
     public Injector injector() {
         return this.injector;
     }

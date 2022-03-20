@@ -9,7 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Squaremap;
-import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.inject.ModulesConfiguration;
@@ -18,7 +17,6 @@ import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 import xyz.jpenilla.squaremap.paper.inject.module.PaperModule;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
-import xyz.jpenilla.squaremap.paper.listener.PlayerListener;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 import xyz.jpenilla.squaremap.paper.util.BukkitRunnableAdapter;
@@ -32,6 +30,7 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     private BukkitRunnable updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
     private WorldLoadListener worldLoadListener;
+    private PaperNetworking networking;
 
     @Override
     public void onEnable() {
@@ -53,9 +52,8 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         this.common = this.injector.getInstance(SquaremapCommon.class);
         this.getServer().getServicesManager().register(Squaremap.class, this.common.api(), this, ServicePriority.Normal);
 
-        PaperNetworking.register(this);
-
-        this.getServer().getPluginManager().registerEvents(this.injector.getInstance(PlayerListener.class), this);
+        this.networking = this.injector.getInstance(PaperNetworking.class);
+        this.networking.register();
 
         new Metrics(this, 13571); // https://bstats.org/plugin/bukkit/squaremap/13571
 
@@ -64,7 +62,9 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
 
     @Override
     public void onDisable() {
-        PaperNetworking.unregister(this);
+        if (this.networking != null) {
+            this.networking.unregister();
+        }
         if (this.common != null) {
             this.getServer().getServicesManager().unregister(Squaremap.class, this.common.api());
             this.common.shutdown();
@@ -127,11 +127,6 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         }
 
         this.getServer().getScheduler().cancelTasks(this);
-    }
-
-    @Override
-    public @NonNull ServerAccess serverAccess() {
-        return this.injector.getInstance(ServerAccess.class);
     }
 
     @Override

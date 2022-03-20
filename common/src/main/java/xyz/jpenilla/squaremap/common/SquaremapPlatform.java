@@ -13,7 +13,5 @@ public interface SquaremapPlatform {
 
     AbstractPlayerManager playerManager();
 
-    ServerAccess serverAccess();
-
     String version();
 }

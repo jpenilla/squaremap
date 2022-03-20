@@ -20,7 +20,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.AbstractWorldManager;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
@@ -33,6 +33,7 @@ public final class Networking {
 
     public static void handleIncoming(
         final SquaremapPlatform platform,
+        final ServerAccess serverAccess,
         final byte[] bytes,
         final ServerPlayer serverPlayer,
         final Predicate<MapItemSavedData> vanillaMap
@@ -42,17 +43,20 @@ public final class Networking {
         switch (action) {
             case Constants.SERVER_DATA -> {
                 CLIENT_USERS.add(serverPlayer.getUUID());
-                Networking.sendServerData((AbstractWorldManager<?>) platform.worldManager(), serverPlayer);
+                sendServerData(platform, serverPlayer);
             }
             case Constants.MAP_DATA -> {
-                int id = in.readInt();
-                Networking.sendMapData(platform, serverPlayer, id, vanillaMap);
+                final int id = in.readInt();
+                sendMapData(serverAccess, serverPlayer, id, vanillaMap);
             }
         }
     }
 
-    public static void sendServerData(final AbstractWorldManager<?> worldManager, final ServerPlayer player) {
-        ByteArrayDataOutput out = out();
+    public static void sendServerData(
+        final SquaremapPlatform platform,
+        final ServerPlayer player
+    ) {
+        final ByteArrayDataOutput out = out();
 
         out.writeInt(Constants.SERVER_DATA);
         out.writeInt(Constants.PROTOCOL);
@@ -60,7 +64,7 @@ public final class Networking {
 
         out.writeUTF(Config.WEB_ADDRESS);
 
-        final Map<WorldIdentifier, MapWorldInternal> mapWorlds = worldManager.worlds();
+        final Map<WorldIdentifier, MapWorldInternal> mapWorlds = platform.worldManager().worlds();
         out.writeInt(mapWorlds.size());
 
         mapWorlds.forEach(($, mapWorld) -> {
@@ -77,7 +81,7 @@ public final class Networking {
     }
 
     private static void sendMapData(
-        final SquaremapPlatform platform,
+        final ServerAccess serverAccess,
         final ServerPlayer player,
         final int id,
         final Predicate<MapItemSavedData> vanillaMap
@@ -94,7 +98,7 @@ public final class Networking {
             return;
         }
 
-        final @Nullable ServerLevel world = platform.serverAccess().level(Util.worldIdentifier(mapData.dimension.location()));
+        final @Nullable ServerLevel world = serverAccess.level(Util.worldIdentifier(mapData.dimension.location()));
         if (world == null) {
             out.writeInt(Constants.ERROR_NO_SUCH_WORLD);
             out.writeInt(id);

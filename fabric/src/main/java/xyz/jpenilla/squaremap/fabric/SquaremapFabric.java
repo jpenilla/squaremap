@@ -13,7 +13,6 @@ import net.minecraft.server.MinecraftServer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
@@ -49,7 +48,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
         this.serverAccess = this.injector.getInstance(FabricServerAccess.class);
         this.registerLifecycleListeners();
         FabricMapUpdates.registerListeners();
-        FabricNetworking.register(this);
+        this.injector.getInstance(FabricNetworking.class).register();
         this.common.updateCheck();
     }
 
@@ -98,15 +97,6 @@ public final class SquaremapFabric implements SquaremapPlatform {
         this.updatePlayers = null;
         this.updateWorldData = null;
         this.playerManager = null;
-    }
-
-    public MinecraftServer server() {
-        return this.serverAccess.requireServer();
-    }
-
-    @Override
-    public ServerAccess serverAccess() {
-        return this.injector.getInstance(ServerAccess.class);
     }
 
     @Override
