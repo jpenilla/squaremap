@@ -23,7 +23,7 @@ public record WorldLoadListener(SquaremapPaper plugin) implements Listener {
     }
 
     // Use high priority to unload world after other plugins unload listeners
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void handleWorldUnload(final WorldUnloadEvent event) {
         this.plugin.worldManager().worldUnloaded(event.getWorld());
     }
