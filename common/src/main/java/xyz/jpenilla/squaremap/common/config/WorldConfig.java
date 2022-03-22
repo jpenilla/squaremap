@@ -9,14 +9,19 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @SuppressWarnings("unused")
 public final class WorldConfig extends AbstractWorldConfig {
     private static final Map<WorldIdentifier, WorldConfig> CONFIG_MAP = new HashMap<>();
 
-    public static void reload() {
-        reload(WorldConfig.class, CONFIG_MAP, WorldConfig::get);
+    public static void reload(
+        final ServerAccess serverAccess,
+        final SquaremapPlatform platform
+    ) {
+        reload(WorldConfig.class, CONFIG_MAP, WorldConfig::get, serverAccess, platform);
     }
 
     public static WorldConfig get(final @NonNull ServerLevel world) {

@@ -84,7 +84,7 @@ public final class SquaremapCommon {
         final Component success = miniMessage(
             Lang.PLUGIN_RELOADED,
             Placeholder.unparsed("name", "squaremap"),
-            Placeholder.unparsed("version", this.platform().version())
+            Placeholder.unparsed("version", this.platform.version())
         );
         audience.sendMessage(success);
     }

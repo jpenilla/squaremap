@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common.config;
 
+import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
@@ -11,7 +13,11 @@ public final class Advanced extends AbstractConfig {
 
     static Advanced config;
 
-    public static void reload(final DirectoryProvider directoryProvider) {
+    public static void reload(
+        final DirectoryProvider directoryProvider,
+        final ServerAccess serverAccess,
+        final SquaremapPlatform platform
+    ) {
         config = new Advanced(directoryProvider);
         config.readConfig(Advanced.class, null);
 
@@ -25,7 +31,7 @@ public final class Advanced extends AbstractConfig {
             config.readConfig(spongeAdvancedClass, null);
         }
 
-        WorldAdvanced.reload();
+        WorldAdvanced.reload(serverAccess, platform);
     }
 
     public static Advanced config() {
