@@ -9,11 +9,11 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
-import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
-public record WorldLoadListener(SquaremapPlugin plugin) implements Listener {
+public record WorldLoadListener(SquaremapPaper plugin) implements Listener {
     // Use low priority to load world before other plugins load listeners
     @EventHandler(priority = EventPriority.LOW)
     public void handleWorldLoad(final WorldLoadEvent event) {
@@ -23,7 +23,7 @@ public record WorldLoadListener(SquaremapPlugin plugin) implements Listener {
     }
 
     // Use high priority to unload world after other plugins unload listeners
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void handleWorldUnload(final WorldUnloadEvent event) {
         this.plugin.worldManager().worldUnloaded(event.getWorld());
     }

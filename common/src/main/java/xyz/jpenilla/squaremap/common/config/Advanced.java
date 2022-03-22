@@ -1,17 +1,24 @@
 package xyz.jpenilla.squaremap.common.config;
 
+import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
-    private Advanced() {
-        super(Advanced.class, "advanced.yml", 1);
+    Advanced(final DirectoryProvider directoryProvider) {
+        super(directoryProvider.dataDirectory(), Advanced.class, "advanced.yml", 1);
     }
 
     static Advanced config;
 
-    public static void reload() {
-        config = new Advanced();
+    public static void reload(
+        final DirectoryProvider directoryProvider,
+        final ServerAccess serverAccess,
+        final SquaremapPlatform platform
+    ) {
+        config = new Advanced(directoryProvider);
         config.readConfig(Advanced.class, null);
 
         // todo - replace hack
@@ -24,7 +31,7 @@ public final class Advanced extends AbstractConfig {
             config.readConfig(spongeAdvancedClass, null);
         }
 
-        WorldAdvanced.reload();
+        WorldAdvanced.reload(serverAccess, platform);
     }
 
     public static Advanced config() {

@@ -11,7 +11,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.PlayerManager;
 
 @DefaultQualifier(NonNull.class)
-public abstract class PlayerManagerImpl implements PlayerManager {
+public abstract class AbstractPlayerManager implements PlayerManager {
     private final Set<UUID> hidden = ConcurrentHashMap.newKeySet();
 
     public boolean otherwiseHidden(final ServerPlayer player) {

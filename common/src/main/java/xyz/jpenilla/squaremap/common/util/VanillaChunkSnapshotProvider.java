@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common.util;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.mojang.datafixers.util.Either;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.nbt.CompoundTag;
@@ -15,9 +17,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
+@Singleton
 public final class VanillaChunkSnapshotProvider implements ChunkSnapshotProvider {
-    private static final VanillaChunkSnapshotProvider INSTANCE = new VanillaChunkSnapshotProvider();
-
+    @Inject
     private VanillaChunkSnapshotProvider() {
     }
 
@@ -76,9 +78,5 @@ public final class VanillaChunkSnapshotProvider implements ChunkSnapshotProvider
     private static @Nullable ChunkAccess fullIfPresent(final ChunkHolder chunkHolder) {
         final CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> future = chunkHolder.getFutureIfPresentUnchecked(ChunkStatus.FULL);
         return future.getNow(ChunkHolder.UNLOADED_CHUNK).left().orElse(null);
-    }
-
-    public static VanillaChunkSnapshotProvider get() {
-        return INSTANCE;
     }
 }

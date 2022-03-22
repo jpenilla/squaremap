@@ -16,6 +16,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Util;
 
@@ -23,8 +25,11 @@ import xyz.jpenilla.squaremap.common.util.Util;
 public final class WorldAdvanced extends AbstractWorldConfig {
     private static final Map<WorldIdentifier, WorldAdvanced> CONFIG_MAP = new HashMap<>();
 
-    public static void reload() {
-        reload(WorldAdvanced.class, CONFIG_MAP, WorldAdvanced::get);
+    public static void reload(
+        final ServerAccess serverAccess,
+        final SquaremapPlatform platform
+    ) {
+        reload(WorldAdvanced.class, CONFIG_MAP, WorldAdvanced::get, serverAccess, platform);
     }
 
     public static WorldAdvanced get(final @NonNull ServerLevel world) {

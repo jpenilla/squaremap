@@ -10,6 +10,13 @@ minecraft {
 dependencies {
   api(projects.squaremapApi)
 
+  api(libs.guice) {
+    exclude("com.google.guava") // provided by minecraft
+  }
+  api(libs.guiceAssistedInject) {
+    exclude("com.google.guava") // provided by minecraft
+  }
+
   api(platform(libs.adventureBom))
   compileOnlyApi(libs.adventureApi)
   compileOnlyApi(libs.adventureTextSerializerPlain)

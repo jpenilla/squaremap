@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.paper;
 
+import com.google.inject.Inject;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,25 +12,30 @@ import org.bukkit.persistence.PersistentDataType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.PlayerManagerImpl;
+import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
-public final class PaperPlayerManager extends PlayerManagerImpl {
-    public static final NamespacedKey HIDDEN_KEY = new NamespacedKey(SquaremapPlugin.getInstance(), "hidden");
+public final class PaperPlayerManager extends AbstractPlayerManager {
+    public final NamespacedKey hiddenKey;
 
     private static PersistentDataContainer pdc(final ServerPlayer player) {
         return CraftBukkitReflection.player(player).getPersistentDataContainer();
     }
 
+    @Inject
+    private PaperPlayerManager(final SquaremapPaper plugin) {
+        this.hiddenKey = new NamespacedKey(plugin, "hidden");
+    }
+
     @Override
     protected boolean persistentHidden(final ServerPlayer player) {
-        return pdc(player).getOrDefault(HIDDEN_KEY, PersistentDataType.BYTE, (byte) 0) != (byte) 0;
+        return pdc(player).getOrDefault(this.hiddenKey, PersistentDataType.BYTE, (byte) 0) != (byte) 0;
     }
 
     @Override
     protected void persistentHidden(final ServerPlayer player, final boolean value) {
-        pdc(player).set(HIDDEN_KEY, PersistentDataType.BYTE, (byte) (value ? 1 : 0));
+        pdc(player).set(this.hiddenKey, PersistentDataType.BYTE, (byte) (value ? 1 : 0));
     }
 
     @Override

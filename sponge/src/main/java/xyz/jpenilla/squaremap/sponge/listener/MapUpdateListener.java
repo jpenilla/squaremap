@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.sponge.listener;
 
+import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.stream.Stream;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.block.transaction.BlockTransactionReceipt;
 import org.spongepowered.api.block.transaction.Operation;
@@ -22,6 +24,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.world.chunk.ChunkEvent;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3i;
+import org.spongepowered.plugin.PluginContainer;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.sponge.SquaremapSponge;
 import xyz.jpenilla.squaremap.sponge.config.SpongeAdvanced;
@@ -31,9 +34,18 @@ import xyz.jpenilla.squaremap.sponge.util.SpongeVectors;
 public final class MapUpdateListener {
     private final Set<Object> registrations = new HashSet<>();
     private final SquaremapSponge squaremapSponge;
+    private final PluginContainer pluginContainer;
+    private final Game game;
 
-    public MapUpdateListener(final SquaremapSponge squaremapSponge) {
+    @Inject
+    private MapUpdateListener(
+        final SquaremapSponge squaremapSponge,
+        final PluginContainer pluginContainer,
+        final Game game
+    ) {
         this.squaremapSponge = squaremapSponge;
+        this.pluginContainer = pluginContainer;
+        this.game = game;
     }
 
     public void register() {
@@ -56,7 +68,7 @@ public final class MapUpdateListener {
 
     public void unregister() {
         for (final Object listener : this.registrations) {
-            this.squaremapSponge.game().eventManager().unregisterListeners(listener);
+            this.game.eventManager().unregisterListeners(listener);
         }
     }
 
@@ -68,8 +80,8 @@ public final class MapUpdateListener {
     }
 
     private void registerListeners(final Object instance) {
-        this.squaremapSponge.game().eventManager()
-            .registerListeners(this.squaremapSponge.pluginContainer(), instance);
+        this.game.eventManager()
+            .registerListeners(this.pluginContainer, instance);
         this.registrations.add(instance);
     }
 
@@ -80,9 +92,9 @@ public final class MapUpdateListener {
             }
             consumer.accept(event);
         };
-        this.squaremapSponge.game().eventManager().registerListener(
+        this.game.eventManager().registerListener(
             EventListenerRegistration.builder(clazz)
-                .plugin(this.squaremapSponge.pluginContainer())
+                .plugin(this.pluginContainer)
                 .listener(listener)
                 .order(Order.POST)
                 .build()
@@ -91,7 +103,7 @@ public final class MapUpdateListener {
     }
 
     private ServerWorld world(final ResourceKey world) {
-        return this.squaremapSponge.game().server().worldManager().world(world).orElseThrow();
+        return this.game.server().worldManager().world(world).orElseThrow();
     }
 
     private void mark(final ServerWorld level, final Vector3i chunk) {

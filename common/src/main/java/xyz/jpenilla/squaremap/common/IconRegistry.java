@@ -12,6 +12,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.api.Registry;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
@@ -19,8 +20,8 @@ public final class IconRegistry implements Registry<BufferedImage> {
     private final Map<Key, BufferedImage> images = new ConcurrentHashMap<>();
     private final Path directory;
 
-    public IconRegistry() {
-        this.directory = FileUtil.WEB_DIR.resolve("images/icon/registered/");
+    public IconRegistry(final DirectoryProvider directoryProvider) {
+        this.directory = directoryProvider.webDirectory().resolve("images/icon/registered/");
         try {
             if (Files.exists(this.directory)) {
                 FileUtil.deleteRecursively(this.directory);

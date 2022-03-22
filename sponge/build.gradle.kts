@@ -17,6 +17,7 @@ minecraft {
 dependencies {
   implementation(projects.squaremapCommon) {
     exclude("io.leangen.geantyref")
+    exclude("com.google.inject")
   }
   implementation(libs.cloudSponge) {
     exclude("io.leangen.geantyref")
@@ -46,6 +47,7 @@ tasks {
     archiveFileName.set("squaremap-sponge-mc$minecraftVersion-${project.version}.jar")
     listOf(
       "cloud.commandframework",
+      "com.google.inject.assistedinject",
     ).forEach(::reloc)
     manifest {
       attributes(

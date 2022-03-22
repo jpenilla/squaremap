@@ -22,51 +22,9 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import net.minecraft.server.level.ServerLevel;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
-import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
 
 public final class FileUtil {
-    public static Path PLUGIN_DIR;
-    public static Path WEB_DIR;
-    public static Path LOCALE_DIR;
-    public static Path TILES_DIR;
-
-    static {
-        reload();
-    }
-
-    public static void reload() {
-        PLUGIN_DIR = SquaremapCommon.instance().platform().dataDirectory();
-        WEB_DIR = PLUGIN_DIR.resolve(Config.WEB_DIR);
-        LOCALE_DIR = PLUGIN_DIR.resolve("locale");
-        TILES_DIR = WEB_DIR.resolve("tiles");
-    }
-
-    public static Path[] getRegionFiles(final ServerLevel level) {
-        final Path regionFolder = SquaremapCommon.instance().platform().regionFileDirectory(level);
-        Logging.debug(() -> "Listing region files for directory '" + regionFolder + "'...");
-        try (final Stream<Path> stream = Files.list(regionFolder)) {
-            return stream.filter(file -> file.getFileName().toString().endsWith(".mca")).toArray(Path[]::new);
-        } catch (final IOException ex) {
-            throw new RuntimeException("Failed to list region files in " + regionFolder.toAbsolutePath(), ex);
-        }
-    }
-
-    public static Path getAndCreateTilesDirectory(final ServerLevel level) {
-        final Path dir = TILES_DIR.resolve(Util.levelWebName(level));
-        if (!Files.exists(dir)) {
-            try {
-                Files.createDirectories(dir);
-            } catch (final IOException e) {
-                Logging.error(Lang.LOG_COULD_NOT_CREATE_DIR, e, "path", dir.toAbsolutePath());
-            }
-        }
-        return dir;
-    }
-
     public static void deleteContentsRecursively(final Path directory) throws IOException {
         if (!Files.isDirectory(directory)) {
             return;
@@ -152,7 +110,7 @@ public final class FileUtil {
         }
     }
 
-    public static void writeString(final Path file, final Supplier<String> string) {
+    public static void writeStringAsync(final Path file, final Supplier<String> string) {
         ForkJoinPool.commonPool().execute(() -> {
             try {
                 writeString(file, string.get());

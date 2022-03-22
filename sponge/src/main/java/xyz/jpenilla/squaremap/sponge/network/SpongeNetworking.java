@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.sponge.network;
 
+import com.google.inject.Inject;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -12,11 +13,25 @@ import org.spongepowered.api.event.lifecycle.RegisterChannelEvent;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 import org.spongepowered.api.network.EngineConnectionSide;
 import org.spongepowered.api.network.channel.raw.RawDataChannel;
+import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.network.Networking;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
-public final class SpongeNetwork {
+public final class SpongeNetworking {
+    private final SquaremapPlatform platform;
+    private final ServerAccess serverAccess;
+
+    @Inject
+    private SpongeNetworking(
+        final SquaremapPlatform platform,
+        final ServerAccess serverAccess
+    ) {
+        this.platform = platform;
+        this.serverAccess = serverAccess;
+    }
+
     @Listener
     public void channelRegistration(final RegisterChannelEvent event) {
         final RawDataChannel channel = event.register(
@@ -30,6 +45,8 @@ public final class SpongeNetwork {
                     return;
                 }
                 Networking.handleIncoming(
+                    this.platform,
+                    this.serverAccess,
                     Util.raw((FriendlyByteBuf) sponge),
                     listener.getPlayer(),
                     $ -> true

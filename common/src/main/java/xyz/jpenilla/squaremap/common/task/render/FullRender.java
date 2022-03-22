@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common.task.render;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -9,26 +11,40 @@ import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
+import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 public final class FullRender extends AbstractRender {
+    private final DirectoryProvider directoryProvider;
     private final int wait;
     private int maxRadius = 0;
     private int totalChunks;
     private int totalRegions;
 
-    public FullRender(final @NonNull MapWorldInternal world, final int wait) {
-        super(world);
+    @AssistedInject
+    private FullRender(
+        @Assisted final @NonNull MapWorldInternal world,
+        @Assisted final int wait,
+        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider,
+        final @NonNull DirectoryProvider directoryProvider
+    ) {
+        super(world, chunkSnapshotProvider);
+        this.directoryProvider = directoryProvider;
         this.wait = wait;
     }
 
-    public FullRender(final @NonNull MapWorldInternal world) {
-        this(world, 0);
+    @AssistedInject
+    private FullRender(
+        @Assisted final @NonNull MapWorldInternal world,
+        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider,
+        final @NonNull DirectoryProvider directoryProvider
+    ) {
+        this(world, 0, chunkSnapshotProvider, directoryProvider);
     }
 
     @Override
@@ -142,7 +158,7 @@ public final class FullRender extends AbstractRender {
     private List<RegionCoordinate> getRegions() {
         final List<RegionCoordinate> regions = new ArrayList<>();
 
-        for (final Path path : FileUtil.getRegionFiles(this.level)) {
+        for (final Path path : this.directoryProvider.getRegionFiles(this.level)) {
             if (path.toFile().length() == 0) {
                 continue;
             }

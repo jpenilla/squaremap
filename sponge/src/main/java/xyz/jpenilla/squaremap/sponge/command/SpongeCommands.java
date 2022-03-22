@@ -7,16 +7,21 @@ import cloud.commandframework.sponge.SpongeCommandManager;
 import cloud.commandframework.sponge.argument.SinglePlayerSelectorArgument;
 import cloud.commandframework.sponge.argument.Vector2iArgument;
 import cloud.commandframework.sponge.data.SinglePlayerSelector;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.command.registrar.tree.CommandTreeNodeTypes;
 import org.spongepowered.math.vector.Vector2i;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
+import org.spongepowered.plugin.PluginContainer;
 import xyz.jpenilla.squaremap.common.command.Commander;
+import xyz.jpenilla.squaremap.common.command.Commands;
+import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
@@ -26,15 +31,21 @@ import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.util.Components;
-import xyz.jpenilla.squaremap.sponge.SquaremapSponge;
 
-public final class SpongeCommands {
-    private SpongeCommands() {
+@DefaultQualifier(NonNull.class)
+@Singleton
+public final class SpongeCommands implements PlatformCommands {
+    private final PluginContainer pluginContainer;
+
+    @Inject
+    private SpongeCommands(final PluginContainer pluginContainer) {
+        this.pluginContainer = pluginContainer;
     }
 
-    public static CommandManager<Commander> createCommandManager(final SquaremapSponge plugin) {
+    @Override
+    public CommandManager<Commander> createCommandManager() {
         final SpongeCommandManager<Commander> mgr = new SpongeCommandManager<>(
-            plugin.pluginContainer(),
+            this.pluginContainer,
             CommandExecutionCoordinator.simpleCoordinator(),
             commander -> ((SpongeCommander) commander).cause(),
             SpongeCommander::from
@@ -55,10 +66,11 @@ public final class SpongeCommands {
         return mgr;
     }
 
-    public static void register(final @NonNull SquaremapCommon common) {
+    @Override
+    public void registerCommands(final Commands commands) {
         List.of(
             new RadiusRenderCommand(
-                common.commands(),
+                commands,
                 Vector2iArgument::optional,
                 (name, context) -> {
                     final @Nullable Vector2i loc = context.getOrDefault(name, null);
@@ -68,13 +80,13 @@ public final class SpongeCommands {
                     return new BlockPos(loc.x(), 0, loc.y());
                 }
             ),
-            new HideShowCommands(common.commands(), SinglePlayerSelectorArgument::of, SpongeCommands::resolvePlayer)
+            new HideShowCommands(commands, SinglePlayerSelectorArgument::of, SpongeCommands::resolvePlayer)
         ).forEach(SquaremapCommand::register);
     }
 
-    private static @NonNull ServerPlayer resolvePlayer(final @NonNull String argName, final @NonNull CommandContext<Commander> context) {
+    private static ServerPlayer resolvePlayer(final String argName, final CommandContext<Commander> context) {
         final Commander sender = context.getSender();
-        final SinglePlayerSelector selector = context.getOrDefault(argName, null);
+        final @Nullable SinglePlayerSelector selector = context.getOrDefault(argName, null);
 
         if (selector == null) {
             if (sender instanceof PlayerCommander player) {

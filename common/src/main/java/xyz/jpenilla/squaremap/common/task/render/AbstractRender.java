@@ -27,7 +27,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.BiomeColors;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
@@ -35,6 +34,7 @@ import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.Util;
@@ -44,6 +44,7 @@ public abstract class AbstractRender implements Runnable {
 
     private final ExecutorService executor;
     private final FutureTask<Void> futureTask;
+    private final ChunkSnapshotProvider chunkSnapshotProvider;
     protected volatile boolean cancelled = false;
 
     protected final MapWorldInternal mapWorld;
@@ -56,9 +57,13 @@ public abstract class AbstractRender implements Runnable {
 
     protected Pair<Timer, RenderProgress> progress = null;
 
-    public AbstractRender(final @NonNull MapWorldInternal world) {
+    protected AbstractRender(
+        final @NonNull MapWorldInternal world,
+        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider
+    ) {
         this(
             world,
+            chunkSnapshotProvider,
             Executors.newFixedThreadPool(
                 getThreads(world.config().MAX_RENDER_THREADS),
                 Util.squaremapThreadFactory("render-worker", world.serverLevel())
@@ -66,11 +71,16 @@ public abstract class AbstractRender implements Runnable {
         );
     }
 
-    public AbstractRender(final @NonNull MapWorldInternal mapWorld, final @NonNull ExecutorService executor) {
+    protected AbstractRender(
+        final @NonNull MapWorldInternal mapWorld,
+        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider,
+        final @NonNull ExecutorService executor
+    ) {
         this.futureTask = new FutureTask<>(this, null);
         this.mapWorld = mapWorld;
         this.executor = executor;
         this.level = mapWorld.serverLevel();
+        this.chunkSnapshotProvider = chunkSnapshotProvider;
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
             ? new ConcurrentHashMap<>()
             : null; // this should be null if we are not mapping biomes
@@ -327,7 +337,7 @@ public abstract class AbstractRender implements Runnable {
         int color = this.mapWorld.getMapColor(state);
 
         if (this.biomeColors != null) {
-            color = this.biomeColors.computeIfAbsent(Thread.currentThread(), $ -> new BiomeColors(this.mapWorld))
+            color = this.biomeColors.computeIfAbsent(Thread.currentThread(), $ -> new BiomeColors(this.mapWorld, this.chunkSnapshotProvider))
                 .modifyColorFromBiome(color, chunk, mutablePos);
         }
 
@@ -449,8 +459,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private @Nullable ChunkSnapshot chunkSnapshot(final ServerLevel level, final int x, final int z) {
-        final CompletableFuture<ChunkSnapshot> future = SquaremapCommon.instance().platform().chunkSnapshotProvider()
-            .asyncSnapshot(level, x, z, false);
+        final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(level, x, z, false);
         while (!future.isDone()) {
             if (this.cancelled) {
                 return null;

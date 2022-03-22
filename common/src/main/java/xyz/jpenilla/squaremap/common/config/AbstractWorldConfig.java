@@ -8,7 +8,8 @@ import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
+import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
@@ -122,11 +123,13 @@ public abstract class AbstractWorldConfig {
     protected static <C extends AbstractWorldConfig> void reload(
         final Class<C> configClass,
         final Map<WorldIdentifier, C> configMap,
-        final Function<ServerLevel, C> factory
+        final Function<ServerLevel, C> factory,
+        final ServerAccess serverAccess,
+        final SquaremapPlatform platform
     ) {
         configMap.clear();
-        SquaremapCommon.instance().platform().levels().forEach(factory::apply);
-        final WorldManager worldManager = SquaremapCommon.instance().platform().worldManager();
+        serverAccess.levels().forEach(factory::apply);
+        final WorldManager worldManager = platform.worldManager();
         if (worldManager == null) {
             return;
         }

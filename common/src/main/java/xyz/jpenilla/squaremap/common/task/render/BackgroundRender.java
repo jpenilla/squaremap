@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common.task.render;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,13 +16,19 @@ import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 public final class BackgroundRender extends AbstractRender {
 
-    public BackgroundRender(final @NonNull MapWorldInternal world) {
+    @AssistedInject
+    private BackgroundRender(
+        @Assisted final @NonNull MapWorldInternal world,
+        final ChunkSnapshotProvider chunkSnapshotProvider
+    ) {
         super(
             world,
+            chunkSnapshotProvider,
             Executors.newFixedThreadPool(
                 getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS),
                 Util.squaremapThreadFactory("bg-render-worker", world.serverLevel())

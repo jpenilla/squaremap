@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
+import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
 @SuppressWarnings("unused")
 public final class Config extends AbstractConfig {
-    private Config() {
-        super(Config.class, "config.yml", 2);
+    Config(final DirectoryProvider directoryProvider) {
+        super(directoryProvider.dataDirectory(), Config.class, "config.yml", 2);
     }
 
     @Override
@@ -28,11 +31,15 @@ public final class Config extends AbstractConfig {
 
     static Config config;
 
-    public static void reload() {
-        config = new Config();
+    public static void reload(
+        final DirectoryProvider directoryProvider,
+        final ServerAccess serverAccess,
+        final SquaremapPlatform platform
+    ) {
+        config = new Config(directoryProvider);
         config.readConfig(Config.class, null);
 
-        WorldConfig.reload();
+        WorldConfig.reload(serverAccess, platform);
     }
 
     public static String LANGUAGE_FILE = "lang-en.yml";

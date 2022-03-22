@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.paper.listener;
 
+import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -42,15 +43,16 @@ import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.util.Numbers;
-import xyz.jpenilla.squaremap.paper.SquaremapPlugin;
+import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.config.PaperAdvanced;
 
 public final class MapUpdateListeners {
 
-    private final SquaremapPlugin plugin;
+    private final SquaremapPaper plugin;
     private final List<Listener> registeredListeners = new ArrayList<>();
 
-    public MapUpdateListeners(final @NonNull SquaremapPlugin plugin) {
+    @Inject
+    private MapUpdateListeners(final @NonNull SquaremapPaper plugin) {
         this.plugin = plugin;
     }
 

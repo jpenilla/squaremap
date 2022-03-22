@@ -26,6 +26,9 @@ tasks {
       "cloud.commandframework",
       "io.leangen.geantyref",
       "org.bstats",
+      "javax.inject",
+      "com.google.inject",
+      "org.aopalliance",
     ).forEach(::reloc)
   }
   reobfJar {
@@ -38,7 +41,7 @@ squaremapPlatform {
 }
 
 bukkit {
-  main = "xyz.jpenilla.squaremap.paper.SquaremapPlugin"
+  main = "xyz.jpenilla.squaremap.paper.SquaremapPaper"
   name = rootProject.name
   apiVersion = "1.18"
   website = providers.gradleProperty("githubUrl").get()

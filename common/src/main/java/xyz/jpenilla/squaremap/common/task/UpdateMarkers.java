@@ -79,7 +79,7 @@ public final class UpdateMarkers implements Runnable {
         });
 
         Path file = this.mapWorld.tilesPath().resolve("markers.json");
-        FileUtil.writeString(file, () -> GSON.toJson(layers));
+        FileUtil.writeStringAsync(file, () -> GSON.toJson(layers));
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {

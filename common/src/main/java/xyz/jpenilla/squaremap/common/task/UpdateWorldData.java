@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.common.task;
 
 import com.google.gson.Gson;
+import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +13,12 @@ import net.minecraft.world.level.Level;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.Util;
@@ -25,16 +28,25 @@ public final class UpdateWorldData implements Runnable {
     private static final Gson GSON = new Gson();
 
     private final SquaremapPlatform platform;
+    private final DirectoryProvider directoryProvider;
+    private final ServerAccess serverAccess;
 
-    public UpdateWorldData(final SquaremapPlatform platform) {
+    @Inject
+    private UpdateWorldData(
+        final SquaremapPlatform platform,
+        final DirectoryProvider directoryProvider,
+        final ServerAccess serverAccess
+    ) {
         this.platform = platform;
+        this.directoryProvider = directoryProvider;
+        this.serverAccess = serverAccess;
     }
 
     @Override
     public void run() {
         List<Object> worlds = new ArrayList<>();
 
-        this.platform.levels().forEach(world -> {
+        this.serverAccess.levels().forEach(world -> {
             final @Nullable MapWorldInternal mapWorld = this.platform.worldManager().getWorldIfEnabled(world)
                 .orElse(null);
             if (mapWorld == null) {
@@ -76,7 +88,7 @@ public final class UpdateWorldData implements Runnable {
             settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
             settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
 
-            FileUtil.writeString(mapWorld.tilesPath().resolve("settings.json"), () -> GSON.toJson(settings));
+            FileUtil.writeStringAsync(mapWorld.tilesPath().resolve("settings.json"), () -> GSON.toJson(settings));
 
             Map<String, Object> worldsList = new HashMap<>();
             //worldsList.put("name", world.getName());
@@ -113,7 +125,7 @@ public final class UpdateWorldData implements Runnable {
         map.put("worlds", worlds);
         map.put("ui", ui);
 
-        FileUtil.writeString(FileUtil.TILES_DIR.resolve("settings.json"), () -> GSON.toJson(map));
+        FileUtil.writeStringAsync(this.directoryProvider.tilesDirectory().resolve("settings.json"), () -> GSON.toJson(map));
     }
 
     // replicate bukkit "environment"
