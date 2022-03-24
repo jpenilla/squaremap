@@ -15,6 +15,7 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import net.minecraft.util.Mth;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
@@ -25,25 +26,33 @@ import xyz.jpenilla.squaremap.common.util.FileUtil;
 public final class Image {
     private static final int TRANSPARENT = new Color(0, 0, 0, 0).getRGB();
     public static final int SIZE = 512;
-    private final int[][] pixels = new int[SIZE][SIZE];
-    private final int maxZoom;
     private final RegionCoordinate region;
     private final Path directory;
+    private final int maxZoom;
+    private int @Nullable [][] pixels = null;
 
     public Image(final RegionCoordinate region, final Path directory, final int maxZoom) {
         this.region = region;
         this.directory = directory;
         this.maxZoom = maxZoom;
-        for (int[] arr : this.pixels) {
-            Arrays.fill(arr, Integer.MIN_VALUE);
-        }
     }
 
     public synchronized void setPixel(final int x, final int z, final int color) {
+        if (this.pixels == null) {
+            this.pixels = new int[SIZE][SIZE];
+            for (final int[] arr : this.pixels) {
+                Arrays.fill(arr, Integer.MIN_VALUE);
+            }
+        }
+
         this.pixels[x & (SIZE - 1)][z & (SIZE - 1)] = color;
     }
 
-    public void save() {
+    public synchronized void save() {
+        if (this.pixels == null) {
+            return;
+        }
+
         for (int zoom = 0; zoom <= this.maxZoom; zoom++) {
             int step = (int) Math.pow(2, zoom);
             int size = SIZE / step;
