@@ -6,10 +6,12 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
+import com.google.inject.Inject;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -18,10 +20,12 @@ import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
 import xyz.jpenilla.squaremap.common.util.Components;
 
+@DefaultQualifier(NonNull.class)
 public final class HelpCommand extends SquaremapCommand {
     private final MinecraftHelp<Commander> minecraftHelp;
 
-    public HelpCommand(final @NonNull Commands commands) {
+    @Inject
+    private HelpCommand(final Commands commands) {
         super(commands);
         this.minecraftHelp = new MinecraftHelp<>(
             String.format("/%s help", Config.MAIN_COMMAND_LABEL),
@@ -61,7 +65,7 @@ public final class HelpCommand extends SquaremapCommand {
                 .handler(this::executeHelp));
     }
 
-    private void executeHelp(final @NonNull CommandContext<Commander> context) {
+    private void executeHelp(final CommandContext<Commander> context) {
         this.minecraftHelp.queryCommands(
             context.<String>getOptional("query").orElse(""),
             context.getSender()

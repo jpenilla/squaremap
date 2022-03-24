@@ -2,16 +2,27 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import com.google.inject.Inject;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.util.Components;
 
+@DefaultQualifier(NonNull.class)
 public final class ReloadCommand extends SquaremapCommand {
-    public ReloadCommand(final @NonNull Commands commands) {
+    private final SquaremapCommon common;
+
+    @Inject
+    private ReloadCommand(
+        final Commands commands,
+        final SquaremapCommon common
+    ) {
         super(commands);
+        this.common = common;
     }
 
     @Override
@@ -23,7 +34,7 @@ public final class ReloadCommand extends SquaremapCommand {
                 .handler(this::execute));
     }
 
-    public void execute(final @NonNull CommandContext<Commander> context) {
-        context.get(Commands.COMMON).reload(context.getSender());
+    public void execute(final CommandContext<Commander> context) {
+        this.common.reload(context.getSender());
     }
 }

@@ -10,6 +10,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -19,14 +20,15 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
 import xyz.jpenilla.squaremap.common.util.Components;
 
+@DefaultQualifier(NonNull.class)
 public final class RadiusRenderCommand extends SquaremapCommand {
     private final Function<String, CommandArgument<Commander, ?>> vec2dArgument;
     private final BiFunction<String, CommandContext<Commander>, @Nullable BlockPos> getPos;
 
     public RadiusRenderCommand(
-        final @NonNull Commands commands,
-        final @NonNull Function<String, CommandArgument<Commander, ?>> vec2dArgument,
-        final @NonNull BiFunction<String, CommandContext<Commander>, @Nullable BlockPos> getPos
+        final Commands commands,
+        final Function<String, CommandArgument<Commander, ?>> vec2dArgument,
+        final BiFunction<String, CommandContext<Commander>, @Nullable BlockPos> getPos
     ) {
         super(commands);
         this.vec2dArgument = vec2dArgument;
@@ -45,12 +47,12 @@ public final class RadiusRenderCommand extends SquaremapCommand {
                 .handler(this::executeRadiusRender));
     }
 
-    private void executeRadiusRender(final @NonNull CommandContext<Commander> context) {
+    private void executeRadiusRender(final CommandContext<Commander> context) {
         final Commander sender = context.getSender();
         final MapWorldInternal world = context.get("world");
         final int radius = context.get("radius");
 
-        BlockPos center = this.getPos.apply("center", context);
+        @Nullable BlockPos center = this.getPos.apply("center", context);
         if (center == null) {
             center = new BlockPos(0, 0, 0);
         }

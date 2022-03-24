@@ -54,8 +54,8 @@ public final class SquaremapCommon {
     public void init() {
         this.configManager.init();
         this.start();
-        this.setupApi(this.injector);
-        this.injector.getInstance(Commands.class); // Init commands
+        this.setupApi();
+        this.injector.getInstance(Commands.class).registerCommands();
     }
 
     public void start() {
@@ -97,8 +97,8 @@ public final class SquaremapCommon {
         ForkJoinPool.commonPool().execute(() -> new UpdateChecker(Logging.logger(), "jpenilla/squaremap").checkVersion());
     }
 
-    public void setupApi(final Injector injector) {
-        this.api = injector.getInstance(Squaremap.class);
+    public void setupApi() {
+        this.api = this.injector.getInstance(Squaremap.class);
 
         try {
             this.api.iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(this.directoryProvider.webDirectory().resolve("images/icon/spawn.png").toFile()));

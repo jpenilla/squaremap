@@ -8,6 +8,7 @@ import java.util.function.Function;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -15,14 +16,15 @@ import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
 import xyz.jpenilla.squaremap.common.util.Components;
 
+@DefaultQualifier(NonNull.class)
 public final class HideShowCommands extends SquaremapCommand {
     private final Function<String, CommandArgument<Commander, ?>> playerArgument;
     private final BiFunction<String, CommandContext<Commander>, ServerPlayer> getPlayer;
 
     public HideShowCommands(
-        final @NonNull Commands commands,
-        final @NonNull Function<String, CommandArgument<Commander, ?>> playerArgument,
-        final @NonNull BiFunction<String, CommandContext<Commander>, ServerPlayer> getPlayer
+        final Commands commands,
+        final Function<String, CommandArgument<Commander, ?>> playerArgument,
+        final BiFunction<String, CommandContext<Commander>, ServerPlayer> getPlayer
     ) {
         super(commands);
         this.playerArgument = playerArgument;
@@ -56,7 +58,7 @@ public final class HideShowCommands extends SquaremapCommand {
                 .handler(this::executeShow));
     }
 
-    private void executeHide(final @NonNull CommandContext<Commander> context) {
+    private void executeHide(final CommandContext<Commander> context) {
         final ServerPlayer target = this.getPlayer.apply("player", context);
         final Commander sender = context.getSender();
         if (context.get(Commands.PLATFORM).playerManager().hidden(target.getUUID())) {
@@ -68,7 +70,7 @@ public final class HideShowCommands extends SquaremapCommand {
         Lang.send(sender, Lang.PLAYER_HIDDEN, Placeholder.unparsed("player", target.getGameProfile().getName()));
     }
 
-    private void executeShow(final @NonNull CommandContext<Commander> context) {
+    private void executeShow(final CommandContext<Commander> context) {
         final ServerPlayer target = this.getPlayer.apply("player", context);
         final Commander sender = context.getSender();
         if (!context.get(Commands.PLATFORM).playerManager().hidden(target.getUUID())) {

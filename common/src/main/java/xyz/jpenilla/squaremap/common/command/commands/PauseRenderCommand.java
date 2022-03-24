@@ -2,8 +2,10 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import com.google.inject.Inject;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -13,8 +15,10 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
 import xyz.jpenilla.squaremap.common.util.Components;
 
+@DefaultQualifier(NonNull.class)
 public final class PauseRenderCommand extends SquaremapCommand {
-    public PauseRenderCommand(final @NonNull Commands commands) {
+    @Inject
+    private PauseRenderCommand(final Commands commands) {
         super(commands);
     }
 
@@ -28,7 +32,7 @@ public final class PauseRenderCommand extends SquaremapCommand {
                 .handler(this::executePauseRender));
     }
 
-    private void executePauseRender(final @NonNull CommandContext<Commander> context) {
+    private void executePauseRender(final CommandContext<Commander> context) {
         final Commander sender = context.getSender();
         final MapWorldInternal world = CommandUtil.resolveWorld(context);
 

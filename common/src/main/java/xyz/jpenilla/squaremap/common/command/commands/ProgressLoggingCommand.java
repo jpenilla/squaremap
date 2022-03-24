@@ -4,11 +4,13 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.IntegerArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import com.google.inject.Inject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -24,8 +26,15 @@ import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 @DefaultQualifier(NonNull.class)
 public final class ProgressLoggingCommand extends SquaremapCommand {
-    public ProgressLoggingCommand(final Commands commands) {
+    private final SquaremapPlatform platform;
+
+    @Inject
+    private ProgressLoggingCommand(
+        final Commands commands,
+        final SquaremapPlatform platform
+    ) {
         super(commands);
+        this.platform = platform;
     }
 
     @Override
@@ -58,7 +67,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
     private void executeToggle(final CommandContext<Commander> context) {
         Config.toggleProgressLogging();
 
-        context.get(Commands.PLATFORM).worldManager().worlds().values()
+        this.platform.worldManager().worlds().values()
             .forEach(MapWorldInternal::restartRenderProgressLogging);
 
         final Component message;
@@ -79,7 +88,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         final int seconds = context.get("seconds");
         Config.setLoggingInterval(seconds);
 
-        context.get(Commands.PLATFORM).worldManager().worlds().values()
+        this.platform.worldManager().worlds().values()
             .forEach(MapWorldInternal::restartRenderProgressLogging);
 
         context.getSender().sendMessage(Components.miniMessage(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Placeholder.unparsed("seconds", Integer.toString(seconds))));
