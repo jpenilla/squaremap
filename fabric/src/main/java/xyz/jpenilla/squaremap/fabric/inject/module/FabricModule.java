@@ -14,6 +14,7 @@ import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
 import xyz.jpenilla.squaremap.fabric.FabricServerAccess;
 import xyz.jpenilla.squaremap.fabric.SquaremapFabric;
 import xyz.jpenilla.squaremap.fabric.command.FabricCommands;
+import xyz.jpenilla.squaremap.fabric.util.FabricMapUpdates;
 
 @DefaultQualifier(NonNull.class)
 public final class FabricModule extends AbstractModule {
@@ -37,6 +38,8 @@ public final class FabricModule extends AbstractModule {
         this.bind(Path.class)
             .annotatedWith(DataDirectory.class)
             .toInstance(FabricLoader.getInstance().getGameDir().resolve("squaremap"));
+
+        this.requestStaticInjection(FabricMapUpdates.class);
     }
 
     @Provides

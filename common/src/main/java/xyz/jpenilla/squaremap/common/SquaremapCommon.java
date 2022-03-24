@@ -21,6 +21,7 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
+import xyz.jpenilla.squaremap.common.data.LevelBiomeColorData;
 import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
@@ -31,10 +32,8 @@ import static xyz.jpenilla.squaremap.common.util.Components.miniMessage;
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class SquaremapCommon {
-    private static @MonotonicNonNull SquaremapCommon INSTANCE;
-
-    private final SquaremapPlatform platform;
     private final Injector injector;
+    private final SquaremapPlatform platform;
     private final DirectoryProvider directoryProvider;
     private final ConfigManager configManager;
     private @MonotonicNonNull Squaremap api;
@@ -46,19 +45,21 @@ public final class SquaremapCommon {
         final DirectoryProvider directoryProvider,
         final ConfigManager configManager
     ) {
-        INSTANCE = this;
-        this.platform = platform;
         this.injector = injector;
+        this.platform = platform;
         this.directoryProvider = directoryProvider;
         this.configManager = configManager;
+    }
 
+    public void init() {
         this.configManager.init();
         this.start();
-        this.setupApi(injector);
-        injector.getInstance(Commands.class); // Init commands
+        this.setupApi(this.injector);
+        this.injector.getInstance(Commands.class); // Init commands
     }
 
     public void start() {
+        LevelBiomeColorData.loadImages(this.directoryProvider);
         this.platform.startCallback();
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.startServer(this.directoryProvider);
@@ -122,21 +123,5 @@ public final class SquaremapCommon {
 
     public Squaremap api() {
         return this.api;
-    }
-
-    public SquaremapPlatform platform() {
-        return this.platform;
-    }
-
-    public ServerAccess serverAccess() {
-        return this.injector.getInstance(ServerAccess.class);
-    }
-
-    public Injector injector() {
-        return this.injector;
-    }
-
-    public static SquaremapCommon instance() {
-        return INSTANCE;
     }
 }

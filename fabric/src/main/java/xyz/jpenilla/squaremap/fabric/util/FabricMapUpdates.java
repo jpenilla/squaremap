@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.fabric.util;
 
+import com.google.inject.Inject;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -12,11 +13,14 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.fabric.SquaremapFabric;
 
 @DefaultQualifier(NonNull.class)
 public final class FabricMapUpdates {
+    @Inject
+    private static SquaremapFabric PLATFORM;
+
     private FabricMapUpdates() {
     }
 
@@ -46,7 +50,7 @@ public final class FabricMapUpdates {
     }
 
     public static void mark(final ServerLevel level, final ChunkCoordinate chunk) {
-        SquaremapCommon.instance().platform().worldManager()
+        PLATFORM.worldManager()
             .getWorldIfEnabled(level)
             .ifPresent(world -> world.chunkModified(chunk));
     }

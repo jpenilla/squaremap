@@ -68,6 +68,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
                 .done()
         );
         this.common = this.injector.getInstance(SquaremapCommon.class);
+        this.common.init();
         this.game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(SpongeNetworking.class));
     }
 

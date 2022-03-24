@@ -50,6 +50,7 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         );
 
         this.common = this.injector.getInstance(SquaremapCommon.class);
+        this.common.init();
         this.getServer().getServicesManager().register(Squaremap.class, this.common.api(), this, ServicePriority.Normal);
 
         this.networking = this.injector.getInstance(PaperNetworking.class);

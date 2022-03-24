@@ -10,7 +10,6 @@ import cloud.commandframework.meta.CommandMeta;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.List;
@@ -20,6 +19,7 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.command.commands.CancelRenderCommand;
@@ -33,6 +33,8 @@ import xyz.jpenilla.squaremap.common.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
+import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.Components;
 
 import static net.kyori.adventure.text.Component.text;
@@ -41,24 +43,32 @@ import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class Commands {
-    public static final CloudKey<Injector> INJECTOR = SimpleCloudKey.of("squaremap-injector", TypeToken.get(Injector.class));
-    public static final CloudKey<SquaremapCommon> COMMON = SimpleCloudKey.of("squaremap-common", TypeToken.get(SquaremapCommon.class));
-    public static final CloudKey<SquaremapPlatform> PLATFORM = SimpleCloudKey.of("squaremap-platform", TypeToken.get(SquaremapPlatform.class));
+    public static final CloudKey<SquaremapCommon> COMMON = createTypeKey(SquaremapCommon.class);
+    public static final CloudKey<SquaremapPlatform> PLATFORM = createTypeKey(SquaremapPlatform.class);
+    public static final CloudKey<DirectoryProvider> DIRECTORY_PROVIDER = createTypeKey(DirectoryProvider.class);
+    public static final CloudKey<ServerAccess> SERVER_ACCESS = createTypeKey(ServerAccess.class);
+    public static final CloudKey<RenderFactory> RENDER_FACTORY = createTypeKey(RenderFactory.class);
 
     private final CommandManager<Commander> commandManager;
 
     @Inject
     private Commands(
-        final Injector injector,
-        final PlatformCommands platformCommands
+        final PlatformCommands platformCommands,
+        final SquaremapCommon common,
+        final SquaremapPlatform platform,
+        final DirectoryProvider directoryProvider,
+        final ServerAccess serverAccess,
+        final RenderFactory renderFactory
     ) {
         this.commandManager = platformCommands.createCommandManager();
 
         this.commandManager.registerCommandPreProcessor(ctx -> {
             final CommandContext<Commander> commandContext = ctx.getCommandContext();
-            commandContext.store(INJECTOR, injector);
-            commandContext.store(COMMON, injector.getInstance(SquaremapCommon.class));
-            commandContext.store(PLATFORM, injector.getInstance(SquaremapPlatform.class));
+            commandContext.store(COMMON, common);
+            commandContext.store(PLATFORM, platform);
+            commandContext.store(DIRECTORY_PROVIDER, directoryProvider);
+            commandContext.store(SERVER_ACCESS, serverAccess);
+            commandContext.store(RENDER_FACTORY, renderFactory);
         });
 
         this.registerExceptionHandlers();
@@ -121,5 +131,9 @@ public final class Commands {
 
     public CommandManager<Commander> commandManager() {
         return this.commandManager;
+    }
+
+    private static <T> CloudKey<T> createTypeKey(final Class<T> type) {
+        return SimpleCloudKey.of("squaremap-" + type.getName(), TypeToken.get(type));
     }
 }

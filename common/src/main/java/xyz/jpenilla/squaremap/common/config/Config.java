@@ -5,7 +5,6 @@ import java.util.List;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
 @SuppressWarnings("unused")
@@ -33,13 +32,12 @@ public final class Config extends AbstractConfig {
 
     public static void reload(
         final DirectoryProvider directoryProvider,
-        final ServerAccess serverAccess,
-        final SquaremapPlatform platform
+        final ServerAccess serverAccess
     ) {
         config = new Config(directoryProvider);
         config.readConfig(Config.class, null);
 
-        WorldConfig.reload(serverAccess, platform);
+        WorldConfig.reload(serverAccess);
     }
 
     public static String LANGUAGE_FILE = "lang-en.yml";

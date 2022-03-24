@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
-import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Util;
 
@@ -18,12 +17,11 @@ public record LevelBiomeColorData(
     Reference2IntMap<Biome> foliageColors,
     Reference2IntMap<Biome> waterColors
 ) {
-    private static final int[] MAP_GRASS;
-    private static final int[] MAP_FOLIAGE;
+    private static int[] MAP_GRASS;
+    private static int[] MAP_FOLIAGE;
 
-    static {
-        final Path imagesDir = SquaremapCommon.instance().injector().getInstance(DirectoryProvider.class)
-            .webDirectory().resolve("images");
+    public static void loadImages(final DirectoryProvider directoryProvider) {
+        final Path imagesDir = directoryProvider.webDirectory().resolve("images");
         final BufferedImage imgGrass;
         final BufferedImage imgFoliage;
 

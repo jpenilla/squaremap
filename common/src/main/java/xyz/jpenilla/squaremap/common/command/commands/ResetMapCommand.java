@@ -13,7 +13,6 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
 import xyz.jpenilla.squaremap.common.config.Lang;
-import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
@@ -36,7 +35,7 @@ public final class ResetMapCommand extends SquaremapCommand {
     private void executeResetMap(final @NonNull CommandContext<Commander> context) {
         final Commander sender = context.getSender();
         final ServerLevel world = context.get("world");
-        final Path worldTilesDir = context.get(Commands.INJECTOR).getInstance(DirectoryProvider.class).getAndCreateTilesDirectory(world);
+        final Path worldTilesDir = context.get(Commands.DIRECTORY_PROVIDER).getAndCreateTilesDirectory(world);
         try {
             FileUtil.deleteContentsRecursively(worldTilesDir);
         } catch (final IOException ex) {

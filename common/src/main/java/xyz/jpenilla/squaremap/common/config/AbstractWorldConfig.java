@@ -9,9 +9,6 @@ import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.WorldManager;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.Util;
 
@@ -124,17 +121,9 @@ public abstract class AbstractWorldConfig {
         final Class<C> configClass,
         final Map<WorldIdentifier, C> configMap,
         final Function<ServerLevel, C> factory,
-        final ServerAccess serverAccess,
-        final SquaremapPlatform platform
+        final ServerAccess serverAccess
     ) {
         configMap.clear();
         serverAccess.levels().forEach(factory::apply);
-        final WorldManager worldManager = platform.worldManager();
-        if (worldManager == null) {
-            return;
-        }
-        for (final MapWorldInternal world : worldManager.worlds().values()) {
-            world.refreshConfigInstances();
-        }
     }
 }

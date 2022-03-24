@@ -80,7 +80,7 @@ public class LevelArgument<C> extends CommandArgument<C, ServerLevel> {
                 return failure(new MapWorldArgument.MapWorldParseException(input, MapWorldArgument.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
-            final @Nullable ServerLevel world = commandContext.get(Commands.COMMON).serverAccess().level(Util.worldIdentifier(key));
+            final @Nullable ServerLevel world = commandContext.get(Commands.SERVER_ACCESS).level(Util.worldIdentifier(key));
             if (world == null) {
                 return failure(new MapWorldArgument.MapWorldParseException(input, MapWorldArgument.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
@@ -91,7 +91,7 @@ public class LevelArgument<C> extends CommandArgument<C, ServerLevel> {
 
         @Override
         public List<String> suggestions(final CommandContext<C> commandContext, final String input) {
-            return commandContext.get(Commands.COMMON).serverAccess().levels().stream()
+            return commandContext.get(Commands.SERVER_ACCESS).levels().stream()
                 .flatMap(mapWorld -> {
                     final ResourceLocation identifier = mapWorld.dimension().location();
                     if (!input.isBlank() && identifier.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE)) {

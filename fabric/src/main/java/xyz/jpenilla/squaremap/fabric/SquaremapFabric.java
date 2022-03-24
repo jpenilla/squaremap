@@ -45,6 +45,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
                 .done()
         );
         this.common = this.injector.getInstance(SquaremapCommon.class);
+        this.common.init();
         this.serverAccess = this.injector.getInstance(FabricServerAccess.class);
         this.registerLifecycleListeners();
         FabricMapUpdates.registerListeners();
