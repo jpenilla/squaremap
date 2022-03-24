@@ -1,4 +1,5 @@
 plugins {
+  id("base-conventions")
   id("org.spongepowered.gradle.vanilla")
 }
 
