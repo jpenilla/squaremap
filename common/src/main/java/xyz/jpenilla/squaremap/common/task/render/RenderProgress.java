@@ -44,6 +44,10 @@ public final class RenderProgress extends TimerTask {
         }
     }
 
+    public static @Nullable Pair<Timer, RenderProgress> printProgress(final AbstractRender render) {
+        return printProgress(render, null);
+    }
+
     public static @Nullable Pair<Timer, RenderProgress> printProgress(final AbstractRender render, final @Nullable RenderProgress old) {
         if (!Config.PROGRESS_LOGGING) {
             return null;

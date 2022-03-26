@@ -7,7 +7,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -121,102 +120,29 @@ public abstract class MapWorldInternal implements MapWorld {
         }
     }
 
-    public @Nullable Map<RegionCoordinate, Boolean> getRenderProgress() {
-        try {
-            final Path file = this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME);
-            if (Files.isRegularFile(file)) {
-                final Type type = new TypeToken<LinkedHashMap<RegionCoordinate, Boolean>>() {
-                }.getType();
-                try (final BufferedReader reader = Files.newBufferedReader(file)) {
-                    return GSON.fromJson(reader, type);
-                }
-            }
-        } catch (final JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.logger().warn("Failed to deserialize render progress for world '{}'", this.identifier().asString(), e);
-        }
-        return null;
+    @Override
+    public Registry<LayerProvider> layerRegistry() {
+        return LAYER_REGISTRIES.computeIfAbsent(this.identifier(), $ -> new LayerRegistry());
     }
 
-    public void saveRenderProgress(Map<RegionCoordinate, Boolean> regions) {
-        try {
-            Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
-        } catch (final IOException ex) {
-            Logging.logger().warn("Failed to serialize render progress for world '{}'", this.identifier().asString(), ex);
-        }
+    @Override
+    public WorldIdentifier identifier() {
+        return Util.worldIdentifier(this.level);
     }
 
-    private void serializeDirtyChunks() {
-        try {
-            Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
-        } catch (final IOException ex) {
-            Logging.logger().warn("Failed to serialize dirty chunks for world '{}'", this.identifier().asString(), ex);
-        }
+    /**
+     * Get the map visibility limit of the world. Only these regions are drawn,
+     * even if more chunks exist on disk.
+     *
+     * @return The visibility limit.
+     */
+    //@Override
+    public VisibilityLimitImpl visibilityLimit() {
+        return this.visibilityLimit;
     }
 
-    private void deserializeDirtyChunks() {
-        try {
-            final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
-            if (Files.isRegularFile(file)) {
-                try (final BufferedReader reader = Files.newBufferedReader(file)) {
-                    this.modifiedChunks.addAll(
-                        GSON.fromJson(
-                            reader,
-                            TypeToken.getParameterized(List.class, ChunkCoordinate.class).getType()
-                        )
-                    );
-                }
-            }
-        } catch (final JsonIOException | JsonSyntaxException | IOException ex) {
-            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}'", this.identifier().asString(), ex);
-        }
-    }
-
-    private void startBackgroundRender() {
-        if (this.backgroundRendering() || this.isRendering()) {
-            throw new IllegalStateException("Already rendering");
-        }
-        if (!this.config().BACKGROUND_RENDER_ENABLED) {
-            return;
-        }
-        final BackgroundRender render = this.renderFactory.createBackgroundRender(this);
-        this.backgroundRender = Pair.of(
-            render,
-            this.executor.scheduleAtFixedRate(render, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, TimeUnit.SECONDS)
-        );
-    }
-
-    private void stopBackgroundRender() {
-        if (!this.backgroundRendering()) {
-            throw new IllegalStateException("Not background rendering");
-        }
-        this.backgroundRender.right().cancel(false);
-        this.backgroundRender.left().stop();
-        this.backgroundRender = null;
-    }
-
-    private boolean backgroundRendering() {
-        return this.backgroundRender != null;
-    }
-
-    public void chunkModified(final ChunkCoordinate coord) {
-        if (!this.config().BACKGROUND_RENDER_ENABLED) {
-            return;
-        }
-        if (!this.visibilityLimit().shouldRenderChunk(coord)) {
-            return;
-        }
-        this.modifiedChunks.add(coord);
-    }
-
-    public boolean hasModifiedChunks() {
-        return !this.modifiedChunks.isEmpty();
-    }
-
-    public ChunkCoordinate nextModifiedChunk() {
-        final Iterator<ChunkCoordinate> it = this.modifiedChunks.iterator();
-        final ChunkCoordinate coord = it.next();
-        it.remove();
-        return coord;
+    public LevelBiomeColorData levelBiomeColorData() {
+        return this.levelBiomeColorData;
     }
 
     public WorldConfig config() {
@@ -244,6 +170,31 @@ public abstract class MapWorldInternal implements MapWorld {
         return Colors.rgb(state.getMapColor(null, null));
     }
 
+    public void saveImage(final Image image) {
+        this.imageIOexecutor.submit(image::save);
+    }
+
+    public void chunkModified(final ChunkCoordinate coord) {
+        if (!this.config().BACKGROUND_RENDER_ENABLED) {
+            return;
+        }
+        if (!this.visibilityLimit().shouldRenderChunk(coord)) {
+            return;
+        }
+        this.modifiedChunks.add(coord);
+    }
+
+    public boolean hasModifiedChunks() {
+        return !this.modifiedChunks.isEmpty();
+    }
+
+    public ChunkCoordinate nextModifiedChunk() {
+        final Iterator<ChunkCoordinate> it = this.modifiedChunks.iterator();
+        final ChunkCoordinate coord = it.next();
+        it.remove();
+        return coord;
+    }
+
     public boolean isRendering() {
         return this.activeRender != null;
     }
@@ -256,20 +207,40 @@ public abstract class MapWorldInternal implements MapWorld {
         this.pauseRenders = pauseRenders;
     }
 
+    public void restartRenderProgressLogging() {
+        final @Nullable Pair<AbstractRender, Future<?>> render = this.activeRender;
+        if (render != null) {
+            render.left().restartProgressLogger();
+        }
+    }
+
+    public void startRender(final AbstractRender render) {
+        if (this.isRendering()) {
+            throw new IllegalStateException("Already rendering");
+        }
+        if (this.backgroundRendering()) {
+            this.stopBackgroundRender();
+        }
+        this.activeRender = Pair.of(
+            render,
+            this.executor.submit(render)
+        );
+    }
+
     public void cancelRender() {
-        if (!this.isRendering()) {
+        final @Nullable Pair<AbstractRender, Future<?>> render = this.activeRender;
+        if (render == null) {
             throw new IllegalStateException("No render to cancel");
         }
-        final Pair<AbstractRender, Future<?>> render = this.activeRender;
         render.left().cancel();
         waitFor(render.right());
     }
 
     public void stopRender() {
-        if (!this.isRendering()) {
+        final @Nullable Pair<AbstractRender, Future<?>> render = this.activeRender;
+        if (render == null) {
             throw new IllegalStateException("No render to stop");
         }
-        final Pair<AbstractRender, Future<?>> render = this.activeRender;
         render.left().stop();
         waitFor(render.right());
     }
@@ -286,17 +257,32 @@ public abstract class MapWorldInternal implements MapWorld {
         this.startBackgroundRender();
     }
 
-    public void startRender(final AbstractRender render) {
-        if (this.isRendering()) {
+    private void startBackgroundRender() {
+        if (this.backgroundRendering() || this.isRendering()) {
             throw new IllegalStateException("Already rendering");
         }
-        if (this.backgroundRendering()) {
-            this.stopBackgroundRender();
+        if (!this.config().BACKGROUND_RENDER_ENABLED) {
+            return;
         }
-        this.activeRender = Pair.of(
+        final BackgroundRender render = this.renderFactory.createBackgroundRender(this);
+        this.backgroundRender = Pair.of(
             render,
-            this.executor.submit(render)
+            this.executor.scheduleAtFixedRate(render, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, TimeUnit.SECONDS)
         );
+    }
+
+    private void stopBackgroundRender() {
+        final @Nullable Pair<BackgroundRender, Future<?>> pair = this.backgroundRender;
+        if (pair == null) {
+            throw new IllegalStateException("Not background rendering");
+        }
+        pair.right().cancel(false);
+        pair.left().stop();
+        this.backgroundRender = null;
+    }
+
+    private boolean backgroundRendering() {
+        return this.backgroundRender != null;
     }
 
     public void shutdown() {
@@ -317,24 +303,6 @@ public abstract class MapWorldInternal implements MapWorld {
         this.serializeDirtyChunks();
     }
 
-    public void saveImage(final Image image) {
-        this.imageIOexecutor.submit(image::save);
-    }
-
-    @Override
-    public Registry<LayerProvider> layerRegistry() {
-        return LAYER_REGISTRIES.computeIfAbsent(this.identifier(), $ -> new LayerRegistry());
-    }
-
-    @Override
-    public WorldIdentifier identifier() {
-        return Util.worldIdentifier(this.level);
-    }
-
-    public LevelBiomeColorData levelBiomeColorData() {
-        return this.levelBiomeColorData;
-    }
-
     private Path getAndCreateDataDirectory(final DirectoryProvider directoryProvider) {
         final Path data = directoryProvider.dataDirectory()
             .resolve("data")
@@ -344,29 +312,54 @@ public abstract class MapWorldInternal implements MapWorld {
                 Files.createDirectories(data);
             }
         } catch (final IOException ex) {
-            throw this.failedToCreateDataDirectory(ex);
+            throw new IllegalStateException("Failed to create data directory for world '%s'".formatted(this.identifier().asString()), ex);
         }
         return data;
     }
 
-    private IllegalStateException failedToCreateDataDirectory(final Throwable cause) {
-        return new IllegalStateException("Failed to create data directory for world '%s'".formatted(this.identifier()), cause);
+    public @Nullable Map<RegionCoordinate, Boolean> getRenderProgress() {
+        try {
+            final Path file = this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME);
+            if (!Files.isRegularFile(file)) {
+                return null;
+            }
+            try (final BufferedReader reader = Files.newBufferedReader(file)) {
+                return GSON.fromJson(reader, new TypeToken<LinkedHashMap<RegionCoordinate, Boolean>>() {}.getType());
+            }
+        } catch (final JsonIOException | JsonSyntaxException | IOException e) {
+            Logging.logger().warn("Failed to deserialize render progress for world '{}'", this.identifier().asString(), e);
+        }
+        return null;
     }
 
-    /**
-     * Get the map visibility limit of the world. Only these regions are drawn,
-     * even if more chunks exist on disk.
-     *
-     * @return The visibility limit.
-     */
-    //@Override
-    public VisibilityLimitImpl visibilityLimit() {
-        return this.visibilityLimit;
+    public void saveRenderProgress(Map<RegionCoordinate, Boolean> regions) {
+        try {
+            Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
+        } catch (final IOException ex) {
+            Logging.logger().warn("Failed to serialize render progress for world '{}'", this.identifier().asString(), ex);
+        }
     }
 
-    public void restartRenderProgressLogging() {
-        if (this.activeRender != null) {
-            this.activeRender.left().restartProgressLogger();
+    private void serializeDirtyChunks() {
+        try {
+            Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
+        } catch (final IOException ex) {
+            Logging.logger().warn("Failed to serialize dirty chunks for world '{}'", this.identifier().asString(), ex);
+        }
+    }
+
+    private void deserializeDirtyChunks() {
+        try {
+            final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
+            if (!Files.isRegularFile(file)) {
+                return;
+            }
+            try (final BufferedReader reader = Files.newBufferedReader(file)) {
+                final List<ChunkCoordinate> deserialized = GSON.fromJson(reader, new TypeToken<List<ChunkCoordinate>>() {}.getType());
+                this.modifiedChunks.addAll(deserialized);
+            }
+        } catch (final JsonIOException | JsonSyntaxException | IOException ex) {
+            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}'", this.identifier().asString(), ex);
         }
     }
 

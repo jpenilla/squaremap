@@ -162,13 +162,12 @@ public abstract class AbstractRender implements Runnable {
 
     public final void restartProgressLogger() {
         final @Nullable RenderProgress old;
-        if (this.progress != null) {
-            this.progress.left().cancel();
-            old = this.progress.right();
-        } else {
-            old = null;
+        final @Nullable Pair<Timer, RenderProgress> progress = this.progress;
+        if (progress != null) {
+            progress.left().cancel();
+            old = progress.right();
+            this.progress = RenderProgress.printProgress(this, old);
         }
-        this.progress = RenderProgress.printProgress(this, old);
     }
 
     protected final void mapRegion(final RegionCoordinate region) {

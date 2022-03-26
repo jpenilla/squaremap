@@ -71,7 +71,7 @@ public final class RadiusRender extends AbstractRender {
     protected void render() {
         Logging.info(Lang.LOG_STARTED_RADIUSRENDER, "world", this.mapWorld.identifier().asString());
 
-        this.progress = RenderProgress.printProgress(this, null);
+        this.progress = RenderProgress.printProgress(this);
 
         final SpiralIterator<ChunkCoordinate> spiral = SpiralIterator.chunk(this.centerX, this.centerZ, this.radius);
         final Map<RegionCoordinate, Image> images = new HashMap<>();
