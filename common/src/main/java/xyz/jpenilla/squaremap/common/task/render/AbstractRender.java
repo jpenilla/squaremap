@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -21,10 +23,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Lang;
@@ -39,46 +41,39 @@ import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.Util;
 
+@DefaultQualifier(NonNull.class)
 public abstract class AbstractRender implements Runnable {
-    private static final Logger LOGGER = LogManager.getLogger();
-
-    private final ExecutorService executor;
-    private final FutureTask<Void> futureTask;
+    private final ExecutorService executorService;
+    private final Executor executor;
     private final ChunkSnapshotProvider chunkSnapshotProvider;
-    protected volatile boolean cancelled = false;
+    private volatile @MonotonicNonNull Thread thread;
+    protected volatile State state = State.RUNNING;
 
     protected final MapWorldInternal mapWorld;
     protected final ServerLevel level;
 
-    protected final Map<Thread, BiomeColors> biomeColors;
+    protected final @Nullable Map<Thread, BiomeColors> biomeColors;
 
-    protected final AtomicInteger curChunks = new AtomicInteger(0);
-    protected final AtomicInteger curRegions = new AtomicInteger(0);
+    protected final AtomicInteger processedChunks = new AtomicInteger(0);
+    protected final AtomicInteger processedRegions = new AtomicInteger(0);
 
-    protected Pair<Timer, RenderProgress> progress = null;
+    protected volatile @Nullable Pair<Timer, RenderProgress> progress = null;
 
     protected AbstractRender(
-        final @NonNull MapWorldInternal world,
-        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider
+        final MapWorldInternal world,
+        final ChunkSnapshotProvider chunkSnapshotProvider
     ) {
-        this(
-            world,
-            chunkSnapshotProvider,
-            Executors.newFixedThreadPool(
-                getThreads(world.config().MAX_RENDER_THREADS),
-                Util.squaremapThreadFactory("render-worker", world.serverLevel())
-            )
-        );
+        this(world, chunkSnapshotProvider, createRenderWorkerPool(world));
     }
 
     protected AbstractRender(
-        final @NonNull MapWorldInternal mapWorld,
-        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider,
-        final @NonNull ExecutorService executor
+        final MapWorldInternal mapWorld,
+        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final ExecutorService workerPool
     ) {
-        this.futureTask = new FutureTask<>(this, null);
         this.mapWorld = mapWorld;
-        this.executor = executor;
+        this.executorService = workerPool;
+        this.executor = new RenderWorkerExecutor(workerPool, this::running);
         this.level = mapWorld.serverLevel();
         this.chunkSnapshotProvider = chunkSnapshotProvider;
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
@@ -86,24 +81,87 @@ public abstract class AbstractRender implements Runnable {
             : null; // this should be null if we are not mapping biomes
     }
 
-    public static int getThreads(int threads) {
-        if (threads == -1) {
-            threads = Runtime.getRuntime().availableProcessors() / 3;
-        }
-        return Math.max(1, threads);
+    protected abstract void render();
+
+    protected final boolean running() {
+        return this.state == State.RUNNING;
     }
 
-    public synchronized void cancel() {
+    @Override
+    public final void run() {
+        if (!this.running()) {
+            return;
+        }
+
+        this.thread = Thread.currentThread();
+
+        try {
+            this.render();
+        } catch (final Exception ex) {
+            Logging.logger().warn("Encountered exception executing render", ex);
+        }
+
+        this.renderStopped();
+    }
+
+    private void renderStopped() {
+        if (this instanceof BackgroundRender) {
+            return;
+        }
+        final State state = this.state;
+        this.shutdown();
+        this.mapWorld.renderStopped(state == State.CANCELLED || state == State.RUNNING);
+        final String msg = state == State.RUNNING ? Lang.LOG_FINISHED_RENDERING : Lang.LOG_CANCELLED_RENDERING;
+        Logging.info(msg, "world", this.mapWorld.identifier().asString());
+    }
+
+    private synchronized void shutdown() {
         if (this.progress != null) {
             this.progress.left().cancel();
+            this.progress = null;
         }
-        this.cancelled = true;
-        Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 1L);
-        this.futureTask.cancel(false);
+
+        if (!this.executorService.isShutdown()) {
+            this.executorService.shutdownNow();
+        }
     }
 
-    public void restartProgressLogger() {
-        final RenderProgress old;
+    public final void stop() {
+        this.stop(State.STOPPED);
+    }
+
+    public final void cancel() {
+        this.stop(State.CANCELLED);
+    }
+
+    private void stop(final State state) {
+        if (this.state != State.RUNNING) {
+            throw new IllegalStateException("Stop already requested");
+        }
+        this.state = state;
+        this.shutdown();
+        final Thread thread = this.thread;
+        if (thread != null) {
+            thread.interrupt();
+        } else {
+            this.renderStopped();
+        }
+    }
+
+    public abstract int totalChunks();
+
+    public abstract int totalRegions();
+
+    public final int processedChunks() {
+        return this.processedChunks.get();
+    }
+
+    public final int processedRegions() {
+        return this.processedRegions.get();
+    }
+
+    public final void restartProgressLogger() {
+        final @Nullable RenderProgress old;
         if (this.progress != null) {
             this.progress.left().cancel();
             old = this.progress.right();
@@ -113,67 +171,33 @@ public abstract class AbstractRender implements Runnable {
         this.progress = RenderProgress.printProgress(this, old);
     }
 
-    @Override
-    public final void run() {
-        this.render();
-
-        if (!(this instanceof BackgroundRender)) {
-            final boolean finished = !this.cancelled;
-
-            this.mapWorld.stopRender();
-
-            if (finished) {
-                this.mapWorld.finishedRender();
-                Logging.info(Lang.LOG_FINISHED_RENDERING, "world", this.mapWorld.identifier().asString());
-            } else {
-                Logging.info(Lang.LOG_CANCELLED_RENDERING, "world", this.mapWorld.identifier().asString());
-            }
-        }
-    }
-
-    public abstract int totalChunks();
-
-    public final int processedChunks() {
-        return this.curChunks.get();
-    }
-
-    public abstract int totalRegions();
-
-    public final int processedRegions() {
-        return this.curRegions.get();
-    }
-
-    protected abstract void render();
-
-    public final @NonNull FutureTask<Void> getFutureTask() {
-        return this.futureTask;
-    }
-
-    protected final void mapRegion(final @NonNull RegionCoordinate region) {
-        Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
-        int startX = region.getChunkX();
-        int startZ = region.getChunkZ();
+    protected final void mapRegion(final RegionCoordinate region) {
+        final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+        final int startX = region.getChunkX();
+        final int startZ = region.getChunkZ();
         final List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (int chunkX = startX; chunkX < startX + 32; chunkX++) {
             futures.add(this.mapChunkColumn(image, chunkX, startZ));
         }
         for (final CompletableFuture<Void> future : futures) {
             try {
-                future.join();
-            } catch (final Exception ex) {
-                LOGGER.warn("Exception mapping region {}", region, ex);
+                future.get();
+            } catch (final InterruptedException ignore) {
+                return;
+            } catch (final CancellationException | ExecutionException ex) {
+                Logging.logger().warn("Exception mapping region {}", region, ex);
             }
         }
-        if (!this.cancelled) {
+        if (this.running()) {
             this.mapWorld.saveImage(image);
         }
     }
 
-    protected final @NonNull CompletableFuture<Void> mapChunkColumn(final @NonNull Image image, final int chunkX, final int startChunkZ) {
+    protected final CompletableFuture<Void> mapChunkColumn(final Image image, final int chunkX, final int startChunkZ) {
         return CompletableFuture.runAsync(() -> {
             int[] lastY = new int[16];
             for (int chunkZ = startChunkZ; chunkZ < startChunkZ + 32; chunkZ++) {
-                if (this.cancelled) {
+                if (!this.running()) {
                     return;
                 }
                 if (!this.mapWorld.visibilityLimit().shouldRenderChunk(chunkX, chunkZ)) {
@@ -182,42 +206,42 @@ public abstract class AbstractRender implements Runnable {
                     continue;
                 }
 
-                ChunkSnapshot chunk;
+                @Nullable ChunkSnapshot chunk;
                 if (chunkZ == startChunkZ) {
                     // this is the top line of the image, we need to
                     // scan the bottom line of the region to the north
                     // in order to get the correct lastY for shading
-                    chunk = this.chunkSnapshot(this.level, chunkX, chunkZ - 1);
+                    chunk = this.chunkSnapshot(chunkX, chunkZ - 1);
                     if (chunk != null) {
                         lastY = this.getLastYFromBottomRow(chunk);
                     }
                 }
-                chunk = this.chunkSnapshot(this.level, chunkX, chunkZ);
+                chunk = this.chunkSnapshot(chunkX, chunkZ);
                 if (chunk != null) {
                     this.scanChunk(image, lastY, chunk);
                 }
-                this.curChunks.incrementAndGet();
+                this.processedChunks.incrementAndGet();
             }
         }, this.executor).exceptionally(thr -> {
-            LOGGER.warn("mapChunkColumn failed!", thr);
+            Logging.logger().warn("Exception mapping chunk column starting at [{}, {}] in {}", chunkX, startChunkZ, this.mapWorld.identifier().asString(), thr);
             return null;
         });
     }
 
-    protected final @NonNull CompletableFuture<Void> mapSingleChunk(final @NonNull Image image, final int chunkX, final int chunkZ) {
+    protected final CompletableFuture<Void> mapSingleChunk(final Image image, final int chunkX, final int chunkZ) {
         return CompletableFuture.runAsync(() -> {
             int[] lastY = new int[16];
 
-            ChunkSnapshot chunk;
+            @Nullable ChunkSnapshot chunk;
 
             // try scanning south row of northern chunk to get proper yDiff
-            chunk = this.chunkSnapshot(this.level, chunkX, chunkZ - 1);
+            chunk = this.chunkSnapshot(chunkX, chunkZ - 1);
             if (chunk != null) {
                 lastY = this.getLastYFromBottomRow(chunk);
             }
 
             // scan the chunk itself
-            chunk = this.chunkSnapshot(this.level, chunkX, chunkZ);
+            chunk = this.chunkSnapshot(chunkX, chunkZ);
             if (chunk != null) {
                 this.scanChunk(image, lastY, chunk);
             }
@@ -226,7 +250,7 @@ public abstract class AbstractRender implements Runnable {
             // https://github.com/pl3xgaming/Pl3xMap/issues/15
             final int down = chunkZ + 1;
             if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
-                chunk = this.chunkSnapshot(this.level, chunkX, down);
+                chunk = this.chunkSnapshot(chunkX, down);
                 if (chunk != null) {
                     this.scanTopRow(image, lastY, chunk);
                 }
@@ -235,22 +259,22 @@ public abstract class AbstractRender implements Runnable {
                 this.mapWorld.chunkModified(new ChunkCoordinate(chunkX, down));
             }
 
-            this.curChunks.incrementAndGet();
+            this.processedChunks.incrementAndGet();
         }, this.executor).exceptionally(thr -> {
-            LOGGER.warn("mapSingleChunk failed!", thr);
+            Logging.logger().warn("Exception mapping chunk at [{}, {}] in {}", chunkX, chunkZ, this.mapWorld.identifier().asString(), thr);
             return null;
         });
     }
 
-    private void scanChunk(Image image, int[] lastY, ChunkSnapshot chunk) {
-        while (this.mapWorld.rendersPaused()) {
+    private void scanChunk(final Image image, final int[] lastY, final ChunkSnapshot chunk) {
+        while (this.mapWorld.rendersPaused() && this.running()) {
             sleep(500);
         }
         final int blockX = chunk.pos().getMinBlockX();
         final int blockZ = chunk.pos().getMinBlockZ();
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                if (this.cancelled) {
+                if (!this.running()) {
                     return;
                 }
                 if (this.mapWorld.visibilityLimit().shouldRenderColumn(blockX + x, blockZ + z)) {
@@ -260,11 +284,11 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    private void scanTopRow(Image image, int[] lastY, ChunkSnapshot chunk) {
+    private void scanTopRow(final Image image, final int[] lastY, final ChunkSnapshot chunk) {
         final int blockX = chunk.pos().getMinBlockX();
         final int blockZ = chunk.pos().getMinBlockZ();
         for (int x = 0; x < 16; x++) {
-            if (this.cancelled) {
+            if (!this.running()) {
                 return;
             }
             if (this.mapWorld.visibilityLimit().shouldRenderColumn(blockX + x, blockZ)) {
@@ -279,11 +303,11 @@ public abstract class AbstractRender implements Runnable {
             : this.mapWorld.config().MAP_MAX_HEIGHT;
     }
 
-    private int @NonNull [] getLastYFromBottomRow(final @NonNull ChunkSnapshot chunk) {
+    private int[] getLastYFromBottomRow(final ChunkSnapshot chunk) {
         final int[] lastY = new int[16];
         final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
         for (int x = 0; x < 16; x++) {
-            if (this.cancelled) {
+            if (!this.running()) {
                 return lastY;
             }
             final int topY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, 15) + 1;
@@ -333,7 +357,7 @@ public abstract class AbstractRender implements Runnable {
         return this.getColor(chunk, imgX, imgZ, lastY, state, mutablePos);
     }
 
-    private int getColor(final @NonNull ChunkSnapshot chunk, final int imgX, final int imgZ, final int[] lastY, final @NonNull BlockState state, final BlockPos.@NonNull MutableBlockPos mutablePos) {
+    private int getColor(final ChunkSnapshot chunk, final int imgX, final int imgZ, final int[] lastY, final BlockState state, final BlockPos.MutableBlockPos mutablePos) {
         int color = this.mapWorld.getMapColor(state);
 
         if (this.biomeColors != null) {
@@ -357,7 +381,7 @@ public abstract class AbstractRender implements Runnable {
         return Colors.shade(color, colorOffset);
     }
 
-    private @NonNull BlockState iterateDown(final @NonNull ChunkSnapshot chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
+    private BlockState iterateDown(final ChunkSnapshot chunk, final BlockPos.MutableBlockPos mutablePos) {
         BlockState state;
         if (chunk.dimensionType().hasCeiling()) {
             do {
@@ -372,7 +396,7 @@ public abstract class AbstractRender implements Runnable {
         return state;
     }
 
-    private @NonNull BlockState iterateUp(final @NonNull ChunkSnapshot chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
+    private BlockState iterateUp(final ChunkSnapshot chunk, final BlockPos.MutableBlockPos mutablePos) {
         BlockState state;
         int height = mutablePos.getY();
         mutablePos.setY(chunk.getMinBuildHeight());
@@ -393,12 +417,12 @@ public abstract class AbstractRender implements Runnable {
         return state;
     }
 
-    private static boolean isGlass(final @NonNull BlockState state) {
+    private static boolean isGlass(final BlockState state) {
         final Block block = state.getBlock();
         return block == Blocks.GLASS || block instanceof StainedGlassBlock;
     }
 
-    private @NonNull BlockState handleGlass(final @NonNull ChunkSnapshot chunk, final BlockPos.@NonNull MutableBlockPos mutablePos) {
+    private BlockState handleGlass(final ChunkSnapshot chunk, final BlockPos.MutableBlockPos mutablePos) {
         BlockState state = chunk.getBlockState(mutablePos);
         while (isGlass(state)) {
             state = this.iterateDown(chunk, mutablePos);
@@ -409,7 +433,7 @@ public abstract class AbstractRender implements Runnable {
     private record DepthResult(int depth, BlockState state) {
     }
 
-    private static @Nullable DepthResult findDepthIfFluid(final @NonNull BlockPos blockPos, final @NonNull BlockState state, final @NonNull ChunkSnapshot chunk) {
+    private static @Nullable DepthResult findDepthIfFluid(final BlockPos blockPos, final BlockState state, final ChunkSnapshot chunk) {
         if (blockPos.getY() > chunk.getMinBuildHeight() && !state.getFluidState().isEmpty()) {
             BlockState fluidState;
             int fluidDepth = 0;
@@ -428,7 +452,7 @@ public abstract class AbstractRender implements Runnable {
         return null;
     }
 
-    private int getFluidColor(final int fluidCountY, int color, final @NonNull BlockState fluidState, final @NonNull BlockState underBlock, final int odd) {
+    private int getFluidColor(final int fluidCountY, int color, final BlockState fluidState, final BlockState underBlock, final int odd) {
         final Fluid fluid = fluidState.getFluidState().getType();
         boolean shaded = false;
         if (fluid == Fluids.WATER || fluid == Fluids.FLOWING_WATER) {
@@ -458,20 +482,57 @@ public abstract class AbstractRender implements Runnable {
         return Colors.shade(color, colorOffset);
     }
 
-    private @Nullable ChunkSnapshot chunkSnapshot(final ServerLevel level, final int x, final int z) {
-        final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(level, x, z, false);
+    private @Nullable ChunkSnapshot chunkSnapshot(final int x, final int z) {
+        final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(this.level, x, z, false);
         while (!future.isDone()) {
-            if (this.cancelled) {
+            if (!this.running()) {
                 return null;
             }
         }
         return future.join();
     }
 
+    private static ExecutorService createRenderWorkerPool(final MapWorldInternal world) {
+        return Util.newFixedThreadPool(
+            getThreads(world.config().MAX_RENDER_THREADS),
+            Util.squaremapThreadFactory("render-worker", world.serverLevel()),
+            new ThreadPoolExecutor.DiscardPolicy()
+        );
+    }
+
+    protected static int getThreads(int threads) {
+        if (threads == -1) {
+            threads = Runtime.getRuntime().availableProcessors() / 3;
+        }
+        return Math.max(1, threads);
+    }
+
     protected static void sleep(int ms) {
         try {
             Thread.sleep(ms);
-        } catch (InterruptedException ignore) {
+        } catch (final InterruptedException ignore) {
         }
+    }
+
+    private record RenderWorkerExecutor(Executor wrapped, BooleanSupplier running) implements Executor {
+        @Override
+        public void execute(final Runnable task) {
+            this.wrapped.execute(new WorkerTask(task, this.running));
+        }
+
+        private record WorkerTask(Runnable wrapped, BooleanSupplier running) implements Runnable {
+            @Override
+            public void run() {
+                if (this.running.getAsBoolean()) {
+                    this.wrapped.run();
+                }
+            }
+        }
+    }
+
+    protected enum State {
+        RUNNING,
+        STOPPED,
+        CANCELLED
     }
 }

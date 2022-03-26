@@ -16,11 +16,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,6 +31,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.MapWorld;
+import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.LayerRegistry;
@@ -41,6 +44,7 @@ import xyz.jpenilla.squaremap.common.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.common.task.render.BackgroundRender;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
 import xyz.jpenilla.squaremap.common.util.RecordTypeAdapterFactory;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
@@ -56,6 +60,8 @@ public abstract class MapWorldInternal implements MapWorld {
     private static final Map<WorldIdentifier, LayerRegistry> LAYER_REGISTRIES = new HashMap<>();
 
     private final ServerLevel level;
+    private final WorldConfig worldConfig;
+    private final WorldAdvanced advancedWorldConfig;
     private final RenderFactory renderFactory;
     private final Path dataPath;
     private final Path tilesPath;
@@ -67,10 +73,8 @@ public abstract class MapWorldInternal implements MapWorld {
     private final VisibilityLimitImpl visibilityLimit;
 
     private volatile boolean pauseRenders = false;
-    private WorldConfig worldConfig;
-    private WorldAdvanced advancedWorldConfig;
-    private @Nullable AbstractRender activeRender = null;
-    private @Nullable ScheduledFuture<?> backgroundRender = null;
+    private volatile @Nullable Pair<AbstractRender, Future<?>> activeRender = null;
+    private volatile @Nullable Pair<BackgroundRender, Future<?>> backgroundRender = null;
 
     protected MapWorldInternal(
         final ServerLevel level,
@@ -83,11 +87,11 @@ public abstract class MapWorldInternal implements MapWorld {
         this.imageIOexecutor = Executors.newSingleThreadExecutor(
             Util.squaremapThreadFactory("imageio", this.level)
         );
-        this.executor = Executors.newSingleThreadScheduledExecutor(
+        this.executor = new ExceptionLoggingScheduledThreadPoolExecutor(
+            1,
             Util.squaremapThreadFactory("render", this.level)
         );
 
-        // Keep updated references to world configs to avoid constant HashMap lookups during renders
         this.worldConfig = WorldConfig.get(this.level);
         this.advancedWorldConfig = WorldAdvanced.get(this.level);
 
@@ -127,7 +131,7 @@ public abstract class MapWorldInternal implements MapWorld {
                     return GSON.fromJson(reader, type);
                 }
             }
-        } catch (JsonIOException | JsonSyntaxException | IOException e) {
+        } catch (final JsonIOException | JsonSyntaxException | IOException e) {
             Logging.logger().warn("Failed to deserialize render progress for world '{}'", this.identifier().asString(), e);
         }
         return null;
@@ -136,16 +140,16 @@ public abstract class MapWorldInternal implements MapWorld {
     public void saveRenderProgress(Map<RegionCoordinate, Boolean> regions) {
         try {
             Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
-        } catch (IOException e) {
-            Logging.logger().warn("Failed to serialize render progress for world '{}'", this.identifier().asString(), e);
+        } catch (final IOException ex) {
+            Logging.logger().warn("Failed to serialize render progress for world '{}'", this.identifier().asString(), ex);
         }
     }
 
     private void serializeDirtyChunks() {
         try {
             Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
-        } catch (IOException e) {
-            Logging.logger().warn("Failed to serialize dirty chunks for world '{}'", this.identifier().asString(), e);
+        } catch (final IOException ex) {
+            Logging.logger().warn("Failed to serialize dirty chunks for world '{}'", this.identifier().asString(), ex);
         }
     }
 
@@ -162,8 +166,8 @@ public abstract class MapWorldInternal implements MapWorld {
                     );
                 }
             }
-        } catch (JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}'", this.identifier().asString(), e);
+        } catch (final JsonIOException | JsonSyntaxException | IOException ex) {
+            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}'", this.identifier().asString(), ex);
         }
     }
 
@@ -175,14 +179,18 @@ public abstract class MapWorldInternal implements MapWorld {
             return;
         }
         final BackgroundRender render = this.renderFactory.createBackgroundRender(this);
-        this.backgroundRender = this.executor.scheduleAtFixedRate(render, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        this.backgroundRender = Pair.of(
+            render,
+            this.executor.scheduleAtFixedRate(render, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, this.config().BACKGROUND_RENDER_INTERVAL_SECONDS, TimeUnit.SECONDS)
+        );
     }
 
     private void stopBackgroundRender() {
         if (!this.backgroundRendering()) {
             throw new IllegalStateException("Not background rendering");
         }
-        this.backgroundRender.cancel(false);
+        this.backgroundRender.right().cancel(false);
+        this.backgroundRender.left().stop();
         this.backgroundRender = null;
     }
 
@@ -248,20 +256,33 @@ public abstract class MapWorldInternal implements MapWorld {
         this.pauseRenders = pauseRenders;
     }
 
-    public void finishedRender() {
-        try {
-            Files.deleteIfExists(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME));
-        } catch (IOException e) {
-            Logging.logger().warn("Failed to delete render progress data for world '{}'", this.identifier().asString(), e);
+    public void cancelRender() {
+        if (!this.isRendering()) {
+            throw new IllegalStateException("No render to cancel");
         }
+        final Pair<AbstractRender, Future<?>> render = this.activeRender;
+        render.left().cancel();
+        waitFor(render.right());
     }
 
     public void stopRender() {
         if (!this.isRendering()) {
             throw new IllegalStateException("No render to stop");
         }
-        this.activeRender.cancel();
+        final Pair<AbstractRender, Future<?>> render = this.activeRender;
+        render.left().stop();
+        waitFor(render.right());
+    }
+
+    public void renderStopped(final boolean deleteProgress) {
         this.activeRender = null;
+        if (deleteProgress) {
+            try {
+                Files.deleteIfExists(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME));
+            } catch (final IOException ex) {
+                Logging.logger().warn("Failed to delete render state data for world '{}'", this.identifier().asString(), ex);
+            }
+        }
         this.startBackgroundRender();
     }
 
@@ -272,8 +293,10 @@ public abstract class MapWorldInternal implements MapWorld {
         if (this.backgroundRendering()) {
             this.stopBackgroundRender();
         }
-        this.activeRender = render;
-        this.executor.submit(this.activeRender.getFutureTask());
+        this.activeRender = Pair.of(
+            render,
+            this.executor.submit(render)
+        );
     }
 
     public void shutdown() {
@@ -290,7 +313,7 @@ public abstract class MapWorldInternal implements MapWorld {
             this.stopBackgroundRender();
         }
         Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 1L);
-        Util.shutdownExecutor(this.imageIOexecutor, TimeUnit.SECONDS, 2L);
+        Util.shutdownExecutor(this.imageIOexecutor, TimeUnit.SECONDS, 5L);
         this.serializeDirtyChunks();
     }
 
@@ -343,13 +366,15 @@ public abstract class MapWorldInternal implements MapWorld {
 
     public void restartRenderProgressLogging() {
         if (this.activeRender != null) {
-            this.activeRender.restartProgressLogger();
+            this.activeRender.left().restartProgressLogger();
         }
     }
 
-    public void refreshConfigInstances() {
-        this.worldConfig = WorldConfig.get(this.level);
-        this.advancedWorldConfig = WorldAdvanced.get(this.level);
+    private static void waitFor(final Future<?> future) {
+        try {
+            future.get();
+        } catch (final InterruptedException | ExecutionException | CancellationException ignore) {
+        }
     }
 
     public interface Factory<W> {

@@ -6,9 +6,12 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
@@ -20,6 +23,7 @@ import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
+@DefaultQualifier(NonNull.class)
 public final class RadiusRender extends AbstractRender {
     private final int centerX;
     private final int centerZ;
@@ -28,10 +32,10 @@ public final class RadiusRender extends AbstractRender {
 
     @AssistedInject
     private RadiusRender(
-        @Assisted final @NonNull MapWorldInternal world,
-        @Assisted final @NonNull BlockPos center,
-        @Assisted int radius,
-        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider
+        @Assisted final MapWorldInternal world,
+        @Assisted final BlockPos center,
+        @Assisted final int radius,
+        final ChunkSnapshotProvider chunkSnapshotProvider
     ) {
         super(world, chunkSnapshotProvider);
         this.radius = Numbers.blockToChunk(radius);
@@ -73,7 +77,7 @@ public final class RadiusRender extends AbstractRender {
         final Map<RegionCoordinate, Image> images = new HashMap<>();
         final Multimap<RegionCoordinate, CompletableFuture<Void>> futures = ArrayListMultimap.create();
 
-        while (spiral.hasNext()) {
+        while (spiral.hasNext() && this.running()) {
             final ChunkCoordinate chunkCoord = spiral.next();
             final RegionCoordinate region = chunkCoord.regionCoordinate();
 
@@ -87,22 +91,22 @@ public final class RadiusRender extends AbstractRender {
             futures.put(region, this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));
         }
 
-        final Map<RegionCoordinate, CompletableFuture<Void>> regionFutureMap = new HashMap<>();
-        futures.asMap().forEach((region, futureCollection) ->
-            regionFutureMap.put(region, CompletableFuture.allOf(futureCollection.toArray(CompletableFuture[]::new))));
+        final Map<RegionCoordinate, CompletableFuture<Void>> regionFutures = new HashMap<>();
+        futures.asMap().forEach((region, chunkFutures) -> regionFutures.put(
+            region,
+            CompletableFuture.allOf(chunkFutures.toArray(CompletableFuture[]::new))
+                .thenRun(() -> {
+                    if (this.running()) {
+                        this.mapWorld.saveImage(images.get(region));
+                    }
+                })
+        ));
 
-        regionFutureMap.forEach((region, combinedFuture) ->
-            combinedFuture.whenComplete((result, throwable) -> {
-                if (!this.cancelled) {
-                    this.mapWorld.saveImage(images.get(region));
-                }
-            }));
-
-        CompletableFuture.allOf(regionFutureMap.values().toArray(CompletableFuture[]::new)).join();
-
-        if (this.progress != null) {
-            this.progress.left().cancel();
+        try {
+            CompletableFuture.allOf(regionFutures.values().toArray(CompletableFuture[]::new)).get();
+        } catch (final InterruptedException ignore) {
+        } catch (final CancellationException | ExecutionException ex) {
+            Logging.logger().error("Exception executing radius render", ex);
         }
-
     }
 }

@@ -1,7 +1,10 @@
 package xyz.jpenilla.squaremap.common.util;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -32,6 +35,18 @@ public final class Util {
 
     public static ThreadFactory squaremapThreadFactory(final String name, final ServerLevel level) {
         return squaremapThreadFactory(name + "-[" + level.dimension().location() + "]");
+    }
+
+    public static ThreadPoolExecutor newFixedThreadPool(final int size, final ThreadFactory threadFactory, final RejectedExecutionHandler rejectedExecutionHandler) {
+        return new ThreadPoolExecutor(
+            size,
+            size,
+            0L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(),
+            threadFactory,
+            rejectedExecutionHandler
+        );
     }
 
     public static void shutdownExecutor(final ExecutorService service, final TimeUnit timeoutUnit, final long timeoutLength) {

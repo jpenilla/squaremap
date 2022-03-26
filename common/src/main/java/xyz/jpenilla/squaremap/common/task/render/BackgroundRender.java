@@ -3,14 +3,18 @@ package xyz.jpenilla.squaremap.common.task.render;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
@@ -19,21 +23,14 @@ import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Util;
 
+@DefaultQualifier(NonNull.class)
 public final class BackgroundRender extends AbstractRender {
-
     @AssistedInject
     private BackgroundRender(
-        @Assisted final @NonNull MapWorldInternal world,
+        @Assisted final MapWorldInternal world,
         final ChunkSnapshotProvider chunkSnapshotProvider
     ) {
-        super(
-            world,
-            chunkSnapshotProvider,
-            Executors.newFixedThreadPool(
-                getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS),
-                Util.squaremapThreadFactory("bg-render-worker", world.serverLevel())
-            )
-        );
+        super(world, chunkSnapshotProvider, createBackgroundRenderWorkerPool(world));
     }
 
     @Override
@@ -48,30 +45,58 @@ public final class BackgroundRender extends AbstractRender {
 
     @Override
     protected void render() {
-        long time = System.currentTimeMillis();
-        final Set<ChunkCoordinate> chunks = new HashSet<>();
+        final long time = System.currentTimeMillis();
+        final Set<ChunkCoordinate> chunks = ConcurrentHashMap.newKeySet();
         while (this.mapWorld.hasModifiedChunks() && chunks.size() < this.mapWorld.config().BACKGROUND_RENDER_MAX_CHUNKS_PER_INTERVAL) {
             chunks.add(this.mapWorld.nextModifiedChunk());
         }
-        final Map<RegionCoordinate, List<ChunkCoordinate>> coordMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
-
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-        coordMap.forEach((region, chunkCoords) -> {
-            final Image img = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
-
-            final CompletableFuture<Void> future = CompletableFuture.allOf(chunkCoords.stream().map(coord ->
-                mapSingleChunk(img, coord.x(), coord.z())).toArray(CompletableFuture[]::new));
-
-            future.whenComplete((result, throwable) -> this.mapWorld.saveImage(img));
-            futures.add(future);
-        });
-        if (!futures.isEmpty()) {
-            CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
-            this.biomeColors.clear();
-            Logging.debug(() -> String.format(
-                "Finished background render cycle in %.2f seconds",
-                (double) (System.currentTimeMillis() - time) / 1000.0D
-            ));
+        if (chunks.isEmpty()) {
+            return;
         }
+
+        final List<CompletableFuture<Void>> regionFutures = new ArrayList<>();
+
+        final Map<RegionCoordinate, List<ChunkCoordinate>> regionChunksMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
+        regionChunksMap.forEach((region, chunksToRenderInRegion) -> {
+            final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+
+            final CompletableFuture<?>[] chunkFutures = chunksToRenderInRegion.stream()
+                .map(coord -> this.mapSingleChunk(image, coord.x(), coord.z()))
+                .toArray(CompletableFuture<?>[]::new);
+
+            regionFutures.add(CompletableFuture.allOf(chunkFutures).thenRun(() -> {
+                if (!this.running()) {
+                    return;
+                }
+                chunksToRenderInRegion.forEach(chunks::remove);
+                this.mapWorld.saveImage(image);
+            }));
+        });
+
+        try {
+            CompletableFuture.allOf(regionFutures.toArray(CompletableFuture<?>[]::new)).get();
+        } catch (final InterruptedException ignore) {
+        } catch (final CancellationException | ExecutionException ex) {
+            Logging.logger().error("Exception executing background render", ex);
+        }
+
+        if (this.biomeColors != null) {
+            this.biomeColors.clear();
+        }
+
+        chunks.forEach(this.mapWorld::chunkModified);
+
+        Logging.debug(() -> String.format(
+            "Finished background render cycle in %.2f seconds",
+            (double) (System.currentTimeMillis() - time) / 1000.0D
+        ));
+    }
+
+    private static ExecutorService createBackgroundRenderWorkerPool(final MapWorldInternal world) {
+        return Util.newFixedThreadPool(
+            getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS),
+            Util.squaremapThreadFactory("bg-render-worker", world.serverLevel()),
+            new ThreadPoolExecutor.DiscardPolicy()
+        );
     }
 }

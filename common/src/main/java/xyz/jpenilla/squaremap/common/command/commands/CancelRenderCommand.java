@@ -41,7 +41,6 @@ public final class CancelRenderCommand extends SquaremapCommand {
         }
 
         Lang.send(sender, Lang.CANCELLED_RENDER, Placeholder.unparsed("world", world.identifier().asString()));
-        world.stopRender();
-        world.finishedRender();
+        world.cancelRender();
     }
 }

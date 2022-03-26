@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
@@ -19,6 +21,7 @@ import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
+@DefaultQualifier(NonNull.class)
 public final class FullRender extends AbstractRender {
     private final DirectoryProvider directoryProvider;
     private final int wait;
@@ -28,10 +31,10 @@ public final class FullRender extends AbstractRender {
 
     @AssistedInject
     private FullRender(
-        @Assisted final @NonNull MapWorldInternal world,
+        @Assisted final MapWorldInternal world,
         @Assisted final int wait,
-        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider,
-        final @NonNull DirectoryProvider directoryProvider
+        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final DirectoryProvider directoryProvider
     ) {
         super(world, chunkSnapshotProvider);
         this.directoryProvider = directoryProvider;
@@ -40,9 +43,9 @@ public final class FullRender extends AbstractRender {
 
     @AssistedInject
     private FullRender(
-        @Assisted final @NonNull MapWorldInternal world,
-        final @NonNull ChunkSnapshotProvider chunkSnapshotProvider,
-        final @NonNull DirectoryProvider directoryProvider
+        @Assisted final MapWorldInternal world,
+        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final DirectoryProvider directoryProvider
     ) {
         this(world, 0, chunkSnapshotProvider, directoryProvider);
     }
@@ -56,15 +59,15 @@ public final class FullRender extends AbstractRender {
         // order preserved map of regions with boolean to signify if it was already scanned
         final Map<RegionCoordinate, Boolean> regions;
 
-        Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.getRenderProgress();
+        final @Nullable Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.getRenderProgress();
         if (resumedMap != null) {
             Logging.info(Lang.LOG_RESUMED_RENDERING, "world", this.mapWorld.identifier().asString());
 
             regions = resumedMap;
 
             final int count = (int) regions.values().stream().filter(bool -> bool).count();
-            this.curRegions.set(count);
-            this.curChunks.set(this.countCompletedChunks(regions));
+            this.processedRegions.set(count);
+            this.processedChunks.set(this.countCompletedChunks(regions));
         } else {
             Logging.info(Lang.LOG_STARTED_FULLRENDER, "world", this.mapWorld.identifier().asString());
 
@@ -83,10 +86,7 @@ public final class FullRender extends AbstractRender {
             // iterate the spiral to get all regions needed
             int failsafe = 0;
             regions = new LinkedHashMap<>();
-            while (spiral.hasNext()) {
-                if (this.cancelled) {
-                    break;
-                }
+            while (spiral.hasNext() && this.running()) {
                 if (failsafe > 500000) {
                     // we scanned over half a million non-existent regions straight
                     // quit the prescan and add the remaining regions to the end
@@ -104,7 +104,7 @@ public final class FullRender extends AbstractRender {
         }
 
         // ensure task wasnt cancelled before we start
-        if (this.cancelled) {
+        if (!this.running()) {
             return;
         }
 
@@ -117,24 +117,21 @@ public final class FullRender extends AbstractRender {
         this.progress = RenderProgress.printProgress(this, null);
 
         // finally, scan each region in the order provided by the spiral
-        for (Map.Entry<RegionCoordinate, Boolean> entry : regions.entrySet()) {
-            if (this.cancelled) {
+        for (final Map.Entry<RegionCoordinate, Boolean> entry : regions.entrySet()) {
+            if (!this.running()) {
                 break;
             }
-            if (entry.getValue()) continue;
+            if (entry.getValue()) {
+                continue;
+            }
             this.mapRegion(entry.getKey());
             entry.setValue(true);
-            this.curRegions.incrementAndGet();
-            // only save progress is task is not cancelled
-            if (!this.cancelled) {
+            this.processedRegions.incrementAndGet();
+            // only save progress if task is not cancelled
+            if (this.running()) {
                 this.mapWorld.saveRenderProgress(regions);
             }
         }
-
-        if (this.progress != null) {
-            this.progress.left().cancel();
-        }
-
     }
 
     private int countCompletedChunks(final Map<RegionCoordinate, Boolean> regions) {
