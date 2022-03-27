@@ -31,15 +31,16 @@ public abstract class AbstractWorldManager<W extends MapWorldInternal> implement
         return Collections.unmodifiableMap(this.worlds);
     }
 
+    @Override
     public Optional<MapWorldInternal> getWorldIfEnabled(final ServerLevel world) {
         if (WorldConfig.get(world).MAP_ENABLED) {
-            return Optional.of(this.getWorld(world));
+            return Optional.of(this.getOrCreateMapWorld(world));
         } else {
             return Optional.empty();
         }
     }
 
-    public W getWorld(final ServerLevel world) {
+    private W getOrCreateMapWorld(final ServerLevel world) {
         return this.worlds.computeIfAbsent(
             Util.worldIdentifier(world),
             $ -> this.factory.create(world)

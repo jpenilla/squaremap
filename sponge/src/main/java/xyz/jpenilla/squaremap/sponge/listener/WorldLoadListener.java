@@ -15,7 +15,7 @@ public record WorldLoadListener(SquaremapSponge platform) {
     @Listener(order = Order.EARLY)
     public void worldLoad(final LoadWorldEvent event) {
         WorldConfig.get((ServerLevel) event.world());
-        this.platform.worldManager().getWorld((ServerLevel) event.world());
+        this.platform.worldManager().getWorldIfEnabled((ServerLevel) event.world());
     }
 
     @Listener(order = Order.LATE)
