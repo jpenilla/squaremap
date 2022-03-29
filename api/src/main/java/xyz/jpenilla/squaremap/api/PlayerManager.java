@@ -15,7 +15,7 @@ public interface PlayerManager {
      *
      * @param uuid player UUID
      */
-    default void hide(@NonNull UUID uuid) {
+    default void hide(final @NonNull UUID uuid) {
         hide(uuid, false);
     }
 
@@ -34,7 +34,7 @@ public interface PlayerManager {
      *
      * @param uuid player UUID
      */
-    default void show(@NonNull UUID uuid) {
+    default void show(final @NonNull UUID uuid) {
         show(uuid, false);
     }
 
@@ -54,7 +54,7 @@ public interface PlayerManager {
      * @param uuid player UUID
      * @param hide whether to hide the player
      */
-    default void hidden(@NonNull UUID uuid, boolean hide) {
+    default void hidden(final @NonNull UUID uuid, final boolean hide) {
         hidden(uuid, hide, false);
     }
 

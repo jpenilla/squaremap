@@ -1,6 +1,6 @@
 package xyz.jpenilla.squaremap.common;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -10,7 +10,9 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
 public interface WorldManager {
-    Map<WorldIdentifier, MapWorldInternal> worlds();
+    Collection<MapWorldInternal> worlds();
+
+    Optional<MapWorldInternal> getWorldIfEnabled(WorldIdentifier worldIdentifier);
 
     Optional<MapWorldInternal> getWorldIfEnabled(ServerLevel level);
 }

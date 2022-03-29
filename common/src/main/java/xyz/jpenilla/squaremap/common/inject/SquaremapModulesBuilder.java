@@ -16,72 +16,70 @@ import xyz.jpenilla.squaremap.common.inject.module.VanillaChunkSnapshotProviderM
 import xyz.jpenilla.squaremap.common.inject.module.VanillaRegionFileDirectoryResolverModule;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 
+import static java.util.Objects.requireNonNull;
+
 @DefaultQualifier(NonNull.class)
-final class ModulesConfigurationImpl implements ModulesConfiguration {
+public final class SquaremapModulesBuilder {
     private final SquaremapPlatform platform;
     private final List<Module> extraModules = new ArrayList<>();
     private boolean vanillaRegionFileDirectoryResolver;
     private boolean vanillaChunkSnapshotProvider;
     private @Nullable Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass;
 
-    public ModulesConfigurationImpl(final SquaremapPlatform platform) {
+    private SquaremapModulesBuilder(final SquaremapPlatform platform) {
         this.platform = platform;
     }
 
-    @Override
-    public ModulesConfiguration mapWorldFactory(final Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass) {
+    public SquaremapModulesBuilder mapWorldFactory(final Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass) {
         this.mapWorldFactoryClass = mapWorldFactoryClass;
         return this;
     }
 
-    @Override
-    public ModulesConfiguration vanillaChunkSnapshotProvider() {
+    public SquaremapModulesBuilder vanillaChunkSnapshotProvider() {
         this.vanillaChunkSnapshotProvider = true;
         return this;
     }
 
-    @Override
-    public ModulesConfiguration vanillaRegionFileDirectoryResolver() {
+    public SquaremapModulesBuilder vanillaRegionFileDirectoryResolver() {
         this.vanillaRegionFileDirectoryResolver = true;
         return this;
     }
 
-    @Override
-    public ModulesConfiguration withModules(final Module... modules) {
+    public SquaremapModulesBuilder withModules(final Module... modules) {
         this.extraModules.addAll(Arrays.asList(modules));
         return this;
     }
 
-    @Override
-    public ModulesConfiguration withModule(final Module module) {
+    public SquaremapModulesBuilder withModule(final Module module) {
         this.extraModules.add(module);
         return this;
     }
 
-    @Override
-    public List<Module> done() {
-        if (this.mapWorldFactoryClass == null) {
-            throw new IllegalArgumentException("mapWorldFactoryClass is null");
-        }
+    public List<Module> build() {
+        requireNonNull(this.mapWorldFactoryClass, "mapWorldFactoryClass");
 
-        final List<Module> list = new ArrayList<>(
-            List.of(
-                new ApiModule(),
-                new PlatformModule(this.platform),
-                new FactoryModuleBuilder().build(RenderFactory.class),
-                new FactoryModuleBuilder().build(this.mapWorldFactoryClass)
-            )
+        final List<Module> baseModules = List.of(
+            new ApiModule(),
+            new PlatformModule(this.platform),
+            new FactoryModuleBuilder().build(RenderFactory.class),
+            new FactoryModuleBuilder().build(this.mapWorldFactoryClass)
         );
 
+        final List<Module> modules = new ArrayList<>(baseModules);
+
         if (this.vanillaChunkSnapshotProvider) {
-            list.add(new VanillaChunkSnapshotProviderModule());
+            modules.add(new VanillaChunkSnapshotProviderModule());
         }
 
         if (this.vanillaRegionFileDirectoryResolver) {
-            list.add(new VanillaRegionFileDirectoryResolverModule());
+            modules.add(new VanillaRegionFileDirectoryResolverModule());
         }
 
-        list.addAll(this.extraModules);
-        return list;
+        modules.addAll(this.extraModules);
+        return modules;
+    }
+
+    public static SquaremapModulesBuilder forPlatform(final SquaremapPlatform platform) {
+        return new SquaremapModulesBuilder(platform);
     }
 }

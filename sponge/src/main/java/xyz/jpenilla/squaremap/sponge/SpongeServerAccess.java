@@ -4,7 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -38,6 +40,11 @@ public final class SpongeServerAccess implements ServerAccess {
         return (ServerLevel) this.game.server().worldManager()
             .world(ResourceKey.of(identifier.namespace(), identifier.value()))
             .orElse(null);
+    }
+
+    @Override
+    public @Nullable ServerPlayer player(UUID uuid) {
+        return (ServerPlayer) this.game.server().player(uuid).orElse(null);
     }
 
     @Override

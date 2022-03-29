@@ -32,14 +32,13 @@ public final class UpdateMarkers implements Runnable {
     private static final Gson GSON = new Gson();
 
     private final MapWorldInternal mapWorld;
+    private final Map<Key, Long> lastUpdatedTime = new HashMap<>();
+    private final Map<Key, Map<String, Object>> layerCache = new HashMap<>();
+    private final Map<Key, Map<String, Object>> serializedLayerCache = new HashMap<>();
 
     public UpdateMarkers(final @NonNull MapWorldInternal mapWorld) {
         this.mapWorld = mapWorld;
     }
-
-    private final Map<Key, Long> lastUpdatedTime = new HashMap<>();
-    private final Map<Key, Map<String, Object>> layerCache = new HashMap<>();
-    private final Map<Key, Map<String, Object>> serializedLayerCache = new HashMap<>();
 
     @Override
     public void run() {
@@ -78,7 +77,7 @@ public final class UpdateMarkers implements Runnable {
             }
         });
 
-        Path file = this.mapWorld.tilesPath().resolve("markers.json");
+        final Path file = this.mapWorld.tilesPath().resolve("markers.json");
         FileUtil.writeStringAsync(file, () -> GSON.toJson(layers));
     }
 

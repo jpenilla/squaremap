@@ -2,7 +2,7 @@ package xyz.jpenilla.squaremap.common.task;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
+import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +17,8 @@ import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
@@ -28,20 +28,21 @@ import xyz.jpenilla.squaremap.common.util.Util;
 @DefaultQualifier(NonNull.class)
 public class UpdatePlayers implements Runnable {
     private static final Gson GSON = new Gson();
-    private final Injector injector;
-    private final SquaremapPlatform platform;
+
+    private final Provider<ComponentFlattener> flattener;
+    private final AbstractPlayerManager playerManager;
     private final DirectoryProvider directoryProvider;
     private final ServerAccess serverAccess;
 
     @Inject
     private UpdatePlayers(
-        final Injector injector,
-        final SquaremapPlatform platform,
+        final Provider<ComponentFlattener> flattener,
+        final AbstractPlayerManager playerManager,
         final DirectoryProvider directoryProvider,
         final ServerAccess serverAccess
     ) {
-        this.injector = injector;
-        this.platform = platform;
+        this.flattener = flattener;
+        this.playerManager = playerManager;
         this.directoryProvider = directoryProvider;
         this.serverAccess = serverAccess;
     }
@@ -50,10 +51,10 @@ public class UpdatePlayers implements Runnable {
     public void run() {
         List<Object> players = new ArrayList<>();
 
-        final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.injector.getInstance(ComponentFlattener.class));
+        final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.flattener.get());
 
         this.serverAccess.levels().forEach(world -> {
-            WorldConfig worldConfig = WorldConfig.get(world);
+            final WorldConfig worldConfig = WorldConfig.get(world);
 
             world.players().forEach(player -> {
                 if (worldConfig.PLAYER_TRACKER_HIDE_SPECTATORS && player.gameMode.getGameModeForPlayer() == GameType.SPECTATOR) {
@@ -62,14 +63,14 @@ public class UpdatePlayers implements Runnable {
                 if (worldConfig.PLAYER_TRACKER_HIDE_INVISIBLE && player.isInvisible()) {
                     return;
                 }
-                if (this.platform.playerManager().hidden(player) || this.platform.playerManager().otherwiseHidden(player)) {
+                if (this.playerManager.hidden(player) || this.playerManager.otherwiseHidden(player)) {
                     return;
                 }
-                Map<String, Object> playerEntry = new HashMap<>();
+                final Map<String, Object> playerEntry = new HashMap<>();
                 final Vec3 playerLoc = player.position();
                 playerEntry.put("name", player.getGameProfile().getName());
                 if (worldConfig.PLAYER_TRACKER_USE_DISPLAY_NAME) {
-                    playerEntry.put("display_name", htmlComponentSerializer.serialize(this.platform.playerManager().displayName(player)));
+                    playerEntry.put("display_name", htmlComponentSerializer.serialize(this.playerManager.displayName(player)));
                 }
                 playerEntry.put("uuid", player.getUUID().toString().replace("-", ""));
                 playerEntry.put("world", Util.levelWebName(world));
@@ -88,7 +89,7 @@ public class UpdatePlayers implements Runnable {
             });
         });
 
-        Map<String, Object> map = new HashMap<>();
+        final Map<String, Object> map = new HashMap<>();
         map.put("players", players);
         map.put("max", this.serverAccess.maxPlayers());
 

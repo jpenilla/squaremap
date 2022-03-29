@@ -4,7 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import io.netty.buffer.Unpooled;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +19,6 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.Config;
@@ -64,16 +63,16 @@ public final class Networking {
 
         out.writeUTF(Config.WEB_ADDRESS);
 
-        final Map<WorldIdentifier, MapWorldInternal> mapWorlds = platform.worldManager().worlds();
+        final Collection<MapWorldInternal> mapWorlds = platform.worldManager().worlds();
         out.writeInt(mapWorlds.size());
 
-        mapWorlds.forEach(($, mapWorld) -> {
+        for (final MapWorldInternal mapWorld : mapWorlds) {
             out.writeUTF(mapWorld.identifier().asString());
             out.writeUTF(Util.levelWebName(mapWorld.serverLevel()));
             out.writeInt(mapWorld.config().ZOOM_MAX);
             out.writeInt(mapWorld.config().ZOOM_DEFAULT);
             out.writeInt(mapWorld.config().ZOOM_EXTRA);
-        });
+        }
 
         out.writeUTF(player.getLevel().dimension().location().toString());
 

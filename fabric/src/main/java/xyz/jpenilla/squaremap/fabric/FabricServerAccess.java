@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -62,6 +64,11 @@ public final class FabricServerAccess implements ServerAccess {
             }
         }
         return null;
+    }
+
+    @Override
+    public @Nullable ServerPlayer player(final UUID uuid) {
+        return this.requireServer().getPlayerList().getPlayer(uuid);
     }
 
     @Override

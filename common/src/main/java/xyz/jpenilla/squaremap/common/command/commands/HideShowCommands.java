@@ -61,24 +61,24 @@ public final class HideShowCommands extends SquaremapCommand {
     private void executeHide(final CommandContext<Commander> context) {
         final ServerPlayer target = this.getPlayer.apply("player", context);
         final Commander sender = context.getSender();
-        if (context.get(Commands.PLATFORM).playerManager().hidden(target.getUUID())) {
+        if (context.get(Commands.PLAYER_MANAGER).hidden(target.getUUID())) {
             Lang.send(sender, Lang.PLAYER_ALREADY_HIDDEN, Placeholder.unparsed("player", target.getGameProfile().getName()));
             return;
         }
 
-        context.get(Commands.PLATFORM).playerManager().hide(target.getUUID(), true);
+        context.get(Commands.PLAYER_MANAGER).hide(target.getUUID(), true);
         Lang.send(sender, Lang.PLAYER_HIDDEN, Placeholder.unparsed("player", target.getGameProfile().getName()));
     }
 
     private void executeShow(final CommandContext<Commander> context) {
         final ServerPlayer target = this.getPlayer.apply("player", context);
         final Commander sender = context.getSender();
-        if (!context.get(Commands.PLATFORM).playerManager().hidden(target.getUUID())) {
+        if (!context.get(Commands.PLAYER_MANAGER).hidden(target.getUUID())) {
             Lang.send(sender, Lang.PLAYER_NOT_HIDDEN, Placeholder.unparsed("player", target.getGameProfile().getName()));
             return;
         }
 
-        context.get(Commands.PLATFORM).playerManager().show(target.getUUID(), true);
+        context.get(Commands.PLAYER_MANAGER).show(target.getUUID(), true);
         Lang.send(sender, Lang.PLAYER_SHOWN, Placeholder.unparsed("player", target.getGameProfile().getName()));
     }
 }

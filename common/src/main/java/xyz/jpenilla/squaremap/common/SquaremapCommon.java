@@ -36,6 +36,7 @@ public final class SquaremapCommon {
     private final SquaremapPlatform platform;
     private final DirectoryProvider directoryProvider;
     private final ConfigManager configManager;
+    private final AbstractPlayerManager playerManager;
     private @MonotonicNonNull Squaremap api;
 
     @Inject
@@ -43,12 +44,14 @@ public final class SquaremapCommon {
         final Injector injector,
         final SquaremapPlatform platform,
         final DirectoryProvider directoryProvider,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final AbstractPlayerManager playerManager
     ) {
         this.injector = injector;
         this.platform = platform;
         this.directoryProvider = directoryProvider;
         this.configManager = configManager;
+        this.playerManager = playerManager;
     }
 
     public void init() {
@@ -79,6 +82,7 @@ public final class SquaremapCommon {
         this.stop();
 
         this.configManager.reload();
+        this.playerManager.reload();
 
         this.start();
 

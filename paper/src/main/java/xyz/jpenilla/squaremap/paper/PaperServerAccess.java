@@ -5,9 +5,12 @@ import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -42,6 +45,15 @@ public final class PaperServerAccess implements ServerAccess {
             return null;
         }
         return CraftBukkitReflection.serverLevel(world);
+    }
+
+    @Override
+    public @Nullable ServerPlayer player(final UUID uuid) {
+        final @Nullable Player player = this.server.getPlayer(uuid);
+        if (player == null) {
+            return null;
+        }
+        return CraftBukkitReflection.serverPlayer(player);
     }
 
     @Override

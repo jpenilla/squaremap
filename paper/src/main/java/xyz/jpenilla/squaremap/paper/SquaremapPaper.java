@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Squaremap;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.inject.ModulesConfiguration;
+import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
@@ -25,7 +25,6 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     private Injector injector;
     private SquaremapCommon common;
     private PaperWorldManager worldManager;
-    private PaperPlayerManager playerManager;
     private BukkitRunnable updateWorldData;
     private BukkitRunnable updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
@@ -43,10 +42,10 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         }
 
         this.injector = Guice.createInjector(
-            ModulesConfiguration.create(this)
+            SquaremapModulesBuilder.forPlatform(this)
                 .mapWorldFactory(PaperMapWorld.Factory.class)
                 .withModule(new PaperModule(this))
-                .done()
+                .build()
         );
 
         this.common = this.injector.getInstance(SquaremapCommon.class);
@@ -74,26 +73,38 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
 
     @Override
     public void startCallback() {
-        this.playerManager = this.injector.getInstance(PaperPlayerManager.class);
+        this.worldManager = this.injector.getInstance(PaperWorldManager.class);
+        this.worldManager.start();
+
+        this.worldLoadListener = new WorldLoadListener(this);
+        this.getServer().getPluginManager().registerEvents(this.worldLoadListener, this);
+
+        this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);
+        this.mapUpdateListeners.register();
 
         this.updatePlayers = new BukkitRunnableAdapter(this.injector.getInstance(UpdatePlayers.class));
         this.updatePlayers.runTaskTimer(this, 20, 20);
 
         this.updateWorldData = new BukkitRunnableAdapter(this.injector.getInstance(UpdateWorldData.class));
         this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
-
-        this.worldManager = this.injector.getInstance(PaperWorldManager.class);
-        this.worldManager.start();
-
-        this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);
-        this.mapUpdateListeners.register();
-
-        this.worldLoadListener = new WorldLoadListener(this);
-        this.getServer().getPluginManager().registerEvents(this.worldLoadListener, this);
     }
 
     @Override
     public void stopCallback() {
+        if (this.updateWorldData != null) {
+            if (!this.updateWorldData.isCancelled()) {
+                this.updateWorldData.cancel();
+            }
+            this.updateWorldData = null;
+        }
+
+        if (this.updatePlayers != null) {
+            if (!this.updatePlayers.isCancelled()) {
+                this.updatePlayers.cancel();
+            }
+            this.updatePlayers = null;
+        }
+
         if (this.mapUpdateListeners != null) {
             this.mapUpdateListeners.unregister();
             this.mapUpdateListeners = null;
@@ -104,27 +115,9 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
             this.worldLoadListener = null;
         }
 
-        if (this.updatePlayers != null) {
-            if (!this.updatePlayers.isCancelled()) {
-                this.updatePlayers.cancel();
-            }
-            this.updatePlayers = null;
-        }
-
-        if (this.updateWorldData != null) {
-            if (!this.updateWorldData.isCancelled()) {
-                this.updateWorldData.cancel();
-            }
-            this.updateWorldData = null;
-        }
-
         if (this.worldManager != null) {
             this.worldManager.shutdown();
             this.worldManager = null;
-        }
-
-        if (this.playerManager != null) {
-            this.playerManager = null;
         }
 
         this.getServer().getScheduler().cancelTasks(this);
@@ -138,10 +131,5 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     @Override
     public @NonNull PaperWorldManager worldManager() {
         return this.worldManager;
-    }
-
-    @Override
-    public @NonNull PaperPlayerManager playerManager() {
-        return this.playerManager;
     }
 }

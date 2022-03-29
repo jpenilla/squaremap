@@ -11,7 +11,5 @@ public interface SquaremapPlatform {
 
     WorldManager worldManager();
 
-    AbstractPlayerManager playerManager();
-
     String version();
 }

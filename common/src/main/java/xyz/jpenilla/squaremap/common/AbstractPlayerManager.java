@@ -12,15 +12,18 @@ import xyz.jpenilla.squaremap.api.PlayerManager;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractPlayerManager implements PlayerManager {
+    private final ServerAccess serverAccess;
     private final Set<UUID> hidden = ConcurrentHashMap.newKeySet();
+
+    protected AbstractPlayerManager(final ServerAccess serverAccess) {
+        this.serverAccess = serverAccess;
+    }
 
     public boolean otherwiseHidden(final ServerPlayer player) {
         return false;
     }
 
     public abstract Component displayName(ServerPlayer player);
-
-    public abstract @Nullable ServerPlayer player(UUID uuid);
 
     protected abstract boolean persistentHidden(ServerPlayer player);
 
@@ -60,6 +63,10 @@ public abstract class AbstractPlayerManager implements PlayerManager {
         return this.hidden(requirePlayer(uuid));
     }
 
+    public final void reload() {
+        this.hidden.clear(); // API Javadoc states non-persistent hidden status will be cleared on plugin reload
+    }
+
     public final boolean hidden(final ServerPlayer player) {
         return this.hidden.contains(player.getUUID())
             || this.persistentHidden(player);
@@ -74,7 +81,7 @@ public abstract class AbstractPlayerManager implements PlayerManager {
     }
 
     private ServerPlayer requirePlayer(final UUID uuid) {
-        final @Nullable ServerPlayer player = this.player(uuid);
+        final @Nullable ServerPlayer player = this.serverAccess.player(uuid);
         if (player == null) {
             throw new IllegalArgumentException("Player with uuid '" + uuid + "' is not online.");
         }

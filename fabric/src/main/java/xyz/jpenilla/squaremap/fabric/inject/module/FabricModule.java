@@ -8,9 +8,11 @@ import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
+import xyz.jpenilla.squaremap.fabric.FabricPlayerManager;
 import xyz.jpenilla.squaremap.fabric.FabricServerAccess;
 import xyz.jpenilla.squaremap.fabric.SquaremapFabric;
 import xyz.jpenilla.squaremap.fabric.command.FabricCommands;
@@ -38,6 +40,9 @@ public final class FabricModule extends AbstractModule {
         this.bind(Path.class)
             .annotatedWith(DataDirectory.class)
             .toInstance(FabricLoader.getInstance().getGameDir().resolve("squaremap"));
+
+        this.bind(AbstractPlayerManager.class)
+            .to(FabricPlayerManager.class);
 
         this.requestStaticInjection(FabricMapUpdates.class);
     }

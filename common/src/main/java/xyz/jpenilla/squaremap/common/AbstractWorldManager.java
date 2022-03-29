@@ -1,11 +1,14 @@
 package xyz.jpenilla.squaremap.common;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
@@ -27,17 +30,21 @@ public abstract class AbstractWorldManager<W extends MapWorldInternal> implement
     }
 
     @Override
-    public Map<WorldIdentifier, MapWorldInternal> worlds() {
-        return Collections.unmodifiableMap(this.worlds);
+    public Collection<MapWorldInternal> worlds() {
+        return Collections.unmodifiableCollection(this.worlds.values());
     }
 
     @Override
-    public Optional<MapWorldInternal> getWorldIfEnabled(final ServerLevel world) {
-        if (WorldConfig.get(world).MAP_ENABLED) {
-            return Optional.of(this.getOrCreateMapWorld(world));
-        } else {
-            return Optional.empty();
+    public Optional<MapWorldInternal> getWorldIfEnabled(final WorldIdentifier worldIdentifier) {
+        return Optional.ofNullable(this.worlds.get(worldIdentifier));
+    }
+
+    @Override
+    public Optional<MapWorldInternal> getWorldIfEnabled(final ServerLevel level) {
+        if (WorldConfig.get(level).MAP_ENABLED) {
+            return Optional.of(this.getOrCreateMapWorld(level));
         }
+        return Optional.empty();
     }
 
     private W getOrCreateMapWorld(final ServerLevel world) {
@@ -54,12 +61,25 @@ public abstract class AbstractWorldManager<W extends MapWorldInternal> implement
     }
 
     public void worldUnloaded(final ServerLevel world) {
-        this.getWorldIfEnabled(world).ifPresent(MapWorldInternal::shutdown);
-        this.worlds.remove(Util.worldIdentifier(world));
+        final @Nullable W removed = this.worlds.remove(Util.worldIdentifier(world));
+        if (removed != null) {
+            tryShutdown(removed);
+        }
     }
 
     public void shutdown() {
-        this.worlds.values().forEach(MapWorldInternal::shutdown);
+        final List<W> worlds = List.copyOf(this.worlds.values());
         this.worlds.clear();
+        for (final W world : worlds) {
+            tryShutdown(world);
+        }
+    }
+
+    private static void tryShutdown(final MapWorldInternal mapWorld) {
+        try {
+            mapWorld.shutdown();
+        } catch (final Exception ex) {
+            Logging.logger().error("Exception shutting down map world '{}'", mapWorld.identifier().asString(), ex);
+        }
     }
 }

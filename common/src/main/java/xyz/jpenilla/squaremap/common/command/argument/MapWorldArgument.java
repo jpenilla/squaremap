@@ -135,7 +135,7 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
 
         @Override
         public List<String> suggestions(final CommandContext<C> commandContext, final String input) {
-            return commandContext.get(Commands.PLATFORM).worldManager().worlds().values().stream()
+            return commandContext.get(Commands.PLATFORM).worldManager().worlds().stream()
                 .flatMap(mapWorld -> {
                     final WorldIdentifier identifier = mapWorld.identifier();
                     if (!input.isBlank() && identifier.namespace().equals(ResourceLocation.DEFAULT_NAMESPACE)) {

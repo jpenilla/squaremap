@@ -20,6 +20,7 @@ import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.command.commands.CancelRenderCommand;
@@ -43,6 +44,7 @@ import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 @Singleton
 public final class Commands {
     public static final CloudKey<SquaremapPlatform> PLATFORM = createTypeKey(SquaremapPlatform.class);
+    public static final CloudKey<AbstractPlayerManager> PLAYER_MANAGER = createTypeKey(AbstractPlayerManager.class);
     public static final CloudKey<ServerAccess> SERVER_ACCESS = createTypeKey(ServerAccess.class);
     public static final CloudKey<RenderFactory> RENDER_FACTORY = createTypeKey(RenderFactory.class);
 
@@ -55,6 +57,7 @@ public final class Commands {
         final Injector injector,
         final PlatformCommands platformCommands,
         final SquaremapPlatform platform,
+        final AbstractPlayerManager playerManager,
         final ServerAccess serverAccess,
         final RenderFactory renderFactory
     ) {
@@ -65,6 +68,7 @@ public final class Commands {
         this.commandManager.registerCommandPreProcessor(preprocessContext -> {
             final CommandContext<Commander> commandContext = preprocessContext.getCommandContext();
             commandContext.store(PLATFORM, platform);
+            commandContext.store(PLAYER_MANAGER, playerManager);
             commandContext.store(SERVER_ACCESS, serverAccess);
             commandContext.store(RENDER_FACTORY, renderFactory);
         });

@@ -17,7 +17,7 @@ import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.inject.ModulesConfiguration;
+import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.fabric.data.FabricMapWorld;
@@ -33,16 +33,15 @@ public final class SquaremapFabric implements SquaremapPlatform {
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
     private @Nullable FabricWorldManager worldManager;
-    private @Nullable FabricPlayerManager playerManager;
 
     private SquaremapFabric() {
         this.injector = Guice.createInjector(
-            ModulesConfiguration.create(this)
+            SquaremapModulesBuilder.forPlatform(this)
                 .mapWorldFactory(FabricMapWorld.Factory.class)
                 .withModule(new FabricModule(this))
                 .vanillaChunkSnapshotProvider()
                 .vanillaRegionFileDirectoryResolver()
-                .done()
+                .build()
         );
         this.common = this.injector.getInstance(SquaremapCommon.class);
         this.common.init();
@@ -83,21 +82,19 @@ public final class SquaremapFabric implements SquaremapPlatform {
         this.worldManager = this.injector.getInstance(FabricWorldManager.class);
         this.worldManager.start();
 
-        this.playerManager = this.injector.getInstance(FabricPlayerManager.class);
         this.updatePlayers = this.injector.getInstance(UpdatePlayers.class);
         this.updateWorldData = this.injector.getInstance(UpdateWorldData.class);
     }
 
     @Override
     public void stopCallback() {
+        this.updatePlayers = null;
+        this.updateWorldData = null;
+
         if (this.worldManager != null) {
             this.worldManager.shutdown();
             this.worldManager = null;
         }
-
-        this.updatePlayers = null;
-        this.updateWorldData = null;
-        this.playerManager = null;
     }
 
     @Override
@@ -109,11 +106,6 @@ public final class SquaremapFabric implements SquaremapPlatform {
     @Override
     public FabricWorldManager worldManager() {
         return this.worldManager;
-    }
-
-    @Override
-    public FabricPlayerManager playerManager() {
-        return this.playerManager;
     }
 
     private final class TickEndListener implements ServerTickEvents.EndTick {
@@ -133,7 +125,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
                 }
 
                 if (SquaremapFabric.this.worldManager != null) {
-                    for (final MapWorldInternal mapWorld : SquaremapFabric.this.worldManager.worlds().values()) {
+                    for (final MapWorldInternal mapWorld : SquaremapFabric.this.worldManager.worlds()) {
                         ((FabricMapWorld) mapWorld).tickEachSecond(this.tick);
                     }
                 }
