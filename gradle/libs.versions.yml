@@ -15,11 +15,11 @@ versions:
     checkerQual: 3.21.3
     cloud: 1.7.0-SNAPSHOT
     configurate: 4.1.2
-    adventure: 4.10.0
+    adventure: 4.10.1
     adventurePlatformFabric: 5.2.0
     paperApi: 1.18.2-R0.1-SNAPSHOT
     bStats: 3.0.0
-    fabricApi: 0.47.9+1.18.2
+    fabricApi: 0.48.0+1.18.2
     fabricLoader: 0.13.3
     cardinalComponents: 4.1.4
     guice: 5.1.0
@@ -111,7 +111,7 @@ dependencies:
     undertow:
         group: io.undertow
         name: undertow-core
-        version: 2.2.14.Final
+        version: 2.2.16.Final
     jBossLoggingAnnotations:
         group: org.jboss.logging
         name: jboss-logging-annotations
