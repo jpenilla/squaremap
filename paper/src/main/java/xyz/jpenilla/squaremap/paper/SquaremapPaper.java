@@ -6,7 +6,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Squaremap;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
@@ -19,14 +19,13 @@ import xyz.jpenilla.squaremap.paper.inject.module.PaperModule;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
-import xyz.jpenilla.squaremap.paper.util.BukkitRunnableAdapter;
 
 public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatform {
     private Injector injector;
     private SquaremapCommon common;
     private PaperWorldManager worldManager;
-    private BukkitRunnable updateWorldData;
-    private BukkitRunnable updatePlayers;
+    private BukkitTask updateWorldData;
+    private BukkitTask updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
     private WorldLoadListener worldLoadListener;
     private PaperNetworking networking;
@@ -82,11 +81,10 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);
         this.mapUpdateListeners.register();
 
-        this.updatePlayers = new BukkitRunnableAdapter(this.injector.getInstance(UpdatePlayers.class));
-        this.updatePlayers.runTaskTimer(this, 20, 20);
-
-        this.updateWorldData = new BukkitRunnableAdapter(this.injector.getInstance(UpdateWorldData.class));
-        this.updateWorldData.runTaskTimer(this, 0, 20 * 5);
+        this.updatePlayers = this.getServer().getScheduler()
+            .runTaskTimer(this, this.injector.getInstance(UpdatePlayers.class), 20, 20);
+        this.updateWorldData = this.getServer().getScheduler()
+            .runTaskTimer(this, this.injector.getInstance(UpdateWorldData.class), 0, 20 * 5);
     }
 
     @Override
