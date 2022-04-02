@@ -6,7 +6,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -24,15 +23,7 @@ public final class ConfigManager {
     }
 
     public void init() {
-        Config.reload(this.directoryProvider, this.serverAccess);
-
-        // this has to load after config.yml in order to know if web dir should be overwritten
-        // but also before advanced.yml to ensure foliage.png and grass.png are already on disk
-        FileUtil.extract("/web/", this.directoryProvider.webDirectory().toFile(), Config.UPDATE_WEB_DIR);
-        FileUtil.extract("/locale/", this.directoryProvider.localeDirectory().toFile(), false);
-
-        Advanced.reload(this.directoryProvider, this.serverAccess);
-        Lang.reload(this.directoryProvider);
+        this.reload();
     }
 
     public void reload() {

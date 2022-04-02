@@ -7,7 +7,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 public abstract class SquaremapCommand {
     protected final Commands commands;
 
-    protected SquaremapCommand(final @NonNull Commands commands) {
+    protected SquaremapCommand(final Commands commands) {
         this.commands = commands;
     }
 

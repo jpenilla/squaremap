@@ -6,25 +6,27 @@ import net.kyori.adventure.audience.ForwardingAudience;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.command.CommandCause;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 
 // Commanders are used as Map keys by the CommandConfirmationManager to track who has confirmations pending
 // So our equals and hashcode only account for the source, not the entire stack
+@DefaultQualifier(NonNull.class)
 public class SpongeCommander implements Commander, ForwardingAudience.Single {
     private final CommandCause cause;
 
-    public SpongeCommander(final @NonNull CommandCause cause) {
+    private SpongeCommander(final CommandCause cause) {
         this.cause = cause;
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public Audience audience() {
         return this.cause.audience();
     }
 
-    public @NonNull CommandCause cause() {
+    public CommandCause cause() {
         return this.cause;
     }
 
@@ -53,12 +55,12 @@ public class SpongeCommander implements Commander, ForwardingAudience.Single {
     }
 
     public static final class Player extends SpongeCommander implements PlayerCommander {
-        public Player(final @NonNull CommandCause stack) {
+        private Player(final CommandCause stack) {
             super(stack);
         }
 
         @Override
-        public @NonNull ServerPlayer player() {
+        public ServerPlayer player() {
             return (ServerPlayer) this.cause().root();
         }
 

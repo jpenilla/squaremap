@@ -22,8 +22,8 @@ import static cloud.commandframework.arguments.parser.ArgumentParseResult.failur
 import static cloud.commandframework.arguments.parser.ArgumentParseResult.success;
 
 @DefaultQualifier(NonNull.class)
-public class LevelArgument<C> extends CommandArgument<C, ServerLevel> {
-    protected LevelArgument(
+public final class LevelArgument<C> extends CommandArgument<C, ServerLevel> {
+    private LevelArgument(
         final boolean required,
         final String name,
         final String defaultValue,
@@ -67,7 +67,6 @@ public class LevelArgument<C> extends CommandArgument<C, ServerLevel> {
     }
 
     public static final class Parser<C> implements ArgumentParser<C, ServerLevel> {
-
         @Override
         public ArgumentParseResult<ServerLevel> parse(final CommandContext<C> commandContext, final Queue<String> inputQueue) {
             final @Nullable String input = inputQueue.peek();

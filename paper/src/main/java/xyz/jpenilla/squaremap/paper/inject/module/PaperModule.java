@@ -19,7 +19,6 @@ import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.command.PaperCommands;
 import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.paper.util.PaperRegionFileDirectoryResolver;
-import xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperModule extends AbstractModule {
@@ -58,7 +57,5 @@ public final class PaperModule extends AbstractModule {
 
         this.bind(ComponentFlattener.class)
             .toInstance(PaperComponents.flattener());
-
-        this.requestStaticInjection(WorldNameToKeyMigration.class);
     }
 }

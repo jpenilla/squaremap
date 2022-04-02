@@ -19,6 +19,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
 public final class Lang {
@@ -204,6 +205,8 @@ public final class Lang {
     }
 
     public static void reload(final DirectoryProvider directoryProvider) {
+        FileUtil.extract("/locale/", directoryProvider.localeDirectory(), false);
+
         final Path configFile = directoryProvider.localeDirectory().resolve(Config.LANGUAGE_FILE);
         final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
             .path(configFile)

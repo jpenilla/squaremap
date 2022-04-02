@@ -11,6 +11,7 @@ import cloud.commandframework.fabric.data.SinglePlayerSelector;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -50,19 +51,17 @@ public final class FabricCommands implements PlatformCommands {
     @Override
     public void registerCommands(final Commands commands) {
         List.of(
-            new RadiusRenderCommand(
-                commands,
-                ColumnPosArgument::optional,
-                (name, context) -> {
-                    final Coordinates.@Nullable ColumnCoordinates loc = context.getOrDefault(name, null);
-                    if (loc == null) {
-                        return null;
-                    }
-                    return loc.blockPos();
-                }
-            ),
+            new RadiusRenderCommand(commands, ColumnPosArgument::optional, FabricCommands::resolveColumnPos),
             new HideShowCommands(commands, SinglePlayerSelectorArgument::of, FabricCommands::resolvePlayer)
         ).forEach(SquaremapCommand::register);
+    }
+
+    private static @Nullable BlockPos resolveColumnPos(final String argName, final CommandContext<Commander> context) {
+        final Coordinates.@Nullable ColumnCoordinates loc = context.getOrDefault(argName, null);
+        if (loc == null) {
+            return null;
+        }
+        return loc.blockPos();
     }
 
     private static ServerPlayer resolvePlayer(final String argName, final CommandContext<Commander> context) {

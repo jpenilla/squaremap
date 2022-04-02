@@ -9,6 +9,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.util.Util;
@@ -16,19 +17,20 @@ import xyz.jpenilla.squaremap.fabric.mixin.CommandSourceStackAccess;
 
 // Commanders are used as Map keys by the CommandConfirmationManager to track who has confirmations pending
 // So our equals and hashcode only account for the source, not the entire stack
+@DefaultQualifier(NonNull.class)
 public class FabricCommander implements Commander, ForwardingAudience.Single {
     private final CommandSourceStack stack;
 
-    public FabricCommander(final @NonNull CommandSourceStack stack) {
+    private FabricCommander(final CommandSourceStack stack) {
         this.stack = stack;
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public Audience audience() {
         return FabricServerAudiences.of(this.stack.getServer()).audience(this.stack);
     }
 
-    public @NonNull CommandSourceStack stack() {
+    public CommandSourceStack stack() {
         return this.stack;
     }
 
@@ -57,12 +59,12 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
     }
 
     public static final class Player extends FabricCommander implements PlayerCommander {
-        public Player(final @NonNull CommandSourceStack stack) {
+        private Player(final CommandSourceStack stack) {
             super(stack);
         }
 
         @Override
-        public @NonNull ServerPlayer player() {
+        public ServerPlayer player() {
             try {
                 return this.stack().getPlayerOrException();
             } catch (final CommandSyntaxException e) {

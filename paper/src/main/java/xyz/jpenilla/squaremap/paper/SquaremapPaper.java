@@ -75,7 +75,7 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         this.worldManager = this.injector.getInstance(PaperWorldManager.class);
         this.worldManager.start();
 
-        this.worldLoadListener = new WorldLoadListener(this);
+        this.worldLoadListener = this.injector.getInstance(WorldLoadListener.class);
         this.getServer().getPluginManager().registerEvents(this.worldLoadListener, this);
 
         this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);

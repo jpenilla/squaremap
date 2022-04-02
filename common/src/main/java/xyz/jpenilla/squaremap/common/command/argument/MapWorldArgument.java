@@ -32,8 +32,8 @@ import static cloud.commandframework.arguments.parser.ArgumentParseResult.succes
  * @param <C> Command sender type
  */
 @DefaultQualifier(NonNull.class)
-public class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
-    protected MapWorldArgument(
+public final class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
+    private MapWorldArgument(
         final boolean required,
         final String name,
         final String defaultValue,
@@ -106,7 +106,6 @@ public class MapWorldArgument<C> extends CommandArgument<C, MapWorldInternal> {
     }
 
     public static final class Parser<C> implements ArgumentParser<C, MapWorldInternal> {
-
         @Override
         public ArgumentParseResult<MapWorldInternal> parse(final CommandContext<C> commandContext, final Queue<String> inputQueue) {
             final @Nullable String input = inputQueue.peek();

@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -47,7 +46,6 @@ import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.config.PaperAdvanced;
 
 public final class MapUpdateListeners {
-
     private final SquaremapPaper plugin;
     private final List<Listener> registeredListeners = new ArrayList<>();
 
@@ -170,11 +168,11 @@ public final class MapUpdateListeners {
     }
 
     private void handleBlockPistonExtendEvent(final @NonNull BlockPistonExtendEvent event) {
-        this.markLocations(event.getBlock().getWorld(), event.getBlocks().stream().map(Block::getLocation).collect(Collectors.toList()));
+        this.markLocations(event.getBlock().getWorld(), event.getBlocks().stream().map(Block::getLocation).toList());
     }
 
     private void handleBlockPistonRetractEvent(final @NonNull BlockPistonRetractEvent event) {
-        this.markLocations(event.getBlock().getWorld(), event.getBlocks().stream().map(Block::getLocation).collect(Collectors.toList()));
+        this.markLocations(event.getBlock().getWorld(), event.getBlocks().stream().map(Block::getLocation).toList());
     }
 
     private void handleBlockEvent(final @NonNull BlockEvent blockEvent) {
@@ -202,7 +200,7 @@ public final class MapUpdateListeners {
     }
 
     private void handleEntityExplodeEvent(final @NonNull EntityExplodeEvent event) {
-        this.markChunksFromBlocks(event.getLocation().getWorld(), event.blockList().stream().map(Block::getState).collect(Collectors.toList()));
+        this.markChunksFromBlocks(event.getLocation().getWorld(), event.blockList().stream().map(Block::getState).toList());
     }
 
     private void handleFluidLevelChangeEvent(final @NonNull FluidLevelChangeEvent event) {

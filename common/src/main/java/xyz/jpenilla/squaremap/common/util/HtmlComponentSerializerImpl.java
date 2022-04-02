@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.common.util;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
@@ -37,7 +38,7 @@ final class HtmlComponentSerializerImpl implements HtmlComponentSerializer {
         private static final String CLOSE_SPAN = "</span>";
 
         private final StringBuilder sb = new StringBuilder();
-        private final ArrayDeque<Style> stack = new ArrayDeque<>();
+        private final Deque<Style> stack = new ArrayDeque<>();
 
         private HtmlFlattener() {
         }

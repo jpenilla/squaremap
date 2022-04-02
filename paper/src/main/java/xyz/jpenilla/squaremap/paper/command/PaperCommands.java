@@ -72,19 +72,17 @@ public final class PaperCommands implements PlatformCommands {
     @Override
     public void registerCommands(final Commands commands) {
         List.of(
-            new RadiusRenderCommand(
-                commands,
-                Location2DArgument::optional,
-                (name, context) -> {
-                    final @Nullable Location2D loc = context.getOrDefault(name, null);
-                    if (loc == null) {
-                        return null;
-                    }
-                    return new BlockPos(loc.getBlockX(), 0, loc.getBlockZ());
-                }
-            ),
+            new RadiusRenderCommand(commands, Location2DArgument::optional, PaperCommands::resolveColumnPos),
             new HideShowCommands(commands, SinglePlayerSelectorArgument::of, PaperCommands::resolvePlayer)
         ).forEach(SquaremapCommand::register);
+    }
+
+    private static @Nullable BlockPos resolveColumnPos(final String argName, final CommandContext<Commander> context) {
+        final @Nullable Location2D loc = context.getOrDefault(argName, null);
+        if (loc == null) {
+            return null;
+        }
+        return new BlockPos(loc.getBlockX(), 0, loc.getBlockZ());
     }
 
     private static ServerPlayer resolvePlayer(final String argName, final CommandContext<Commander> context) {

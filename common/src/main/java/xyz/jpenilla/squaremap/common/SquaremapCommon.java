@@ -24,6 +24,7 @@ import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.LevelBiomeColorData;
 import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
+import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.UpdateChecker;
 
@@ -37,6 +38,7 @@ public final class SquaremapCommon {
     private final DirectoryProvider directoryProvider;
     private final ConfigManager configManager;
     private final AbstractPlayerManager playerManager;
+    private final Commands commands;
     private @MonotonicNonNull Squaremap api;
 
     @Inject
@@ -45,23 +47,27 @@ public final class SquaremapCommon {
         final SquaremapPlatform platform,
         final DirectoryProvider directoryProvider,
         final ConfigManager configManager,
-        final AbstractPlayerManager playerManager
+        final AbstractPlayerManager playerManager,
+        final Commands commands
     ) {
         this.injector = injector;
         this.platform = platform;
         this.directoryProvider = directoryProvider;
         this.configManager = configManager;
         this.playerManager = playerManager;
+        this.commands = commands;
     }
 
     public void init() {
         this.configManager.init();
+        this.directoryProvider.init();
         this.start();
         this.setupApi();
-        this.injector.getInstance(Commands.class).registerCommands();
+        this.commands.registerCommands();
     }
 
     public void start() {
+        FileUtil.extract("/web/", this.directoryProvider.webDirectory(), Config.UPDATE_WEB_DIR);
         LevelBiomeColorData.loadImages(this.directoryProvider);
         this.platform.startCallback();
         if (Config.HTTPD_ENABLED) {

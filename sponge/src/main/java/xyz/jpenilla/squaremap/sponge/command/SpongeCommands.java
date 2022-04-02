@@ -69,19 +69,17 @@ public final class SpongeCommands implements PlatformCommands {
     @Override
     public void registerCommands(final Commands commands) {
         List.of(
-            new RadiusRenderCommand(
-                commands,
-                Vector2iArgument::optional,
-                (name, context) -> {
-                    final @Nullable Vector2i loc = context.getOrDefault(name, null);
-                    if (loc == null) {
-                        return null;
-                    }
-                    return new BlockPos(loc.x(), 0, loc.y());
-                }
-            ),
+            new RadiusRenderCommand(commands, Vector2iArgument::optional, SpongeCommands::resolveColumnPos),
             new HideShowCommands(commands, SinglePlayerSelectorArgument::of, SpongeCommands::resolvePlayer)
         ).forEach(SquaremapCommand::register);
+    }
+
+    private static @Nullable BlockPos resolveColumnPos(final String argName, final CommandContext<Commander> context) {
+        final @Nullable Vector2i loc = context.getOrDefault(argName, null);
+        if (loc == null) {
+            return null;
+        }
+        return new BlockPos(loc.x(), 0, loc.y());
     }
 
     private static ServerPlayer resolvePlayer(final String argName, final CommandContext<Commander> context) {

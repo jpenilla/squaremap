@@ -2,28 +2,31 @@ package xyz.jpenilla.squaremap.common.task.render;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Lang;
-import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
 public final class FullRender extends AbstractRender {
-    private final DirectoryProvider directoryProvider;
+    private final RegionFileDirectoryResolver regionFileDirectoryResolver;
     private final int wait;
     private int maxRadius = 0;
     private int totalChunks;
@@ -34,10 +37,10 @@ public final class FullRender extends AbstractRender {
         @Assisted final MapWorldInternal world,
         @Assisted final int wait,
         final ChunkSnapshotProvider chunkSnapshotProvider,
-        final DirectoryProvider directoryProvider
+        final RegionFileDirectoryResolver regionFileDirectoryResolver
     ) {
         super(world, chunkSnapshotProvider);
-        this.directoryProvider = directoryProvider;
+        this.regionFileDirectoryResolver = regionFileDirectoryResolver;
         this.wait = wait;
     }
 
@@ -45,9 +48,9 @@ public final class FullRender extends AbstractRender {
     private FullRender(
         @Assisted final MapWorldInternal world,
         final ChunkSnapshotProvider chunkSnapshotProvider,
-        final DirectoryProvider directoryProvider
+        final RegionFileDirectoryResolver regionFileDirectoryResolver
     ) {
-        this(world, 0, chunkSnapshotProvider, directoryProvider);
+        this(world, 0, chunkSnapshotProvider, regionFileDirectoryResolver);
     }
 
     @Override
@@ -155,7 +158,7 @@ public final class FullRender extends AbstractRender {
     private List<RegionCoordinate> getRegions() {
         final List<RegionCoordinate> regions = new ArrayList<>();
 
-        for (final Path path : this.directoryProvider.getRegionFiles(this.level)) {
+        for (final Path path : this.getRegionFiles()) {
             if (path.toFile().length() == 0) {
                 continue;
             }
@@ -182,5 +185,15 @@ public final class FullRender extends AbstractRender {
         }
 
         return regions;
+    }
+
+    private Path[] getRegionFiles() {
+        final Path regionFolder = this.regionFileDirectoryResolver.resolveRegionFileDirectory(this.level);
+        Logging.debug(() -> "Listing region files for directory '" + regionFolder + "'...");
+        try (final Stream<Path> stream = Files.list(regionFolder)) {
+            return stream.filter(file -> file.getFileName().toString().endsWith(".mca")).toArray(Path[]::new);
+        } catch (final IOException ex) {
+            throw new RuntimeException("Failed to list region files in directory '" + regionFolder.toAbsolutePath() + "'", ex);
+        }
     }
 }

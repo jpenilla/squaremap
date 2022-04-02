@@ -19,7 +19,7 @@ import xyz.jpenilla.squaremap.common.util.Util;
 public abstract class AbstractWorldManager<W extends MapWorldInternal> implements WorldManager {
     private final Map<WorldIdentifier, W> worlds = new ConcurrentHashMap<>();
     private final MapWorldInternal.Factory<W> factory;
-    private final ServerAccess serverAccess;
+    protected final ServerAccess serverAccess;
 
     protected AbstractWorldManager(
         final MapWorldInternal.Factory<W> factory,

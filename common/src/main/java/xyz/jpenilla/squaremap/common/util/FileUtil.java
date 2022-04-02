@@ -56,7 +56,11 @@ public final class FileUtil {
         }
     }
 
-    public static void extract(String inDir, File outDir, boolean replace) {
+    public static void extract(final String inDir, final Path outDir, final boolean replaceExisting) {
+        extract(inDir, outDir.toFile(), replaceExisting);
+    }
+
+    private static void extract(final String inDir, final File outDir, final boolean replaceExisting) {
         // https://coderanch.com/t/472574/java/extract-directory-current-jar
         final URL dirURL = FileUtil.class.getResource(inDir);
         final String path = inDir.substring(1);
@@ -78,7 +82,7 @@ public final class FileUtil {
                 }
                 final String filename = name.substring(path.length());
                 final File file = new File(outDir, filename);
-                if (!replace && file.exists()) {
+                if (!replaceExisting && file.exists()) {
                     Logging.debug(() -> "  exists   " + name);
                     continue;
                 }

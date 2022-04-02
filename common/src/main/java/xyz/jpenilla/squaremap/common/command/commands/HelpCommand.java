@@ -1,13 +1,13 @@
 package xyz.jpenilla.squaremap.common.command.commands;
 
 import cloud.commandframework.CommandHelpHandler;
+import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import com.google.inject.Inject;
-import java.util.stream.Collectors;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -27,19 +27,7 @@ public final class HelpCommand extends SquaremapCommand {
     @Inject
     private HelpCommand(final Commands commands) {
         super(commands);
-        this.minecraftHelp = new MinecraftHelp<>(
-            String.format("/%s help", Config.MAIN_COMMAND_LABEL),
-            AudienceProvider.nativeAudience(),
-            commands.commandManager()
-        );
-        this.minecraftHelp.setHelpColors(MinecraftHelp.HelpColors.of(
-            TextColor.color(0x5B00FF),
-            NamedTextColor.WHITE,
-            TextColor.color(0xC028FF),
-            NamedTextColor.GRAY,
-            NamedTextColor.DARK_GRAY
-        ));
-        this.minecraftHelp.setMessage(MinecraftHelp.MESSAGE_HELP_TITLE, "squaremap command help");
+        this.minecraftHelp = createMinecraftHelp(commands.commandManager());
     }
 
     @Override
@@ -53,7 +41,7 @@ public final class HelpCommand extends SquaremapCommand {
                 return indexHelpTopic.getEntries()
                     .stream()
                     .map(CommandHelpHandler.VerboseHelpEntry::getSyntaxString)
-                    .collect(Collectors.toList());
+                    .toList();
             })
             .build();
 
@@ -70,5 +58,22 @@ public final class HelpCommand extends SquaremapCommand {
             context.<String>getOptional("query").orElse(""),
             context.getSender()
         );
+    }
+
+    private static MinecraftHelp<Commander> createMinecraftHelp(final CommandManager<Commander> manager) {
+        final MinecraftHelp<Commander> minecraftHelp = new MinecraftHelp<>(
+            String.format("/%s help", Config.MAIN_COMMAND_LABEL),
+            AudienceProvider.nativeAudience(),
+            manager
+        );
+        minecraftHelp.setHelpColors(MinecraftHelp.HelpColors.of(
+            TextColor.color(0x5B00FF),
+            NamedTextColor.WHITE,
+            TextColor.color(0xC028FF),
+            NamedTextColor.GRAY,
+            NamedTextColor.DARK_GRAY
+        ));
+        minecraftHelp.setMessage(MinecraftHelp.MESSAGE_HELP_TITLE, "squaremap command help");
+        return minecraftHelp;
     }
 }

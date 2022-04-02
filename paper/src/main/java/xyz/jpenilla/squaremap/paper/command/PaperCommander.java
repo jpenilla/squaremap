@@ -7,23 +7,25 @@ import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
+@DefaultQualifier(NonNull.class)
 public class PaperCommander implements Commander, ForwardingAudience.Single {
     private final CommandSender sender;
 
-    public PaperCommander(final @NonNull CommandSender sender) {
+    private PaperCommander(final CommandSender sender) {
         this.sender = sender;
     }
 
     @Override
-    public @NonNull Audience audience() {
+    public Audience audience() {
         return this.sender;
     }
 
-    public @NonNull CommandSender sender() {
+    public CommandSender sender() {
         return this.sender;
     }
 
@@ -52,16 +54,16 @@ public class PaperCommander implements Commander, ForwardingAudience.Single {
     }
 
     public static final class Player extends PaperCommander implements PlayerCommander {
-        public Player(final org.bukkit.entity.@NonNull Player sender) {
+        private Player(final org.bukkit.entity.Player sender) {
             super(sender);
         }
 
-        public org.bukkit.entity.@NonNull Player bukkit() {
+        public org.bukkit.entity.Player bukkit() {
             return (org.bukkit.entity.Player) this.sender();
         }
 
         @Override
-        public @NonNull ServerPlayer player() {
+        public ServerPlayer player() {
             return CraftBukkitReflection.serverPlayer(this.bukkit());
         }
 
