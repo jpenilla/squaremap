@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
@@ -25,15 +25,15 @@ import xyz.jpenilla.squaremap.common.util.Util;
 public final class UpdateWorldData implements Runnable {
     private static final Gson GSON = new Gson();
 
-    private final SquaremapPlatform platform;
+    private final WorldManager worldManager;
     private final DirectoryProvider directoryProvider;
 
     @Inject
     private UpdateWorldData(
-        final SquaremapPlatform platform,
+        final WorldManager worldManager,
         final DirectoryProvider directoryProvider
     ) {
-        this.platform = platform;
+        this.worldManager = worldManager;
         this.directoryProvider = directoryProvider;
     }
 
@@ -41,7 +41,7 @@ public final class UpdateWorldData implements Runnable {
     public void run() {
         List<Object> worlds = new ArrayList<>();
 
-        this.platform.worldManager().worlds().forEach(mapWorld -> {
+        this.worldManager.worlds().forEach(mapWorld -> {
             final ServerLevel level = mapWorld.serverLevel();
             final WorldConfig worldConfig = mapWorld.config();
 

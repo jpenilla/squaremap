@@ -10,10 +10,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
 import xyz.jpenilla.squaremap.fabric.FabricPlayerManager;
 import xyz.jpenilla.squaremap.fabric.FabricServerAccess;
+import xyz.jpenilla.squaremap.fabric.FabricWorldManager;
 import xyz.jpenilla.squaremap.fabric.SquaremapFabric;
 import xyz.jpenilla.squaremap.fabric.command.FabricCommands;
 import xyz.jpenilla.squaremap.fabric.util.FabricMapUpdates;
@@ -43,6 +45,9 @@ public final class FabricModule extends AbstractModule {
 
         this.bind(AbstractPlayerManager.class)
             .to(FabricPlayerManager.class);
+
+        this.bind(WorldManager.class)
+            .to(FabricWorldManager.class);
 
         this.requestStaticInjection(FabricMapUpdates.class);
     }

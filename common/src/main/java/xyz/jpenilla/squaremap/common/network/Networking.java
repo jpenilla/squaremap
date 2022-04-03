@@ -20,7 +20,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
@@ -31,7 +31,7 @@ public final class Networking {
     public static final Set<UUID> CLIENT_USERS = ConcurrentHashMap.newKeySet();
 
     public static void handleIncoming(
-        final SquaremapPlatform platform,
+        final WorldManager worldManager,
         final ServerAccess serverAccess,
         final byte[] bytes,
         final ServerPlayer serverPlayer,
@@ -42,7 +42,7 @@ public final class Networking {
         switch (action) {
             case Constants.SERVER_DATA -> {
                 CLIENT_USERS.add(serverPlayer.getUUID());
-                sendServerData(platform, serverPlayer);
+                sendServerData(worldManager, serverPlayer);
             }
             case Constants.MAP_DATA -> {
                 final int id = in.readInt();
@@ -52,7 +52,7 @@ public final class Networking {
     }
 
     public static void sendServerData(
-        final SquaremapPlatform platform,
+        final WorldManager worldManager,
         final ServerPlayer player
     ) {
         final ByteArrayDataOutput out = out();
@@ -63,7 +63,7 @@ public final class Networking {
 
         out.writeUTF(Config.WEB_ADDRESS);
 
-        final Collection<MapWorldInternal> mapWorlds = platform.worldManager().worlds();
+        final Collection<MapWorldInternal> mapWorlds = worldManager.worlds();
         out.writeInt(mapWorlds.size());
 
         for (final MapWorldInternal mapWorld : mapWorlds) {

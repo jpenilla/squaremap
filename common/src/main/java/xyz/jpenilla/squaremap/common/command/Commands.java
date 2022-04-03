@@ -22,7 +22,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.commands.CancelRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ConfirmCommand;
 import xyz.jpenilla.squaremap.common.command.commands.FullRenderCommand;
@@ -43,10 +43,10 @@ import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class Commands {
-    public static final CloudKey<SquaremapPlatform> PLATFORM = createTypeKey(SquaremapPlatform.class);
     public static final CloudKey<AbstractPlayerManager> PLAYER_MANAGER = createTypeKey(AbstractPlayerManager.class);
     public static final CloudKey<ServerAccess> SERVER_ACCESS = createTypeKey(ServerAccess.class);
     public static final CloudKey<RenderFactory> RENDER_FACTORY = createTypeKey(RenderFactory.class);
+    public static final CloudKey<WorldManager> WORLD_MANAGER = createTypeKey(WorldManager.class);
 
     private final Injector injector;
     private final CommandManager<Commander> commandManager;
@@ -56,10 +56,10 @@ public final class Commands {
     private Commands(
         final Injector injector,
         final PlatformCommands platformCommands,
-        final SquaremapPlatform platform,
         final AbstractPlayerManager playerManager,
         final ServerAccess serverAccess,
-        final RenderFactory renderFactory
+        final RenderFactory renderFactory,
+        final WorldManager worldManager
     ) {
         this.injector = injector;
         this.platformCommands = platformCommands;
@@ -67,10 +67,10 @@ public final class Commands {
 
         this.commandManager.registerCommandPreProcessor(preprocessContext -> {
             final CommandContext<Commander> commandContext = preprocessContext.getCommandContext();
-            commandContext.store(PLATFORM, platform);
             commandContext.store(PLAYER_MANAGER, playerManager);
             commandContext.store(SERVER_ACCESS, serverAccess);
             commandContext.store(RENDER_FACTORY, renderFactory);
+            commandContext.store(WORLD_MANAGER, worldManager);
         });
 
         this.registerExceptionHandlers();

@@ -14,6 +14,7 @@ import org.bukkit.map.MapRenderer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.network.Networking;
 import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
@@ -23,16 +24,19 @@ public final class PaperNetworking implements Listener {
     private final SquaremapPaper plugin;
     private final ServerAccess serverAccess;
     private final Server server;
+    private final WorldManager worldManager;
 
     @Inject
     private PaperNetworking(
         final SquaremapPaper plugin,
         final ServerAccess serverAccess,
-        final Server server
+        final Server server,
+        final WorldManager worldManager
     ) {
         this.plugin = plugin;
         this.serverAccess = serverAccess;
         this.server = server;
+        this.worldManager = worldManager;
     }
 
     public void register() {
@@ -52,7 +56,7 @@ public final class PaperNetworking implements Listener {
     private void handlePluginMessage(final String channel, final Player player, final byte[] bytes) {
         final ServerPlayer serverPlayer = CraftBukkitReflection.serverPlayer(player);
         Networking.handleIncoming(
-            this.plugin,
+            this.worldManager,
             this.serverAccess,
             bytes,
             serverPlayer,

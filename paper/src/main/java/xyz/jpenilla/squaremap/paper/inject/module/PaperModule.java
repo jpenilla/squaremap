@@ -9,12 +9,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
 import xyz.jpenilla.squaremap.paper.PaperPlayerManager;
 import xyz.jpenilla.squaremap.paper.PaperServerAccess;
+import xyz.jpenilla.squaremap.paper.PaperWorldManager;
 import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.command.PaperCommands;
 import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
@@ -54,6 +56,9 @@ public final class PaperModule extends AbstractModule {
 
         this.bind(AbstractPlayerManager.class)
             .to(PaperPlayerManager.class);
+
+        this.bind(WorldManager.class)
+            .to(PaperWorldManager.class);
 
         this.bind(ComponentFlattener.class)
             .toInstance(PaperComponents.flattener());

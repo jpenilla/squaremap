@@ -25,25 +25,25 @@ import org.spongepowered.api.event.world.chunk.ChunkEvent;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3i;
 import org.spongepowered.plugin.PluginContainer;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.sponge.SquaremapSponge;
 import xyz.jpenilla.squaremap.sponge.config.SpongeAdvanced;
 import xyz.jpenilla.squaremap.sponge.util.SpongeVectors;
 
 @DefaultQualifier(NonNull.class)
 public final class MapUpdateListener {
     private final Set<Object> registrations = new HashSet<>();
-    private final SquaremapSponge squaremapSponge;
+    private final WorldManager worldManager;
     private final PluginContainer pluginContainer;
     private final Game game;
 
     @Inject
     private MapUpdateListener(
-        final SquaremapSponge squaremapSponge,
+        final WorldManager worldManager,
         final PluginContainer pluginContainer,
         final Game game
     ) {
-        this.squaremapSponge = squaremapSponge;
+        this.worldManager = worldManager;
         this.pluginContainer = pluginContainer;
         this.game = game;
     }
@@ -111,19 +111,15 @@ public final class MapUpdateListener {
     }
 
     private void mark(final ServerWorld level, final Collection<ChunkCoordinate> chunks) {
-        this.squaremapSponge.worldManager()
-            .getWorldIfEnabled((ServerLevel) level)
-            .ifPresent(world -> {
-                for (final ChunkCoordinate chunk : chunks) {
-                    world.chunkModified(chunk);
-                }
-            });
+        this.worldManager.getWorldIfEnabled((ServerLevel) level).ifPresent(world -> {
+            for (final ChunkCoordinate chunk : chunks) {
+                world.chunkModified(chunk);
+            }
+        });
     }
 
     private void mark(final ServerLevel level, final ChunkCoordinate chunk) {
-        this.squaremapSponge.worldManager()
-            .getWorldIfEnabled(level)
-            .ifPresent(world -> world.chunkModified(chunk));
+        this.worldManager.getWorldIfEnabled(level).ifPresent(world -> world.chunkModified(chunk));
     }
 
     public final class BlockTriggers {

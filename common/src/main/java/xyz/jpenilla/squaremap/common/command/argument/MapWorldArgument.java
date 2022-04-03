@@ -129,12 +129,12 @@ public final class MapWorldArgument<C> extends CommandArgument<C, MapWorldIntern
             }
 
             inputQueue.remove();
-            return success(commandContext.get(Commands.PLATFORM).worldManager().getWorldIfEnabled(world).orElseThrow());
+            return success(commandContext.get(Commands.WORLD_MANAGER).getWorldIfEnabled(world).orElseThrow());
         }
 
         @Override
         public List<String> suggestions(final CommandContext<C> commandContext, final String input) {
-            return commandContext.get(Commands.PLATFORM).worldManager().worlds().stream()
+            return commandContext.get(Commands.WORLD_MANAGER).worlds().stream()
                 .flatMap(mapWorld -> {
                     final WorldIdentifier identifier = mapWorld.identifier();
                     if (!input.isBlank() && identifier.namespace().equals(ResourceLocation.DEFAULT_NAMESPACE)) {

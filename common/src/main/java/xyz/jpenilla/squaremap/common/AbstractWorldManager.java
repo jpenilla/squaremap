@@ -16,13 +16,13 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
-public abstract class AbstractWorldManager<W extends MapWorldInternal> implements WorldManager {
-    private final Map<WorldIdentifier, W> worlds = new ConcurrentHashMap<>();
-    private final MapWorldInternal.Factory<W> factory;
+public abstract class AbstractWorldManager implements WorldManager {
+    private final Map<WorldIdentifier, MapWorldInternal> worlds = new ConcurrentHashMap<>();
+    private final MapWorldInternal.Factory<?> factory;
     protected final ServerAccess serverAccess;
 
     protected AbstractWorldManager(
-        final MapWorldInternal.Factory<W> factory,
+        final MapWorldInternal.Factory<?> factory,
         final ServerAccess serverAccess
     ) {
         this.factory = factory;
@@ -41,36 +41,36 @@ public abstract class AbstractWorldManager<W extends MapWorldInternal> implement
 
     @Override
     public Optional<MapWorldInternal> getWorldIfEnabled(final ServerLevel level) {
-        if (WorldConfig.get(level).MAP_ENABLED) {
-            return Optional.of(this.getOrCreateMapWorld(level));
-        }
-        return Optional.empty();
+        return this.getWorldIfEnabled(Util.worldIdentifier(level));
     }
 
-    private W getOrCreateMapWorld(final ServerLevel world) {
-        return this.worlds.computeIfAbsent(
-            Util.worldIdentifier(world),
-            $ -> this.factory.create(world)
-        );
+    public void initWorld(final ServerLevel level) {
+        final WorldIdentifier identifier = Util.worldIdentifier(level);
+        if (this.worlds.containsKey(identifier)) {
+            throw new IllegalStateException("MapWorld already exists for '" + identifier.asString() + "'");
+        }
+        if (WorldConfig.get(level).MAP_ENABLED) {
+            this.worlds.put(identifier, this.factory.create(level));
+        }
     }
 
     public void start() {
         for (final ServerLevel level : this.serverAccess.levels()) {
-            this.getWorldIfEnabled(level);
+            this.initWorld(level);
         }
     }
 
     public void worldUnloaded(final ServerLevel world) {
-        final @Nullable W removed = this.worlds.remove(Util.worldIdentifier(world));
+        final @Nullable MapWorldInternal removed = this.worlds.remove(Util.worldIdentifier(world));
         if (removed != null) {
             tryShutdown(removed);
         }
     }
 
     public void shutdown() {
-        final List<W> worlds = List.copyOf(this.worlds.values());
+        final List<MapWorldInternal> worlds = List.copyOf(this.worlds.values());
         this.worlds.clear();
-        for (final W world : worlds) {
+        for (final MapWorldInternal world : worlds) {
             tryShutdown(world);
         }
     }

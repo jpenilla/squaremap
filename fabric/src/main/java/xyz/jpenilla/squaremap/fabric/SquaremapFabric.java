@@ -15,7 +15,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
@@ -30,9 +29,9 @@ public final class SquaremapFabric implements SquaremapPlatform {
     private final Injector injector;
     private final SquaremapCommon common;
     private final FabricServerAccess serverAccess;
+    private final FabricWorldManager worldManager;
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
-    private @Nullable FabricWorldManager worldManager;
 
     private SquaremapFabric() {
         this.injector = Guice.createInjector(
@@ -45,6 +44,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
         );
         this.common = this.injector.getInstance(SquaremapCommon.class);
         this.common.init();
+        this.worldManager = this.injector.getInstance(FabricWorldManager.class);
         this.serverAccess = this.injector.getInstance(FabricServerAccess.class);
         this.registerLifecycleListeners();
         FabricMapUpdates.registerListeners();
@@ -53,7 +53,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
     }
 
     private void registerLifecycleListeners() {
-        ServerLifecycleEvents.SERVER_STARTED.register(this.serverAccess::setServer);
+        ServerLifecycleEvents.SERVER_STARTING.register(this.serverAccess::setServer);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             if (server.isDedicatedServer()) {
                 this.common.shutdown();
@@ -64,24 +64,14 @@ public final class SquaremapFabric implements SquaremapPlatform {
             new ClientLifecycleListeners().register();
         }
 
-        ServerWorldEvents.LOAD.register((server, level) -> {
-            WorldConfig.get(level);
-            this.worldManager().getWorldIfEnabled(level);
-        });
-        ServerWorldEvents.UNLOAD.register((server, level) -> {
-            if (this.worldManager != null) {
-                this.worldManager.worldUnloaded(level);
-            }
-        });
+        ServerWorldEvents.LOAD.register((server, level) -> this.worldManager.initWorld(level));
+        ServerWorldEvents.UNLOAD.register((server, level) -> this.worldManager.worldUnloaded(level));
 
         ServerTickEvents.END_SERVER_TICK.register(new TickEndListener());
     }
 
     @Override
     public void startCallback() {
-        this.worldManager = this.injector.getInstance(FabricWorldManager.class);
-        this.worldManager.start();
-
         this.updatePlayers = this.injector.getInstance(UpdatePlayers.class);
         this.updateWorldData = this.injector.getInstance(UpdateWorldData.class);
     }
@@ -90,22 +80,12 @@ public final class SquaremapFabric implements SquaremapPlatform {
     public void stopCallback() {
         this.updatePlayers = null;
         this.updateWorldData = null;
-
-        if (this.worldManager != null) {
-            this.worldManager.shutdown();
-            this.worldManager = null;
-        }
     }
 
     @Override
     public String version() {
         return FabricLoader.getInstance().getModContainer("squaremap")
             .orElseThrow().getMetadata().getVersion().getFriendlyString();
-    }
-
-    @Override
-    public FabricWorldManager worldManager() {
-        return this.worldManager;
     }
 
     private final class TickEndListener implements ServerTickEvents.EndTick {
@@ -124,10 +104,8 @@ public final class SquaremapFabric implements SquaremapPlatform {
                     SquaremapFabric.this.updatePlayers.run();
                 }
 
-                if (SquaremapFabric.this.worldManager != null) {
-                    for (final MapWorldInternal mapWorld : SquaremapFabric.this.worldManager.worlds()) {
-                        ((FabricMapWorld) mapWorld).tickEachSecond(this.tick);
-                    }
+                for (final MapWorldInternal mapWorld : SquaremapFabric.this.worldManager.worlds()) {
+                    ((FabricMapWorld) mapWorld).tickEachSecond(this.tick);
                 }
             }
 

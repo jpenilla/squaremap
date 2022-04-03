@@ -20,31 +20,31 @@ import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class SquaremapApiProvider implements Squaremap {
-    private final SquaremapPlatform platform;
     private final DirectoryProvider directoryProvider;
     private final PlayerManager playerManager;
+    private final WorldManager worldManager;
     private final IconRegistry iconRegistry;
 
     @Inject
     private SquaremapApiProvider(
-        final SquaremapPlatform platform,
         final DirectoryProvider directoryProvider,
-        final AbstractPlayerManager playerManager
+        final AbstractPlayerManager playerManager,
+        final WorldManager worldManager
     ) {
-        this.platform = platform;
         this.directoryProvider = directoryProvider;
         this.playerManager = playerManager;
+        this.worldManager = worldManager;
         this.iconRegistry = new IconRegistry(directoryProvider);
     }
 
     @Override
     public Collection<MapWorld> mapWorlds() {
-        return Collections.unmodifiableCollection(this.platform.worldManager().worlds());
+        return Collections.unmodifiableCollection(this.worldManager.worlds());
     }
 
     @Override
     public Optional<MapWorld> getWorldIfEnabled(final WorldIdentifier identifier) {
-        return this.platform.worldManager().getWorldIfEnabled(identifier).map(Function.identity());
+        return this.worldManager.getWorldIfEnabled(identifier).map(Function.identity());
     }
 
     @Override

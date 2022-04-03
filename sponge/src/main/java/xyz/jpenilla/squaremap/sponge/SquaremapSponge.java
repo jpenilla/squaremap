@@ -44,7 +44,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
     private final SquaremapCommon common;
     private final Injector injector;
     private @Nullable MapUpdateListener mapUpdateListener;
-    private @Nullable SpongeWorldManager worldManager;
     private @Nullable ScheduledTask updateWorlds;
     private @Nullable ScheduledTask updatePlayers;
     private @Nullable WorldLoadListener worldLoadListener;
@@ -94,10 +93,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
 
     @Override
     public void startCallback() {
-        this.worldManager = this.injector.getInstance(SpongeWorldManager.class);
-        this.worldManager.start();
-
-        this.worldLoadListener = new WorldLoadListener(this);
+        this.worldLoadListener = this.injector.getInstance(WorldLoadListener.class);
         this.game.eventManager().registerListeners(this.pluginContainer, this.worldLoadListener);
 
         this.mapUpdateListener = this.injector.getInstance(MapUpdateListener.class);
@@ -129,11 +125,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
             this.game.eventManager().unregisterListeners(this.worldLoadListener);
             this.worldLoadListener = null;
         }
-
-        if (this.worldManager != null) {
-            this.worldManager.shutdown();
-            this.worldManager = null;
-        }
     }
 
     @Listener
@@ -154,11 +145,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
             audience = Audience.audience(audiences);
         }
         this.common.reload(audience);
-    }
-
-    @Override
-    public SpongeWorldManager worldManager() {
-        return this.worldManager;
     }
 
     private void scheduleTasks() {

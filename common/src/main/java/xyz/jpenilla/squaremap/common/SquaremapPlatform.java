@@ -9,7 +9,5 @@ public interface SquaremapPlatform {
 
     void stopCallback();
 
-    WorldManager worldManager();
-
     String version();
 }

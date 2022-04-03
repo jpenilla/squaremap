@@ -46,6 +46,7 @@ public final class SpongeMapWorld extends MapWorldInternal {
     }
 
     public interface Factory extends MapWorldInternal.Factory<SpongeMapWorld> {
+        @Override
         SpongeMapWorld create(ServerLevel level);
     }
 }

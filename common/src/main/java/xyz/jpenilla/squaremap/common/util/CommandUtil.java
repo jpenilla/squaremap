@@ -29,13 +29,12 @@ public final class CommandUtil {
         }
         if (sender instanceof final PlayerCommander player) {
             final ServerLevel level = player.player().getLevel();
-            final Optional<MapWorldInternal> optionalMapWorld = context.get(Commands.PLATFORM).worldManager().getWorldIfEnabled(level);
-            if (optionalMapWorld.isEmpty()) {
-                Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Placeholder.unparsed("world", level.dimension().location().toString()));
-                throw CommandCompleted.withoutMessage();
-            } else {
-                return optionalMapWorld.get();
+            final Optional<MapWorldInternal> mapWorld = context.get(Commands.WORLD_MANAGER).getWorldIfEnabled(level);
+            if (mapWorld.isPresent()) {
+                return mapWorld.get();
             }
+            Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Placeholder.unparsed("world", level.dimension().location().toString()));
+            throw CommandCompleted.withoutMessage();
         } else {
             throw CommandCompleted.withMessage(Components.miniMessage(Lang.CONSOLE_MUST_SPECIFY_WORLD));
         }

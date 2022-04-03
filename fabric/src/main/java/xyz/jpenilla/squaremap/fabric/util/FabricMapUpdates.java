@@ -14,12 +14,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.fabric.SquaremapFabric;
+import xyz.jpenilla.squaremap.fabric.FabricWorldManager;
 
 @DefaultQualifier(NonNull.class)
 public final class FabricMapUpdates {
     @Inject
-    private static SquaremapFabric PLATFORM;
+    private static FabricWorldManager WORLD_MANAGER;
 
     private FabricMapUpdates() {
     }
@@ -50,9 +50,7 @@ public final class FabricMapUpdates {
     }
 
     public static void mark(final ServerLevel level, final ChunkCoordinate chunk) {
-        PLATFORM.worldManager()
-            .getWorldIfEnabled(level)
-            .ifPresent(world -> world.chunkModified(chunk));
+        WORLD_MANAGER.getWorldIfEnabled(level).ifPresent(world -> world.chunkModified(chunk));
     }
 
     private static void afterBlockBreak(

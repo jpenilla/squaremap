@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.paper;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import org.bukkit.World;
@@ -14,7 +15,8 @@ import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 import xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration;
 
 @DefaultQualifier(NonNull.class)
-public final class PaperWorldManager extends AbstractWorldManager<PaperMapWorld> {
+@Singleton
+public final class PaperWorldManager extends AbstractWorldManager {
     private final DirectoryProvider directoryProvider;
 
     @Inject
@@ -27,20 +29,13 @@ public final class PaperWorldManager extends AbstractWorldManager<PaperMapWorld>
         this.directoryProvider = directoryProvider;
     }
 
-    public Optional<PaperMapWorld> getWorldIfEnabled(final World world) {
-        return this.getWorldIfEnabled(CraftBukkitReflection.serverLevel(world))
-            .map(w -> (PaperMapWorld) w);
-    }
-
-    public void worldUnloaded(final World world) {
-        this.worldUnloaded(CraftBukkitReflection.serverLevel(world));
-    }
-
     @Override
-    public void start() {
-        for (final ServerLevel level : this.serverAccess.levels()) {
-            WorldNameToKeyMigration.tryMoveDirectories(this.directoryProvider, level);
-        }
-        super.start();
+    public void initWorld(final ServerLevel level) {
+        WorldNameToKeyMigration.tryMoveDirectories(this.directoryProvider, level);
+        super.initWorld(level);
+    }
+
+    public Optional<PaperMapWorld> getWorldIfEnabled(final World world) {
+        return this.getWorldIfEnabled(CraftBukkitReflection.serverLevel(world)).map(PaperMapWorld.class::cast);
     }
 }

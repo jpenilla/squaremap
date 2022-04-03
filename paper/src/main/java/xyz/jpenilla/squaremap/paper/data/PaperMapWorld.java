@@ -38,6 +38,7 @@ public final class PaperMapWorld extends MapWorldInternal {
     }
 
     public interface Factory extends MapWorldInternal.Factory<PaperMapWorld> {
+        @Override
         PaperMapWorld create(ServerLevel level);
     }
 }

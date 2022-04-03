@@ -23,7 +23,7 @@ import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatform {
     private Injector injector;
     private SquaremapCommon common;
-    private PaperWorldManager worldManager;
+    private Squaremap api;
     private BukkitTask updateWorldData;
     private BukkitTask updatePlayers;
     private MapUpdateListeners mapUpdateListeners;
@@ -34,7 +34,7 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
     public void onEnable() {
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig");
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException ex) {
             this.getLogger().severe("squaremap requires Paper or one of its forks to run. Get Paper from https://papermc.io/downloads");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
@@ -49,7 +49,9 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
 
         this.common = this.injector.getInstance(SquaremapCommon.class);
         this.common.init();
-        this.getServer().getServicesManager().register(Squaremap.class, this.common.api(), this, ServicePriority.Normal);
+
+        this.api = this.injector.getInstance(Squaremap.class);
+        this.getServer().getServicesManager().register(Squaremap.class, this.api, this, ServicePriority.Normal);
 
         this.networking = this.injector.getInstance(PaperNetworking.class);
         this.networking.register();
@@ -64,17 +66,16 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
         if (this.networking != null) {
             this.networking.unregister();
         }
+        if (this.api != null) {
+            this.getServer().getServicesManager().unregister(Squaremap.class, this.api);
+        }
         if (this.common != null) {
-            this.getServer().getServicesManager().unregister(Squaremap.class, this.common.api());
             this.common.shutdown();
         }
     }
 
     @Override
     public void startCallback() {
-        this.worldManager = this.injector.getInstance(PaperWorldManager.class);
-        this.worldManager.start();
-
         this.worldLoadListener = this.injector.getInstance(WorldLoadListener.class);
         this.getServer().getPluginManager().registerEvents(this.worldLoadListener, this);
 
@@ -83,6 +84,7 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
 
         this.updatePlayers = this.getServer().getScheduler()
             .runTaskTimer(this, this.injector.getInstance(UpdatePlayers.class), 20, 20);
+
         this.updateWorldData = this.getServer().getScheduler()
             .runTaskTimer(this, this.injector.getInstance(UpdateWorldData.class), 0, 20 * 5);
     }
@@ -113,21 +115,11 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
             this.worldLoadListener = null;
         }
 
-        if (this.worldManager != null) {
-            this.worldManager.shutdown();
-            this.worldManager = null;
-        }
-
         this.getServer().getScheduler().cancelTasks(this);
     }
 
     @Override
     public @NonNull String version() {
         return this.getDescription().getVersion();
-    }
-
-    @Override
-    public @NonNull PaperWorldManager worldManager() {
-        return this.worldManager;
     }
 }

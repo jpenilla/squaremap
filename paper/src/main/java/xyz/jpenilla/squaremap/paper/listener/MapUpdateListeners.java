@@ -42,16 +42,22 @@ import org.bukkit.event.world.StructureGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.paper.PaperWorldManager;
 import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.config.PaperAdvanced;
 
 public final class MapUpdateListeners {
     private final SquaremapPaper plugin;
+    private final PaperWorldManager worldManager;
     private final List<Listener> registeredListeners = new ArrayList<>();
 
     @Inject
-    private MapUpdateListeners(final @NonNull SquaremapPaper plugin) {
+    private MapUpdateListeners(
+        final @NonNull SquaremapPaper plugin,
+        final @NonNull PaperWorldManager worldManager
+    ) {
         this.plugin = plugin;
+        this.worldManager = worldManager;
     }
 
     public void register() {
@@ -122,7 +128,7 @@ public final class MapUpdateListeners {
     }
 
     private void markChunk(final @NonNull Location loc, final boolean skipVisibilityCheck) {
-        this.plugin.worldManager().getWorldIfEnabled(loc.getWorld()).ifPresent(mapWorld -> {
+        this.worldManager.getWorldIfEnabled(loc.getWorld()).ifPresent(mapWorld -> {
             if (skipVisibilityCheck || locationVisible(loc)) {
                 mapWorld.chunkModified(
                     new ChunkCoordinate(
@@ -135,7 +141,7 @@ public final class MapUpdateListeners {
     }
 
     private void markLocations(final @NonNull World world, final @NonNull List<Location> locations) {
-        this.plugin.worldManager().getWorldIfEnabled(world).ifPresent(mapWorld -> locations.stream()
+        this.worldManager.getWorldIfEnabled(world).ifPresent(mapWorld -> locations.stream()
             .filter(MapUpdateListeners::locationVisible)
             .map(loc -> new ChunkCoordinate(
                 Numbers.blockToChunk(loc.getBlockX()),
@@ -146,7 +152,7 @@ public final class MapUpdateListeners {
     }
 
     private void markChunksFromBlocks(final @NonNull World world, final @NonNull List<BlockState> blockStates) {
-        this.plugin.worldManager().getWorldIfEnabled(world).ifPresent(mapWorld ->
+        this.worldManager.getWorldIfEnabled(world).ifPresent(mapWorld ->
             blockStates.stream()
                 .map(BlockState::getLocation)
                 .filter(MapUpdateListeners::locationVisible)

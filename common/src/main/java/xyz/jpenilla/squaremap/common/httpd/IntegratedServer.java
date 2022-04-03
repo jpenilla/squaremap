@@ -17,17 +17,20 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
-public class IntegratedServer {
-    private static Undertow server;
+public final class IntegratedServer {
+    private static Undertow SERVER;
+
+    private IntegratedServer() {
+    }
 
     public static void startServer(final DirectoryProvider directoryProvider) {
         try {
-            server = buildUndertow(createResourceHandler(directoryProvider));
-            server.start();
+            SERVER = buildUndertow(createResourceHandler(directoryProvider));
+            SERVER.start();
 
             Logging.info(Lang.LOG_INTERNAL_WEB_STARTED, "bind", Config.HTTPD_BIND, "port", Config.HTTPD_PORT);
         } catch (Exception e) {
-            server = null;
+            SERVER = null;
             Logging.logger().error(Lang.LOG_INTERNAL_WEB_START_ERROR, e);
         }
     }
@@ -81,13 +84,13 @@ public class IntegratedServer {
     }
 
     public static void stopServer() {
-        if (server == null) {
+        if (SERVER == null) {
             Logging.logger().warn(Lang.LOG_INTERNAL_WEB_STOP_ERROR);
             return;
         }
 
-        server.stop();
-        server = null;
+        SERVER.stop();
+        SERVER = null;
         Logging.logger().info(Lang.LOG_INTERNAL_WEB_STOPPED);
     }
 }

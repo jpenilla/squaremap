@@ -370,7 +370,7 @@ public abstract class MapWorldInternal implements MapWorld {
         }
     }
 
-    public interface Factory<W> {
+    public interface Factory<W extends MapWorldInternal> {
         W create(ServerLevel level);
     }
 }

@@ -10,7 +10,7 @@ import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -26,15 +26,15 @@ import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 @DefaultQualifier(NonNull.class)
 public final class ProgressLoggingCommand extends SquaremapCommand {
-    private final SquaremapPlatform platform;
+    private final WorldManager worldManager;
 
     @Inject
     private ProgressLoggingCommand(
         final Commands commands,
-        final SquaremapPlatform platform
+        final WorldManager worldManager
     ) {
         super(commands);
-        this.platform = platform;
+        this.worldManager = worldManager;
     }
 
     @Override
@@ -67,7 +67,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
     private void executeToggle(final CommandContext<Commander> context) {
         Config.toggleProgressLogging();
 
-        this.platform.worldManager().worlds()
+        this.worldManager.worlds()
             .forEach(MapWorldInternal::restartRenderProgressLogging);
 
         final Component message;
@@ -88,7 +88,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         final int seconds = context.get("seconds");
         Config.setLoggingInterval(seconds);
 
-        this.platform.worldManager().worlds()
+        this.worldManager.worlds()
             .forEach(MapWorldInternal::restartRenderProgressLogging);
 
         context.getSender().sendMessage(Components.miniMessage(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Placeholder.unparsed("seconds", Integer.toString(seconds))));

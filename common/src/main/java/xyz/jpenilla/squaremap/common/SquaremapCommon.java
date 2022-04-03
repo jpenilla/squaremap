@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Squaremap;
@@ -38,8 +37,8 @@ public final class SquaremapCommon {
     private final DirectoryProvider directoryProvider;
     private final ConfigManager configManager;
     private final AbstractPlayerManager playerManager;
+    private final AbstractWorldManager worldManager;
     private final Commands commands;
-    private @MonotonicNonNull Squaremap api;
 
     @Inject
     private SquaremapCommon(
@@ -48,6 +47,7 @@ public final class SquaremapCommon {
         final DirectoryProvider directoryProvider,
         final ConfigManager configManager,
         final AbstractPlayerManager playerManager,
+        final WorldManager worldManager,
         final Commands commands
     ) {
         this.injector = injector;
@@ -55,6 +55,7 @@ public final class SquaremapCommon {
         this.directoryProvider = directoryProvider;
         this.configManager = configManager;
         this.playerManager = playerManager;
+        this.worldManager = (AbstractWorldManager) worldManager;
         this.commands = commands;
     }
 
@@ -66,9 +67,10 @@ public final class SquaremapCommon {
         this.commands.registerCommands();
     }
 
-    public void start() {
+    private void start() {
         FileUtil.extract("/web/", this.directoryProvider.webDirectory(), Config.UPDATE_WEB_DIR);
         LevelBiomeColorData.loadImages(this.directoryProvider);
+        this.worldManager.start();
         this.platform.startCallback();
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.startServer(this.directoryProvider);
@@ -77,11 +79,12 @@ public final class SquaremapCommon {
         }
     }
 
-    public void stop() {
+    private void stop() {
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.stopServer();
         }
         this.platform.stopCallback();
+        this.worldManager.shutdown();
     }
 
     public void reload(final Audience audience) {
@@ -107,31 +110,26 @@ public final class SquaremapCommon {
         ForkJoinPool.commonPool().execute(() -> new UpdateChecker(Logging.logger(), "jpenilla/squaremap").checkVersion());
     }
 
-    public void setupApi() {
-        this.api = this.injector.getInstance(Squaremap.class);
+    private void setupApi() {
+        final Squaremap api = this.injector.getInstance(Squaremap.class);
 
         try {
-            this.api.iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(this.directoryProvider.webDirectory().resolve("images/icon/spawn.png").toFile()));
-        } catch (final IOException e) {
-            Logging.logger().warn("Failed to register spawn icon", e);
+            api.iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(this.directoryProvider.webDirectory().resolve("images/icon/spawn.png").toFile()));
+        } catch (final IOException ex) {
+            Logging.logger().warn("Failed to register spawn icon", ex);
         }
 
         final Method register = ReflectionUtil.needMethod(SquaremapProvider.class, List.of("register"), Squaremap.class);
-        ReflectionUtil.invokeOrThrow(register, null, this.api);
+        ReflectionUtil.invokeOrThrow(register, null, api);
+    }
+
+    private void shutdownApi() {
+        final Method unregister = ReflectionUtil.needMethod(SquaremapProvider.class, List.of("unregister"));
+        ReflectionUtil.invokeOrThrow(unregister, null);
     }
 
     public void shutdown() {
         this.shutdownApi();
         this.stop();
-    }
-
-    public void shutdownApi() {
-        final Method unregister = ReflectionUtil.needMethod(SquaremapProvider.class, List.of("unregister"));
-        ReflectionUtil.invokeOrThrow(unregister, null);
-        this.api = null;
-    }
-
-    public Squaremap api() {
-        return this.api;
     }
 }
