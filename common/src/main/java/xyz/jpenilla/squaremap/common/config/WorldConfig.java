@@ -2,33 +2,15 @@ package xyz.jpenilla.squaremap.common.config;
 
 import io.leangen.geantyref.TypeToken;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.util.Util;
 
 @SuppressWarnings("unused")
-public final class WorldConfig extends AbstractWorldConfig {
-    private static final Map<WorldIdentifier, WorldConfig> CONFIG_MAP = new HashMap<>();
-
-    public static void reload(final ServerAccess serverAccess) {
-        reload(WorldConfig.class, CONFIG_MAP, WorldConfig::get, serverAccess);
-    }
-
-    public static WorldConfig get(final @NonNull ServerLevel world) {
-        return CONFIG_MAP.computeIfAbsent(
-            Util.worldIdentifier(world),
-            $ -> new WorldConfig(world, Config.config)
-        );
-    }
-
-    private WorldConfig(final ServerLevel world, final Config parent) {
-        super(WorldConfig.class, world, parent);
+public final class WorldConfig extends AbstractWorldConfig<Config> {
+    WorldConfig(final Config parent, final ServerLevel world) {
+        super(WorldConfig.class, parent, world);
         this.init();
     }
 
@@ -183,5 +165,4 @@ public final class WorldConfig extends AbstractWorldConfig {
             )
         );
     }
-
 }

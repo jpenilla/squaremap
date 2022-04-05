@@ -9,6 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractWorldManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
@@ -23,9 +24,10 @@ public final class PaperWorldManager extends AbstractWorldManager {
     private PaperWorldManager(
         final PaperMapWorld.Factory factory,
         final ServerAccess serverAccess,
-        final DirectoryProvider directoryProvider
+        final DirectoryProvider directoryProvider,
+        final ConfigManager configManager
     ) {
-        super(factory, serverAccess);
+        super(factory, serverAccess, configManager);
         this.directoryProvider = directoryProvider;
     }
 

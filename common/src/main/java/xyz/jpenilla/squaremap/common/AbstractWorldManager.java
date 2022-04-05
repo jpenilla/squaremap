@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
 
@@ -20,13 +20,16 @@ public abstract class AbstractWorldManager implements WorldManager {
     private final Map<WorldIdentifier, MapWorldInternal> worlds = new ConcurrentHashMap<>();
     private final MapWorldInternal.Factory<?> factory;
     protected final ServerAccess serverAccess;
+    private final ConfigManager configManager;
 
     protected AbstractWorldManager(
         final MapWorldInternal.Factory<?> factory,
-        final ServerAccess serverAccess
+        final ServerAccess serverAccess,
+        final ConfigManager configManager
     ) {
         this.factory = factory;
         this.serverAccess = serverAccess;
+        this.configManager = configManager;
     }
 
     @Override
@@ -49,7 +52,7 @@ public abstract class AbstractWorldManager implements WorldManager {
         if (this.worlds.containsKey(identifier)) {
             throw new IllegalStateException("MapWorld already exists for '" + identifier.asString() + "'");
         }
-        if (WorldConfig.get(level).MAP_ENABLED) {
+        if (this.configManager.worldConfig(level).MAP_ENABLED) {
             this.worlds.put(identifier, this.factory.create(level));
         }
     }

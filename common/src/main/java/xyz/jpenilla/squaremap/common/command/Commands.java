@@ -33,6 +33,7 @@ import xyz.jpenilla.squaremap.common.command.commands.ReloadCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Config;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.Lang;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.Components;
@@ -46,6 +47,7 @@ public final class Commands {
     public static final CloudKey<AbstractPlayerManager> PLAYER_MANAGER = createTypeKey(AbstractPlayerManager.class);
     public static final CloudKey<ServerAccess> SERVER_ACCESS = createTypeKey(ServerAccess.class);
     public static final CloudKey<RenderFactory> RENDER_FACTORY = createTypeKey(RenderFactory.class);
+    public static final CloudKey<ConfigManager> CONFIG_MANAGER = createTypeKey(ConfigManager.class);
     public static final CloudKey<WorldManager> WORLD_MANAGER = createTypeKey(WorldManager.class);
 
     private final Injector injector;
@@ -59,6 +61,7 @@ public final class Commands {
         final AbstractPlayerManager playerManager,
         final ServerAccess serverAccess,
         final RenderFactory renderFactory,
+        final ConfigManager configManager,
         final WorldManager worldManager
     ) {
         this.injector = injector;
@@ -70,6 +73,7 @@ public final class Commands {
             commandContext.store(PLAYER_MANAGER, playerManager);
             commandContext.store(SERVER_ACCESS, serverAccess);
             commandContext.store(RENDER_FACTORY, renderFactory);
+            commandContext.store(CONFIG_MANAGER, configManager);
             commandContext.store(WORLD_MANAGER, worldManager);
         });
 

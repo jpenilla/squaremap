@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.task.UpdateMarkers;
@@ -18,9 +19,10 @@ public final class FabricMapWorld extends MapWorldInternal {
     private FabricMapWorld(
         @Assisted final ServerLevel level,
         final RenderFactory renderFactory,
-        final DirectoryProvider directoryProvider
+        final DirectoryProvider directoryProvider,
+        final ConfigManager configManager
     ) {
-        super(level, renderFactory, directoryProvider);
+        super(level, renderFactory, directoryProvider, configManager);
 
         this.updateMarkers = new UpdateMarkers(this);
     }

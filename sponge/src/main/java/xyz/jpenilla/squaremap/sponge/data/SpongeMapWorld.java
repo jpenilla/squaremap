@@ -10,6 +10,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.task.UpdateMarkers;
@@ -25,9 +26,10 @@ public final class SpongeMapWorld extends MapWorldInternal {
         final RenderFactory renderFactory,
         final DirectoryProvider directoryProvider,
         final Game game,
-        final PluginContainer pluginContainer
+        final PluginContainer pluginContainer,
+        final ConfigManager configManager
     ) {
-        super(level, renderFactory, directoryProvider);
+        super(level, renderFactory, directoryProvider, configManager);
 
         this.updateMarkers = game.server().scheduler().submit(
             Task.builder()

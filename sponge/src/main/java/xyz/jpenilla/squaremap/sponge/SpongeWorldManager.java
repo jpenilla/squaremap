@@ -6,6 +6,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractWorldManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.sponge.data.SpongeMapWorld;
 
 @DefaultQualifier(NonNull.class)
@@ -14,8 +15,9 @@ public final class SpongeWorldManager extends AbstractWorldManager {
     @Inject
     private SpongeWorldManager(
         final SpongeMapWorld.Factory factory,
-        final ServerAccess serverAccess
+        final ServerAccess serverAccess,
+        final ConfigManager configManager
     ) {
-        super(factory, serverAccess);
+        super(factory, serverAccess, configManager);
     }
 }

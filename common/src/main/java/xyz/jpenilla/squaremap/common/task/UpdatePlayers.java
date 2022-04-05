@@ -19,6 +19,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
@@ -33,18 +34,21 @@ public class UpdatePlayers implements Runnable {
     private final AbstractPlayerManager playerManager;
     private final DirectoryProvider directoryProvider;
     private final ServerAccess serverAccess;
+    private final ConfigManager configManager;
 
     @Inject
     private UpdatePlayers(
         final Provider<ComponentFlattener> flattener,
         final AbstractPlayerManager playerManager,
         final DirectoryProvider directoryProvider,
-        final ServerAccess serverAccess
+        final ServerAccess serverAccess,
+        final ConfigManager configManager
     ) {
         this.flattener = flattener;
         this.playerManager = playerManager;
         this.directoryProvider = directoryProvider;
         this.serverAccess = serverAccess;
+        this.configManager = configManager;
     }
 
     @Override
@@ -54,7 +58,7 @@ public class UpdatePlayers implements Runnable {
         final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.flattener.get());
 
         this.serverAccess.levels().forEach(world -> {
-            final WorldConfig worldConfig = WorldConfig.get(world);
+            final WorldConfig worldConfig = this.configManager.worldConfig(world);
 
             world.players().forEach(player -> {
                 if (worldConfig.PLAYER_TRACKER_HIDE_SPECTATORS && player.gameMode.getGameModeForPlayer() == GameType.SPECTATOR) {

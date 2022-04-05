@@ -7,6 +7,7 @@ import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.task.UpdateMarkers;
@@ -19,13 +20,14 @@ public final class PaperMapWorld extends MapWorldInternal {
 
     @AssistedInject
     private PaperMapWorld(
-        final SquaremapPaper platform,
         @Assisted final ServerLevel level,
+        final SquaremapPaper platform,
         final RenderFactory renderFactory,
         final DirectoryProvider directoryProvider,
-        final Server server
+        final Server server,
+        final ConfigManager configManager
     ) {
-        super(level, renderFactory, directoryProvider);
+        super(level, renderFactory, directoryProvider, configManager);
 
         this.updateMarkersTask = server.getScheduler()
             .runTaskTimer(platform, new UpdateMarkers(this), 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);

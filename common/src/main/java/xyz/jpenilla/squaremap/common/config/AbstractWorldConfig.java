@@ -3,17 +3,13 @@ package xyz.jpenilla.squaremap.common.config;
 import io.leangen.geantyref.TypeToken;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @SuppressWarnings("unused")
-public abstract class AbstractWorldConfig {
+public abstract class AbstractWorldConfig<C extends AbstractConfig> {
     private static final @Nullable Class<?> PAPER_MIGRATION_CLASS = ReflectionUtil.findClass("xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration");
     private static final @Nullable Method PAPER_MIGRATE_METHOD = PAPER_MIGRATION_CLASS == null ? null : ReflectionUtil.needMethod(PAPER_MIGRATION_CLASS, List.of("migrate"), AbstractConfig.class, ServerLevel.class);
     public static final String DOT = "____dot____";
@@ -21,12 +17,12 @@ public abstract class AbstractWorldConfig {
     final String worldName;
     protected final ServerLevel world;
     protected final AbstractConfig parent;
-    private final Class<? extends AbstractWorldConfig> configClass;
+    private final Class<? extends AbstractWorldConfig<?>> configClass;
 
     protected AbstractWorldConfig(
-        final Class<? extends AbstractWorldConfig> worldConfigClass,
-        final ServerLevel level,
-        final AbstractConfig parent
+        final Class<? extends AbstractWorldConfig<?>> worldConfigClass,
+        final AbstractConfig parent,
+        final ServerLevel level
     ) {
         this.configClass = worldConfigClass;
         this.world = level;
@@ -115,15 +111,5 @@ public abstract class AbstractWorldConfig {
 
     private static String wrapDefaultPath(final String path) {
         return "world-settings.default." + path;
-    }
-
-    protected static <C extends AbstractWorldConfig> void reload(
-        final Class<C> configClass,
-        final Map<WorldIdentifier, C> configMap,
-        final Function<ServerLevel, C> factory,
-        final ServerAccess serverAccess
-    ) {
-        configMap.clear();
-        serverAccess.levels().forEach(factory::apply);
     }
 }

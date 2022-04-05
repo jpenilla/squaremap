@@ -35,6 +35,7 @@ import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.LayerRegistry;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.WorldAdvanced;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
@@ -78,7 +79,8 @@ public abstract class MapWorldInternal implements MapWorld {
     protected MapWorldInternal(
         final ServerLevel level,
         final RenderFactory renderFactory,
-        final DirectoryProvider directoryProvider
+        final DirectoryProvider directoryProvider,
+        final ConfigManager configManager
     ) {
         this.level = level;
         this.renderFactory = renderFactory;
@@ -91,8 +93,8 @@ public abstract class MapWorldInternal implements MapWorld {
             Util.squaremapThreadFactory("render", this.level)
         );
 
-        this.worldConfig = WorldConfig.get(this.level);
-        this.advancedWorldConfig = WorldAdvanced.get(this.level);
+        this.worldConfig = configManager.worldConfig(this.level);
+        this.advancedWorldConfig = configManager.worldAdvanced(this.level);
 
         this.blockColors = new BlockColors(this);
         this.levelBiomeColorData = LevelBiomeColorData.create(this);

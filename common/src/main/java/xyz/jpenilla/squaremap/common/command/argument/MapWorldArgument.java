@@ -123,7 +123,7 @@ public final class MapWorldArgument<C> extends CommandArgument<C, MapWorldIntern
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
-            final WorldConfig worldConfig = WorldConfig.get(world);
+            final WorldConfig worldConfig = commandContext.get(Commands.CONFIG_MANAGER).worldConfig(world);
             if (!worldConfig.MAP_ENABLED) {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.MAP_NOT_ENABLED));
             }

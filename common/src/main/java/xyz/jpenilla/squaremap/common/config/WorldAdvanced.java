@@ -3,7 +3,6 @@ package xyz.jpenilla.squaremap.common.config;
 import io.leangen.geantyref.TypeToken;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -14,29 +13,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @SuppressWarnings("unused")
-public final class WorldAdvanced extends AbstractWorldConfig {
-    private static final Map<WorldIdentifier, WorldAdvanced> CONFIG_MAP = new HashMap<>();
-
-    public static void reload(final ServerAccess serverAccess) {
-        reload(WorldAdvanced.class, CONFIG_MAP, WorldAdvanced::get, serverAccess);
-    }
-
-    public static WorldAdvanced get(final @NonNull ServerLevel world) {
-        return CONFIG_MAP.computeIfAbsent(
-            Util.worldIdentifier(world),
-            $ -> new WorldAdvanced(world, Advanced.config)
-        );
-    }
-
-    private WorldAdvanced(final ServerLevel level, final Advanced parent) {
-        super(WorldAdvanced.class, level, parent);
+public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
+    WorldAdvanced(final Advanced parent, final ServerLevel level) {
+        super(WorldAdvanced.class, parent, level);
         this.init();
     }
 
