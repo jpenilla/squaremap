@@ -9,19 +9,19 @@ import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @SuppressWarnings("unused")
-public abstract class AbstractWorldConfig<C extends AbstractConfig> {
+public abstract class AbstractWorldConfig<P extends AbstractConfig> {
+    public static final String DOT = "____dot____";
     private static final @Nullable Class<?> PAPER_MIGRATION_CLASS = ReflectionUtil.findClass("xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration");
     private static final @Nullable Method PAPER_MIGRATE_METHOD = PAPER_MIGRATION_CLASS == null ? null : ReflectionUtil.needMethod(PAPER_MIGRATION_CLASS, List.of("migrate"), AbstractConfig.class, ServerLevel.class);
-    public static final String DOT = "____dot____";
 
     final String worldName;
     protected final ServerLevel world;
-    protected final AbstractConfig parent;
-    private final Class<? extends AbstractWorldConfig<?>> configClass;
+    protected final P parent;
+    private final Class<? extends AbstractWorldConfig<P>> configClass;
 
     protected AbstractWorldConfig(
-        final Class<? extends AbstractWorldConfig<?>> worldConfigClass,
-        final AbstractConfig parent,
+        final Class<? extends AbstractWorldConfig<P>> worldConfigClass,
+        final P parent,
         final ServerLevel level
     ) {
         this.configClass = worldConfigClass;

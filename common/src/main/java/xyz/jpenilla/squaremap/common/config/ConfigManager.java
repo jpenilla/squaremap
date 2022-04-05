@@ -53,15 +53,15 @@ public final class ConfigManager {
         return this.worldAdvancedContainer.config(level);
     }
 
-    private static final class WorldConfigContainer<W extends AbstractWorldConfig<C>, C extends AbstractConfig> {
+    private static final class WorldConfigContainer<W extends AbstractWorldConfig<P>, P extends AbstractConfig> {
         private final Map<WorldIdentifier, W> configs = new ConcurrentHashMap<>();
-        private final BiFunction<C, ServerLevel, W> worldConfigFactory;
-        private final Supplier<C> parentConfigSupplier;
+        private final BiFunction<P, ServerLevel, W> worldConfigFactory;
+        private final Supplier<P> parentConfigSupplier;
         private final ServerAccess serverAccess;
 
         WorldConfigContainer(
-            final BiFunction<C, ServerLevel, W> worldConfigFactory,
-            final Supplier<C> parentConfigSupplier,
+            final BiFunction<P, ServerLevel, W> worldConfigFactory,
+            final Supplier<P> parentConfigSupplier,
             final ServerAccess serverAccess
         ) {
             this.worldConfigFactory = worldConfigFactory;
