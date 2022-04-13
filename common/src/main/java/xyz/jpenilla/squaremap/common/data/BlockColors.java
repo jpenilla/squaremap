@@ -23,7 +23,7 @@ public final class BlockColors {
     private final Reference2IntMap<Block> staticColorMap;
     private final Reference2ObjectMap<Block, DynamicColorGetter> dynamicColorMap;
 
-    public BlockColors(final MapWorldInternal world) {
+    private BlockColors(final MapWorldInternal world) {
         final Reference2IntMap<Block> staticColors = new Reference2IntOpenHashMap<>(world.advanced().COLOR_OVERRIDES_BLOCKS);
         staticColors.defaultReturnValue(-1);
         this.staticColorMap = Reference2IntMaps.unmodifiable(staticColors);
@@ -44,7 +44,7 @@ public final class BlockColors {
      * Get a special color for a BlockState, if it exists. Will return -1 if there
      * is no special color for the provided BlockState.
      *
-     * @param state IBlockData to test
+     * @param state BlockState to test
      * @return special color, or -1
      */
     public int getColor(final BlockState state) {
@@ -74,6 +74,10 @@ public final class BlockColors {
     private static int wheat(final BlockState state) {
         float factor = (state.getValue(CropBlock.AGE) + 1) / 8F;
         return Colors.mix(Colors.plantsMapColor(), 0xDCBB65, factor);
+    }
+
+    public static BlockColors create(final MapWorldInternal mapWorld) {
+        return new BlockColors(mapWorld);
     }
 
     private interface DynamicColorGetter {

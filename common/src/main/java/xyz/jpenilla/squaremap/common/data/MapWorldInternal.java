@@ -96,7 +96,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.worldConfig = configManager.worldConfig(this.level);
         this.advancedWorldConfig = configManager.worldAdvanced(this.level);
 
-        this.blockColors = new BlockColors(this);
+        this.blockColors = BlockColors.create(this);
         this.levelBiomeColorData = LevelBiomeColorData.create(this);
 
         this.dataPath = this.getAndCreateDataDirectory(directoryProvider);
@@ -320,49 +320,53 @@ public abstract class MapWorldInternal implements MapWorld {
     }
 
     public @Nullable Map<RegionCoordinate, Boolean> getRenderProgress() {
-        try {
-            final Path file = this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME);
-            if (!Files.isRegularFile(file)) {
-                return null;
-            }
-            try (final BufferedReader reader = Files.newBufferedReader(file)) {
-                return GSON.fromJson(reader, new TypeToken<LinkedHashMap<RegionCoordinate, Boolean>>() {}.getType());
-            }
+        final Path file = this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME);
+        if (!Files.isRegularFile(file)) {
+            return null;
+        }
+        try (final BufferedReader reader = Files.newBufferedReader(file)) {
+            return GSON.fromJson(reader, new TypeToken<LinkedHashMap<RegionCoordinate, Boolean>>() {}.getType());
         } catch (final JsonIOException | JsonSyntaxException | IOException e) {
-            Logging.logger().warn("Failed to deserialize render progress for world '{}'", this.identifier().asString(), e);
+            Logging.logger().warn("Failed to deserialize render progress for world '{}' from file '{}'", this.identifier().asString(), file, e);
         }
         return null;
     }
 
     public void saveRenderProgress(Map<RegionCoordinate, Boolean> regions) {
+        final Path file = this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME);
         try {
-            Files.writeString(this.dataPath.resolve(RENDER_PROGRESS_FILE_NAME), GSON.toJson(regions));
+            Files.writeString(file, GSON.toJson(regions));
         } catch (final IOException ex) {
-            Logging.logger().warn("Failed to serialize render progress for world '{}'", this.identifier().asString(), ex);
+            Logging.logger().warn("Failed to serialize render progress for world '{}' to file '{}'", this.identifier().asString(), file, ex);
         }
     }
 
     private void serializeDirtyChunks() {
+        final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
         try {
-            Files.writeString(this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME), GSON.toJson(this.modifiedChunks));
+            Files.writeString(file, GSON.toJson(this.modifiedChunks));
         } catch (final IOException ex) {
-            Logging.logger().warn("Failed to serialize dirty chunks for world '{}'", this.identifier().asString(), ex);
+            Logging.logger().warn("Failed to serialize dirty chunks for world '{}' to file '{}'", this.identifier().asString(), file, ex);
         }
     }
 
     private void deserializeDirtyChunks() {
-        try {
-            final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
-            if (!Files.isRegularFile(file)) {
-                return;
-            }
-            try (final BufferedReader reader = Files.newBufferedReader(file)) {
-                final List<ChunkCoordinate> deserialized = GSON.fromJson(reader, new TypeToken<List<ChunkCoordinate>>() {}.getType());
-                this.modifiedChunks.addAll(deserialized);
-            }
-        } catch (final JsonIOException | JsonSyntaxException | IOException ex) {
-            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}'", this.identifier().asString(), ex);
+        final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
+        if (!Files.isRegularFile(file)) {
+            return;
         }
+        final List<ChunkCoordinate> deserialized;
+        try (final BufferedReader reader = Files.newBufferedReader(file)) {
+            deserialized = GSON.fromJson(reader, new TypeToken<List<ChunkCoordinate>>() {}.getType());
+        } catch (final JsonIOException | JsonSyntaxException | IOException ex) {
+            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}' from file '{}'", this.identifier().asString(), file, ex);
+            return;
+        }
+        if (deserialized == null) {
+            Logging.logger().warn("Failed to deserialize dirty chunks for world '{}' from file '{}' (null result, file is corrupted or empty?)", this.identifier().asString(), file);
+            return;
+        }
+        this.modifiedChunks.addAll(deserialized);
     }
 
     private static void waitFor(final Future<?> future) {
