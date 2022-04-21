@@ -12,15 +12,15 @@ plugins:
 
 versions:
     minecraft: 1.18.2
-    checkerQual: 3.21.3
+    checkerQual: 3.21.4
     cloud: 1.7.0-SNAPSHOT
     configurate: 4.1.2
     adventure: 4.10.1
-    adventurePlatformFabric: 5.2.0
+    adventurePlatformFabric: 5.2.1
     paperApi: 1.18.2-R0.1-SNAPSHOT
     bStats: 3.0.0
-    fabricApi: 0.48.0+1.18.2
-    fabricLoader: 0.13.3
+    fabricApi: 0.51.0+1.18.2
+    fabricLoader: 0.14.0
     cardinalComponents: 4.1.4
     guice: 5.1.0
 
