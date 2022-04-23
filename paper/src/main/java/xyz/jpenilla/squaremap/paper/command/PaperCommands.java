@@ -12,7 +12,6 @@ import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.List;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
@@ -28,7 +27,7 @@ import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.commands.HideShowCommands;
 import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
@@ -93,13 +92,12 @@ public final class PaperCommands implements PlatformCommands {
             if (sender instanceof PlayerCommander player) {
                 return player.player();
             }
-            throw CommandCompleted.withMessage(Components.miniMessage(Lang.CONSOLE_MUST_SPECIFY_PLAYER));
+            throw CommandCompleted.withMessage(Messages.CONSOLE_MUST_SPECIFY_PLAYER);
         }
 
         final @Nullable Player targetPlayer = selector.getPlayer();
         if (targetPlayer == null) {
-            Lang.send(sender, Lang.PLAYER_NOT_FOUND_FOR_INPUT, Placeholder.unparsed("input", selector.getSelector()));
-            throw CommandCompleted.withoutMessage();
+            throw CommandCompleted.withMessage(Messages.PLAYER_NOT_FOUND_FOR_INPUT.withPlaceholders(Components.placeholder("input", selector.getSelector())));
         }
 
         return CraftBukkitReflection.serverPlayer(targetPlayer);

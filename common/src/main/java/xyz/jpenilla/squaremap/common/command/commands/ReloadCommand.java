@@ -9,8 +9,7 @@ import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
-import xyz.jpenilla.squaremap.common.config.Lang;
-import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 public final class ReloadCommand extends SquaremapCommand {
@@ -29,7 +28,7 @@ public final class ReloadCommand extends SquaremapCommand {
     public void register() {
         this.commands.registerSubcommand(builder ->
             builder.literal("reload")
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.RELOAD_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.RELOAD_COMMAND_DESCRIPTION.asComponent())
                 .permission("squaremap.command.reload")
                 .handler(this::execute));
     }

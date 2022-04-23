@@ -19,7 +19,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
@@ -135,7 +135,7 @@ public final class Image {
             try {
                 Files.createDirectories(dir);
             } catch (final IOException e) {
-                throw new RuntimeException(Logging.replace(Lang.LOG_COULD_NOT_CREATE_DIR, "path", dir.toAbsolutePath()), e);
+                throw new RuntimeException(Logging.replace(Messages.LOG_COULD_NOT_CREATE_DIR, "path", dir.toAbsolutePath()), e);
             }
         }
         final String fileName = scaledX + "_" + scaledZ + ".png";
@@ -147,11 +147,11 @@ public final class Image {
     }
 
     private void logCouldNotRead(final IOException ex) {
-        Logging.logger().error(xz(Lang.LOG_COULD_NOT_READ_REGION), ex);
+        Logging.logger().error(xz(Messages.LOG_COULD_NOT_READ_REGION), ex);
     }
 
     private void logCouldNotSave(final IOException ex) {
-        Logging.logger().error(xz(Lang.LOG_COULD_NOT_SAVE_REGION), ex);
+        Logging.logger().error(xz(Messages.LOG_COULD_NOT_SAVE_REGION), ex);
     }
 
     private String xz(final String s) {

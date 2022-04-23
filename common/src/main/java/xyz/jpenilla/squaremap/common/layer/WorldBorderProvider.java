@@ -10,7 +10,7 @@ import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.Point;
 import xyz.jpenilla.squaremap.api.marker.Marker;
 import xyz.jpenilla.squaremap.api.marker.MarkerOptions;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
@@ -28,7 +28,7 @@ public class WorldBorderProvider implements LayerProvider {
     public WorldBorderProvider(final @NonNull MapWorldInternal world) {
         this.world = world;
         final WorldConfig config = world.config();
-        this.label = Lang.UI_WORLDBORDER_MARKER_LABEL;
+        this.label = Messages.UI_WORLDBORDER_MARKER_LABEL;
         this.showControls = config.WORLDBORDER_MARKER_SHOW_CONTROLS;
         this.defaultHidden = config.WORLDBORDER_MARKER_DEFAULT_HIDDEN;
         this.layerPriority = config.WORLDBORDER_MARKER_LAYER_PRIORITY;

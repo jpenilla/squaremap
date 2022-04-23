@@ -7,6 +7,7 @@ import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -16,9 +17,7 @@ import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
-import xyz.jpenilla.squaremap.common.util.CommandUtil;
-import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 public final class HelpCommand extends SquaremapCommand {
@@ -47,8 +46,8 @@ public final class HelpCommand extends SquaremapCommand {
 
         this.commands.registerSubcommand(builder ->
             builder.literal("help")
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.HELP_COMMAND_DESCRIPTION))
-                .argument(helpQueryArgument, CommandUtil.description(Lang.HELP_QUERY_ARGUMENT_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.HELP_COMMAND_DESCRIPTION.asComponent())
+                .argument(helpQueryArgument, RichDescription.of(Messages.HELP_QUERY_ARGUMENT_DESCRIPTION))
                 .permission("squaremap.command.help")
                 .handler(this::executeHelp));
     }

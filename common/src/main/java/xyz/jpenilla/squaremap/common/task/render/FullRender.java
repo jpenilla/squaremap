@@ -15,7 +15,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
@@ -64,7 +64,7 @@ public final class FullRender extends AbstractRender {
 
         final @Nullable Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.getRenderProgress();
         if (resumedMap != null) {
-            Logging.info(Lang.LOG_RESUMED_RENDERING, "world", this.mapWorld.identifier().asString());
+            Logging.info(Messages.LOG_RESUMED_RENDERING, "world", this.mapWorld.identifier().asString());
 
             regions = resumedMap;
 
@@ -72,10 +72,10 @@ public final class FullRender extends AbstractRender {
             this.processedRegions.set(count);
             this.processedChunks.set(this.countCompletedChunks(regions));
         } else {
-            Logging.info(Lang.LOG_STARTED_FULLRENDER, "world", this.mapWorld.identifier().asString());
+            Logging.info(Messages.LOG_STARTED_FULLRENDER, "world", this.mapWorld.identifier().asString());
 
             // find all region files
-            Logging.logger().info(Lang.LOG_SCANNING_REGION_FILES);
+            Logging.logger().info(Messages.LOG_SCANNING_REGION_FILES);
             final List<RegionCoordinate> regionFiles = this.getRegions();
 
             // setup a spiral iterator
@@ -115,7 +115,7 @@ public final class FullRender extends AbstractRender {
         this.totalRegions = regions.size();
         this.totalChunks = regions.keySet().stream().mapToInt(visibility::countChunksInRegion).sum();
 
-        Logging.info(Lang.LOG_FOUND_TOTAL_REGION_FILES, "total", regions.size());
+        Logging.info(Messages.LOG_FOUND_TOTAL_REGION_FILES, "total", regions.size());
 
         this.progress = RenderProgress.printProgress(this);
 

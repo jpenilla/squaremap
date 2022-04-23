@@ -6,14 +6,13 @@ import com.google.inject.Inject;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
 
 import static net.kyori.adventure.text.Component.text;
@@ -24,13 +23,13 @@ public final class ConfirmCommand extends SquaremapCommand {
         15L,
         TimeUnit.SECONDS,
         context -> context.getCommandContext().getSender().sendMessage(confirmationRequiredMessage()),
-        sender -> Lang.send(sender, Lang.NO_PENDING_COMMANDS_MESSAGE)
+        sender -> sender.sendMessage(Messages.NO_PENDING_COMMANDS_MESSAGE)
     );
 
     private static ComponentLike confirmationRequiredMessage() {
         return text()
-            .append(Components.miniMessage(Lang.CONFIRMATION_REQUIRED_MESSAGE, Placeholder.unparsed("command", Config.MAIN_COMMAND_LABEL)))
-            .hoverEvent(Components.miniMessage(Lang.CLICK_TO_CONFIRM))
+            .append(Messages.CONFIRMATION_REQUIRED_MESSAGE.withPlaceholders(Components.placeholder("command", Config.MAIN_COMMAND_LABEL)))
+            .hoverEvent(Messages.CLICK_TO_CONFIRM.asComponent())
             .clickEvent(ClickEvent.runCommand('/' + Config.MAIN_COMMAND_LABEL + " confirm"));
     }
 
@@ -45,7 +44,7 @@ public final class ConfirmCommand extends SquaremapCommand {
 
         this.commands.registerSubcommand(builder ->
             builder.literal("confirm")
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.CONFIRM_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.CONFIRM_COMMAND_DESCRIPTION.asComponent())
                 .handler(this.confirmationManager.createConfirmationExecutionHandler()));
     }
 }

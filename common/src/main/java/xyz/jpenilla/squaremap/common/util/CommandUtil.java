@@ -3,7 +3,6 @@ package xyz.jpenilla.squaremap.common.util;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import java.util.Optional;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -13,7 +12,7 @@ import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
@@ -33,10 +32,9 @@ public final class CommandUtil {
             if (mapWorld.isPresent()) {
                 return mapWorld.get();
             }
-            Lang.send(sender, Lang.MAP_NOT_ENABLED_FOR_WORLD, Placeholder.unparsed("world", level.dimension().location().toString()));
-            throw CommandCompleted.withoutMessage();
+            throw CommandCompleted.withMessage(Messages.MAP_NOT_ENABLED_FOR_WORLD.withPlaceholders(Components.worldPlaceholder(level)));
         } else {
-            throw CommandCompleted.withMessage(Components.miniMessage(Lang.CONSOLE_MUST_SPECIFY_WORLD));
+            throw CommandCompleted.withMessage(Messages.CONSOLE_MUST_SPECIFY_WORLD);
         }
     }
 

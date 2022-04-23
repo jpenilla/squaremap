@@ -13,7 +13,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 public final class RenderProgress extends TimerTask {
@@ -97,7 +97,7 @@ public final class RenderProgress extends TimerTask {
         this.seconds++;
 
         Logging.info(
-            (totalRegions > 0 ? Lang.LOG_RENDER_PROGRESS_WITH_REGIONS : Lang.LOG_RENDER_PROGRESS),
+            (totalRegions > 0 ? Messages.LOG_RENDER_PROGRESS_WITH_REGIONS : Messages.LOG_RENDER_PROGRESS),
             "world", this.render.mapWorld.identifier().asString(),
             "current_regions", curRegions,
             "total_regions", totalRegions,

@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
 import xyz.jpenilla.squaremap.common.util.Util;
 
@@ -56,7 +56,7 @@ public final class DirectoryProvider {
             try {
                 Files.createDirectories(dir);
             } catch (final IOException e) {
-                Logging.error(Lang.LOG_COULD_NOT_CREATE_DIR, e, "path", dir.toAbsolutePath());
+                Logging.error(Messages.LOG_COULD_NOT_CREATE_DIR, e, "path", dir.toAbsolutePath());
             }
         }
         return dir;

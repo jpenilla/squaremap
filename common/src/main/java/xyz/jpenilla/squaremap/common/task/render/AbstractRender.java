@@ -29,7 +29,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.BiomeColors;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
@@ -111,7 +111,7 @@ public abstract class AbstractRender implements Runnable {
         final State state = this.state;
         this.shutdown();
         this.mapWorld.renderStopped(state == State.CANCELLED || state == State.RUNNING);
-        final String msg = state == State.RUNNING ? Lang.LOG_FINISHED_RENDERING : Lang.LOG_CANCELLED_RENDERING;
+        final String msg = state == State.RUNNING ? Messages.LOG_FINISHED_RENDERING : Messages.LOG_CANCELLED_RENDERING;
         Logging.info(msg, "world", this.mapWorld.identifier().asString());
     }
 

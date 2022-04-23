@@ -7,7 +7,6 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.WorldManager;
@@ -15,7 +14,7 @@ import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Components;
 
@@ -44,23 +43,23 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
             .permission("squaremap.command.progresslogging");
 
         this.commands.register(progressLogging
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.PROGRESSLOGGING_COMMAND_DESCRIPTION))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.PROGRESSLOGGING_COMMAND_DESCRIPTION.asComponent())
             .handler(this::executePrint));
         this.commands.register(progressLogging.literal("toggle")
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION.asComponent())
             .handler(this::executeToggle));
         this.commands.register(progressLogging.literal("rate")
             .argument(IntegerArgument.<Commander>newBuilder("seconds").withMin(1))
-            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.PROGRESSLOGGING_RATE_COMMAND_DESCRIPTION))
+            .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.PROGRESSLOGGING_RATE_COMMAND_DESCRIPTION.asComponent())
             .handler(this::executeRate));
     }
 
     private void executePrint(final CommandContext<Commander> context) {
-        Lang.send(
-            context.getSender(),
-            Lang.PROGRESSLOGGING_STATUS_MESSAGE,
-            Placeholder.unparsed("seconds", Integer.toString(Config.PROGRESS_LOGGING_INTERVAL)),
-            Placeholder.component("enabled", clickAndHover(Config.PROGRESS_LOGGING ? text("✔", GREEN) : text("✖", RED)))
+        context.getSender().sendMessage(
+            Messages.PROGRESSLOGGING_STATUS_MESSAGE.withPlaceholders(
+                Components.placeholder("seconds", Config.PROGRESS_LOGGING_INTERVAL),
+                Components.placeholder("enabled", clickAndHover(Config.PROGRESS_LOGGING ? text("✔", GREEN) : text("✖", RED)))
+            )
         );
     }
 
@@ -70,17 +69,17 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         this.worldManager.worlds()
             .forEach(MapWorldInternal::restartRenderProgressLogging);
 
-        final Component message;
+        final ComponentLike message;
         if (Config.PROGRESS_LOGGING) {
-            message = Components.miniMessage(Lang.PROGRESSLOGGING_ENABLED_MESSAGE);
+            message = Messages.PROGRESSLOGGING_ENABLED_MESSAGE;
         } else {
-            message = Components.miniMessage(Lang.PROGRESSLOGGING_DISABLED_MESSAGE);
+            message = Messages.PROGRESSLOGGING_DISABLED_MESSAGE;
         }
         context.getSender().sendMessage(clickAndHover(message));
     }
 
     private static Component clickAndHover(final ComponentLike componentLike) {
-        return componentLike.asComponent().hoverEvent(Components.miniMessage(Lang.CLICK_TO_TOGGLE))
+        return componentLike.asComponent().hoverEvent(Messages.CLICK_TO_TOGGLE.asComponent())
             .clickEvent(runCommand("/" + Config.MAIN_COMMAND_LABEL + " progresslogging toggle"));
     }
 
@@ -91,6 +90,6 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         this.worldManager.worlds()
             .forEach(MapWorldInternal::restartRenderProgressLogging);
 
-        context.getSender().sendMessage(Components.miniMessage(Lang.PROGRESSLOGGING_SET_RATE_MESSAGE, Placeholder.unparsed("seconds", Integer.toString(seconds))));
+        context.getSender().sendMessage(Messages.PROGRESSLOGGING_SET_RATE_MESSAGE.withPlaceholders(Components.placeholder("seconds", seconds)));
     }
 }

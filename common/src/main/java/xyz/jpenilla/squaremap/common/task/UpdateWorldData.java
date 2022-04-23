@@ -14,7 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
@@ -61,11 +61,11 @@ public final class UpdateWorldData implements Runnable {
         });
 
         final Map<String, Object> ui = new HashMap<>();
-        ui.put("title", Lang.UI_TITLE);
+        ui.put("title", Messages.UI_TITLE);
 
         final Map<String, Object> coordinates = new HashMap<>();
         coordinates.put("enabled", Config.UI_COORDINATES_ENABLED);
-        coordinates.put("html", Lang.UI_COORDINATES_HTML);
+        coordinates.put("html", Messages.UI_COORDINATES_HTML);
         ui.put("coordinates", coordinates);
 
         final Map<String, Object> link = new HashMap<>();
@@ -74,8 +74,8 @@ public final class UpdateWorldData implements Runnable {
 
         final Map<String, Object> sidebar = new HashMap<>();
         sidebar.put("pinned", Config.UI_SIDEBAR_PINNED);
-        sidebar.put("player_list_label", Lang.UI_SIDEBAR_PLAYER_LIST_LABEL);
-        sidebar.put("world_list_label", Lang.UI_SIDEBAR_WORLD_LIST_LABEL);
+        sidebar.put("player_list_label", Messages.UI_SIDEBAR_PLAYER_LIST_LABEL);
+        sidebar.put("world_list_label", Messages.UI_SIDEBAR_WORLD_LIST_LABEL);
         ui.put("sidebar", sidebar);
 
         final Map<String, Object> map = new HashMap<>();
@@ -98,7 +98,7 @@ public final class UpdateWorldData implements Runnable {
         final Map<String, Object> playerTracker = new HashMap<>();
         playerTracker.put("enabled", worldConfig.PLAYER_TRACKER_ENABLED);
         playerTracker.put("update_interval", worldConfig.PLAYER_TRACKER_UPDATE_INTERVAL);
-        playerTracker.put("label", Lang.UI_PLAYER_TRACKER_LABEL);
+        playerTracker.put("label", Messages.UI_PLAYER_TRACKER_LABEL);
         playerTracker.put("show_controls", worldConfig.PLAYER_TRACKER_SHOW_CONTROLS);
         playerTracker.put("default_hidden", worldConfig.PLAYER_TRACKER_DEFAULT_HIDDEN);
         playerTracker.put("priority", worldConfig.PLAYER_TRACKER_PRIORITY);

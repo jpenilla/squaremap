@@ -22,14 +22,14 @@ import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 public record UpdateChecker(Logger logger, String githubRepo) {
     private static final Gson GSON = new GsonBuilder().create();
 
     public void checkVersion() {
-        this.logger.info(Lang.UPDATE_CHECKER_FETCHING_VERSION_INFORMATION);
+        this.logger.info(Messages.UPDATE_CHECKER_FETCHING_VERSION_INFORMATION);
 
         final @Nullable Manifest manifest = manifest(UpdateChecker.class); // we expect to be shaded into platform jars
         if (manifest == null) {
@@ -56,15 +56,15 @@ public record UpdateChecker(Logger logger, String githubRepo) {
             return;
         } else if (result instanceof Distance.Behind behind) {
             this.logger.info(
-                Lang.UPDATE_CHECKER_BEHIND_BRANCH
+                Messages.UPDATE_CHECKER_BEHIND_BRANCH
                     .replace("<branch>", branch)
                     .replace("<behind>", String.valueOf(behind.result()))
             );
-            this.logger.info(Lang.UPDATE_CHECKER_DOWNLOAD_DEV_BUILDS.replace("<link>", "https://jenkins.jpenilla.xyz/job/squaremap/"));
+            this.logger.info(Messages.UPDATE_CHECKER_DOWNLOAD_DEV_BUILDS.replace("<link>", "https://jenkins.jpenilla.xyz/job/squaremap/"));
         } else if (result instanceof Distance.Failure failure) {
             this.logger.warn("Error obtaining version information", failure.reason());
         } else if (result instanceof Distance.UnknownCommit) {
-            this.logger.info(Lang.UPDATE_CHECKER_UNKNOWN_COMMIT.replace("<commit>", gitHash));
+            this.logger.info(Messages.UPDATE_CHECKER_UNKNOWN_COMMIT.replace("<commit>", gitHash));
         } else {
             throw new RuntimeException("Unknown result type?");
         }
@@ -84,9 +84,9 @@ public record UpdateChecker(Logger logger, String githubRepo) {
             return;
         }
         final int versionsBehind = releases.releaseList().indexOf(ver);
-        this.logger.info(Lang.UPDATE_CHECKER_BEHIND_RELEASES.replace("<behind>", String.valueOf(versionsBehind == -1 ? "?" : versionsBehind)));
+        this.logger.info(Messages.UPDATE_CHECKER_BEHIND_RELEASES.replace("<behind>", String.valueOf(versionsBehind == -1 ? "?" : versionsBehind)));
         this.logger.info(
-            Lang.UPDATE_CHECKER_DOWNLOAD_RELEASE
+            Messages.UPDATE_CHECKER_DOWNLOAD_RELEASE
                 .replace("<latest>", releases.releaseList().get(0))
                 .replace("<link>", releases.releaseUrls().get(releases.releaseList().get(0)))
         );

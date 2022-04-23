@@ -13,7 +13,7 @@ import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
@@ -69,7 +69,7 @@ public final class RadiusRender extends AbstractRender {
 
     @Override
     protected void render() {
-        Logging.info(Lang.LOG_STARTED_RADIUSRENDER, "world", this.mapWorld.identifier().asString());
+        Logging.info(Messages.LOG_STARTED_RADIUSRENDER, "world", this.mapWorld.identifier().asString());
 
         this.progress = RenderProgress.printProgress(this);
 

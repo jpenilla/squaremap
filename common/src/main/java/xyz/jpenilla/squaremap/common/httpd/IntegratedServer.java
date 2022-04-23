@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
 public final class IntegratedServer {
@@ -28,10 +28,10 @@ public final class IntegratedServer {
             SERVER = buildUndertow(createResourceHandler(directoryProvider));
             SERVER.start();
 
-            Logging.info(Lang.LOG_INTERNAL_WEB_STARTED, "bind", Config.HTTPD_BIND, "port", Config.HTTPD_PORT);
+            Logging.info(Messages.LOG_INTERNAL_WEB_STARTED, "bind", Config.HTTPD_BIND, "port", Config.HTTPD_PORT);
         } catch (Exception e) {
             SERVER = null;
-            Logging.logger().error(Lang.LOG_INTERNAL_WEB_START_ERROR, e);
+            Logging.logger().error(Messages.LOG_INTERNAL_WEB_START_ERROR, e);
         }
     }
 
@@ -85,12 +85,12 @@ public final class IntegratedServer {
 
     public static void stopServer() {
         if (SERVER == null) {
-            Logging.logger().warn(Lang.LOG_INTERNAL_WEB_STOP_ERROR);
+            Logging.logger().warn(Messages.LOG_INTERNAL_WEB_STOP_ERROR);
             return;
         }
 
         SERVER.stop();
         SERVER = null;
-        Logging.logger().info(Lang.LOG_INTERNAL_WEB_STOPPED);
+        Logging.logger().info(Messages.LOG_INTERNAL_WEB_STOPPED);
     }
 }

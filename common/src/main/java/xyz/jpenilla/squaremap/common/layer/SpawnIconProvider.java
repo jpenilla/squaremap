@@ -8,7 +8,7 @@ import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.marker.Marker;
 import xyz.jpenilla.squaremap.api.marker.MarkerOptions;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
@@ -28,7 +28,7 @@ public class SpawnIconProvider implements LayerProvider {
     public SpawnIconProvider(final @NonNull MapWorldInternal world) {
         this.world = world;
         final WorldConfig config = world.config();
-        this.label = Lang.UI_SPAWN_MARKER_ICON_LABEL;
+        this.label = Messages.UI_SPAWN_MARKER_ICON_LABEL;
         this.showControls = config.SPAWN_MARKER_ICON_SHOW_CONTROLS;
         this.defaultHidden = config.SPAWN_MARKER_ICON_DEFAULT_HIDDEN;
         this.layerPriority = config.SPAWN_MARKER_ICON_LAYER_PRIORITY;

@@ -10,7 +10,6 @@ import java.util.concurrent.ForkJoinPool;
 import javax.imageio.ImageIO;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Squaremap;
@@ -18,16 +17,15 @@ import xyz.jpenilla.squaremap.api.SquaremapProvider;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.LevelBiomeColorData;
 import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
+import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.UpdateChecker;
-
-import static xyz.jpenilla.squaremap.common.util.Components.miniMessage;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -75,7 +73,7 @@ public final class SquaremapCommon {
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.startServer(this.directoryProvider);
         } else {
-            Logging.logger().info(Lang.LOG_INTERNAL_WEB_DISABLED);
+            Logging.logger().info(Messages.LOG_INTERNAL_WEB_DISABLED);
         }
     }
 
@@ -95,10 +93,9 @@ public final class SquaremapCommon {
 
         this.start();
 
-        final Component success = miniMessage(
-            Lang.PLUGIN_RELOADED,
-            Placeholder.unparsed("name", "squaremap"),
-            Placeholder.unparsed("version", this.platform.version())
+        final Component success = Messages.PLUGIN_RELOADED.withPlaceholders(
+            Components.placeholder("name", "squaremap"),
+            Components.placeholder("version", this.platform.version())
         );
         audience.sendMessage(success);
     }

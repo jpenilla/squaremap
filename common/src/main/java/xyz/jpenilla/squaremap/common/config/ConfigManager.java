@@ -42,7 +42,7 @@ public final class ConfigManager {
         Advanced.reload(this.directoryProvider);
         this.worldAdvancedContainer.reload();
 
-        Lang.reload(this.directoryProvider);
+        Messages.reload(this.directoryProvider);
     }
 
     public WorldConfig worldConfig(final ServerLevel level) {

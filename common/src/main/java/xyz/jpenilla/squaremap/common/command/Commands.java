@@ -34,9 +34,8 @@ import xyz.jpenilla.squaremap.common.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
-import xyz.jpenilla.squaremap.common.util.Components;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.event.ClickEvent.runCommand;
@@ -103,8 +102,8 @@ public final class Commands {
         new MinecraftExceptionHandler<Commander>()
             .withDefaultHandlers()
             .withDecorator(component -> text()
-                .append(Components.miniMessage(Lang.COMMAND_PREFIX)
-                    .hoverEvent(Components.miniMessage(Lang.CLICK_FOR_HELP))
+                .append(Messages.COMMAND_PREFIX.asComponent()
+                    .hoverEvent(Messages.CLICK_FOR_HELP.asComponent())
                     .clickEvent(runCommand(String.format("/%s help", Config.MAIN_COMMAND_LABEL))))
                 .append(component)
                 .build())

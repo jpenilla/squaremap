@@ -25,8 +25,7 @@ import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.commands.HideShowCommands;
 import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.common.config.Lang;
-import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -72,7 +71,7 @@ public final class FabricCommands implements PlatformCommands {
             if (sender instanceof PlayerCommander player) {
                 return player.player();
             }
-            throw CommandCompleted.withMessage(Components.miniMessage(Lang.CONSOLE_MUST_SPECIFY_PLAYER));
+            throw CommandCompleted.withMessage(Messages.CONSOLE_MUST_SPECIFY_PLAYER);
         }
 
         return selector.getSingle();

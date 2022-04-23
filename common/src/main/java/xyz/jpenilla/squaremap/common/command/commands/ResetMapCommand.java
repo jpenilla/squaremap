@@ -6,7 +6,6 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Path;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -14,7 +13,7 @@ import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
@@ -37,7 +36,7 @@ public final class ResetMapCommand extends SquaremapCommand {
         this.commands.registerSubcommand(builder ->
             builder.literal("resetmap")
                 .argument(LevelArgument.of("world"))
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.RESETMAP_COMMAND_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.RESETMAP_COMMAND_DESCRIPTION.asComponent())
                 .meta(CommandConfirmationManager.META_CONFIRMATION_REQUIRED, true)
                 .permission("squaremap.command.resetmap")
                 .handler(this::executeResetMap));
@@ -52,6 +51,6 @@ public final class ResetMapCommand extends SquaremapCommand {
         } catch (final IOException ex) {
             throw new RuntimeException("Could not reset map for level '" + world.dimension().location() + "'", ex);
         }
-        Lang.send(sender, Lang.SUCCESSFULLY_RESET_MAP, Placeholder.unparsed("world", world.dimension().location().toString()));
+        sender.sendMessage(Messages.SUCCESSFULLY_RESET_MAP.withPlaceholders(Components.worldPlaceholder(world)));
     }
 }

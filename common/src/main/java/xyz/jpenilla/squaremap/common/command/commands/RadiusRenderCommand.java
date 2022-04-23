@@ -4,9 +4,9 @@ import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.arguments.standard.IntegerArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
+import cloud.commandframework.minecraft.extras.RichDescription;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -15,9 +15,8 @@ import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
-import xyz.jpenilla.squaremap.common.config.Lang;
+import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.util.CommandUtil;
 import xyz.jpenilla.squaremap.common.util.Components;
 
 @DefaultQualifier(NonNull.class)
@@ -41,8 +40,8 @@ public final class RadiusRenderCommand extends SquaremapCommand {
             builder.literal("radiusrender")
                 .argument(MapWorldArgument.of("world"))
                 .argument(IntegerArgument.<Commander>newBuilder("radius").withMin(1).build())
-                .argument(this.vec2dArgument.apply("center"), CommandUtil.description(Lang.OPTIONAL_CENTER_ARGUMENT_DESCRIPTION))
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Components.miniMessage(Lang.RADIUSRENDER_COMMAND_DESCRIPTION))
+                .argument(this.vec2dArgument.apply("center"), RichDescription.of(Messages.OPTIONAL_CENTER_ARGUMENT_DESCRIPTION))
+                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.RADIUSRENDER_COMMAND_DESCRIPTION.asComponent())
                 .permission("squaremap.command.radiusrender")
                 .handler(this::executeRadiusRender));
     }
@@ -58,11 +57,11 @@ public final class RadiusRenderCommand extends SquaremapCommand {
         }
 
         if (world.isRendering()) {
-            Lang.send(sender, Lang.RENDER_IN_PROGRESS, Placeholder.unparsed("world", world.identifier().asString()));
+            sender.sendMessage(Messages.RENDER_IN_PROGRESS.withPlaceholders(Components.worldPlaceholder(world)));
             return;
         }
 
-        Lang.send(sender, Lang.LOG_STARTED_RADIUSRENDER, Placeholder.unparsed("world", world.identifier().asString()));
+        sender.sendMessage(Components.miniMessage(Messages.LOG_STARTED_RADIUSRENDER, Components.worldPlaceholder(world)));
         world.startRender(
             context.get(Commands.RENDER_FACTORY).createRadiusRender(world, center, radius)
         );
