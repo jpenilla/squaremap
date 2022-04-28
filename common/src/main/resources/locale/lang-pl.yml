@@ -6,64 +6,93 @@ cancelled-render: <green> Anulowano renderowanie dla <world>
 successfully-reset-map: <green>Pomyślnie zresetowano mapę dla <world>
 paused-renders: <green>Wstrzymano rendery dla <world>
 unpaused-renders: <green>Wznowiono rendery dla <world>
-click-for-help: Kliknij, aby uzyskać pomoc
-plugin-reloaded: <green><name> v<version> przeładowano
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
-  message:
-    console-must-specify-player: <red>Musisz określić docelowego gracza podczas uruchamiania tej komendy z konsoli
-    player-not-found-for-input: <red>Nie znaleziono gracza o nazwie '<input>'
-    console-must-specify-world: <red>Musisz określić świat podczas uruchamiania tej komendy z konsoli
-    no-such-world: <red>Nie ma takiego świata '<world>'
-    map-not-enabled-for-world: <red>Mapa nie jest włączona dla świata '<world>'
-    confirmation-required: <red>Wymagane potwierdzenie. Potwierdź używając /<command> confirm.
-    no-pending-commands: <red>Nie masz żadnych poleceń do potwierdzenia.
-  description:
-    help: Uzyskaj pomoc dla komend squaremap
-    resetmap: Resetuje mapę określonego świata
-    confirm: Potwierdź wykonanie komendy
-    reload: Przeładuj wtyczkę
-    full-render: Rozpoczyna pełne renderowanie dla określonego świata
-    cancel-render: Anuluje renderowanie dla określonego świata
-    pause-render: Wstrzymuje wszystkie rendery dla określonego świata
-    radius-render: Rozpoczyna renderowanie promienia
-    hide: Ukryj gracza na mapie
-    show: Pokaż gracza na mapie
-  argument:
-    optional-world: Domyślnie aktualny świat gracza, jeśli nie jest określony
-    optional-center: Domyślnie (<white>0<gray>,</gray> 0</white>) jeśli nie określono
-    optional-player: Wykonujący gracz, jeśli nie określono (konsola musi określać gracza)
-    help-query: Zapytanie o pomoc
-  hide:
-    already-hidden: <red><player> jest już ukryty na mapie
-    hidden: <green><player> jest teraz ukryty na mapie
-  show:
-    not-hidden: <red><player> nie jest ukryty na mapie
-    shown: <green><player> nie jest już ukryty na mapie
+    message:
+        console-must-specify-player: <red>Musisz określić docelowego gracza podczas
+            uruchamiania tej komendy z konsoli
+        player-not-found-for-input: <red>Nie znaleziono gracza o nazwie '<input>'
+        console-must-specify-world: <red>Musisz określić świat podczas uruchamiania
+            tej komendy z konsoli
+        no-such-world: <red>Nie ma takiego świata '<world>'
+        map-not-enabled-for-world: <red>Mapa nie jest włączona dla świata '<world>'
+        confirmation-required: <red>Wymagane potwierdzenie. Potwierdź używając /<command>
+            confirm.
+        no-pending-commands: <red>Nie masz żadnych poleceń do potwierdzenia.
+        progresslogging:
+            enabled: <green>Render progress logging has been enabled.
+            disabled: <green>Render progress logging has been disabled.
+            set-rate: <green>Render progress logging interval has been set to </green><seconds>
+                seconds
+            statusmessage: 'Render progress logging enabled: <enabled>, interval:
+                <green><seconds></green> seconds'
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
+    description:
+        help: Uzyskaj pomoc dla komend squaremap
+        resetmap: Resetuje mapę określonego świata
+        confirm: Potwierdź wykonanie komendy
+        reload: Przeładuj wtyczkę
+        full-render: Rozpoczyna pełne renderowanie dla określonego świata
+        cancel-render: Anuluje renderowanie dla określonego świata
+        pause-render: Wstrzymuje wszystkie rendery dla określonego świata
+        radius-render: Rozpoczyna renderowanie promienia
+        progresslogging:
+            status: Prints the current settings for render progress logging
+            toggle: Toggles render progress logging on or off
+            rate: Sets the interval in seconds for logging render progress
+        hide: Ukryj gracza na mapie
+        show: Pokaż gracza na mapie
+    argument:
+        optional-world: Domyślnie aktualny świat gracza, jeśli nie jest określony
+        optional-center: Domyślnie (<white>0<gray>,</gray> 0</white>) jeśli nie określono
+        optional-player: Wykonujący gracz, jeśli nie określono (konsola musi określać
+            gracza)
+        help-query: Zapytanie o pomoc
+    hide:
+        already-hidden: <red><player> jest już ukryty na mapie
+        hidden: <green><player> jest teraz ukryty na mapie
+    show:
+        not-hidden: <red><player> nie jest ukryty na mapie
+        shown: <green><player> nie jest już ukryty na mapie
+click-for-help: Kliknij, aby uzyskać pomoc
+click-to-confirm: Click to confirm
+click-to-toggle: Click to toggle
+plugin-reloaded: <green><name> v<version> przeładowano
 ui:
-  page-title: squaremap - {world}
-  coordinates: Współrzędne<br/><x>, <z>
-  sidebar:
-    player-list: Gracze ({cur}/{max})
-    world-list: Światy
-  layers:
-    player-tracker: Gracze
-    world-spawn: Spawn
-    world-border: Granica świata
+    page-title: squaremap - {world}
+    coordinates: Współrzędne<br/><x>, <z>
+    sidebar:
+        player-list: Gracze ({cur}/{max})
+        world-list: Światy
+    layers:
+        player-tracker: Gracze
+        world-spawn: Spawn
+        world-border: Granica świata
 log:
-  started-full-render: <dark_aqua>Rozpoczęto pełne renderowanie mapy dla <yellow><world>
-  started-radius-render: <dark_aqua>Rozpoczęto renderowanie mapy dla <yellow><world>
-  scanning-region-files: <yellow>Skanowanie plików regionów...
-  found-total-region-files: <green>Znaleziono <gray><total> <green>plików regionów
-  finished-rendering: <dark_aqua>Zakończono renderowanie mapy dla <yellow><world>
-  cancelled-rendering: <dark_aqua>Renderowanie mapy dla <yellow><world> <dark_aqua>zostało przerwane
-  resumed-rendering: <dark_aqua>Renderowanie mapy dla <yellow><world> <dark_aqua>zostało wznowione
-  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Świat<gray>:</gray> <yellow><world></yellow> Chunki<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Upłynęło<gray>:</gray> <yellow><elapsed></yellow> Szacowany czas<gray>:</gray> <yellow><eta></yellow> Szybkość<gray></gray> <yellow><rate></yellow> cps
-  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Świat<gray>:</gray> <yellow><world></yellow> Regiony<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Chunki<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Upłynęło<gray>:</gray> <yellow><elapsed></yellow> Szacowany czas<gray>:</gray> <yellow><eta></yellow> Szybkość<gray>:</gray> <yellow><rate></yellow> cps
-  internal-web-disabled: <green>Wewnętrzny serwer jest wyłączony w pliku config.yml
-  internal-web-started: <green>Wewnętrzny serwer uruchomiony na <bind>:<port>
-  internal-web-stopped: <green>Wewnętrzny serwer zatrzymany
-  internal-web-start-error: Wewnętrzny serwer nie może się uruchomić
-  could-not-create-directory: Nie można utworzyć katalogu <path>
-  could-not-save-region: Nie można zapisać mapy dla regionu <x>,<z>
-  internal-web-not-running: Wystąpił błąd z wewnętrznym serwerem
+    started-full-render: Rozpoczęto pełne renderowanie mapy dla <world>
+    started-radius-render: Rozpoczęto renderowanie mapy dla <world>
+    scanning-region-files: Skanowanie plików regionów...
+    found-total-region-files: Znaleziono <total> plików regionów
+    finished-rendering: Zakończono renderowanie mapy dla <world>
+    cancelled-rendering: Renderowanie mapy dla <world> zostało przerwane
+    resumed-rendering: Renderowanie mapy dla <world> zostało wznowione
+    scanning-region-progress: '(<percent>) Świat: <world> Chunki: <current_chunks>/<total_chunks>
+        Upłynęło: <elapsed> Szacowany czas: <eta> Szybkość <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) Świat: <world> Regiony: <current_regions>/<total_regions>
+        Chunki: <current_chunks>/<total_chunks> Upłynęło: <elapsed> Szacowany czas:
+        <eta> Szybkość: <rate> cps'
+    internal-web-disabled: Wewnętrzny serwer jest wyłączony w pliku config.yml
+    internal-web-started: Wewnętrzny serwer uruchomiony na <bind>:<port>
+    internal-web-stopped: Wewnętrzny serwer zatrzymany
+    internal-web-start-error: Wewnętrzny serwer nie może się uruchomić
+    could-not-create-directory: Nie można utworzyć katalogu <path>
+    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
+        It will be overwritten.
+    could-not-save-region: Nie można zapisać mapy dla regionu <x>,<z>
+    internal-web-not-running: Wystąpił błąd z wewnętrznym serwerem
+    update-checker:
+        fetching-version-information: Fetching version information...
+        behind-branch: squaremap is <behind> version(s) behind branch '<branch>'!
+        download-dev-builds: Download dev builds from <link>
+        unknown-commit: Unknown commit '<commit>', cannot check for updates.
+        behind-releases: squaremap is <behind> version(s) out of date.
+        download-release: Download the latest release (<latest>) from <link>

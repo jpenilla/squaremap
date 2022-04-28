@@ -6,64 +6,93 @@ cancelled-render: <green>Render je otkazan za <world>
 successfully-reset-map: <green>Karta za svijet <world> je uspješno resetirana
 paused-renders: <green>Pauzirani renderi za svijet <world>
 unpaused-renders: <green>Nastavljeni renderi za svijet <world>
-click-for-help: Klikni za pomoć
-plugin-reloaded: <green><name> v<version> je ponovo učitan
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap </gradient>]</white> '
-  message:
-    console-must-specify-player: <red>Morate odrediti igrača kada pokrećete ovu komandu sa konzole
-    player-not-found-for-input: <red>Nema nađenog igrača za '<input>'
-    console-must-specify-world: <red>Morate odrediti svijet kad pokrećete ovu komandu sa konzole
-    no-such-world: <red>Ne postoji svijet '<world>'
-    map-not-enabled-for-world: <red>Karta nije uključena za svijet '<world>'
-    confirmation-required: <red>Potvrda je potrebna. Potvrdi koristeći /<command> confirm.
-    no-pending-commands: <red>Nemate komandi na čekanju.
-  description:
-    help: Pomoć za squaremap komande
-    resetmap: Resetira kartu za određeni svijet
-    confirm: Potvrdi komandu na čekanju
-    reload: Ponovno učitava plugin
-    full-render: Pokreće potpuni render za određeni svijet
-    cancel-render: Prekida render za određeni svijet
-    pause-render: Pauzira sve rendere za određeni svijet
-    radius-render: Pokreće render određenog područja
-    hide: Sakrij igrača sa karte
-    show: Pokaži igrača na karti
-  argument:
-    optional-world: Ako nije navedeno, koristi se trenutni svijet igrača
-    optional-center: Ako nije navedeno koristi se (<white>0<gray>,</gray> 0</white>)
-    optional-player: Ako nije navedeno, koristi se igrač koji je izvršio komandu (u konzoli se mora navesti igrač)
-    help-query: Upit za pomoć
-  hide:
-    already-hidden: <red><player> je već sakriven sa karte
-    hidden: <green><player> je sad sakriven sa karte
-  show:
-    not-hidden: <red><player> nije sakriven sa karte
-    shown: <green><player> više nije sakriven sa karte
+    message:
+        console-must-specify-player: <red>Morate odrediti igrača kada pokrećete ovu
+            komandu sa konzole
+        player-not-found-for-input: <red>Nema nađenog igrača za '<input>'
+        console-must-specify-world: <red>Morate odrediti svijet kad pokrećete ovu
+            komandu sa konzole
+        no-such-world: <red>Ne postoji svijet '<world>'
+        map-not-enabled-for-world: <red>Karta nije uključena za svijet '<world>'
+        confirmation-required: <red>Potvrda je potrebna. Potvrdi koristeći /<command>
+            confirm.
+        no-pending-commands: <red>Nemate komandi na čekanju.
+        progresslogging:
+            enabled: <green>Render progress logging has been enabled.
+            disabled: <green>Render progress logging has been disabled.
+            set-rate: <green>Render progress logging interval has been set to </green><seconds>
+                seconds
+            statusmessage: 'Render progress logging enabled: <enabled>, interval:
+                <green><seconds></green> seconds'
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
+    description:
+        help: Pomoć za squaremap komande
+        resetmap: Resetira kartu za određeni svijet
+        confirm: Potvrdi komandu na čekanju
+        reload: Ponovno učitava plugin
+        full-render: Pokreće potpuni render za određeni svijet
+        cancel-render: Prekida render za određeni svijet
+        pause-render: Pauzira sve rendere za određeni svijet
+        radius-render: Pokreće render određenog područja
+        progresslogging:
+            status: Prints the current settings for render progress logging
+            toggle: Toggles render progress logging on or off
+            rate: Sets the interval in seconds for logging render progress
+        hide: Sakrij igrača sa karte
+        show: Pokaži igrača na karti
+    argument:
+        optional-world: Ako nije navedeno, koristi se trenutni svijet igrača
+        optional-center: Ako nije navedeno koristi se (<white>0<gray>,</gray> 0</white>)
+        optional-player: Ako nije navedeno, koristi se igrač koji je izvršio komandu
+            (u konzoli se mora navesti igrač)
+        help-query: Upit za pomoć
+    hide:
+        already-hidden: <red><player> je već sakriven sa karte
+        hidden: <green><player> je sad sakriven sa karte
+    show:
+        not-hidden: <red><player> nije sakriven sa karte
+        shown: <green><player> više nije sakriven sa karte
+click-for-help: Klikni za pomoć
+click-to-confirm: Click to confirm
+click-to-toggle: Click to toggle
+plugin-reloaded: <green><name> v<version> je ponovo učitan
 ui:
-  page-title: squaremap - {world}
-  coordinates: Koordinate<br/><x>, <z>
-  sidebar:
-    player-list: Igrači ({cur}/{max})
-    world-list: Svijetovi
-  layers:
-    player-tracker: Igrači
-    world-spawn: Mjesto stvaranja
-    world-border: Granica svijeta
+    page-title: squaremap - {world}
+    coordinates: Koordinate<br/><x>, <z>
+    sidebar:
+        player-list: Igrači ({cur}/{max})
+        world-list: Svijetovi
+    layers:
+        player-tracker: Igrači
+        world-spawn: Mjesto stvaranja
+        world-border: Granica svijeta
 log:
-  started-full-render: <dark_aqua>Pokrenut potpuni render karte za svijet <yellow><world>
-  started-radius-render: <dark_aqua>Pokrenut render karte na određenom području za svijet <yellow><world>
-  scanning-region-files: <yellow>Skeniranje region fajlova...
-  found-total-region-files: <green>Pronađeno <gray><total> <green> region fajla/ova
-  finished-rendering: <dark_aqua>Završeno renderovanje karte za svijet <yellow><world>
-  cancelled-rendering: <dark_aqua> Renderovanje karte za svijet <yellow><world> <dark_aqua>je prekinuto
-  resumed-rendering: <dark_aqua> Renderovanje karte za svijet <yellow><world> <dark_aqua>je nastavljeno
-  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray><dark_aqua>Svijet<gray>:</gray><yellow><world></yellow>Chunkovi<gray>:</gray><yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow>Proteklo<gray>:</gray><yellow><elapsed></yellow> Preostalo<gray>:</gray><yellow><eta></yellow> Brzina<gray>:</gray><yellow><rate></yellow> cps
-  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray><dark_aqua>Svijet<gray>:</gray><yellow><world></yellow> Regioni<gray>:</gray><yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow>Chunkovi<gray>:</gray><yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow>Proteklo<gray>:</gray><yellow><elapsed></yellow> Preostalo<gray>:</gray><yellow><eta></yellow> Brzina<gray>:</gray><yellow><rate></yellow> cps
-  internal-web-disabled: <green>Interni webserver je isključen u config.yml
-  internal-web-started: <green>Interni webserver je pokrenut na <bind>:<port>
-  internal-web-stopped: <green>Interni webserver zaustavljen
-  internal-web-start-error: Interni webserver se ne može pokrenuti
-  could-not-create-directory: Nije moguće napraviti direktorij! <path>
-  could-not-save-region: Karta za regiju <x>,<z> se nije uspjela spremiti
-  internal-web-not-running: Desila se greška sa internim webserverom
+    started-full-render: Pokrenut potpuni render karte za svijet <world>
+    started-radius-render: Pokrenut render karte na određenom području za svijet <world>
+    scanning-region-files: Skeniranje region fajlova...
+    found-total-region-files: Pronađeno <total> region fajla/ova
+    finished-rendering: Završeno renderovanje karte za svijet <world>
+    cancelled-rendering: Renderovanje karte za svijet <world> je prekinuto
+    resumed-rendering: Renderovanje karte za svijet <world> je nastavljeno
+    scanning-region-progress: '(<percent>) Svijet: <world> Chunkovi: <current_chunks>/<total_chunks>
+        Proteklo: <elapsed> Preostalo: <eta> Brzina: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) Svijet: <world> Regioni: <current_regions>/<total_regions>
+        Chunkovi: <current_chunks>/<total_chunks> Proteklo: <elapsed> Preostalo: <eta>
+        Brzina: <rate> cps'
+    internal-web-disabled: Interni webserver je isključen u config.yml
+    internal-web-started: Interni webserver je pokrenut na <bind>:<port>
+    internal-web-stopped: Interni webserver zaustavljen
+    internal-web-start-error: Interni webserver se ne može pokrenuti
+    could-not-create-directory: Nije moguće napraviti direktorij! <path>
+    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
+        It will be overwritten.
+    could-not-save-region: Karta za regiju <x>,<z> se nije uspjela spremiti
+    internal-web-not-running: Desila se greška sa internim webserverom
+    update-checker:
+        fetching-version-information: Fetching version information...
+        behind-branch: squaremap is <behind> version(s) behind branch '<branch>'!
+        download-dev-builds: Download dev builds from <link>
+        unknown-commit: Unknown commit '<commit>', cannot check for updates.
+        behind-releases: squaremap is <behind> version(s) out of date.
+        download-release: Download the latest release (<latest>) from <link>

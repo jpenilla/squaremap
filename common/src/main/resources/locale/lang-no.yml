@@ -1,3 +1,5 @@
+# Translators: [Baktus79]
+
 render-in-progress: <red>En rendring pågår allerede på <world>
 render-not-in-progress: <red>Ingen rendring kjører for <world>
 cancelled-render: <green>Rendring ble kansellert for <world>
@@ -6,18 +8,23 @@ paused-renders: <green>Satt rendring på pause for <world>
 unpaused-renders: <green>Fortsetter rendring av verden <world>
 command:
     message:
-        console-must-specify-player: <red>Du må spesifisere en spiller når du kjører denne kommandoen fra konsollen
+        console-must-specify-player: <red>Du må spesifisere en spiller når du kjører
+            denne kommandoen fra konsollen
         player-not-found-for-input: <red>Ingen spiller funnet for input '<input>'
-        console-must-specify-world: <red>Du må spesifisere verden når du kjører denne kommandoen fra konsollen
+        console-must-specify-world: <red>Du må spesifisere verden når du kjører denne
+            kommandoen fra konsollen
         no-such-world: <red>Ingen slik verden '<world>'
         map-not-enabled-for-world: <red>Kart er ikke aktivert for verden '<world>'
-        confirmation-required: <red>Bekreftelse påkrevd. Bekreft ved å bruke /<command> confirm.
+        confirmation-required: <red>Bekreftelse påkrevd. Bekreft ved å bruke /<command>
+            confirm.
         no-pending-commands: <red>Du har ingen ventende kommandoer.
         progresslogging:
             enabled: <green>Logging av rendringsfremdrift er aktivert.
             disabled: <green>Logging av rendringsfremdrift er deaktivert.
-            set-rate: <green>Loggintervall for rendringsfremdrift er satt til </green><seconds> sekunder
-            statusmessage: 'Logg for rendringsfremdrift: <enabled>, intervall: <green><seconds></green> sekunder'
+            set-rate: <green>Loggintervall for rendringsfremdrift er satt til </green><seconds>
+                sekunder
+            statusmessage: 'Logg for rendringsfremdrift: <enabled>, intervall: <green><seconds></green>
+                sekunder'
     prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
     description:
         help: Få hjelp til squaremap kommandoer
@@ -36,8 +43,10 @@ command:
         show: Vis en spiller på kartvisningen
     argument:
         optional-world: Sett standard til spillernes nåværende verden hvis ikke angitt
-        optional-center: Sett standard til (<white>0<gray>,</gray> 0</white>) hvis uspesifisert
-        optional-player: Sett standard til den utførende spilleren hvis uspesifisert (konsollen må spesifisere en spiller)
+        optional-center: Sett standard til (<white>0<gray>,</gray> 0</white>) hvis
+            uspesifisert
+        optional-player: Sett standard til den utførende spilleren hvis uspesifisert
+            (konsollen må spesifisere en spiller)
         help-query: Hjelp spørring
     hide:
         already-hidden: <red><player> er allerede skjult fra kartet
@@ -48,6 +57,7 @@ command:
 click-for-help: Klikk for å få hjelp
 click-to-confirm: Klikk for å bekrefte
 click-to-toggle: Klikk for å veksle
+plugin-reloaded: <green><name> v<version> lastet på nytt
 ui:
     page-title: squaremap - {world}
     coordinates: Koordinater<br/>{x}, {z}
@@ -58,7 +68,6 @@ ui:
         player-tracker: Spillere
         world-spawn: Startpunkt
         world-border: Verdensgrense
-plugin-reloaded: <green><name> v<version> lastet på nytt
 log:
     started-full-render: Startet full rendring for <world>
     started-radius-render: Startet radiusrendring for <world>
@@ -67,13 +76,24 @@ log:
     finished-rendering: Fullført rendring av kart for <world>
     cancelled-rendering: Rendring av kart for <world> har blitt avbrutt
     resumed-rendering: Rendring av kart for <world> har blitt gjenopptatt
-    scanning-region-progress: '(<percent>) Verden: <world> Chunks: <current_chunks>/<total_chunks> Forløpt: <elapsed> ETA: <eta> Rate: <rate> cps'
-    scanning-region-progress-with-regions: '(<percent>) Verden: <world> Regioner: <current_regions>/<total_regions> Chunks: <current_chunks>/<total_chunks> Forløpt: <elapsed> ETA: <eta> Rate: <rate> cps'
+    scanning-region-progress: '(<percent>) Verden: <world> Chunks: <current_chunks>/<total_chunks>
+        Forløpt: <elapsed> ETA: <eta> Rate: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) Verden: <world> Regioner:
+        <current_regions>/<total_regions> Chunks: <current_chunks>/<total_chunks>
+        Forløpt: <elapsed> ETA: <eta> Rate: <rate> cps'
     internal-web-disabled: Intern webserver er deaktivert i config.yml
     internal-web-started: Intern webserver kjører på <bind>:<port>
     internal-web-stopped: Intern webserver stoppet
     internal-web-start-error: Intern webserver kunne ikke starte
     could-not-create-directory: Kunne ikke opprette mappe! <path>
-    could-not-read-region: Kunne ikke lese kartbilde for region <x>,<z> (bildet ødelagt?). Den vil bli overskrevet.
+    could-not-read-region: Kunne ikke lese kartbilde for region <x>,<z> (bildet ødelagt?).
+        Den vil bli overskrevet.
     could-not-save-region: Kunne ikke lagre kartet for regionen <x>,<z>
     internal-web-not-running: Det oppsto en feil med den interne webserveren
+    update-checker:
+        fetching-version-information: Fetching version information...
+        behind-branch: squaremap is <behind> version(s) behind branch '<branch>'!
+        download-dev-builds: Download dev builds from <link>
+        unknown-commit: Unknown commit '<commit>', cannot check for updates.
+        behind-releases: squaremap is <behind> version(s) out of date.
+        download-release: Download the latest release (<latest>) from <link>

@@ -6,64 +6,94 @@ cancelled-render: <green>Render geannuleerd voor <world>
 successfully-reset-map: <green>Kaart succesvol gereset voor <world>
 paused-renders: <green> Renders voor <world> gepauzeerd
 unpaused-renders: <green> Renders voor <world> voortgezet
-click-for-help: Klik hier voor hulp
-plugin-reloaded: <green><name> v<version> herladen
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
-  message:
-    console-must-specify-player: <red>Je moet een speler opgeven bij het uitvoeren van dit commando vanuit de console
-    player-not-found-for-input: <red>Geen speler gevonden voor invoer '<input>'
-    console-must-specify-world: <red>Je moet een wereld opgeven bij het uitvoeren van dit commando vanuit de console
-    no-such-world: <red>Geen dergelijke wereld '<world>'
-    map-not-enabled-for-world: <red>Kaart is niet ingeschakeld voor wereld '<world>'
-    confirmation-required: <red>Bevestiging vereist. Bevestig met /<command> confirm.
-    no-pending-commands: <red>Je hebt geen openstaande commando's.
-  description:
-    help: Krijg hulp voor squaremap commando's
-    resetmap: Reset de kaart van een bepaalde wereld
-    confirm: Bevestig een openstaand commando
-    reload: Herlaadt de plugin
-    full-render: Start een volledige render voor de opgegeven wereld
-    cancel-render: Annuleert een render voor de opgegeven wereld
-    pause-render: Pauzeert alle renders voor de opgegeven wereld
-    radius-render: Start een render met een straal
-    hide: Verberg een speler in de kaartweergave
-    show: Toon een speler op de kaartweergave
-  argument:
-    optional-world: Wordt standaard ingesteld op de huidige wereld van de speler als deze niet is opgegeven
-    optional-center: Wordt standaard ingesteld op (<white>0<gray>,</gray> 0</white>) als deze niet is opgegeven
-    optional-player: Wordt standaard ingesteld op de uitvoerende speler als deze niet gespecificeerd is (console moet een speler opgeven)
-    help-query: Help zoekopdracht
-  hide:
-    already-hidden: <red><player> is al verborgen van de kaart
-    hidden: <green><player> is nu verborgen van de kaart
-  show:
-    not-hidden: <red><player> is niet verborgen van de kaart
-    shown: <green><player> is niet langer verborgen van de kaart
+    message:
+        console-must-specify-player: <red>Je moet een speler opgeven bij het uitvoeren
+            van dit commando vanuit de console
+        player-not-found-for-input: <red>Geen speler gevonden voor invoer '<input>'
+        console-must-specify-world: <red>Je moet een wereld opgeven bij het uitvoeren
+            van dit commando vanuit de console
+        no-such-world: <red>Geen dergelijke wereld '<world>'
+        map-not-enabled-for-world: <red>Kaart is niet ingeschakeld voor wereld '<world>'
+        confirmation-required: <red>Bevestiging vereist. Bevestig met /<command> confirm.
+        no-pending-commands: <red>Je hebt geen openstaande commando's.
+        progresslogging:
+            enabled: <green>Render progress logging has been enabled.
+            disabled: <green>Render progress logging has been disabled.
+            set-rate: <green>Render progress logging interval has been set to </green><seconds>
+                seconds
+            statusmessage: 'Render progress logging enabled: <enabled>, interval:
+                <green><seconds></green> seconds'
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
+    description:
+        help: Krijg hulp voor squaremap commando's
+        resetmap: Reset de kaart van een bepaalde wereld
+        confirm: Bevestig een openstaand commando
+        reload: Herlaadt de plugin
+        full-render: Start een volledige render voor de opgegeven wereld
+        cancel-render: Annuleert een render voor de opgegeven wereld
+        pause-render: Pauzeert alle renders voor de opgegeven wereld
+        radius-render: Start een render met een straal
+        progresslogging:
+            status: Prints the current settings for render progress logging
+            toggle: Toggles render progress logging on or off
+            rate: Sets the interval in seconds for logging render progress
+        hide: Verberg een speler in de kaartweergave
+        show: Toon een speler op de kaartweergave
+    argument:
+        optional-world: Wordt standaard ingesteld op de huidige wereld van de speler
+            als deze niet is opgegeven
+        optional-center: Wordt standaard ingesteld op (<white>0<gray>,</gray> 0</white>)
+            als deze niet is opgegeven
+        optional-player: Wordt standaard ingesteld op de uitvoerende speler als deze
+            niet gespecificeerd is (console moet een speler opgeven)
+        help-query: Help zoekopdracht
+    hide:
+        already-hidden: <red><player> is al verborgen van de kaart
+        hidden: <green><player> is nu verborgen van de kaart
+    show:
+        not-hidden: <red><player> is niet verborgen van de kaart
+        shown: <green><player> is niet langer verborgen van de kaart
+click-for-help: Klik hier voor hulp
+click-to-confirm: Click to confirm
+click-to-toggle: Click to toggle
+plugin-reloaded: <green><name> v<version> herladen
 ui:
-  page-title: squaremap - {world}
-  coordinates: Coördinaten<br/><x>, <z>
-  sidebar:
-    player-list: Spelers ({cur}/{max})
-    world-list: Werelden
-  layers:
-    player-tracker: Spelers
-    world-spawn: Spawn
-    world-border: Wereld Grens
+    page-title: squaremap - {world}
+    coordinates: Coördinaten<br/><x>, <z>
+    sidebar:
+        player-list: Spelers ({cur}/{max})
+        world-list: Werelden
+    layers:
+        player-tracker: Spelers
+        world-spawn: Spawn
+        world-border: Wereld Grens
 log:
-  started-full-render: <dark_aqua>Volledige kaart render voor <yellow><world> gestart
-  started-radius-render: <dark_aqua>Straal kaart render voor <yellow><world> gestart
-  scanning-region-files: <yellow>Scannen van regiobestanden...
-  found-total-region-files: <gray><total> <green>regiobestanden gevonden
-  finished-rendering: <dark_aqua>Klaar met renderen van <yellow><world>
-  cancelled-rendering: <dark_aqua>Rendering kaart voor <yellow><world> <dark_aqua>is onderbroken
-  resumed-rendering: <dark_aqua>Rendering kaart voor <yellow><world> <dark_aqua>is hervat
-  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Wereld<gray>:</gray> <yellow><world></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Verstreken<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Snelheid<gray>:</gray> <yellow><rate></yellow> cps
-  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Wereld<gray>:</gray> <yellow><world></yellow> Regio's<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Chunks<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Verstreken<gray>:</gray> <yellow><elapsed></yellow> ETA<gray>:</gray> <yellow><eta></yellow> Beoordeel<gray>:</gray> <yellow><rate></yellow> cps
-  internal-web-disabled: <green>Interne webserver is uitgeschakeld in config.yml
-  internal-web-started: '<green>Interne webserver draait op: <bind><port>'
-  internal-web-stopped: <green>Interne webserver gestopt
-  internal-web-start-error: Interne webserver kon niet starten
-  could-not-create-directory: Kon map niet aanmaken! <path>
-  could-not-save-region: Kan de kaart voor regio <x>,<z> niet opslaan
-  internal-web-not-running: Er is een fout opgetreden met de interne webserver
+    started-full-render: Volledige kaart render voor <world> gestart
+    started-radius-render: Straal kaart render voor <world> gestart
+    scanning-region-files: Scannen van regiobestanden...
+    found-total-region-files: <total> regiobestanden gevonden
+    finished-rendering: Klaar met renderen van <world>
+    cancelled-rendering: Rendering kaart voor <world> is onderbroken
+    resumed-rendering: Rendering kaart voor <world> is hervat
+    scanning-region-progress: '(<percent>) Wereld: <world> Chunks: <current_chunks>/<total_chunks>
+        Verstreken: <elapsed> ETA: <eta> Snelheid: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) Wereld: <world> Regio''s:
+        <current_regions>/<total_regions> Chunks: <current_chunks>/<total_chunks>
+        Verstreken: <elapsed> ETA: <eta> Beoordeel: <rate> cps'
+    internal-web-disabled: Interne webserver is uitgeschakeld in config.yml
+    internal-web-started: 'Interne webserver draait op: <bind>:<port>'
+    internal-web-stopped: Interne webserver gestopt
+    internal-web-start-error: Interne webserver kon niet starten
+    could-not-create-directory: Kon map niet aanmaken! <path>
+    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
+        It will be overwritten.
+    could-not-save-region: Kan de kaart voor regio <x>,<z> niet opslaan
+    internal-web-not-running: Er is een fout opgetreden met de interne webserver
+    update-checker:
+        fetching-version-information: Fetching version information...
+        behind-branch: squaremap is <behind> version(s) behind branch '<branch>'!
+        download-dev-builds: Download dev builds from <link>
+        unknown-commit: Unknown commit '<commit>', cannot check for updates.
+        behind-releases: squaremap is <behind> version(s) out of date.
+        download-release: Download the latest release (<latest>) from <link>

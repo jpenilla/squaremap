@@ -6,64 +6,93 @@ cancelled-render: <green>Создание карты для <world> отмене
 successfully-reset-map: <green>Карта для <world> успешно сброшена
 paused-renders: <green>Создание карты для <world> приостановлено
 unpaused-renders: <green>Создание карты для <world> возобновлено
-click-for-help: Кликните для помощи
-plugin-reloaded: <green><name> v<version> перезагружен
 command:
-  prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
-  message:
-    console-must-specify-player: <red>При исполнении этой команды из консоли нужно указать игрока
-    player-not-found-for-input: <red>Игрок '<input>' не найден
-    console-must-specify-world: <red>При выполнении этой команды из консоли необходимо указать мир
-    no-such-world: <red>Мир '<world>' не найден
-    map-not-enabled-for-world: <red>Карта для мира '<world>' не включена
-    confirmation-required: <red>Требуется подтверждение. Подтвердите с помощью /<command> confirm.
-    no-pending-commands: <red>У вас нет команд, ожидающих выполнения.
-  description:
-    help: Получить справку по командам squaremap
-    resetmap: Сбросить карту указанного мира
-    confirm: Подтвердить команду, ожидающую выполнения
-    reload: Перезагрузить плагин
-    full-render: Начать создание карты всего указанного мира
-    cancel-render: Отменить создание карты для указанного мира
-    pause-render: Приостановить создание всех карт для указанного мира
-    radius-render: Запустить создание карты в радиусе
-    hide: Скрыть игрока на карте
-    show: Показать игрока на карте
-  argument:
-    optional-world: По умолчанию используется текущий мир игрока
-    optional-center: По умолчанию используется (<white>0<gray>,</gray> 0</white>)
-    optional-player: По умолчанию используется игрок, исполняющий команду (при использовании из консоли необходимо указать игрока)
-    help-query: Поисковый Запрос
-  hide:
-    already-hidden: <red><player> уже скрыт на карте
-    hidden: <green><player> теперь скрыт на карте
-  show:
-    not-hidden: <red><player> не скрыт на карте
-    shown: <green><player> больше не скрыт на карте
+    message:
+        console-must-specify-player: <red>При исполнении этой команды из консоли нужно
+            указать игрока
+        player-not-found-for-input: <red>Игрок '<input>' не найден
+        console-must-specify-world: <red>При выполнении этой команды из консоли необходимо
+            указать мир
+        no-such-world: <red>Мир '<world>' не найден
+        map-not-enabled-for-world: <red>Карта для мира '<world>' не включена
+        confirmation-required: <red>Требуется подтверждение. Подтвердите с помощью
+            /<command> confirm.
+        no-pending-commands: <red>У вас нет команд, ожидающих выполнения.
+        progresslogging:
+            enabled: <green>Render progress logging has been enabled.
+            disabled: <green>Render progress logging has been disabled.
+            set-rate: <green>Render progress logging interval has been set to </green><seconds>
+                seconds
+            statusmessage: 'Render progress logging enabled: <enabled>, interval:
+                <green><seconds></green> seconds'
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
+    description:
+        help: Получить справку по командам squaremap
+        resetmap: Сбросить карту указанного мира
+        confirm: Подтвердить команду, ожидающую выполнения
+        reload: Перезагрузить плагин
+        full-render: Начать создание карты всего указанного мира
+        cancel-render: Отменить создание карты для указанного мира
+        pause-render: Приостановить создание всех карт для указанного мира
+        radius-render: Запустить создание карты в радиусе
+        progresslogging:
+            status: Prints the current settings for render progress logging
+            toggle: Toggles render progress logging on or off
+            rate: Sets the interval in seconds for logging render progress
+        hide: Скрыть игрока на карте
+        show: Показать игрока на карте
+    argument:
+        optional-world: По умолчанию используется текущий мир игрока
+        optional-center: По умолчанию используется (<white>0<gray>,</gray> 0</white>)
+        optional-player: По умолчанию используется игрок, исполняющий команду (при
+            использовании из консоли необходимо указать игрока)
+        help-query: Поисковый Запрос
+    hide:
+        already-hidden: <red><player> уже скрыт на карте
+        hidden: <green><player> теперь скрыт на карте
+    show:
+        not-hidden: <red><player> не скрыт на карте
+        shown: <green><player> больше не скрыт на карте
+click-for-help: Кликните для помощи
+click-to-confirm: Click to confirm
+click-to-toggle: Click to toggle
+plugin-reloaded: <green><name> v<version> перезагружен
 ui:
-  page-title: squaremap - {world}
-  coordinates: Координаты<br/><x>, <z>
-  sidebar:
-    player-list: Игроки ({cur}/{max})
-    world-list: Миры
-  layers:
-    player-tracker: Игроки
-    world-spawn: Спавн
-    world-border: Граница мира
+    page-title: squaremap - {world}
+    coordinates: Координаты<br/><x>, <z>
+    sidebar:
+        player-list: Игроки ({cur}/{max})
+        world-list: Миры
+    layers:
+        player-tracker: Игроки
+        world-spawn: Спавн
+        world-border: Граница мира
 log:
-  started-full-render: <dark_aqua>Начато создание карты всего мира <yellow><world>
-  started-radius-render: <dark_aqua>Начато создание карты в радиусе для мира <yellow><world>
-  scanning-region-files: <yellow>Сканирование файлов регионов...
-  found-total-region-files: <green>Найдено <gray><total> <green>файлов регионов
-  finished-rendering: <dark_aqua>Завершено создание карты для <yellow><world>
-  cancelled-rendering: <dark_aqua>Создание карты для <yellow><world> <dark_aqua>было прервано
-  resumed-rendering: <dark_aqua>Создание карты для <yellow><world> <dark_aqua>было возобновлено
-  scanning-region-progress: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Мир<gray>:</gray> <yellow><world></yellow> Чанки<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Прошло<gray>:</gray> <yellow><elapsed></yellow> Осталось<gray>:</gray> <yellow><eta></yellow> Скорость<gray>:</gray> <yellow><rate></yellow> чанков/c
-  scanning-region-progress-with-regions: <gray>(</gray><yellow><percent></yellow><gray>)</gray> <dark_aqua>Мир<gray>:</gray> <yellow><world></yellow> Регионы<gray>:</gray> <yellow><current_regions></yellow><gray>/</gray><yellow><total_regions></yellow> Чанки<gray>:</gray> <yellow><current_chunks></yellow><gray>/</gray><yellow><total_chunks></yellow> Прошло<gray>:</gray> <yellow><elapsed></yellow> Осталось<gray>:</gray> <yellow><eta></yellow> Скорость<gray>:</gray> <yellow><rate></yellow> чанков/c
-  internal-web-disabled: <green>Внутренний веб-сервер отключен в config.yml
-  internal-web-started: <green>Внутренний веб-сервер запущен на <bind>:<port>
-  internal-web-stopped: <green>Внутренний веб-сервер остановлен
-  internal-web-start-error: Не удалось запустить внутренний веб-сервер
-  could-not-create-directory: Не удалось создать папку! <path>
-  could-not-save-region: Не удалось сохранить карту для региона <x>,<z>
-  internal-web-not-running: Ошибка внутреннего веб-сервера
+    started-full-render: Начато создание карты всего мира <world>
+    started-radius-render: Начато создание карты в радиусе для мира <world>
+    scanning-region-files: Сканирование файлов регионов...
+    found-total-region-files: Найдено <total> файлов регионов
+    finished-rendering: Завершено создание карты для <world>
+    cancelled-rendering: Создание карты для <world> было прервано
+    resumed-rendering: Создание карты для <world> было возобновлено
+    scanning-region-progress: '(<percent>) Мир: <world> Чанки: <current_chunks>/<total_chunks>
+        Прошло: <elapsed> Осталось: <eta> Скорость: <rate> чанков/c'
+    scanning-region-progress-with-regions: '(<percent>) Мир: <world> Регионы: <current_regions>/<total_regions>
+        Чанки: <current_chunks>/<total_chunks> Прошло: <elapsed> Осталось: <eta> Скорость:
+        <rate> чанков/c'
+    internal-web-disabled: Внутренний веб-сервер отключен в config.yml
+    internal-web-started: Внутренний веб-сервер запущен на <bind>:<port>
+    internal-web-stopped: Внутренний веб-сервер остановлен
+    internal-web-start-error: Не удалось запустить внутренний веб-сервер
+    could-not-create-directory: Не удалось создать папку! <path>
+    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
+        It will be overwritten.
+    could-not-save-region: Не удалось сохранить карту для региона <x>,<z>
+    internal-web-not-running: Ошибка внутреннего веб-сервера
+    update-checker:
+        fetching-version-information: Fetching version information...
+        behind-branch: squaremap is <behind> version(s) behind branch '<branch>'!
+        download-dev-builds: Download dev builds from <link>
+        unknown-commit: Unknown commit '<commit>', cannot check for updates.
+        behind-releases: squaremap is <behind> version(s) out of date.
+        download-release: Download the latest release (<latest>) from <link>

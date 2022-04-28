@@ -20,7 +20,7 @@ command:
             disabled: <green>渲染进度日志已禁用
             set-rate: <green>渲染进度日志的间隔已设置为 </green><seconds> 秒
             statusmessage: '渲染进度日志状态: <enabled>, 间隔: <green><seconds></green> 秒'
-    prefix: <white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> 
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
     description:
         help: 获取 squaremap 的命令帮助
         resetmap: 重置指定世界的渲染
@@ -50,6 +50,7 @@ command:
 click-for-help: 点击获取帮助
 click-to-confirm: 点击进行确认
 click-to-toggle: 点击进行切换
+plugin-reloaded: <green><name> v<version> 已重新加载
 ui:
     page-title: squaremap - {world}
     coordinates: 坐标<br/>{x}, {z}
@@ -60,7 +61,6 @@ ui:
         player-tracker: 玩家
         world-spawn: 出生点
         world-border: 世界边界
-plugin-reloaded: <green><name> v<version> 已重新加载
 log:
     started-full-render: 开始世界 <world> 的完整渲染
     started-radius-render: 开始世界 <world> 的半径渲染
@@ -69,8 +69,11 @@ log:
     finished-rendering: 世界 <world> 的渲染已完成
     cancelled-rendering: 世界 <world> 的渲染已取消
     resumed-rendering: 世界 <world> 的渲染已恢复
-    scanning-region-progress: '(<percent>) 世界: <world> 区块: <current_chunks>/<total_chunks> 已用时: <elapsed> 剩余时间: <eta> 速度: <rate> cps'
-    scanning-region-progress-with-regions: '(<percent>) 世界: <world> 区域: <current_regions>/<total_regions> 区块: <current_chunks>/<total_chunks> 已用时: <elapsed> 剩余时间: <eta> 速度: <rate> cps'
+    scanning-region-progress: '(<percent>) 世界: <world> 区块: <current_chunks>/<total_chunks>
+        已用时: <elapsed> 剩余时间: <eta> 速度: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) 世界: <world> 区域: <current_regions>/<total_regions>
+        区块: <current_chunks>/<total_chunks> 已用时: <elapsed> 剩余时间: <eta> 速度: <rate>
+        cps'
     internal-web-disabled: 内部Web服务器已在 config.yml 设置为关闭
     internal-web-started: 内部Web服务器已启动于 <bind>:<port>
     internal-web-stopped: 内部Web服务器已停止
@@ -79,3 +82,10 @@ log:
     could-not-read-region: 无法读取 <x>,<z> 区域的地图图片 (已损坏?) 它将被覆盖
     could-not-save-region: 无法保存 <x>,<z> 区域的地图
     internal-web-not-running: 内部Web服务器发生错误
+    update-checker:
+        fetching-version-information: Fetching version information...
+        behind-branch: squaremap is <behind> version(s) behind branch '<branch>'!
+        download-dev-builds: Download dev builds from <link>
+        unknown-commit: Unknown commit '<commit>', cannot check for updates.
+        behind-releases: squaremap is <behind> version(s) out of date.
+        download-release: Download the latest release (<latest>) from <link>
