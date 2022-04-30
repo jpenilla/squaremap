@@ -57,7 +57,7 @@ class SquaremapMap {
             this.coordinates = new UICoordinates(json.ui.coordinates);
             this.uiLink = new UILink(json.ui.link);
 
-            this.worldList.loadWorld(this.getUrlParam("world", json.worlds[0].name), (world) => {
+            this.worldList.loadWorld(this.getUrlParam("world", json.worlds.sort((a, b) => a.order - b.order)[0].name), (world) => {
                 this.loop();
                 this.centerOn(
                     this.getUrlParam("x", world.spawn.x),
