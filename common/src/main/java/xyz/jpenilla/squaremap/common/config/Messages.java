@@ -15,6 +15,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.NodeStyle;
@@ -191,11 +192,35 @@ public final class Messages {
     private Messages() {
     }
 
-    private static void loadValues() {
-        Arrays.stream(Messages.class.getDeclaredFields())
+    public static void reload(final DirectoryProvider directoryProvider) {
+        FileUtil.extract("/locale/", directoryProvider.localeDirectory(), false);
+
+        final Path configFile = directoryProvider.localeDirectory().resolve(Config.LANGUAGE_FILE);
+        final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
+            .path(configFile)
+            .nodeStyle(NodeStyle.BLOCK)
+            .build();
+        final CommentedConfigurationNode config;
+        try {
+            config = loader.load();
+        } catch (final ConfigurateException ex) {
+            throw new RuntimeException("Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
+        }
+
+        loadValues(Messages.class, config);
+
+        try {
+            loader.save(config);
+        } catch (final ConfigurateException ex) {
+            Logging.logger().error("Could not save " + configFile, ex);
+        }
+    }
+
+    private static void loadValues(final Class<?> clazz, final CommentedConfigurationNode config) {
+        Arrays.stream(clazz.getDeclaredFields())
             .filter(Messages::isStatic)
             .filter(Messages::checkTypeAndAnnotation)
-            .forEach(Messages::loadValue);
+            .forEach(field -> loadValue(config, field));
     }
 
     private static boolean isStatic(final Field field) {
@@ -207,49 +232,34 @@ public final class Messages {
             && (field.getType().equals(String.class) || field.getType().equals(ComponentMessage.class));
     }
 
-    private static void loadValue(final Field field) {
+    private static void loadValue(final CommentedConfigurationNode config, final Field field) {
         final MessageKey messageKey = field.getAnnotation(MessageKey.class);
         final @Nullable String defaultValue = messageKey.defaultValue().equals("") ? null : messageKey.defaultValue();
         try {
             if (field.getType() == String.class) {
-                field.set(null, getString(messageKey.value(), defaultValue != null ? defaultValue : (String) field.get(null)));
+                final String value = getString(
+                    config,
+                    messageKey.value(),
+                    defaultValue != null ? defaultValue : (String) field.get(null)
+                );
+                field.set(null, value);
             } else if (field.getType() == ComponentMessage.class) {
-                field.set(null, new ComponentMessage(getString(messageKey.value(), defaultValue != null ? defaultValue : ((ComponentMessage) field.get(null)).miniMessage)));
+                final String value = getString(
+                    config,
+                    messageKey.value(),
+                    defaultValue != null ? defaultValue : ((ComponentMessage) field.get(null)).miniMessage()
+                );
+                field.set(null, new ComponentMessage(value));
             } else {
                 throw new IllegalStateException();
             }
-        } catch (IllegalAccessException e) {
-            Logging.logger().warn("Failed to load {}", Config.LANGUAGE_FILE, e);
+        } catch (final IllegalAccessException ex) {
+            Logging.logger().warn("Failed to load {}", Config.LANGUAGE_FILE, ex);
         }
     }
 
-    public static void reload(final DirectoryProvider directoryProvider) {
-        FileUtil.extract("/locale/", directoryProvider.localeDirectory(), false);
-
-        final Path configFile = directoryProvider.localeDirectory().resolve(Config.LANGUAGE_FILE);
-        final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
-            .path(configFile)
-            .nodeStyle(NodeStyle.BLOCK)
-            .build();
-        try {
-            config = loader.load();
-        } catch (ConfigurateException ex) {
-            throw new RuntimeException("Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
-        }
-
-        loadValues();
-
-        try {
-            loader.save(config);
-        } catch (ConfigurateException ex) {
-            Logging.logger().error("Could not save " + configFile, ex);
-        }
-    }
-
-    private static @MonotonicNonNull ConfigurationNode config;
-
-    private static String getString(String path, String def) {
-        return config.node(AbstractConfig.splitPath(path)).getString(def);
+    private static String getString(final ConfigurationNode node, final String path, final String def) {
+        return node.node(AbstractConfig.splitPath(path)).getString(def);
     }
 
     @Target(ElementType.FIELD)
@@ -260,14 +270,32 @@ public final class Messages {
         String defaultValue() default "";
     }
 
-    public record ComponentMessage(String miniMessage) implements ComponentLike {
+    public static final class ComponentMessage implements ComponentLike {
+        private final String miniMessage;
+        private volatile @MonotonicNonNull Component noPlaceholders;
+
+        private ComponentMessage(String miniMessage) {
+            this.miniMessage = miniMessage;
+        }
+
         public Component withPlaceholders(final TagResolver... placeholders) {
             return Components.miniMessage(this.miniMessage, placeholders);
         }
 
         @Override
         public Component asComponent() {
-            return Components.miniMessage(this.miniMessage);
+            if (this.noPlaceholders == null) {
+                synchronized (this) {
+                    if (this.noPlaceholders == null) {
+                        this.noPlaceholders = Components.miniMessage(this.miniMessage);
+                    }
+                }
+            }
+            return this.noPlaceholders;
+        }
+
+        public String miniMessage() {
+            return this.miniMessage;
         }
     }
 }
