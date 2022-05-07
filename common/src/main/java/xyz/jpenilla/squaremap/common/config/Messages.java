@@ -274,7 +274,7 @@ public final class Messages {
         private final String miniMessage;
         private volatile @MonotonicNonNull Component noPlaceholders;
 
-        private ComponentMessage(String miniMessage) {
+        private ComponentMessage(final String miniMessage) {
             this.miniMessage = miniMessage;
         }
 
