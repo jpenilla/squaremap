@@ -1,6 +1,6 @@
 plugins {
-  id("platform-conventions")
   id("quiet-fabric-loom")
+  id("platform-conventions")
 }
 
 val minecraftVersion = libs.versions.minecraft.get()
