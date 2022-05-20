@@ -29,7 +29,7 @@ repositories {
   maven("https://oss.sonatype.org/content/repositories/snapshots/") {
     mavenContent { snapshotsOnly() }
   }
-  maven("https://papermc.io/repo/repository/maven-public/")
+  maven("https://repo.papermc.io/repository/maven-public/")
   maven("https://maven.fabricmc.net/") {
     mavenContent { includeGroup("net.fabricmc") }
   }

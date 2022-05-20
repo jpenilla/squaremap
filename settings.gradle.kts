@@ -3,7 +3,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
   repositories {
     gradlePluginPortal()
-    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.spongepowered.org/repository/maven-public/")
     maven("https://maven.fabricmc.net/")
     maven("https://maven.quiltmc.org/repository/release/")
