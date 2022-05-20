@@ -59,7 +59,7 @@ click-to-toggle: Click to toggle
 plugin-reloaded: <green><name> v<version> je ponovo učitan
 ui:
     page-title: squaremap - {world}
-    coordinates: Koordinate<br/><x>, <z>
+    coordinates: Koordinate<br/>{x}, {z}
     sidebar:
         player-list: Igrači ({cur}/{max})
         world-list: Svijetovi

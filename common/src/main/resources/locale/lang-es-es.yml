@@ -62,7 +62,7 @@ click-to-toggle: Click to toggle
 plugin-reloaded: <green><name> v<version> recargado
 ui:
     page-title: squaremap - {world}
-    coordinates: Coordenadas<br/><x>, <z>
+    coordinates: Coordenadas<br/>{x}, {z}
     sidebar:
         player-list: Jugadores ({cur}/{max})
         world-list: Mundos
