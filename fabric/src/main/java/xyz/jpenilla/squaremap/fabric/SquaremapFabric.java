@@ -49,7 +49,6 @@ public final class SquaremapFabric implements SquaremapPlatform {
         this.registerLifecycleListeners();
         FabricMapUpdates.registerListeners();
         this.injector.getInstance(FabricNetworking.class).register();
-        this.common.updateCheck();
     }
 
     private void registerLifecycleListeners() {
@@ -62,6 +61,8 @@ public final class SquaremapFabric implements SquaremapPlatform {
         });
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             new ClientLifecycleListeners().register();
+        } else {
+            ServerLifecycleEvents.SERVER_STARTED.register($ -> this.common.updateCheck());
         }
 
         ServerWorldEvents.LOAD.register((server, level) -> this.worldManager.initWorld(level));
@@ -117,6 +118,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
     // classes on the server when guice scans for methods
     private final class ClientLifecycleListeners {
         void register() {
+            ClientLifecycleEvents.CLIENT_STARTED.register($ -> SquaremapFabric.this.common.updateCheck());
             ClientLifecycleEvents.CLIENT_STOPPING.register($ -> SquaremapFabric.this.common.shutdown());
         }
     }
