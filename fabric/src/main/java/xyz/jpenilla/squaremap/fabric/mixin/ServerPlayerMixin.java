@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xyz.jpenilla.squaremap.common.network.Networking;
+import xyz.jpenilla.squaremap.fabric.event.ServerPlayerEvents;
 
 @Mixin(ServerPlayer.class)
 abstract class ServerPlayerMixin {
@@ -21,7 +21,7 @@ abstract class ServerPlayerMixin {
         )
     )
     void injectTeleportTo(ServerLevel serverLevel, double d, double e, double f, float g, float h, CallbackInfo ci) {
-        Networking.worldChanged((ServerPlayer) (Object) this);
+        ServerPlayerEvents.WORLD_CHANGED.invoker().worldChanged((ServerPlayer) (Object) this);
     }
 
     @Inject(
@@ -33,6 +33,6 @@ abstract class ServerPlayerMixin {
         )
     )
     void injectChangeDimension(ServerLevel serverLevel, CallbackInfoReturnable<Entity> cir) {
-        Networking.worldChanged((ServerPlayer) (Object) this);
+        ServerPlayerEvents.WORLD_CHANGED.invoker().worldChanged((ServerPlayer) (Object) this);
     }
 }

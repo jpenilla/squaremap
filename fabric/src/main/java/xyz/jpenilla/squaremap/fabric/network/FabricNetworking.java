@@ -10,37 +10,39 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.WorldManager;
-import xyz.jpenilla.squaremap.common.network.Networking;
+import xyz.jpenilla.squaremap.common.network.NetworkingHandler;
 import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.fabric.event.ServerPlayerEvents;
 
 @DefaultQualifier(NonNull.class)
 public final class FabricNetworking {
-    private final WorldManager worldManager;
-    private final ServerAccess serverAccess;
+    private final NetworkingHandler networking;
 
     @Inject
-    private FabricNetworking(
-        final WorldManager worldManager,
-        final ServerAccess serverAccess
-    ) {
-        this.worldManager = worldManager;
-        this.serverAccess = serverAccess;
+    private FabricNetworking(final NetworkingHandler networking) {
+        this.networking = networking;
     }
 
     public void register() {
-        ServerPlayNetworking.registerGlobalReceiver(
-            Networking.CHANNEL,
-            (final MinecraftServer server,
-             final ServerPlayer player,
-             final ServerGamePacketListenerImpl handler,
-             final FriendlyByteBuf buf,
-             final PacketSender responseSender) ->
-                Networking.handleIncoming(this.worldManager, this.serverAccess, Util.raw(buf), player, $ -> true)
-        );
+        ServerPlayNetworking.registerGlobalReceiver(NetworkingHandler.CHANNEL, this::handleInconming);
+        ServerPlayConnectionEvents.DISCONNECT.register(this::handleDisconnect);
+        ServerPlayerEvents.WORLD_CHANGED.register(this.networking::worldChanged);
+    }
 
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
-            Networking.CLIENT_USERS.remove(handler.player.getUUID()));
+    private void handleInconming(
+        final MinecraftServer server,
+        final ServerPlayer player,
+        final ServerGamePacketListenerImpl handler,
+        final FriendlyByteBuf buf,
+        final PacketSender responseSender
+    ) {
+        this.networking.handleIncoming(player, Util.raw(buf), map -> true);
+    }
+
+    private void handleDisconnect(
+        final ServerGamePacketListenerImpl handler,
+        final MinecraftServer server
+    ) {
+        this.networking.onDisconnect(handler.player.getUUID());
     }
 }

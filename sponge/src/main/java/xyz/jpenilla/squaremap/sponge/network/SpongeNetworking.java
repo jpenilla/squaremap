@@ -12,58 +12,44 @@ import org.spongepowered.api.event.entity.ChangeEntityWorldEvent;
 import org.spongepowered.api.event.lifecycle.RegisterChannelEvent;
 import org.spongepowered.api.event.network.ServerSideConnectionEvent;
 import org.spongepowered.api.network.EngineConnectionSide;
+import org.spongepowered.api.network.ServerSideConnection;
+import org.spongepowered.api.network.channel.ChannelBuf;
 import org.spongepowered.api.network.channel.raw.RawDataChannel;
-import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.WorldManager;
-import xyz.jpenilla.squaremap.common.network.Networking;
+import xyz.jpenilla.squaremap.common.network.NetworkingHandler;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
 public final class SpongeNetworking {
-    private final WorldManager worldManager;
-    private final ServerAccess serverAccess;
+    private final NetworkingHandler networking;
 
     @Inject
-    private SpongeNetworking(
-        final WorldManager worldManager,
-        final ServerAccess serverAccess
-    ) {
-        this.worldManager = worldManager;
-        this.serverAccess = serverAccess;
+    private SpongeNetworking(final NetworkingHandler networking) {
+        this.networking = networking;
     }
 
     @Listener
     public void channelRegistration(final RegisterChannelEvent event) {
-        final RawDataChannel channel = event.register(
-            (ResourceKey) (Object) Networking.CHANNEL,
-            RawDataChannel.class
-        );
-        channel.play().addHandler(
-            EngineConnectionSide.SERVER,
-            (sponge, connection) -> {
-                if (!(connection instanceof ServerGamePacketListenerImpl listener)) {
-                    return;
-                }
-                Networking.handleIncoming(
-                    this.worldManager,
-                    this.serverAccess,
-                    Util.raw((FriendlyByteBuf) sponge),
-                    listener.getPlayer(),
-                    $ -> true
-                );
-            }
-        );
+        final ResourceKey key = (ResourceKey) (Object) NetworkingHandler.CHANNEL;
+        final RawDataChannel channel = event.register(key, RawDataChannel.class);
+        channel.play().addHandler(EngineConnectionSide.SERVER, this::handleIncoming);
+    }
+
+    private void handleIncoming(final ChannelBuf data, final ServerSideConnection connection) {
+        if (!(connection instanceof ServerGamePacketListenerImpl listener)) {
+            return;
+        }
+        this.networking.handleIncoming(listener.getPlayer(), Util.raw((FriendlyByteBuf) data), map -> true);
     }
 
     @Listener
     public void changeWorld(final ChangeEntityWorldEvent.Post event) {
         if (event.entity() instanceof ServerPlayer player) {
-            Networking.worldChanged(player);
+            this.networking.worldChanged(player);
         }
     }
 
     @Listener
     public void disconnect(final ServerSideConnectionEvent.Disconnect event) {
-        Networking.CLIENT_USERS.remove(event.player().uniqueId());
+        this.networking.onDisconnect(event.player().uniqueId());
     }
 }

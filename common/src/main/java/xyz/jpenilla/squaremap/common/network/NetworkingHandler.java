@@ -3,6 +3,7 @@ package xyz.jpenilla.squaremap.common.network;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.inject.Inject;
 import io.netty.buffer.Unpooled;
 import java.util.Collection;
 import java.util.Set;
@@ -25,36 +26,51 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
 
+/**
+ * Networking handler for squaremap-client compatibility
+ */
 @DefaultQualifier(NonNull.class)
-public final class Networking {
+public final class NetworkingHandler {
     public static final ResourceLocation CHANNEL = new ResourceLocation("squaremap:client");
-    public static final Set<UUID> CLIENT_USERS = ConcurrentHashMap.newKeySet();
 
-    public static void handleIncoming(
+    private final WorldManager worldManager;
+    private final ServerAccess serverAccess;
+    private final Set<UUID> clientUsers;
+
+    @Inject
+    public NetworkingHandler(
         final WorldManager worldManager,
-        final ServerAccess serverAccess,
-        final byte[] bytes,
-        final ServerPlayer serverPlayer,
-        final Predicate<MapItemSavedData> vanillaMap
+        final ServerAccess serverAccess
     ) {
-        final ByteArrayDataInput in = in(bytes);
+        this.worldManager = worldManager;
+        this.serverAccess = serverAccess;
+        this.clientUsers = ConcurrentHashMap.newKeySet();
+    }
+
+    public void onDisconnect(final UUID playerUuid) {
+        this.clientUsers.remove(playerUuid);
+    }
+
+    public void handleIncoming(
+        final ServerPlayer player,
+        final byte[] data,
+        final Predicate<MapItemSavedData> isVanillaMap
+    ) {
+        final ByteArrayDataInput in = in(data);
         final int action = in.readInt();
         switch (action) {
             case Constants.SERVER_DATA -> {
-                CLIENT_USERS.add(serverPlayer.getUUID());
-                sendServerData(worldManager, serverPlayer);
+                this.clientUsers.add(player.getUUID());
+                this.sendServerData(player);
             }
             case Constants.MAP_DATA -> {
                 final int id = in.readInt();
-                sendMapData(serverAccess, serverPlayer, id, vanillaMap);
+                this.sendMapData(player, id, isVanillaMap);
             }
         }
     }
 
-    public static void sendServerData(
-        final WorldManager worldManager,
-        final ServerPlayer player
-    ) {
+    private void sendServerData(final ServerPlayer player) {
         final ByteArrayDataOutput out = out();
 
         out.writeInt(Constants.SERVER_DATA);
@@ -63,7 +79,7 @@ public final class Networking {
 
         out.writeUTF(Config.WEB_ADDRESS);
 
-        final Collection<MapWorldInternal> mapWorlds = worldManager.worlds();
+        final Collection<MapWorldInternal> mapWorlds = this.worldManager.worlds();
         out.writeInt(mapWorlds.size());
 
         for (final MapWorldInternal mapWorld : mapWorlds) {
@@ -79,48 +95,56 @@ public final class Networking {
         send(player, out);
     }
 
-    private static void sendMapData(
-        final ServerAccess serverAccess,
+    private void sendMapData(
         final ServerPlayer player,
         final int id,
-        final Predicate<MapItemSavedData> vanillaMap
+        final Predicate<MapItemSavedData> isVanillaMap
+    ) {
+        final ByteArrayDataOutput data = this.mapData(player, id, isVanillaMap);
+        send(player, data);
+    }
+
+    private ByteArrayDataOutput mapData(
+        final ServerPlayer player,
+        final int id,
+        final Predicate<MapItemSavedData> isVanillaMap
     ) {
         final ByteArrayDataOutput out = out();
         out.writeInt(Constants.MAP_DATA);
         out.writeInt(Constants.PROTOCOL);
-        out.writeInt(Constants.RESPONSE_SUCCESS);
 
         final @Nullable MapItemSavedData mapData = player.level.getMapData(MapItem.makeKey(id));
         if (mapData == null) {
             out.writeInt(Constants.ERROR_NO_SUCH_MAP);
             out.writeInt(id);
-            return;
+            return out;
         }
 
-        final @Nullable ServerLevel world = serverAccess.level(Util.worldIdentifier(mapData.dimension.location()));
+        final @Nullable ServerLevel world = this.serverAccess.level(Util.worldIdentifier(mapData.dimension.location()));
         if (world == null) {
             out.writeInt(Constants.ERROR_NO_SUCH_WORLD);
             out.writeInt(id);
-            return;
+            return out;
         }
 
-        if (!vanillaMap.test(mapData)) {
+        if (!isVanillaMap.test(mapData)) {
             out.writeInt(Constants.ERROR_NOT_VANILLA_MAP);
             out.writeInt(id);
-            return;
+            return out;
         }
 
+        out.writeInt(Constants.RESPONSE_SUCCESS);
         out.writeInt(id);
         out.writeByte(mapData.scale);
         out.writeInt(mapData.x);
         out.writeInt(mapData.z);
         out.writeUTF(world.dimension().location().toString());
 
-        send(player, out);
+        return out;
     }
 
-    public static void worldChanged(final ServerPlayer player) {
-        if (!CLIENT_USERS.contains(player.getUUID())) {
+    public void worldChanged(final ServerPlayer player) {
+        if (!this.clientUsers.contains(player.getUUID())) {
             return;
         }
 
@@ -148,7 +172,7 @@ public final class Networking {
     }
 
     @SuppressWarnings("UnstableApiUsage")
-    private static ByteArrayDataInput in(byte[] bytes) {
+    private static ByteArrayDataInput in(final byte[] bytes) {
         return ByteStreams.newDataInput(bytes);
     }
 }
