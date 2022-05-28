@@ -25,6 +25,9 @@ import java.util.zip.ZipFile;
 import xyz.jpenilla.squaremap.common.Logging;
 
 public final class FileUtil {
+    private FileUtil() {
+    }
+
     public static void deleteContentsRecursively(final Path directory) throws IOException {
         if (!Files.isDirectory(directory)) {
             return;

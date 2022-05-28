@@ -4,8 +4,8 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.level.ServerPlayer;
 
-public interface ServerPlayerEvents {
-    Event<WorldChanged> WORLD_CHANGED = EventFactory.createArrayBacked(
+public final class ServerPlayerEvents {
+    public static final Event<WorldChanged> WORLD_CHANGED = EventFactory.createArrayBacked(
         WorldChanged.class,
         listeners -> player -> {
             for (final WorldChanged listener : listeners) {
@@ -14,7 +14,10 @@ public interface ServerPlayerEvents {
         }
     );
 
-    interface WorldChanged {
+    private ServerPlayerEvents() {
+    }
+
+    public interface WorldChanged {
         void worldChanged(ServerPlayer player);
     }
 }

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xyz.jpenilla.squaremap.fabric.util.FabricMapUpdates;
+import xyz.jpenilla.squaremap.fabric.event.MapUpdateEvents;
 
 @Mixin(BlockItem.class)
 abstract class BlockItemMixin {
@@ -21,7 +21,7 @@ abstract class BlockItemMixin {
     )
     void injectPlace(BlockPlaceContext blockPlaceContext, CallbackInfoReturnable<InteractionResult> cir) {
         if (blockPlaceContext.getLevel() instanceof ServerLevel level) {
-            FabricMapUpdates.mark(level, blockPlaceContext.getClickedPos());
+            MapUpdateEvents.BLOCK_CHANGED.invoker().updatePosition(level, blockPlaceContext.getClickedPos());
         }
     }
 }

@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.jpenilla.squaremap.fabric.util.FabricMapUpdates;
+import xyz.jpenilla.squaremap.fabric.event.MapUpdateEvents;
 
 @Mixin(ChunkHolder.class)
 abstract class ChunkHolderMixin {
@@ -16,6 +16,9 @@ abstract class ChunkHolderMixin {
         at = @At("TAIL")
     )
     void chunkGenerated(ImposterProtoChunk imposter, CallbackInfo ci) {
-        FabricMapUpdates.mark((ServerLevel) imposter.getWrapped().getLevel(), imposter.getPos());
+        MapUpdateEvents.CHUNK_CHANGED.invoker().updatePosition(
+            (ServerLevel) imposter.getWrapped().getLevel(),
+            imposter.getPos()
+        );
     }
 }
