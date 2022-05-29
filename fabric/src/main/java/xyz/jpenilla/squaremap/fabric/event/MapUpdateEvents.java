@@ -5,7 +5,10 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public final class MapUpdateEvents {
     public static final Event<PositionListener<BlockPos>> BLOCK_CHANGED = EventFactory.createArrayBacked(
         PositionListener.class,
