@@ -173,7 +173,7 @@ public abstract class MapWorldInternal implements MapWorld {
     }
 
     public void saveImage(final Image image) {
-        this.imageIOexecutor.submit(image::save);
+        this.imageIOexecutor.execute(image::save);
     }
 
     public void chunkModified(final ChunkCoordinate coord) {
