@@ -24,9 +24,9 @@ setupSubproject("squaremap-api") {
 setupSubproject("squaremap-common") {
   projectDir = file("common")
 }
-//setupSubproject("squaremap-paper") {
-//  projectDir = file("paper")
-//}
+setupSubproject("squaremap-paper") {
+  projectDir = file("paper")
+}
 setupSubproject("squaremap-fabric") {
   projectDir = file("fabric")
 }

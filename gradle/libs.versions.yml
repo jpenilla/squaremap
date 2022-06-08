@@ -17,7 +17,7 @@ versions:
     configurate: 4.1.2
     adventure: 4.11.0
     adventurePlatformFabric: 5.4.0-SNAPSHOT
-    paperApi: 1.18.2-R0.1-SNAPSHOT
+    paperApi: 1.19-R0.1-SNAPSHOT
     bStats: 3.0.0
     fabricApi: 0.55.2+1.19
     fabricLoader: 0.14.6
