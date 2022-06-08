@@ -13,7 +13,7 @@ plugins:
 versions:
     minecraft: 1.19
     checkerQual: 3.22.1
-    cloud: 1.7.0+1.18.2-SNAPSHOT
+    cloud: 1.7.0-SNAPSHOT
     configurate: 4.1.2
     adventure: 4.11.0
     adventurePlatformFabric: 5.4.0-SNAPSHOT
