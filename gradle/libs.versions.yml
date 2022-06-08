@@ -11,17 +11,17 @@ plugins:
     quiet-fabric-loom: 0.12-SNAPSHOT
 
 versions:
-    minecraft: 1.18.2
+    minecraft: 1.19
     checkerQual: 3.22.1
     cloud: 1.7.0+1.18.2-SNAPSHOT
     configurate: 4.1.2
     adventure: 4.11.0
-    adventurePlatformFabric: 5.3.1
+    adventurePlatformFabric: 5.4.0-SNAPSHOT
     paperApi: 1.18.2-R0.1-SNAPSHOT
     bStats: 3.0.0
-    fabricApi: 0.55.1+1.18.2
+    fabricApi: 0.55.2+1.19
     fabricLoader: 0.14.6
-    cardinalComponents: 4.1.4
+    cardinalComponents: 5.0.0-beta.1
     guice: 5.1.0
 
     # buildSrc

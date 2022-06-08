@@ -24,15 +24,15 @@ setupSubproject("squaremap-api") {
 setupSubproject("squaremap-common") {
   projectDir = file("common")
 }
-setupSubproject("squaremap-paper") {
-  projectDir = file("paper")
-}
+//setupSubproject("squaremap-paper") {
+//  projectDir = file("paper")
+//}
 setupSubproject("squaremap-fabric") {
   projectDir = file("fabric")
 }
-setupSubproject("squaremap-sponge") {
-  projectDir = file("sponge")
-}
+//setupSubproject("squaremap-sponge") {
+//  projectDir = file("sponge")
+//}
 
 inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {
   include(name)
