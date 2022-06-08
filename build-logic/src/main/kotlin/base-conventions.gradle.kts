@@ -18,19 +18,18 @@ configure<IndraExtension> {
 }
 
 repositories {
-  mavenLocal()
   mavenCentral()
   maven("https://repo.jpenilla.xyz/snapshots/") {
     mavenContent {
-      // includeGroup("cloud.commandframework")
+      includeGroup("cloud.commandframework")
       includeGroup("xyz.jpenilla")
       snapshotsOnly()
     }
   }
-  maven("https://oss.sonatype.org/content/repositories/snapshots/") {
+  maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
     mavenContent { snapshotsOnly() }
   }
-  maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+  maven("https://oss.sonatype.org/content/repositories/snapshots/") {
     mavenContent { snapshotsOnly() }
   }
   maven("https://repo.papermc.io/repository/maven-public/")
