@@ -2,7 +2,6 @@ package xyz.jpenilla.squaremap.fabric;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -20,7 +19,7 @@ public final class FabricPlayerManager extends AbstractPlayerManager {
 
     @Override
     public Component displayName(final ServerPlayer player) {
-        return FabricServerAudiences.of(player.getServer()).toAdventure(player.getDisplayName());
+        return player.getDisplayName().asComponent();
     }
 
     @Override
