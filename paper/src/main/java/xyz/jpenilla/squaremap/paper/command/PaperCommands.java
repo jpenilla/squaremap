@@ -56,14 +56,10 @@ public final class PaperCommands implements PlatformCommands {
             throw new RuntimeException("Failed to initialize command manager", ex);
         }
 
-        if (mgr.queryCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
-            mgr.registerBrigadier();
-            BrigadierSetup.setup(mgr);
-        }
-
-        if (mgr.queryCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
-            mgr.registerAsynchronousCompletions();
-        }
+        // Don't check capabilities, the versions of Paper we support always have these.
+        mgr.registerBrigadier();
+        BrigadierSetup.setup(mgr);
+        mgr.registerAsynchronousCompletions();
 
         return mgr;
     }
