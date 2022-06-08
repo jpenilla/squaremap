@@ -85,7 +85,15 @@ public final class Image {
         }
 
         try {
-            return ImageIO.read(file.toFile());
+            final @Nullable BufferedImage read = ImageIO.read(file.toFile());
+            if (read == null) {
+                this.logCouldNotRead(
+                    new IOException("Failed to read image file '" + file.toAbsolutePath() + "', result is null. This means no supported " +
+                        "image format was able to read it. The image file may have been malformed or corrupted, it will be overwritten.")
+                );
+                return newBufferedImage();
+            }
+            return read;
         } catch (final IOException ex) {
             try {
                 Files.deleteIfExists(file);
