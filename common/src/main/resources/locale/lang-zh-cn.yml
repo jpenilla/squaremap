@@ -83,9 +83,9 @@ log:
     could-not-save-region: 无法保存 <x>,<z> 区域的地图
     internal-web-not-running: 内部Web服务器发生错误
     update-checker:
-        fetching-version-information: Fetching version information...
-        behind-branch: squaremap is <behind> version(s) behind branch '<branch>'!
-        download-dev-builds: Download dev builds from <link>
-        unknown-commit: Unknown commit '<commit>', cannot check for updates.
-        behind-releases: squaremap is <behind> version(s) out of date.
-        download-release: Download the latest release (<latest>) from <link>
+        fetching-version-information: 获取版本信息中...
+        behind-branch: squaremap 已经落后分支 '<branch>' <behind> 个版本!
+        download-dev-builds: 从 <link> 下载开发版本
+        unknown-commit: 未知的提交 '<commit>', 无法检查更新.
+        behind-releases: squaremap 已经过时 <behind> 个版本.
+        download-release: 从 <link> 下载最新版本 (<latest>)
