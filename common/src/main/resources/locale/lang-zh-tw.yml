@@ -1,0 +1,91 @@
+# Translators: [TWME]
+
+render-in-progress: <red>世界 <world> 存在進行中的渲染
+render-not-in-progress: <red>世界 <world> 沒有進行中的渲染
+cancelled-render: <green>世界 <world> 的渲染已取消
+successfully-reset-map: <green>世界 <world> 的渲染已重置
+paused-renders: <green>世界 <world> 的渲染已暫停
+unpaused-renders: <green>世界 <world> 的渲染已恢復
+command:
+    message:
+        console-must-specify-player: <red>從控制台執行此命令時必須指定一個玩家
+        player-not-found-for-input: <red>沒有找到玩家 '<input>'
+        console-must-specify-world: <red>從控制台執行此命令時必須指定一個世界
+        no-such-world: <red>沒有找到世界 '<world>'
+        map-not-enabled-for-world: <red>世界 '<world>' 的渲染未啟用
+        confirmation-required: <red>請輸入 /<command> confirm 確認操作
+        no-pending-commands: <red>你沒有任何待處理的命令
+        progresslogging:
+            enabled: <green>渲染進度日誌已啟用
+            disabled: <green>渲染進度日誌已禁用
+            set-rate: <green>渲染進度日誌的間隔已設置為 </green><seconds> 秒
+            statusmessage: '渲染進度日誌狀態: <enabled>, 間隔: <green><seconds></green> 秒'
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
+    description:
+        help: 獲取 squaremap 的命令幫助
+        resetmap: 重置指定世界的渲染
+        confirm: 確認待處理的命令
+        reload: 重新加載插件
+        full-render: 完整渲染指定世界
+        cancel-render: 取消渲染指定世界
+        pause-render: 暫停渲染指定世界
+        radius-render: 指定半徑渲染
+        progresslogging:
+            status: 顯示渲染進度日誌的當前設置
+            toggle: 切換渲染進度日誌的狀態
+            rate: 設置渲染進度日誌的間隔 (秒)
+        hide: 在地圖中隱藏玩家
+        show: 在地圖中顯示玩家
+    argument:
+        optional-world: 如未指定世界, 則默認為玩家當前世界
+        optional-center: 如未指定圓心, 則默認為 (<white>0<gray>,</gray> 0</white>)
+        optional-player: 如未指定玩家, 則默認為執行命令的玩家 (控制台執行必須指定一個玩家)
+        help-query: 獲取幫助
+    hide:
+        already-hidden: <red><player> 沒有在地圖中顯示
+        hidden: <green><player> 已在地圖中隱藏
+    show:
+        not-hidden: <red><player> 沒有在地圖中隱藏
+        shown: <green><player> 已在地圖中顯示
+click-for-help: 點擊獲取幫助
+click-to-confirm: 點擊進行確認
+click-to-toggle: 點擊進行切換
+plugin-reloaded: <green><name>  <version> 已重新載入
+ui:
+    page-title: squaremap - {world}
+    coordinates: 坐標<br/>{x}, {z}
+    sidebar:
+        player-list: 玩家 ({cur}/{max})
+        world-list: 世界
+    layers:
+        player-tracker: 玩家
+        world-spawn: 出生點
+        world-border: 世界邊界
+log:
+    started-full-render: 開始世界 <world> 的完整渲染
+    started-radius-render: 開始世界 <world> 的半徑渲染
+    scanning-region-files: 正在掃描區域文件... (這可能需要一點時間)
+    found-total-region-files: 共找到 <total> 個區域文件
+    finished-rendering: 世界 <world> 的渲染已完成
+    cancelled-rendering: 世界 <world> 的渲染已取消
+    resumed-rendering: 世界 <world> 的渲染已恢復
+    scanning-region-progress: '(<percent>) 世界: <world> 區塊: <current_chunks>/<total_chunks>
+        已用時: <elapsed> 剩餘時間: <eta> 速度: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) 世界: <world> 區域: <current_regions>/<total_regions>
+        區塊: <current_chunks>/<total_chunks> 已用時: <elapsed> 剩餘時間: <eta> 速度: <rate>
+        cps'
+    internal-web-disabled: 內部Web伺服器已在 config.yml 設置為關閉
+    internal-web-started: 內部Web伺服器已啟動於 <bind>:<port>
+    internal-web-stopped: 內部Web伺服器已停止
+    internal-web-start-error: 內部Web伺服器無法啟動
+    could-not-create-directory: 無法創建目錄! <path>
+    could-not-read-region: 無法讀取 <x>,<z> 區域的地圖圖片 (已損壞?) 它將被覆蓋
+    could-not-save-region: 無法保存 <x>,<z> 區域的地圖
+    internal-web-not-running: 內部Web伺服器發生錯誤
+    update-checker:
+        fetching-version-information: 正在獲取版本資訊...
+        behind-branch: squaremap 是分支 <branch> 後面的 '<behind>' 版本!
+        download-dev-builds: 從 <link> 下載開發版本
+        unknown-commit: 未知提交'<commit>'，無法檢查更新.
+        behind-releases: squaremap <behind> 版本已過時.
+        download-release: 從 <link> 下載最新版本 (<latest>)
