@@ -26,7 +26,7 @@ squaremap hooks into your Minecraft server as a plugin or mod on a [supported pl
 ## Supported platforms
 
 - [Paper](https://papermc.io/)
-- [Sponge 9](https://www.spongepowered.org/)
+- [Sponge 10](https://www.spongepowered.org/)
 - [Fabric](https://fabricmc.net/) (requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api))
 
 ## Downloads
