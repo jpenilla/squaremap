@@ -28,7 +28,7 @@ versions:
     indra: 2.1.1
     licenser: 0.6.1
     shadow: 7.1.2
-    vanillaGradle: 0.2.1-SNAPSHOT
+    vanillaGradle: 0.2.1-20220508.185818-34
 
 dependencies:
     guice:
