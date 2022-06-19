@@ -61,7 +61,7 @@ public final class VanillaChunkSnapshotProvider implements ChunkSnapshotProvider
             }
         }
 
-        final CompoundTag chunkTag = chunkMap.squaremap$readChunk(chunkPos);
+        final @Nullable CompoundTag chunkTag = chunkMap.squaremap$readChunk(chunkPos).join().orElse(null);
         if (chunkTag != null && chunkTag.contains("Status", Tag.TAG_STRING)) {
             if (ChunkStatus.FULL.getName().equals(chunkTag.getString("Status"))) {
                 return (LevelChunk) level.getChunkSource()

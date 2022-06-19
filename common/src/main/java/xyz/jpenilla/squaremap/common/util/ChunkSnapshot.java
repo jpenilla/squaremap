@@ -58,11 +58,11 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
                     states[i] = sections[i].getStates().copy();
                 }
 
-                biomes[i] = sections[i].getBiomes().copy();
+                biomes[i] = ((PalettedContainer) sections[i].getBiomes()).copy();
             }
         } else {
             for (int i = 0; i < sectionCount; i++) {
-                biomes[i] = sections[i].getBiomes().copy();
+                biomes[i] = ((PalettedContainer) sections[i].getBiomes()).copy();
             }
         }
 

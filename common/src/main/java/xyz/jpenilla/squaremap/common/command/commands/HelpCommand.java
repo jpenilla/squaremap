@@ -31,7 +31,7 @@ public final class HelpCommand extends SquaremapCommand {
 
     @Override
     public void register() {
-        final var commandHelpHandler = this.commands.commandManager().getCommandHelpHandler();
+        final var commandHelpHandler = this.commands.commandManager().createCommandHelpHandler();
         final var helpQueryArgument = StringArgument.<Commander>newBuilder("query")
             .greedy()
             .asOptional()
