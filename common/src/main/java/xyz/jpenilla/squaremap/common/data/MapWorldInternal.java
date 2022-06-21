@@ -23,6 +23,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -66,6 +68,9 @@ public abstract class MapWorldInternal implements MapWorld {
     private final Path dataPath;
     private final Path tilesPath;
     private final ExecutorService imageIOexecutor;
+    private final AtomicLong imageIOExecutorSubmittedTasks = new AtomicLong();
+    private final AtomicLong imageIOExecutorExecutedTasks = new AtomicLong();
+    private static final int IMAGEIO_MAX_TASKS = 100;
     private final ScheduledExecutorService executor;
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final BlockColors blockColors;
@@ -173,7 +178,26 @@ public abstract class MapWorldInternal implements MapWorld {
     }
 
     public void saveImage(final Image image) {
-        this.imageIOexecutor.execute(image::save);
+        this.imageIOExecutorSubmittedTasks.getAndIncrement();
+        this.imageIOexecutor.execute(() -> {
+            try {
+                image.save();
+            } finally {
+                MapWorldInternal.this.imageIOExecutorExecutedTasks.getAndIncrement();
+            }
+        });
+
+        long executed = this.imageIOExecutorExecutedTasks.get();
+        long submitted = this.imageIOExecutorSubmittedTasks.get();
+        for (int failures = 0; (submitted - executed) >= IMAGEIO_MAX_TASKS; ++failures) {
+            boolean interrupted = Thread.interrupted();
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(50, failures)));
+            if (interrupted) {
+                Thread.currentThread().interrupt();
+            }
+            executed = this.imageIOExecutorExecutedTasks.get();
+            submitted = this.imageIOExecutorSubmittedTasks.get();
+        }
     }
 
     public void chunkModified(final ChunkCoordinate coord) {
