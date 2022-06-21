@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
@@ -489,12 +490,9 @@ public abstract class AbstractRender implements Runnable {
             if (!this.running()) {
                 return null;
             }
-            boolean interrupted = Thread.interrupted();
-            Thread.yield();
-            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(5, failures)));
-            if (interrupted) {
-                Thread.currentThread().interrupt();
-            }
+            try {
+                future.get(Math.min(50, failures), TimeUnit.MILLISECONDS);
+            } catch (InterruptedException | TimeoutException | ExecutionException ignore) {}
         }
         return future.join();
     }
