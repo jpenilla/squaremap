@@ -14,7 +14,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -492,7 +491,8 @@ public abstract class AbstractRender implements Runnable {
             }
             try {
                 future.get(Math.min(50, failures), TimeUnit.MILLISECONDS);
-            } catch (InterruptedException | TimeoutException | ExecutionException ignore) {}
+            } catch (final InterruptedException | TimeoutException | ExecutionException ignore) {
+            }
         }
         return future.join();
     }

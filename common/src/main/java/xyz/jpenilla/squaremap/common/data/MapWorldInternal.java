@@ -53,6 +53,7 @@ import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
 public abstract class MapWorldInternal implements MapWorld {
+    private static final int IMAGE_IO_MAX_TASKS = 100;
     private static final String DIRTY_CHUNKS_FILE_NAME = "dirty_chunks.json";
     private static final String RENDER_PROGRESS_FILE_NAME = "resume_render.json";
     private static final Gson GSON = new GsonBuilder()
@@ -70,7 +71,6 @@ public abstract class MapWorldInternal implements MapWorld {
     private final ExecutorService imageIOexecutor;
     private final AtomicLong imageIOExecutorSubmittedTasks = new AtomicLong();
     private final AtomicLong imageIOExecutorExecutedTasks = new AtomicLong();
-    private static final int IMAGEIO_MAX_TASKS = 100;
     private final ScheduledExecutorService executor;
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final BlockColors blockColors;
@@ -183,14 +183,14 @@ public abstract class MapWorldInternal implements MapWorld {
             try {
                 image.save();
             } finally {
-                MapWorldInternal.this.imageIOExecutorExecutedTasks.getAndIncrement();
+                this.imageIOExecutorExecutedTasks.getAndIncrement();
             }
         });
 
         long executed = this.imageIOExecutorExecutedTasks.get();
         long submitted = this.imageIOExecutorSubmittedTasks.get();
-        for (int failures = 1; (submitted - executed) >= IMAGEIO_MAX_TASKS; ++failures) {
-            boolean interrupted = Thread.interrupted();
+        for (int failures = 1; (submitted - executed) >= IMAGE_IO_MAX_TASKS; ++failures) {
+            final boolean interrupted = Thread.interrupted();
             Thread.yield();
             LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(25, failures)));
             if (interrupted) {
