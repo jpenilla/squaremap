@@ -189,9 +189,10 @@ public abstract class MapWorldInternal implements MapWorld {
 
         long executed = this.imageIOExecutorExecutedTasks.get();
         long submitted = this.imageIOExecutorSubmittedTasks.get();
-        for (int failures = 0; (submitted - executed) >= IMAGEIO_MAX_TASKS; ++failures) {
+        for (int failures = 1; (submitted - executed) >= IMAGEIO_MAX_TASKS; ++failures) {
             boolean interrupted = Thread.interrupted();
-            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(50, failures)));
+            Thread.yield();
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(25, failures)));
             if (interrupted) {
                 Thread.currentThread().interrupt();
             }
