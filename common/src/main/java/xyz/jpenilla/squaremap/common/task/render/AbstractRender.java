@@ -485,12 +485,13 @@ public abstract class AbstractRender implements Runnable {
 
     private @Nullable ChunkSnapshot chunkSnapshot(final int x, final int z) {
         final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(this.level, x, z, false);
-        for (int failures = 0; !future.isDone(); ++failures) {
+        for (int failures = 1; !future.isDone(); ++failures) {
             if (!this.running()) {
                 return null;
             }
             boolean interrupted = Thread.interrupted();
-            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(100, failures)));
+            Thread.yield();
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(5, failures)));
             if (interrupted) {
                 Thread.currentThread().interrupt();
             }
