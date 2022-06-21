@@ -11,7 +11,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.BooleanSupplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -483,9 +485,14 @@ public abstract class AbstractRender implements Runnable {
 
     private @Nullable ChunkSnapshot chunkSnapshot(final int x, final int z) {
         final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(this.level, x, z, false);
-        while (!future.isDone()) {
+        for (int failures = 0; !future.isDone(); ++failures) {
             if (!this.running()) {
                 return null;
+            }
+            boolean interrupted = Thread.interrupted();
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(100, failures)));
+            if (interrupted) {
+                Thread.currentThread().interrupt();
             }
         }
         return future.join();
