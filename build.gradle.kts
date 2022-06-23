@@ -3,5 +3,5 @@ plugins {
 }
 
 group = "xyz.jpenilla"
-version = "1.1.6"
+version = "1.1.7-SNAPSHOT"
 description = "Minimalistic and lightweight world map viewer for Minecraft servers"
