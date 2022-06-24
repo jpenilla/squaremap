@@ -5,10 +5,12 @@ import com.google.inject.Injector;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -65,7 +67,10 @@ public final class SquaremapFabric implements SquaremapPlatform {
             ServerLifecycleEvents.SERVER_STARTED.register($ -> this.common.updateCheck());
         }
 
-        ServerWorldEvents.LOAD.register((server, level) -> this.worldManager.initWorld(level));
+        final ResourceLocation early = new ResourceLocation("squaremap:early");
+        ServerWorldEvents.LOAD.register(early, (server, level) -> this.worldManager.initWorld(level));
+        ServerWorldEvents.LOAD.addPhaseOrdering(early, Event.DEFAULT_PHASE);
+
         ServerWorldEvents.UNLOAD.register((server, level) -> this.worldManager.worldUnloaded(level));
 
         ServerTickEvents.END_SERVER_TICK.register(new TickEndListener());
