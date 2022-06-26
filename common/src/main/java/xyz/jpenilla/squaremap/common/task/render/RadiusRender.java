@@ -92,6 +92,9 @@ public final class RadiusRender extends AbstractRender {
         }
 
         for (final Map.Entry<RegionCoordinate, Collection<ChunkCoordinate>> entry : chunks.asMap().entrySet()) {
+            if (!this.running()) {
+                break;
+            }
             final RegionCoordinate region = entry.getKey();
             final Collection<ChunkCoordinate> chunkCoords = entry.getValue();
             if (chunkCoords.size() == 1024) {
@@ -111,7 +114,9 @@ public final class RadiusRender extends AbstractRender {
                 Logging.logger().error("Exception executing radius render for region {}", region, ex);
                 break;
             }
-            this.mapWorld.saveImage(image);
+            if (this.running()) {
+                this.mapWorld.saveImage(image);
+            }
         }
     }
 }
