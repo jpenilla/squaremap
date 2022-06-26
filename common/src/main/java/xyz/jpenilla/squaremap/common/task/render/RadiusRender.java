@@ -4,7 +4,10 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -73,9 +76,8 @@ public final class RadiusRender extends AbstractRender {
 
         this.progress = RenderProgress.printProgress(this);
 
-        final SpiralIterator<ChunkCoordinate> spiral = SpiralIterator.chunk(this.centerX, this.centerZ, this.radius);
-        final Map<RegionCoordinate, Image> images = new HashMap<>();
-        final Multimap<RegionCoordinate, CompletableFuture<Void>> futures = ArrayListMultimap.create();
+        final Iterator<ChunkCoordinate> spiral = SpiralIterator.chunk(this.centerX, this.centerZ, this.radius);
+        final Multimap<RegionCoordinate, ChunkCoordinate> chunks = ArrayListMultimap.create();
 
         while (spiral.hasNext() && this.running()) {
             final ChunkCoordinate chunkCoord = spiral.next();
@@ -86,27 +88,30 @@ public final class RadiusRender extends AbstractRender {
                 continue;
             }
 
-            final Image image = images.computeIfAbsent(region, r -> new Image(r, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX));
-
-            futures.put(region, this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));
+            chunks.put(region, chunkCoord);
         }
 
-        final Map<RegionCoordinate, CompletableFuture<Void>> regionFutures = new HashMap<>();
-        futures.asMap().forEach((region, chunkFutures) -> regionFutures.put(
-            region,
-            CompletableFuture.allOf(chunkFutures.toArray(CompletableFuture[]::new))
-                .thenRun(() -> {
-                    if (this.running()) {
-                        this.mapWorld.saveImage(images.get(region));
-                    }
-                })
-        ));
-
-        try {
-            CompletableFuture.allOf(regionFutures.values().toArray(CompletableFuture[]::new)).get();
-        } catch (final InterruptedException ignore) {
-        } catch (final CancellationException | ExecutionException ex) {
-            Logging.logger().error("Exception executing radius render", ex);
+        for (final Map.Entry<RegionCoordinate, Collection<ChunkCoordinate>> entry : chunks.asMap().entrySet()) {
+            final RegionCoordinate region = entry.getKey();
+            final Collection<ChunkCoordinate> chunkCoords = entry.getValue();
+            if (chunkCoords.size() == 1024) {
+                this.mapRegion(region);
+                continue;
+            }
+            final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+            final List<CompletableFuture<Void>> chunkFutures = new ArrayList<>();
+            for (final ChunkCoordinate chunkCoord : chunkCoords) {
+                chunkFutures.add(this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));
+            }
+            try {
+                CompletableFuture.allOf(chunkFutures.toArray(CompletableFuture[]::new)).get();
+            } catch (final InterruptedException ignore) {
+                break;
+            } catch (final CancellationException | ExecutionException ex) {
+                Logging.logger().error("Exception executing radius render for region {}", region, ex);
+                break;
+            }
+            this.mapWorld.saveImage(image);
         }
     }
 }
