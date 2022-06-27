@@ -19,6 +19,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
 import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.common.util.ColorBlender;
 import xyz.jpenilla.squaremap.common.util.Colors;
 
 @DefaultQualifier(NonNull.class)
@@ -55,6 +56,7 @@ public final class BiomeColors {
         Material.REPLACEABLE_WATER_PLANT
     );
 
+    private final ColorBlender colorBlender = new ColorBlender();
     private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
     private final LevelBiomeColorData colorData;
     private final MapWorldInternal world;
@@ -118,27 +120,18 @@ public final class BiomeColors {
     }
 
     private int sampleNeighbors(final BlockPos pos, final int radius, final ColorSampler colorSampler) {
-        int rgb;
-        int r = 0;
-        int g = 0;
-        int b = 0;
-        int count = 0;
+        this.colorBlender.reset();
+
         // Sampling in the y direction as well would improve output, however would complicate caching (low priority, PRs accepted)
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
                 this.mutablePos.set(x, pos.getY(), z);
-                final Biome biome = this.biome(this.mutablePos);
-                rgb = colorSampler.sample(biome, this.mutablePos);
-                r += (rgb >> 16) & 0xFF;
-                g += (rgb >> 8) & 0xFF;
-                b += rgb & 0xFF;
-                count++;
+
+                this.colorBlender.addColor(colorSampler.sample(this.biome(this.mutablePos), this.mutablePos));
             }
         }
-        rgb = r / count;
-        rgb = (rgb << 8) + g / count;
-        rgb = (rgb << 8) + b / count;
-        return rgb;
+
+        return this.colorBlender.result();
     }
 
     private Biome biome(final BlockPos pos) {
