@@ -95,7 +95,7 @@ public final class BiomeColors {
     }
 
     private int grassColorSampler(final Biome biome, final BlockPos pos) {
-        return this.modifiedGrassColor(biome, pos, this.colorData.grassColors().getInt(biome));
+        return biome.getSpecialEffects().getGrassColorModifier().modifyColor(pos.getX(), pos.getZ(), this.colorData.grassColors().getInt(biome));
     }
 
     private int foliage(final BlockPos pos) {
@@ -143,27 +143,6 @@ public final class BiomeColors {
 
     private Biome biome(final BlockPos pos) {
         return this.biomeCache.biome(pos);
-    }
-
-    private int modifiedGrassColor(final Biome biome, final BlockPos pos, final int color) {
-        return switch (biome.getSpecialEffects().getGrassColorModifier()) {
-            case NONE -> color;
-            case SWAMP -> modifiedSwampGrassColor(pos);
-            case DARK_FOREST -> (color & 0xFEFEFE) + 2634762 >> 1;
-        };
-    }
-
-    private static int modifiedSwampGrassColor(final BlockPos pos) {
-        // swamps have 2 grass colors, depends on sample from noise generator
-        final double sample = Biome.BIOME_INFO_NOISE.getValue(
-            pos.getX() * 0.0225,
-            pos.getZ() * 0.0225,
-            false
-        );
-        if (sample < -0.1) {
-            return 5011004;
-        }
-        return 6975545;
     }
 
     private static final class BiomeCache {
