@@ -46,7 +46,10 @@ public final class PaperChunkSnapshotProvider implements ChunkSnapshotProvider {
             if (chunk instanceof ImposterProtoChunk imposter) {
                 chunk = imposter.getWrapped();
             }
-            return ChunkSnapshot.snapshot((LevelChunk) chunk, biomesOnly);
+            if (chunk instanceof LevelChunk levelChunk && !levelChunk.isEmpty()) {
+                return ChunkSnapshot.snapshot(levelChunk, biomesOnly);
+            }
+            return null;
         }, level.getServer()));
     }
 }
