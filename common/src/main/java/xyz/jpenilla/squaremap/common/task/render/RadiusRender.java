@@ -1,12 +1,10 @@
 package xyz.jpenilla.squaremap.common.task.render;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
@@ -49,7 +47,7 @@ public final class RadiusRender extends AbstractRender {
 
     private int countTotalChunks() {
         int count = 0;
-        VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
+        final VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
         for (int chunkX = this.centerX - this.radius; chunkX <= this.centerX + this.radius; chunkX++) {
             for (int chunkZ = this.centerZ - this.radius; chunkZ <= this.centerZ + this.radius; chunkZ++) {
                 if (visibility.shouldRenderChunk(chunkX, chunkZ)) {
@@ -77,7 +75,7 @@ public final class RadiusRender extends AbstractRender {
         this.progress = RenderProgress.printProgress(this);
 
         final Iterator<ChunkCoordinate> spiral = SpiralIterator.chunk(this.centerX, this.centerZ, this.radius);
-        final Multimap<RegionCoordinate, ChunkCoordinate> chunks = ArrayListMultimap.create();
+        final Map<RegionCoordinate, List<ChunkCoordinate>> chunks = new LinkedHashMap<>();
 
         while (spiral.hasNext() && this.running()) {
             final ChunkCoordinate chunkCoord = spiral.next();
@@ -88,15 +86,15 @@ public final class RadiusRender extends AbstractRender {
                 continue;
             }
 
-            chunks.put(region, chunkCoord);
+            chunks.computeIfAbsent(region, $ -> new ArrayList<>()).add(chunkCoord);
         }
 
-        for (final Map.Entry<RegionCoordinate, Collection<ChunkCoordinate>> entry : chunks.asMap().entrySet()) {
+        for (final Map.Entry<RegionCoordinate, List<ChunkCoordinate>> entry : chunks.entrySet()) {
             if (!this.running()) {
                 break;
             }
             final RegionCoordinate region = entry.getKey();
-            final Collection<ChunkCoordinate> chunkCoords = entry.getValue();
+            final List<ChunkCoordinate> chunkCoords = entry.getValue();
             if (chunkCoords.size() == 1024) {
                 this.mapRegion(region);
                 continue;
