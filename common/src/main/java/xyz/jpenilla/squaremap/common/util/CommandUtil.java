@@ -1,9 +1,7 @@
 package xyz.jpenilla.squaremap.common.util;
 
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.minecraft.extras.RichDescription;
 import java.util.Optional;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -36,9 +34,5 @@ public final class CommandUtil {
         } else {
             throw CommandCompleted.withMessage(Messages.CONSOLE_MUST_SPECIFY_WORLD);
         }
-    }
-
-    public static RichDescription description(final String miniMessage, TagResolver... placeholders) {
-        return RichDescription.of(Components.miniMessage(miniMessage, placeholders));
     }
 }

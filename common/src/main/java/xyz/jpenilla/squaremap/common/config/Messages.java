@@ -100,6 +100,40 @@ public final class Messages {
     @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_CLICK_FOR_PREVIOUS_PAGE)
     public static ComponentMessage COMMAND_HELP_MESSAGE_CLICK_FOR_PREVIOUS_PAGE = new ComponentMessage("Click for previous page");
 
+    private static final String COMMAND_EXCEPTION_MESSAGE_PREFIX = "command.message.exception.";
+
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "command-execution")
+    public static ComponentMessage COMMAND_EXCEPTION_COMMAND_EXECUTION = new ComponentMessage("<red>An internal error occurred while attempting to perform this command.");
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "no-permission")
+    public static ComponentMessage COMMAND_EXCEPTION_NO_PERMISSION = new ComponentMessage("<red>I'm sorry, but you do not have permission to perform this command.\n"
+        + "Please contact the server administrators if you believe that this is in error.");
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "invalid-argument")
+    public static ComponentMessage COMMAND_EXCEPTION_INVALID_ARGUMENT = new ComponentMessage("<red>Invalid command argument<white>:</white> <gray><message>");
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "invalid-sender-type")
+    public static ComponentMessage COMMAND_EXCEPTION_INVALID_SENDER_TYPE = new ComponentMessage("<red>Invalid command sender type. You must be of type <gray><required_sender_type></gray>.");
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "invalid-syntax")
+    public static ComponentMessage COMMAND_EXCEPTION_INVALID_SYNTAX = new ComponentMessage("<red>Invalid command syntax. Correct command syntax is<white>:</white> <gray><correct_syntax>");
+
+    public static final String PARSER_EXCEPTION_MESSAGE_PREFIX = "command.message.parser-exception.";
+
+    // We use _ in these keys for simplicity - it matches what cloud is using. We could normalize them, but seems like more effort than it's worth
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "string")
+    public static ComponentMessage STRING_PARSE_EXCEPTION = new ComponentMessage("'<input>' is not a valid string of type <string_mode>");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "number")
+    public static ComponentMessage NUMBER_PARSE_EXCEPTION = new ComponentMessage("'<input>' is not a valid number in the range <min> to <max>");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "location.invalid-format")
+    public static ComponentMessage LOCATION_PARSE_EXCEPTION_INVALID_FORMAT = new ComponentMessage("'<input>' is not a valid location. Required format is '<x> <z>'");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "location.mixed_local_absolute")
+    public static ComponentMessage LOCATION_PARSE_EXCEPTION_MIXED_LOCAL_ABSOLUTE = new ComponentMessage("Cannot mix local and absolute coordinates. (either all coordinates use '^' or none do)");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "selector.malformed")
+    public static ComponentMessage SELECTOR_PARSE_EXCEPTION_MALFORMED = new ComponentMessage("Selector '<input>' is malformed");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "selector.too_many_players")
+    public static ComponentMessage SELECTOR_PARSE_EXCEPTION_TOO_MANY_PLAYERS = new ComponentMessage("More than 1 player selected in single player selector");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "selector.non_player_in_player_selector")
+    public static ComponentMessage SELECTOR_PARSE_EXCEPTION_NON_PLAYER_IN_PLAYER_SELECTOR = new ComponentMessage("Non-player(s) selected in player selector");
+
+    @MessageKey("click-to-copy")
+    public static ComponentMessage CLICK_TO_COPY = new ComponentMessage("Click to copy to clipboard");
     @MessageKey("click-for-help")
     public static ComponentMessage CLICK_FOR_HELP = new ComponentMessage("Click for help");
     @MessageKey("click-to-confirm")

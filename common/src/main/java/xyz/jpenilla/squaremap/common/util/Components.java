@@ -1,7 +1,9 @@
 package xyz.jpenilla.squaremap.common.util;
 
+import java.util.regex.Pattern;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -14,6 +16,7 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 @DefaultQualifier(NonNull.class)
 public final class Components {
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+    private static final Pattern SPECIAL_CHARACTERS_PATTERN = Pattern.compile("[^\\s\\w\\-]");
 
     public static MiniMessage miniMessage() {
         return MINI_MESSAGE;
@@ -45,5 +48,12 @@ public final class Components {
 
     public static TagResolver.Single playerPlaceholder(final ServerPlayer player) {
         return placeholder("player", player.getGameProfile().getName());
+    }
+
+    public static Component highlight(final Component component, final TextColor highlightColor) {
+        return component.replaceText(config -> {
+            config.match(SPECIAL_CHARACTERS_PATTERN);
+            config.replacement(match -> match.color(highlightColor));
+        });
     }
 }

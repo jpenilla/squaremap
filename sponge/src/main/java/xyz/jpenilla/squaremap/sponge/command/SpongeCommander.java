@@ -26,6 +26,11 @@ public class SpongeCommander implements Commander, ForwardingAudience.Single {
         return this.cause.audience();
     }
 
+    @Override
+    public boolean hasPermission(final String permission) {
+        return this.cause.hasPermission(permission);
+    }
+
     public CommandCause cause() {
         return this.cause;
     }

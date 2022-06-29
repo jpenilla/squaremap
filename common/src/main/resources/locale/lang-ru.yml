@@ -40,6 +40,29 @@ command:
                 [1, <max_pages>]'
             click_for_next_page: Click for next page
             click_for_previous_page: Click for previous page
+        exception:
+            command-execution: <red>An internal error occurred while attempting to
+                perform this command.
+            no-permission: |-
+                <red>I'm sorry, but you do not have permission to perform this command.
+                Please contact the server administrators if you believe that this is in error.
+            invalid-argument: <red>Invalid command argument<white>:</white> <gray><message>
+            invalid-sender-type: <red>Invalid command sender type. You must be of
+                type <gray><required_sender_type></gray>.
+            invalid-syntax: <red>Invalid command syntax. Correct command syntax is<white>:</white>
+                <gray><correct_syntax>
+        parser-exception:
+            string: '''<input>'' is not a valid string of type <string_mode>'
+            number: '''<input>'' is not a valid number in the range <min> to <max>'
+            location:
+                invalid-format: '''<input>'' is not a valid location. Required format
+                    is ''<x> <z>'''
+                mixed_local_absolute: Cannot mix local and absolute coordinates. (either
+                    all coordinates use '^' or none do)
+            selector:
+                malformed: Selector '<input>' is malformed
+                too_many_players: More than 1 player selected in single player selector
+                non_player_in_player_selector: Non-player(s) selected in player selector
     prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
     description:
         help: Получить справку по командам squaremap
@@ -68,6 +91,7 @@ command:
     show:
         not-hidden: <red><player> не скрыт на карте
         shown: <green><player> больше не скрыт на карте
+click-to-copy: Click to copy to clipboard
 click-for-help: Кликните для помощи
 click-to-confirm: Click to confirm
 click-to-toggle: Click to toggle
