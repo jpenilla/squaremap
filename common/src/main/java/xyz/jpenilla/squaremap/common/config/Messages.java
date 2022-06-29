@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.common.config;
 
+import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -8,6 +9,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -26,7 +29,10 @@ import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
+@SuppressWarnings("unused") // Some messages are retrieved from the map instead of the field
 public final class Messages {
+
+    private static final Map<String, Message> MESSAGES = new HashMap<>();
 
     // MiniMessage
     @MessageKey("render-in-progress")
@@ -64,6 +70,35 @@ public final class Messages {
     public static ComponentMessage PROGRESSLOGGING_SET_RATE_MESSAGE = new ComponentMessage("<green>Render progress logging interval has been set to </green><seconds> seconds");
     @MessageKey("command.message.progresslogging.statusmessage")
     public static ComponentMessage PROGRESSLOGGING_STATUS_MESSAGE = new ComponentMessage("Render progress logging enabled: <enabled>, interval: <green><seconds></green> seconds");
+
+    private static final String COMMAND_HELP_MESSAGE_PREFIX = "command.message.help.";
+
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_HELP_TITLE)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_HELP_TITLE = new ComponentMessage("squaremap command help");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_COMMAND)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_COMMAND = new ComponentMessage("Command");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_DESCRIPTION)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_DESCRIPTION = new ComponentMessage("Description");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_NO_DESCRIPTION)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_NO_DESCRIPTION = new ComponentMessage("No description");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_ARGUMENTS)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_ARGUMENTS = new ComponentMessage("Arguments");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_OPTIONAL)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_OPTIONAL = new ComponentMessage("Optional");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_SHOWING_RESULTS_FOR_QUERY)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_SHOWING_RESULTS_FOR_QUERY = new ComponentMessage("Showing search results for query");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_NO_RESULTS_FOR_QUERY)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_NO_RESULTS_FOR_QUERY = new ComponentMessage("No results for query");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_AVAILABLE_COMMANDS)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_AVAILABLE_COMMANDS = new ComponentMessage("Available Commands");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_CLICK_TO_SHOW_HELP)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_CLICK_TO_SHOW_HELP = new ComponentMessage("Click to show help for this command");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_PAGE_OUT_OF_RANGE)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_PAGE_OUT_OF_RANGE = new ComponentMessage("Error: Page <page> is not in range. Must be in range [1, <max_pages>]");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_CLICK_FOR_NEXT_PAGE)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_CLICK_FOR_NEXT_PAGE = new ComponentMessage("Click for next page");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_CLICK_FOR_PREVIOUS_PAGE)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_CLICK_FOR_PREVIOUS_PAGE = new ComponentMessage("Click for previous page");
 
     @MessageKey("click-for-help")
     public static ComponentMessage CLICK_FOR_HELP = new ComponentMessage("Click for help");
@@ -207,6 +242,7 @@ public final class Messages {
             throw new RuntimeException("Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
         }
 
+        MESSAGES.clear();
         loadValues(Messages.class, config);
 
         try {
@@ -236,30 +272,67 @@ public final class Messages {
         final MessageKey messageKey = field.getAnnotation(MessageKey.class);
         final @Nullable String defaultValue = messageKey.defaultValue().equals("") ? null : messageKey.defaultValue();
         try {
-            if (field.getType() == String.class) {
-                final String value = getString(
-                    config,
-                    messageKey.value(),
-                    defaultValue != null ? defaultValue : (String) field.get(null)
-                );
-                field.set(null, value);
-            } else if (field.getType() == ComponentMessage.class) {
-                final String value = getString(
-                    config,
-                    messageKey.value(),
-                    defaultValue != null ? defaultValue : ((ComponentMessage) field.get(null)).miniMessage()
-                );
-                field.set(null, new ComponentMessage(value));
-            } else {
-                throw new IllegalStateException();
-            }
+            final Message message = loadValue(config, field, messageKey, defaultValue);
+            MESSAGES.put(messageKey.value(), message);
         } catch (final IllegalAccessException ex) {
             Logging.logger().warn("Failed to load {}", Config.LANGUAGE_FILE, ex);
         }
     }
 
+    private static Message loadValue(
+        final CommentedConfigurationNode config,
+        final Field field,
+        final MessageKey messageKey,
+        final @Nullable String defaultValue
+    ) throws IllegalAccessException {
+        final Message message;
+        if (field.getType() == String.class) {
+            final String value = getString(
+                config,
+                messageKey.value(),
+                defaultValue != null ? defaultValue : (String) field.get(null)
+            );
+            message = new StringMessage(value);
+            field.set(null, ((StringMessage) message).message());
+        } else if (field.getType() == StringMessage.class) {
+            final String value = getString(
+                config,
+                messageKey.value(),
+                defaultValue != null ? defaultValue : ((StringMessage) field.get(null)).message()
+            );
+            message = new StringMessage(value);
+            field.set(null, message);
+        } else if (field.getType() == ComponentMessage.class) {
+            final String value = getString(
+                config,
+                messageKey.value(),
+                defaultValue != null ? defaultValue : ((ComponentMessage) field.get(null)).miniMessage()
+            );
+            message = new ComponentMessage(value);
+            field.set(null, message);
+        } else {
+            throw new IllegalStateException();
+        }
+        return message;
+    }
+
     private static String getString(final ConfigurationNode node, final String path, final String def) {
         return node.node(AbstractConfig.splitPath(path)).getString(def);
+    }
+
+    public static Component componentMessage(final String key, final TagResolver... placeholders) {
+        final @Nullable Message message = MESSAGES.get(key);
+        if (message == null) {
+            throw new IllegalArgumentException("Message with key '" + key + "' does not exist!");
+        }
+        if (!(message instanceof ComponentMessage componentMessage)) {
+            throw new IllegalArgumentException("Message with key '" + key + "' is not a ComponentMessage!");
+        }
+        if (placeholders.length == 0) {
+            return componentMessage.asComponent();
+        } else {
+            return componentMessage.withPlaceholders(placeholders);
+        }
     }
 
     @Target(ElementType.FIELD)
@@ -270,7 +343,16 @@ public final class Messages {
         String defaultValue() default "";
     }
 
-    public static final class ComponentMessage implements ComponentLike {
+    public sealed interface Message permits StringMessage, ComponentMessage {
+    }
+
+    public record StringMessage(String message) implements Message {
+        public String withPlaceholders(final Object... keyValuePairs) {
+            return Logging.replace(this.message, keyValuePairs);
+        }
+    }
+
+    public static final class ComponentMessage implements Message, ComponentLike {
         private final String miniMessage;
         private volatile @MonotonicNonNull Component noPlaceholders;
 

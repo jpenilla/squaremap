@@ -9,8 +9,10 @@ import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import cloud.commandframework.minecraft.extras.RichDescription;
 import com.google.inject.Inject;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -18,6 +20,7 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
+import xyz.jpenilla.squaremap.common.util.Components;
 
 @DefaultQualifier(NonNull.class)
 public final class HelpCommand extends SquaremapCommand {
@@ -72,7 +75,22 @@ public final class HelpCommand extends SquaremapCommand {
             NamedTextColor.GRAY,
             NamedTextColor.DARK_GRAY
         ));
-        minecraftHelp.setMessage(MinecraftHelp.MESSAGE_HELP_TITLE, "squaremap command help");
+        minecraftHelp.messageProvider(HelpCommand::helpMessage);
         return minecraftHelp;
+    }
+
+    private static Component helpMessage(final Commander sender, final String key, final String... args) {
+        // Hack but works
+        final TagResolver[] placeholders;
+        if (args.length == 0) {
+            placeholders = new TagResolver[]{};
+        } else {
+            placeholders = new TagResolver[]{
+                Components.placeholder("page", args[0]),
+                Components.placeholder("max_pages", args[1])
+            };
+        }
+
+        return Messages.componentMessage("command.message.help." + key, placeholders);
     }
 }
