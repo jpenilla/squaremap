@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -31,6 +33,11 @@ import xyz.jpenilla.squaremap.common.util.FileUtil;
 @DefaultQualifier(NonNull.class)
 @SuppressWarnings("unused") // Some messages are retrieved from the map instead of the field
 public final class Messages {
+    private static final Map<Class<?>, MessageFieldType<?>> MESSAGE_FIELD_TYPES = Map.of(
+        ComponentMessage.class, ComponentMessage.FIELD_TYPE,
+        StringMessage.class, StringMessage.FIELD_TYPE,
+        String.class, StringMessage.STRING_FIELD_TYPE
+    );
 
     private static final Map<String, Message> MESSAGES = new HashMap<>();
 
@@ -304,50 +311,29 @@ public final class Messages {
 
     private static void loadValue(final CommentedConfigurationNode config, final Field field) {
         final MessageKey messageKey = field.getAnnotation(MessageKey.class);
-        final @Nullable String defaultValue = messageKey.defaultValue().equals("") ? null : messageKey.defaultValue();
         try {
-            final Message message = loadValue(config, field, messageKey, defaultValue);
-            MESSAGES.put(messageKey.value(), message);
-        } catch (final IllegalAccessException ex) {
-            Logging.logger().warn("Failed to load {}", Config.LANGUAGE_FILE, ex);
+            loadValue(config, field, messageKey);
+        } catch (final Exception ex) {
+            Logging.logger().warn("Failed to load message with key '{}' from '{}'", messageKey.value(), Config.LANGUAGE_FILE, ex);
         }
     }
 
-    private static Message loadValue(
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void loadValue(
         final CommentedConfigurationNode config,
         final Field field,
-        final MessageKey messageKey,
-        final @Nullable String defaultValue
-    ) throws IllegalAccessException {
-        final Message message;
-        if (field.getType() == String.class) {
-            final String value = getString(
-                config,
-                messageKey.value(),
-                defaultValue != null ? defaultValue : (String) field.get(null)
-            );
-            message = new StringMessage(value);
-            field.set(null, ((StringMessage) message).message());
-        } else if (field.getType() == StringMessage.class) {
-            final String value = getString(
-                config,
-                messageKey.value(),
-                defaultValue != null ? defaultValue : ((StringMessage) field.get(null)).message()
-            );
-            message = new StringMessage(value);
-            field.set(null, message);
-        } else if (field.getType() == ComponentMessage.class) {
-            final String value = getString(
-                config,
-                messageKey.value(),
-                defaultValue != null ? defaultValue : ((ComponentMessage) field.get(null)).miniMessage()
-            );
-            message = new ComponentMessage(value);
-            field.set(null, message);
-        } else {
-            throw new IllegalStateException();
+        final MessageKey messageKey
+    ) throws ReflectiveOperationException {
+        final @Nullable MessageFieldType<?> messageFieldType = MESSAGE_FIELD_TYPES.get(field.getType());
+        if (messageFieldType == null) {
+            throw new IllegalStateException("Could not find MessageFieldType for field with type " + field.getType().getName());
         }
-        return message;
+        final String defaultValue = !messageKey.defaultValue().equals("")
+            ? messageKey.defaultValue()
+            : (String) ((Function) messageFieldType.defaultGetter()).apply(field.get(null));
+        final MessageFieldType.ReadResult<?> readResult = messageFieldType.messageFactory().apply(getString(config, messageKey.value(), defaultValue));
+        field.set(null, readResult.fieldValue());
+        MESSAGES.put(messageKey.value(), readResult.message());
     }
 
     private static String getString(final ConfigurationNode node, final String path, final String def) {
@@ -377,12 +363,20 @@ public final class Messages {
     }
 
     public record StringMessage(String message) implements Message {
+        private static final MessageFieldType<StringMessage> FIELD_TYPE = MessageFieldType.create(StringMessage::new, StringMessage::message);
+        private static final MessageFieldType<String> STRING_FIELD_TYPE = new MessageFieldType<>(
+            string -> new MessageFieldType.ReadResult<>(new StringMessage(string), string),
+            UnaryOperator.identity()
+        );
+
         public String withPlaceholders(final Object... keyValuePairs) {
             return Logging.replace(this.message, keyValuePairs);
         }
     }
 
     public static final class ComponentMessage implements Message, ComponentLike {
+        private static final MessageFieldType<ComponentMessage> FIELD_TYPE = MessageFieldType.create(ComponentMessage::new, ComponentMessage::miniMessage);
+
         private final String miniMessage;
         private volatile @MonotonicNonNull Component noPlaceholders;
 
@@ -411,6 +405,27 @@ public final class Messages {
 
         public String miniMessage() {
             return this.miniMessage;
+        }
+    }
+
+    private record MessageFieldType<T>(
+        Function<String, ReadResult<T>> messageFactory,
+        Function<T, String> defaultGetter
+    ) {
+        static <T extends Message> MessageFieldType<T> create(
+            Function<String, T> messageFactory,
+            Function<T, String> defaultGetter
+        ) {
+            return new MessageFieldType<>(
+                string -> {
+                    final T message = messageFactory.apply(string);
+                    return new ReadResult<>(message, message);
+                },
+                defaultGetter
+            );
+        }
+
+        record ReadResult<T>(Message message, T fieldValue) {
         }
     }
 }
