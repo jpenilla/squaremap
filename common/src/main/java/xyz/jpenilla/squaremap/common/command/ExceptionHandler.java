@@ -90,7 +90,7 @@ final class ExceptionHandler {
             final String key = Messages.PARSER_EXCEPTION_MESSAGE_PREFIX + parserException.errorCaption().getKey().replace("argument.parse.failure.", "");
             @Nullable Component fromConfig;
             try {
-                fromConfig = Messages.componentMessage(key, placeholders);
+                fromConfig = Messages.componentMessage(key).withPlaceholders(placeholders);
             } catch (final Exception ex) {
                 Logging.logger().warn("Could not get message with key '{}'", key, ex);
                 fromConfig = null;

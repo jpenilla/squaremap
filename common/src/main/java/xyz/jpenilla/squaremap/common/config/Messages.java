@@ -354,7 +354,7 @@ public final class Messages {
         return node.node(AbstractConfig.splitPath(path)).getString(def);
     }
 
-    public static Component componentMessage(final String key, final TagResolver... placeholders) {
+    public static ComponentMessage componentMessage(final String key) {
         final @Nullable Message message = MESSAGES.get(key);
         if (message == null) {
             throw new IllegalArgumentException("Message with key '" + key + "' does not exist!");
@@ -362,11 +362,7 @@ public final class Messages {
         if (!(message instanceof ComponentMessage componentMessage)) {
             throw new IllegalArgumentException("Message with key '" + key + "' is not a ComponentMessage!");
         }
-        if (placeholders.length == 0) {
-            return componentMessage.asComponent();
-        } else {
-            return componentMessage.withPlaceholders(placeholders);
-        }
+        return componentMessage;
     }
 
     @Target(ElementType.FIELD)
@@ -395,6 +391,9 @@ public final class Messages {
         }
 
         public Component withPlaceholders(final TagResolver... placeholders) {
+            if (placeholders.length == 0) {
+                return this.asComponent();
+            }
             return Components.miniMessage(this.miniMessage, placeholders);
         }
 
