@@ -18,13 +18,9 @@ import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.LockSupport;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -47,13 +43,13 @@ import xyz.jpenilla.squaremap.common.task.render.BackgroundRender;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
+import xyz.jpenilla.squaremap.common.util.ImageIOExecutor;
 import xyz.jpenilla.squaremap.common.util.RecordTypeAdapterFactory;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
 public abstract class MapWorldInternal implements MapWorld {
-    private static final int IMAGE_IO_MAX_TASKS = 100;
     private static final String DIRTY_CHUNKS_FILE_NAME = "dirty_chunks.json";
     private static final String RENDER_PROGRESS_FILE_NAME = "resume_render.json";
     private static final Gson GSON = new GsonBuilder()
@@ -68,9 +64,7 @@ public abstract class MapWorldInternal implements MapWorld {
     private final RenderFactory renderFactory;
     private final Path dataPath;
     private final Path tilesPath;
-    private final ExecutorService imageIOexecutor;
-    private final AtomicLong imageIOExecutorSubmittedTasks = new AtomicLong();
-    private final AtomicLong imageIOExecutorExecutedTasks = new AtomicLong();
+    private final ImageIOExecutor imageIOExecutor;
     private final ScheduledExecutorService executor;
     private final Set<ChunkCoordinate> modifiedChunks = ConcurrentHashMap.newKeySet();
     private final BlockColors blockColors;
@@ -90,9 +84,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.level = level;
         this.renderFactory = renderFactory;
 
-        this.imageIOexecutor = Executors.newSingleThreadExecutor(
-            Util.squaremapThreadFactory("imageio", this.level)
-        );
+        this.imageIOExecutor = ImageIOExecutor.create(level);
         this.executor = new ExceptionLoggingScheduledThreadPoolExecutor(
             1,
             Util.squaremapThreadFactory("render", this.level)
@@ -178,27 +170,7 @@ public abstract class MapWorldInternal implements MapWorld {
     }
 
     public void saveImage(final Image image) {
-        this.imageIOExecutorSubmittedTasks.getAndIncrement();
-        this.imageIOexecutor.execute(() -> {
-            try {
-                image.save();
-            } finally {
-                this.imageIOExecutorExecutedTasks.getAndIncrement();
-            }
-        });
-
-        long executed = this.imageIOExecutorExecutedTasks.get();
-        long submitted = this.imageIOExecutorSubmittedTasks.get();
-        for (int failures = 1; (submitted - executed) >= IMAGE_IO_MAX_TASKS; ++failures) {
-            final boolean interrupted = Thread.interrupted();
-            Thread.yield();
-            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(Math.min(25, failures)));
-            if (interrupted) {
-                Thread.currentThread().interrupt();
-            }
-            executed = this.imageIOExecutorExecutedTasks.get();
-            submitted = this.imageIOExecutorSubmittedTasks.get();
-        }
+        this.imageIOExecutor.saveImage(image);
     }
 
     public void chunkModified(final ChunkCoordinate coord) {
@@ -326,7 +298,7 @@ public abstract class MapWorldInternal implements MapWorld {
             this.stopBackgroundRender();
         }
         Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 1L);
-        Util.shutdownExecutor(this.imageIOexecutor, TimeUnit.SECONDS, 5L);
+        this.imageIOExecutor.shutdown();
         this.serializeDirtyChunks();
     }
 
