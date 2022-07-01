@@ -91,6 +91,6 @@ public final class HelpCommand extends SquaremapCommand {
             };
         }
 
-        return Messages.componentMessage("command.message.help." + key).withPlaceholders(placeholders);
+        return Messages.componentMessage(Messages.COMMAND_HELP_MESSAGE_PREFIX + key).withPlaceholders(placeholders);
     }
 }

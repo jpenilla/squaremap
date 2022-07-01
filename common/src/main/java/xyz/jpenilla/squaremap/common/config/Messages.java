@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,6 +28,7 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
+import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
 @DefaultQualifier(NonNull.class)
 @SuppressWarnings("unused") // Some messages are retrieved from the map instead of the field
@@ -78,7 +78,7 @@ public final class Messages {
     @MessageKey("command.message.progresslogging.statusmessage")
     public static ComponentMessage PROGRESSLOGGING_STATUS_MESSAGE = new ComponentMessage("Render progress logging enabled: <enabled>, interval: <green><seconds></green> seconds");
 
-    private static final String COMMAND_HELP_MESSAGE_PREFIX = "command.message.help.";
+    public static final String COMMAND_HELP_MESSAGE_PREFIX = "command.message.help.";
 
     @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_HELP_TITLE)
     public static ComponentMessage COMMAND_HELP_MESSAGE_HELP_TITLE = new ComponentMessage("squaremap command help");
@@ -295,18 +295,21 @@ public final class Messages {
 
     private static void loadValues(final Class<?> clazz, final CommentedConfigurationNode config) {
         Arrays.stream(clazz.getDeclaredFields())
-            .filter(Messages::isStatic)
+            .filter(ReflectionUtil::isStatic)
             .filter(Messages::checkTypeAndAnnotation)
             .forEach(field -> loadValue(config, field));
     }
 
-    private static boolean isStatic(final Field field) {
-        return Modifier.isStatic(field.getModifiers());
-    }
-
     private static boolean checkTypeAndAnnotation(final Field field) {
-        return field.isAnnotationPresent(MessageKey.class)
-            && (field.getType().equals(String.class) || field.getType().equals(ComponentMessage.class));
+        if (!field.isAnnotationPresent(MessageKey.class)) {
+            return false;
+        }
+        if (MESSAGE_FIELD_TYPES.containsKey(field.getType())) {
+            return true;
+        } else {
+            Logging.logger().warn("Field '{}.{}' of type '{}' is annotated with @MessageKey, but is not a supported MessageFieldType.", field.getDeclaringClass().getName(), field.getName(), field.getType().getName());
+            return false;
+        }
     }
 
     private static void loadValue(final CommentedConfigurationNode config, final Field field) {

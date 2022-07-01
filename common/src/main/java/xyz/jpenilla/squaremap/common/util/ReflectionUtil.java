@@ -2,7 +2,9 @@ package xyz.jpenilla.squaremap.common.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -83,5 +85,9 @@ public final class ReflectionUtil {
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException("Failed to invoke method", e);
         }
+    }
+
+    public static boolean isStatic(final @NonNull Member member) {
+        return Modifier.isStatic(member.getModifiers());
     }
 }
