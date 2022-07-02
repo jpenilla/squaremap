@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.common.util;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.nio.file.Path;
 import net.minecraft.server.level.ServerLevel;
@@ -10,10 +11,14 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public interface RegionFileDirectoryResolver {
-    Path resolveRegionFileDirectory(final ServerLevel level);
+    Path resolveRegionFileDirectory(ServerLevel level);
 
     @Singleton
     class Vanilla implements RegionFileDirectoryResolver {
+        @Inject
+        private Vanilla() {
+        }
+
         @Override
         public Path resolveRegionFileDirectory(final ServerLevel level) {
             final Path worldPath = level.getServer().getWorldPath(LevelResource.ROOT);

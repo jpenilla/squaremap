@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,7 +81,7 @@ public final class FullRender extends AbstractRender {
 
             // setup a spiral iterator
             final BlockPos spawn = this.level.getSharedSpawnPos();
-            final SpiralIterator<RegionCoordinate> spiral = SpiralIterator.region(
+            final Iterator<RegionCoordinate> spiral = SpiralIterator.region(
                 Numbers.blockToRegion(spawn.getX()),
                 Numbers.blockToRegion(spawn.getZ()),
                 this.maxRadius
@@ -96,7 +97,7 @@ public final class FullRender extends AbstractRender {
                     regionFiles.forEach(region -> regions.put(region, false));
                     break;
                 }
-                RegionCoordinate region = spiral.next();
+                final RegionCoordinate region = spiral.next();
                 if (regionFiles.contains(region)) {
                     regions.put(region, false);
                     failsafe = 0;
@@ -111,7 +112,7 @@ public final class FullRender extends AbstractRender {
             return;
         }
 
-        VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
+        final VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
         this.totalRegions = regions.size();
         this.totalChunks = regions.keySet().stream().mapToInt(visibility::countChunksInRegion).sum();
 

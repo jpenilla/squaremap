@@ -60,15 +60,15 @@ public final class SpiralIterator<T> implements Iterator<T> {
         return t;
     }
 
-    public static <T> SpiralIterator<T> create(final CoordinateMapper<T> coordinateMapper, final int x, final int z, final int radius) {
+    public static <T> Iterator<T> create(final CoordinateMapper<T> coordinateMapper, final int x, final int z, final int radius) {
         return new SpiralIterator<>(coordinateMapper, x, z, radius);
     }
 
-    public static SpiralIterator<ChunkCoordinate> chunk(final int x, final int z, final int radius) {
+    public static Iterator<ChunkCoordinate> chunk(final int x, final int z, final int radius) {
         return create(ChunkCoordinate::new, x, z, radius);
     }
 
-    public static SpiralIterator<RegionCoordinate> region(final int x, final int z, final int radius) {
+    public static Iterator<RegionCoordinate> region(final int x, final int z, final int radius) {
         return create(RegionCoordinate::new, x, z, radius);
     }
 
