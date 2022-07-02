@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.task;
 
-import com.google.gson.Gson;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +22,6 @@ import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
 public final class UpdateWorldData implements Runnable {
-    private static final Gson GSON = new Gson();
-
     private final WorldManager worldManager;
     private final DirectoryProvider directoryProvider;
 
@@ -82,7 +79,7 @@ public final class UpdateWorldData implements Runnable {
         map.put("worlds", worlds);
         map.put("ui", ui);
 
-        FileUtil.writeStringAsync(this.directoryProvider.tilesDirectory().resolve("settings.json"), () -> GSON.toJson(map));
+        FileUtil.writeStringAsync(this.directoryProvider.tilesDirectory().resolve("settings.json"), () -> Util.gson().toJson(map));
     }
 
     private void writeWorldSettings(
@@ -124,7 +121,7 @@ public final class UpdateWorldData implements Runnable {
         settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
         settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
 
-        FileUtil.writeStringAsync(mapWorld.tilesPath().resolve("settings.json"), () -> GSON.toJson(settings));
+        FileUtil.writeStringAsync(mapWorld.tilesPath().resolve("settings.json"), () -> Util.gson().toJson(settings));
     }
 
     // replicate bukkit "environment"

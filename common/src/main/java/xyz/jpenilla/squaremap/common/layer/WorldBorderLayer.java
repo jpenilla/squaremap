@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import net.minecraft.world.level.border.WorldBorder;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.Point;
@@ -14,8 +15,9 @@ import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
-public class WorldBorderProvider implements LayerProvider {
-    public static final Key WORLDBORDER_KEY = Key.of("squaremap-worldborder");
+@DefaultQualifier(NonNull.class)
+public final class WorldBorderLayer implements LayerProvider {
+    public static final Key KEY = Key.of("squaremap-worldborder");
 
     private final String label;
     private final boolean showControls;
@@ -25,7 +27,7 @@ public class WorldBorderProvider implements LayerProvider {
     private final MarkerOptions options;
     private final MapWorldInternal world;
 
-    public WorldBorderProvider(final @NonNull MapWorldInternal world) {
+    public WorldBorderLayer(final MapWorldInternal world) {
         this.world = world;
         final WorldConfig config = world.config();
         this.label = Messages.UI_WORLDBORDER_MARKER_LABEL;
@@ -41,7 +43,7 @@ public class WorldBorderProvider implements LayerProvider {
     }
 
     @Override
-    public @NonNull String getLabel() {
+    public String getLabel() {
         return this.label;
     }
 
@@ -66,7 +68,7 @@ public class WorldBorderProvider implements LayerProvider {
     }
 
     @Override
-    public @NonNull Collection<Marker> getMarkers() {
+    public Collection<Marker> getMarkers() {
         final WorldBorder border = this.world.serverLevel().getWorldBorder();
         final int x = (int) border.getCenterX();
         final int z = (int) border.getCenterZ();

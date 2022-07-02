@@ -41,13 +41,13 @@ public final class BlockColors {
     }
 
     /**
-     * Get a special color for a BlockState, if it exists. Will return -1 if there
-     * is no special color for the provided BlockState.
+     * Get a special color for a {@link BlockState}, if it exists. Will return -1 if there
+     * is no special color for the provided {@link BlockState}.
      *
-     * @param state BlockState to test
+     * @param state {@link BlockState} to test
      * @return special color, or -1
      */
-    public int getColor(final BlockState state) {
+    public int color(final BlockState state) {
         final Block block = state.getBlock();
 
         final int staticColor = this.staticColorMap.getInt(block);
@@ -80,6 +80,7 @@ public final class BlockColors {
         return new BlockColors(mapWorld);
     }
 
+    @FunctionalInterface
     private interface DynamicColorGetter {
         int color(BlockState state);
     }

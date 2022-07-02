@@ -1,7 +1,5 @@
 package xyz.jpenilla.squaremap.common.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,8 +24,6 @@ import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 public record UpdateChecker(Logger logger, String githubRepo) {
-    private static final Gson GSON = new GsonBuilder().create();
-
     public void checkVersion() {
         this.logger.info(Messages.UPDATE_CHECKER_FETCHING_VERSION_INFORMATION);
 
@@ -95,7 +91,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
     private Releases fetchReleases() throws IOException {
         final JsonArray result;
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://api.github.com/repos/%s/releases".formatted(this.githubRepo)).openStream(), StandardCharsets.UTF_8))) {
-            result = GSON.fromJson(reader, JsonArray.class);
+            result = Util.gson().fromJson(reader, JsonArray.class);
         }
 
         final Map<String, String> versionMap = new LinkedHashMap<>();
@@ -117,7 +113,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
                 return new Distance.UnknownCommit();
             }
             try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
-                final JsonObject response = GSON.fromJson(reader, JsonObject.class);
+                final JsonObject response = Util.gson().fromJson(reader, JsonObject.class);
                 final String status = response.get("status").getAsString();
                 return switch (status) {
                     case "identical" -> new Distance.UpToDate();

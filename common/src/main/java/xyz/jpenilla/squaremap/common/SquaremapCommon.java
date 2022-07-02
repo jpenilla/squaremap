@@ -21,7 +21,7 @@ import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.LevelBiomeColorData;
 import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
-import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
+import xyz.jpenilla.squaremap.common.layer.SpawnIconLayer;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
@@ -111,7 +111,7 @@ public final class SquaremapCommon {
         final Squaremap api = this.injector.getInstance(Squaremap.class);
 
         try {
-            api.iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(this.directoryProvider.webDirectory().resolve("images/icon/spawn.png").toFile()));
+            api.iconRegistry().register(SpawnIconLayer.KEY, ImageIO.read(this.directoryProvider.webDirectory().resolve("images/icon/spawn.png").toFile()));
         } catch (final IOException ex) {
             Logging.logger().warn("Failed to register spawn icon", ex);
         }

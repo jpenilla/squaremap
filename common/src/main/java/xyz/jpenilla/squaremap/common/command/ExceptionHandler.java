@@ -27,7 +27,6 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.util.Components;
 
 import static net.kyori.adventure.text.Component.newline;
 import static net.kyori.adventure.text.Component.text;
@@ -37,7 +36,7 @@ import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
-import static xyz.jpenilla.squaremap.common.util.Components.highlight;
+import static xyz.jpenilla.squaremap.common.util.Components.highlightSpecialCharacters;
 import static xyz.jpenilla.squaremap.common.util.Components.placeholder;
 
 @DefaultQualifier(NonNull.class)
@@ -101,7 +100,7 @@ final class ExceptionHandler {
         }
         decorateAndSend(
             commander,
-            Messages.COMMAND_EXCEPTION_INVALID_ARGUMENT.withPlaceholders(Components.placeholder("message", message))
+            Messages.COMMAND_EXCEPTION_INVALID_ARGUMENT.withPlaceholders(placeholder("message", message))
         );
     }
 
@@ -114,7 +113,7 @@ final class ExceptionHandler {
 
     private void invalidSyntax(final Commander commander, final InvalidSyntaxException exception) {
         final Component message = Messages.COMMAND_EXCEPTION_INVALID_SYNTAX.withPlaceholders(
-            placeholder("correct_syntax", highlight(text("/%s".formatted(exception.getCorrectSyntax())), WHITE))
+            placeholder("correct_syntax", highlightSpecialCharacters(text("/%s".formatted(exception.getCorrectSyntax())), WHITE))
         );
         decorateAndSend(commander, message);
     }

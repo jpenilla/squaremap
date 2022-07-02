@@ -112,7 +112,7 @@ public abstract class AbstractRender implements Runnable {
         }
         final State state = this.state;
         this.shutdown();
-        this.mapWorld.renderStopped(state == State.CANCELLED || state == State.RUNNING);
+        this.mapWorld.renderManager().renderStopped(state == State.CANCELLED || state == State.RUNNING);
         final String msg = state == State.RUNNING ? Messages.LOG_FINISHED_RENDERING : Messages.LOG_CANCELLED_RENDERING;
         Logging.info(msg, "world", this.mapWorld.identifier().asString());
     }
@@ -268,7 +268,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private void scanChunk(final Image image, final int[] lastY, final ChunkSnapshot chunk) {
-        while (this.mapWorld.rendersPaused() && this.running()) {
+        while (this.mapWorld.renderManager().rendersPaused() && this.running()) {
             sleep(500);
         }
         final int blockX = chunk.pos().getMinBlockX();

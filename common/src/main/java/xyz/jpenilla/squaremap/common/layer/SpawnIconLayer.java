@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.marker.Marker;
@@ -14,8 +15,9 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 
 import static xyz.jpenilla.squaremap.api.Point.point;
 
-public class SpawnIconProvider implements LayerProvider {
-    public static final Key SPAWN_ICON_KEY = Key.of("squaremap-spawn_icon");
+@DefaultQualifier(NonNull.class)
+public final class SpawnIconLayer implements LayerProvider {
+    public static final Key KEY = Key.of("squaremap-spawn_icon");
 
     private final String label;
     private final boolean showControls;
@@ -25,7 +27,7 @@ public class SpawnIconProvider implements LayerProvider {
     private final MapWorldInternal world;
     private final MarkerOptions options;
 
-    public SpawnIconProvider(final @NonNull MapWorldInternal world) {
+    public SpawnIconLayer(final MapWorldInternal world) {
         this.world = world;
         final WorldConfig config = world.config();
         this.label = Messages.UI_SPAWN_MARKER_ICON_LABEL;
@@ -37,7 +39,7 @@ public class SpawnIconProvider implements LayerProvider {
     }
 
     @Override
-    public @NonNull String getLabel() {
+    public String getLabel() {
         return this.label;
     }
 
@@ -62,10 +64,10 @@ public class SpawnIconProvider implements LayerProvider {
     }
 
     @Override
-    public @NonNull Collection<Marker> getMarkers() {
+    public Collection<Marker> getMarkers() {
         final BlockPos spawn = this.world.serverLevel().getSharedSpawnPos();
         return List.of(
-            Marker.icon(point(spawn.getX(), spawn.getZ()), SPAWN_ICON_KEY, 16)
+            Marker.icon(point(spawn.getX(), spawn.getZ()), KEY, 16)
                 .markerOptions(this.options)
         );
     }

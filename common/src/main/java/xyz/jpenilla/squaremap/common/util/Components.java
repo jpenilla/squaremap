@@ -50,9 +50,13 @@ public final class Components {
         return placeholder("player", player.getGameProfile().getName());
     }
 
-    public static Component highlight(final Component component, final TextColor highlightColor) {
+    public static Component highlightSpecialCharacters(final Component component, final TextColor highlightColor) {
+        return highlight(component, SPECIAL_CHARACTERS_PATTERN, highlightColor);
+    }
+
+    public static Component highlight(final Component component, final Pattern highlight, final TextColor highlightColor) {
         return component.replaceText(config -> {
-            config.match(SPECIAL_CHARACTERS_PATTERN);
+            config.match(highlight);
             config.replacement(match -> match.color(highlightColor));
         });
     }

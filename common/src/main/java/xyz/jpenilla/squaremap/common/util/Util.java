@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common.util;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -21,7 +23,15 @@ import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public final class Util {
+    private static final Gson GSON = new GsonBuilder()
+        .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
+        .create();
+
     private Util() {
+    }
+
+    public static Gson gson() {
+        return GSON;
     }
 
     @SuppressWarnings("unchecked")

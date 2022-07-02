@@ -62,7 +62,7 @@ public final class FullRender extends AbstractRender {
         // order preserved map of regions with boolean to signify if it was already scanned
         final Map<RegionCoordinate, Boolean> regions;
 
-        final @Nullable Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.getRenderProgress();
+        final @Nullable Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.renderManager().readRenderProgress();
         if (resumedMap != null) {
             Logging.info(Messages.LOG_RESUMED_RENDERING, "world", this.mapWorld.identifier().asString());
 
@@ -132,7 +132,7 @@ public final class FullRender extends AbstractRender {
             this.processedRegions.incrementAndGet();
             // only save progress if task is not cancelled
             if (this.running()) {
-                this.mapWorld.saveRenderProgress(regions);
+                this.mapWorld.renderManager().saveRenderProgress(regions);
             }
         }
     }
