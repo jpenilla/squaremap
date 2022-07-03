@@ -13,8 +13,8 @@ command:
         player-not-found-for-input: <red>Nema nađenog igrača za '<input>'
         console-must-specify-world: <red>Morate odrediti svijet kad pokrećete ovu
             komandu sa konzole
-        no-such-world: <red>Ne postoji svijet '<world>'
-        map-not-enabled-for-world: <red>Karta nije uključena za svijet '<world>'
+        no-such-world: Ne postoji svijet '<world>'
+        map-not-enabled-for-world: Karta nije uključena za svijet '<world>'
         confirmation-required: <red>Potvrda je potrebna. Potvrdi koristeći /<command>
             confirm.
         no-pending-commands: <red>Nemate komandi na čekanju.
@@ -55,7 +55,7 @@ command:
             string: '''<input>'' is not a valid string of type <string_mode>'
             number: '''<input>'' is not a valid number in the range <min> to <max>'
             location:
-                invalid-format: '''<input>'' is not a valid location. Required format
+                invalid_format: '''<input>'' is not a valid location. Required format
                     is ''<x> <z>'''
                 mixed_local_absolute: Cannot mix local and absolute coordinates. (either
                     all coordinates use '^' or none do)

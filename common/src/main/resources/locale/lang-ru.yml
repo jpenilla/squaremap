@@ -13,8 +13,8 @@ command:
         player-not-found-for-input: <red>Игрок '<input>' не найден
         console-must-specify-world: <red>При выполнении этой команды из консоли необходимо
             указать мир
-        no-such-world: <red>Мир '<world>' не найден
-        map-not-enabled-for-world: <red>Карта для мира '<world>' не включена
+        no-such-world: Мир '<world>' не найден
+        map-not-enabled-for-world: Карта для мира '<world>' не включена
         confirmation-required: <red>Требуется подтверждение. Подтвердите с помощью
             /<command> confirm.
         no-pending-commands: <red>У вас нет команд, ожидающих выполнения.
@@ -55,7 +55,7 @@ command:
             string: '''<input>'' is not a valid string of type <string_mode>'
             number: '''<input>'' is not a valid number in the range <min> to <max>'
             location:
-                invalid-format: '''<input>'' is not a valid location. Required format
+                invalid_format: '''<input>'' is not a valid location. Required format
                     is ''<x> <z>'''
                 mixed_local_absolute: Cannot mix local and absolute coordinates. (either
                     all coordinates use '^' or none do)

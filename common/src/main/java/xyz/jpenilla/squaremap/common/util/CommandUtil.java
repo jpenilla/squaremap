@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.common.util;
 
 import cloud.commandframework.context.CommandContext;
 import java.util.Optional;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -30,7 +31,10 @@ public final class CommandUtil {
             if (mapWorld.isPresent()) {
                 return mapWorld.get();
             }
-            throw CommandCompleted.withMessage(Messages.MAP_NOT_ENABLED_FOR_WORLD.withPlaceholders(Components.worldPlaceholder(level)));
+            throw CommandCompleted.withMessage(
+                Messages.MAP_NOT_ENABLED_FOR_WORLD.withPlaceholders(Components.worldPlaceholder(level))
+                    .color(NamedTextColor.RED)
+            );
         } else {
             throw CommandCompleted.withMessage(Messages.CONSOLE_MUST_SPECIFY_WORLD);
         }

@@ -9,7 +9,11 @@ import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.util.ComponentMessageThrowable;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -146,7 +150,7 @@ public final class MapWorldArgument<C> extends CommandArgument<C, MapWorldIntern
         }
     }
 
-    public static final class MapWorldParseException extends IllegalArgumentException {
+    public static final class MapWorldParseException extends IllegalArgumentException implements ComponentMessageThrowable {
         private static final long serialVersionUID = 3072715326923004782L;
 
         private final String input;
@@ -161,15 +165,24 @@ public final class MapWorldArgument<C> extends CommandArgument<C, MapWorldIntern
         }
 
         @Override
+        public Component componentMessage() {
+            return this.reason.failureMessage.get().withPlaceholders(Components.placeholder("world", this.input));
+        }
+
+        @Override
         public String getMessage() {
-            return switch (this.reason) {
-                case NO_SUCH_WORLD -> Components.miniMessage().stripTags(Messages.NO_SUCH_WORLD.miniMessage().replace("<world>", this.input));
-                case MAP_NOT_ENABLED -> Components.miniMessage().stripTags(Messages.MAP_NOT_ENABLED_FOR_WORLD.miniMessage().replace("<world>", this.input));
-            };
+            return PlainTextComponentSerializer.plainText().serialize(this.componentMessage());
         }
 
         public enum FailureReason {
-            NO_SUCH_WORLD, MAP_NOT_ENABLED
+            NO_SUCH_WORLD(() -> Messages.NO_SUCH_WORLD),
+            MAP_NOT_ENABLED(() -> Messages.MAP_NOT_ENABLED_FOR_WORLD);
+
+            private final Supplier<Messages.ComponentMessage> failureMessage;
+
+            FailureReason(final Supplier<Messages.ComponentMessage> failureMessage) {
+                this.failureMessage = failureMessage;
+            }
         }
     }
 }

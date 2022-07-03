@@ -13,8 +13,8 @@ command:
         player-not-found-for-input: <red>Nie znaleziono gracza o nazwie '<input>'
         console-must-specify-world: <red>Musisz określić świat podczas uruchamiania
             tej komendy z konsoli
-        no-such-world: <red>Nie ma takiego świata '<world>'
-        map-not-enabled-for-world: <red>Mapa nie jest włączona dla świata '<world>'
+        no-such-world: Nie ma takiego świata '<world>'
+        map-not-enabled-for-world: Mapa nie jest włączona dla świata '<world>'
         confirmation-required: <red>Wymagane potwierdzenie. Potwierdź używając /<command>
             confirm.
         no-pending-commands: <red>Nie masz żadnych poleceń do potwierdzenia.
@@ -55,7 +55,7 @@ command:
             string: '''<input>'' is not a valid string of type <string_mode>'
             number: '''<input>'' is not a valid number in the range <min> to <max>'
             location:
-                invalid-format: '''<input>'' is not a valid location. Required format
+                invalid_format: '''<input>'' is not a valid location. Required format
                     is ''<x> <z>'''
                 mixed_local_absolute: Cannot mix local and absolute coordinates. (either
                     all coordinates use '^' or none do)

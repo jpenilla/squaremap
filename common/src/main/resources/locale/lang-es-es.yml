@@ -14,8 +14,8 @@ command:
             '<input>'
         console-must-specify-world: <red>Debes especificar un mundo al usar este comando
             desde consola
-        no-such-world: <red>No existe el mundo '<world>'
-        map-not-enabled-for-world: <red>El mapa no está habilitado para el mundo '<world>'
+        no-such-world: No existe el mundo '<world>'
+        map-not-enabled-for-world: El mapa no está habilitado para el mundo '<world>'
         confirmation-required: <red>Confirmación requerida. Confirma usando /<command>
             confirm.
         no-pending-commands: <red>No tienes ninguna orden pendiente.
@@ -56,7 +56,7 @@ command:
             string: '''<input>'' is not a valid string of type <string_mode>'
             number: '''<input>'' is not a valid number in the range <min> to <max>'
             location:
-                invalid-format: '''<input>'' is not a valid location. Required format
+                invalid_format: '''<input>'' is not a valid location. Required format
                     is ''<x> <z>'''
                 mixed_local_absolute: Cannot mix local and absolute coordinates. (either
                     all coordinates use '^' or none do)

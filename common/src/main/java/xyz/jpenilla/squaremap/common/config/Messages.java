@@ -62,9 +62,9 @@ public final class Messages {
     @MessageKey("command.message.console-must-specify-world")
     public static ComponentMessage CONSOLE_MUST_SPECIFY_WORLD = new ComponentMessage("<red>You must specify the world when running this command from console");
     @MessageKey("command.message.no-such-world")
-    public static ComponentMessage NO_SUCH_WORLD = new ComponentMessage("<red>No such world '<world>'");
+    public static ComponentMessage NO_SUCH_WORLD = new ComponentMessage("No such world '<world>'");
     @MessageKey("command.message.map-not-enabled-for-world")
-    public static ComponentMessage MAP_NOT_ENABLED_FOR_WORLD = new ComponentMessage("<red>Map is not enabled for world '<world>'");
+    public static ComponentMessage MAP_NOT_ENABLED_FOR_WORLD = new ComponentMessage("Map is not enabled for world '<world>'");
     @MessageKey("command.message.confirmation-required")
     public static ComponentMessage CONFIRMATION_REQUIRED_MESSAGE = new ComponentMessage("<red>Confirmation required. Confirm using /<command> confirm.");
     @MessageKey("command.message.no-pending-commands")
@@ -128,7 +128,7 @@ public final class Messages {
     public static ComponentMessage STRING_PARSE_EXCEPTION = new ComponentMessage("'<input>' is not a valid string of type <string_mode>");
     @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "number")
     public static ComponentMessage NUMBER_PARSE_EXCEPTION = new ComponentMessage("'<input>' is not a valid number in the range <min> to <max>");
-    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "location.invalid-format")
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "location.invalid_format")
     public static ComponentMessage LOCATION_PARSE_EXCEPTION_INVALID_FORMAT = new ComponentMessage("'<input>' is not a valid location. Required format is '<x> <z>'");
     @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "location.mixed_local_absolute")
     public static ComponentMessage LOCATION_PARSE_EXCEPTION_MIXED_LOCAL_ABSOLUTE = new ComponentMessage("Cannot mix local and absolute coordinates. (either all coordinates use '^' or none do)");

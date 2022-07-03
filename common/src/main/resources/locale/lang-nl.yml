@@ -13,8 +13,8 @@ command:
         player-not-found-for-input: <red>Geen speler gevonden voor invoer '<input>'
         console-must-specify-world: <red>Je moet een wereld opgeven bij het uitvoeren
             van dit commando vanuit de console
-        no-such-world: <red>Geen dergelijke wereld '<world>'
-        map-not-enabled-for-world: <red>Kaart is niet ingeschakeld voor wereld '<world>'
+        no-such-world: Geen dergelijke wereld '<world>'
+        map-not-enabled-for-world: Kaart is niet ingeschakeld voor wereld '<world>'
         confirmation-required: <red>Bevestiging vereist. Bevestig met /<command> confirm.
         no-pending-commands: <red>Je hebt geen openstaande commando's.
         progresslogging:
@@ -54,7 +54,7 @@ command:
             string: '''<input>'' is not a valid string of type <string_mode>'
             number: '''<input>'' is not a valid number in the range <min> to <max>'
             location:
-                invalid-format: '''<input>'' is not a valid location. Required format
+                invalid_format: '''<input>'' is not a valid location. Required format
                     is ''<x> <z>'''
                 mixed_local_absolute: Cannot mix local and absolute coordinates. (either
                     all coordinates use '^' or none do)

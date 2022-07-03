@@ -11,8 +11,8 @@ command:
         console-must-specify-player: <red>從控制台執行此命令時必須指定一個玩家
         player-not-found-for-input: <red>沒有找到玩家 '<input>'
         console-must-specify-world: <red>從控制台執行此命令時必須指定一個世界
-        no-such-world: <red>沒有找到世界 '<world>'
-        map-not-enabled-for-world: <red>世界 '<world>' 的渲染未啟用
+        no-such-world: 沒有找到世界 '<world>'
+        map-not-enabled-for-world: 世界 '<world>' 的渲染未啟用
         confirmation-required: <red>請輸入 /<command> confirm 確認操作
         no-pending-commands: <red>你沒有任何待處理的命令
         progresslogging:
@@ -50,7 +50,7 @@ command:
             string: '''<input>'' is not a valid string of type <string_mode>'
             number: '''<input>'' is not a valid number in the range <min> to <max>'
             location:
-                invalid-format: '''<input>'' is not a valid location. Required format
+                invalid_format: '''<input>'' is not a valid location. Required format
                     is ''<x> <z>'''
                 mixed_local_absolute: Cannot mix local and absolute coordinates. (either
                     all coordinates use '^' or none do)
