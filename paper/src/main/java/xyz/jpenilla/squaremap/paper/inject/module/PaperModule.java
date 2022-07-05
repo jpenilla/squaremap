@@ -12,15 +12,15 @@ import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
 import xyz.jpenilla.squaremap.paper.PaperPlayerManager;
 import xyz.jpenilla.squaremap.paper.PaperServerAccess;
 import xyz.jpenilla.squaremap.paper.PaperWorldManager;
 import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.command.PaperCommands;
-import xyz.jpenilla.squaremap.paper.util.PaperChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.paper.util.PaperRegionFileDirectoryResolver;
+import xyz.jpenilla.squaremap.paper.util.chunksnapshot.PaperChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperModule extends AbstractModule {
@@ -51,8 +51,8 @@ public final class PaperModule extends AbstractModule {
         this.bind(PlatformCommands.class)
             .to(PaperCommands.class);
 
-        this.bind(ChunkSnapshotProvider.class)
-            .to(PaperChunkSnapshotProvider.class);
+        this.bind(ChunkSnapshotProviderFactory.class)
+            .to(PaperChunkSnapshotProviderFactory.class);
 
         this.bind(AbstractPlayerManager.class)
             .to(PaperPlayerManager.class);

@@ -1,7 +1,5 @@
-package xyz.jpenilla.squaremap.common.util;
+package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -15,28 +13,23 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.util.ChunkMapAccess;
 
 @DefaultQualifier(NonNull.class)
-@Singleton
-public final class VanillaChunkSnapshotProvider implements ChunkSnapshotProvider {
-    @Inject
-    private VanillaChunkSnapshotProvider() {
-    }
-
+record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotProvider {
     @Override
     public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(
-        final ServerLevel level,
         final int x,
         final int z,
         final boolean biomesOnly
     ) {
         return CompletableFuture.supplyAsync(() -> {
-            final @Nullable LevelChunk chunk = fullChunkIfGenerated(level, x, z);
+            final @Nullable LevelChunk chunk = fullChunkIfGenerated(this.level, x, z);
             if (chunk == null || chunk.isEmpty()) {
                 return null;
             }
             return ChunkSnapshot.snapshot(chunk, biomesOnly);
-        }, level.getServer());
+        }, this.level.getServer());
     }
 
     private static @Nullable LevelChunk fullChunkIfGenerated(final ServerLevel level, final int x, final int z) {

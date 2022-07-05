@@ -19,9 +19,9 @@ import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
@@ -36,9 +36,9 @@ public final class RadiusRender extends AbstractRender {
         @Assisted final MapWorldInternal world,
         @Assisted final BlockPos center,
         @Assisted final int radius,
-        final ChunkSnapshotProvider chunkSnapshotProvider
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory
     ) {
-        super(world, chunkSnapshotProvider);
+        super(world, chunkSnapshotProviderFactory);
         this.radius = Numbers.blockToChunk(radius);
         this.centerX = Numbers.blockToChunk(center.getX());
         this.centerZ = Numbers.blockToChunk(center.getZ());

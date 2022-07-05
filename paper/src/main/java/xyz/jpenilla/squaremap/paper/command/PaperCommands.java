@@ -1,7 +1,6 @@
 package xyz.jpenilla.squaremap.paper.command;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.bukkit.CloudBukkitCapabilities;
 import cloud.commandframework.bukkit.arguments.selector.SinglePlayerSelector;
 import cloud.commandframework.bukkit.parsers.location.Location2D;
 import cloud.commandframework.bukkit.parsers.location.Location2DArgument;

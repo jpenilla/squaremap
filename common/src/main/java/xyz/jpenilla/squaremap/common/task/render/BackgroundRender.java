@@ -20,17 +20,17 @@ import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 public final class BackgroundRender extends AbstractRender {
     @AssistedInject
     private BackgroundRender(
         @Assisted final MapWorldInternal world,
-        final ChunkSnapshotProvider chunkSnapshotProvider
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory
     ) {
-        super(world, chunkSnapshotProvider, createBackgroundRenderWorkerPool(world));
+        super(world, chunkSnapshotProviderFactory, createBackgroundRenderWorkerPool(world));
     }
 
     @Override
@@ -83,6 +83,7 @@ public final class BackgroundRender extends AbstractRender {
         if (this.biomeColors != null) {
             this.biomeColors.clear();
         }
+        this.resetChunkSnapshotProvider();
 
         chunks.forEach(this.mapWorld::chunkModified);
 

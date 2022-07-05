@@ -19,10 +19,10 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
@@ -37,10 +37,10 @@ public final class FullRender extends AbstractRender {
     private FullRender(
         @Assisted final MapWorldInternal world,
         @Assisted final int wait,
-        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
         final RegionFileDirectoryResolver regionFileDirectoryResolver
     ) {
-        super(world, chunkSnapshotProvider);
+        super(world, chunkSnapshotProviderFactory);
         this.regionFileDirectoryResolver = regionFileDirectoryResolver;
         this.wait = wait;
     }
@@ -48,10 +48,10 @@ public final class FullRender extends AbstractRender {
     @AssistedInject
     private FullRender(
         @Assisted final MapWorldInternal world,
-        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
         final RegionFileDirectoryResolver regionFileDirectoryResolver
     ) {
-        this(world, 0, chunkSnapshotProvider, regionFileDirectoryResolver);
+        this(world, 0, chunkSnapshotProviderFactory, regionFileDirectoryResolver);
     }
 
     @Override

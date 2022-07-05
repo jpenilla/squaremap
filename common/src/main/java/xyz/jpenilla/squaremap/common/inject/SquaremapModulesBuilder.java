@@ -12,7 +12,7 @@ import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.module.ApiModule;
 import xyz.jpenilla.squaremap.common.inject.module.PlatformModule;
-import xyz.jpenilla.squaremap.common.inject.module.VanillaChunkSnapshotProviderModule;
+import xyz.jpenilla.squaremap.common.inject.module.VanillaChunkSnapshotProviderFactoryModule;
 import xyz.jpenilla.squaremap.common.inject.module.VanillaRegionFileDirectoryResolverModule;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 
@@ -23,7 +23,7 @@ public final class SquaremapModulesBuilder {
     private final SquaremapPlatform platform;
     private final List<Module> extraModules = new ArrayList<>();
     private boolean vanillaRegionFileDirectoryResolver;
-    private boolean vanillaChunkSnapshotProvider;
+    private boolean vanillaChunkSnapshotProviderFactory;
     private @Nullable Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass;
 
     private SquaremapModulesBuilder(final SquaremapPlatform platform) {
@@ -35,8 +35,8 @@ public final class SquaremapModulesBuilder {
         return this;
     }
 
-    public SquaremapModulesBuilder vanillaChunkSnapshotProvider() {
-        this.vanillaChunkSnapshotProvider = true;
+    public SquaremapModulesBuilder vanillaChunkSnapshotProviderFactory() {
+        this.vanillaChunkSnapshotProviderFactory = true;
         return this;
     }
 
@@ -67,8 +67,8 @@ public final class SquaremapModulesBuilder {
 
         final List<Module> modules = new ArrayList<>(baseModules);
 
-        if (this.vanillaChunkSnapshotProvider) {
-            modules.add(new VanillaChunkSnapshotProviderModule());
+        if (this.vanillaChunkSnapshotProviderFactory) {
+            modules.add(new VanillaChunkSnapshotProviderFactoryModule());
         }
 
         if (this.vanillaRegionFileDirectoryResolver) {

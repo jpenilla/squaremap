@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.util;
+package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 
 import java.util.Map;
 import net.minecraft.core.BlockPos;

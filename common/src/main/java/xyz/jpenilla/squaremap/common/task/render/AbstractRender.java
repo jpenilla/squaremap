@@ -16,6 +16,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -38,17 +39,19 @@ import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractRender implements Runnable {
     private final ExecutorService executorService;
     private final Executor executor;
-    private final ChunkSnapshotProvider chunkSnapshotProvider;
+    private final Supplier<ChunkSnapshotProvider> createChunkSnapshotProvider;
+    private ChunkSnapshotProvider chunkSnapshotProvider;
     private volatile @MonotonicNonNull Thread thread;
     protected volatile State state = State.RUNNING;
 
@@ -64,21 +67,22 @@ public abstract class AbstractRender implements Runnable {
 
     protected AbstractRender(
         final MapWorldInternal world,
-        final ChunkSnapshotProvider chunkSnapshotProvider
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory
     ) {
-        this(world, chunkSnapshotProvider, createRenderWorkerPool(world));
+        this(world, chunkSnapshotProviderFactory, createRenderWorkerPool(world));
     }
 
     protected AbstractRender(
         final MapWorldInternal mapWorld,
-        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
         final ExecutorService workerPool
     ) {
         this.mapWorld = mapWorld;
         this.executorService = workerPool;
         this.executor = new RenderWorkerExecutor(workerPool, this::running);
         this.level = mapWorld.serverLevel();
-        this.chunkSnapshotProvider = chunkSnapshotProvider;
+        this.createChunkSnapshotProvider = () -> chunkSnapshotProviderFactory.createChunkSnapshotProvider(this.level);
+        this.chunkSnapshotProvider = this.createChunkSnapshotProvider.get();
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
             ? new ConcurrentHashMap<>()
             : null; // this should be null if we are not mapping biomes
@@ -161,6 +165,10 @@ public abstract class AbstractRender implements Runnable {
 
     public final int processedRegions() {
         return this.processedRegions.get();
+    }
+
+    protected final void resetChunkSnapshotProvider() {
+        this.chunkSnapshotProvider = this.createChunkSnapshotProvider.get();
     }
 
     public final void restartProgressLogger() {
@@ -493,7 +501,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private @Nullable ChunkSnapshot chunkSnapshot(final int x, final int z) {
-        final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(this.level, x, z, false);
+        final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(x, z, false);
         for (int failures = 1; !future.isDone(); ++failures) {
             if (!this.running()) {
                 return null;

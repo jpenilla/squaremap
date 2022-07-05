@@ -40,7 +40,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
             SquaremapModulesBuilder.forPlatform(this)
                 .mapWorldFactory(FabricMapWorld.Factory.class)
                 .withModule(new FabricModule(this))
-                .vanillaChunkSnapshotProvider()
+                .vanillaChunkSnapshotProviderFactory()
                 .vanillaRegionFileDirectoryResolver()
                 .build()
         );

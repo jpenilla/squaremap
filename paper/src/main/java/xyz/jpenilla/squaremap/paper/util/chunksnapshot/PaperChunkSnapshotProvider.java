@@ -1,7 +1,5 @@
-package xyz.jpenilla.squaremap.paper.util;
+package xyz.jpenilla.squaremap.paper.util.chunksnapshot;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -11,35 +9,29 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
 
 @DefaultQualifier(NonNull.class)
-@Singleton
-public final class PaperChunkSnapshotProvider implements ChunkSnapshotProvider {
-    @Inject
-    private PaperChunkSnapshotProvider() {
-    }
-
+record PaperChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotProvider {
     @Override
     public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(
-        final ServerLevel level,
         final int x,
         final int z,
         final boolean biomesOnly
     ) {
         return CompletableFuture.supplyAsync(() -> {
-            @Nullable ChunkAccess existing = level.getChunkIfLoadedImmediately(x, z);
+            @Nullable ChunkAccess existing = this.level.getChunkIfLoadedImmediately(x, z);
             if (existing == null) {
-                existing = level.getChunkSource().chunkMap.getUnloadingChunk(x, z);
+                existing = this.level.getChunkSource().chunkMap.getUnloadingChunk(x, z);
             }
             if (existing != null && existing.getStatus().isOrAfter(ChunkStatus.FULL)) {
                 return CompletableFuture.completedFuture(existing);
             }
             final CompletableFuture<@Nullable ChunkAccess> load = new CompletableFuture<>();
-            level.getChunkSource().getChunkAtAsynchronously(x, z, ChunkStatus.EMPTY, false, false, load::complete);
+            this.level.getChunkSource().getChunkAtAsynchronously(x, z, ChunkStatus.EMPTY, false, false, load::complete);
             return load;
-        }, level.getServer()).thenCompose(chunkFuture -> chunkFuture.thenApplyAsync(chunk -> {
+        }, this.level.getServer()).thenCompose(chunkFuture -> chunkFuture.thenApplyAsync(chunk -> {
             if (chunk == null || !chunk.getStatus().isOrAfter(ChunkStatus.FULL)) {
                 return null;
             }
@@ -50,6 +42,6 @@ public final class PaperChunkSnapshotProvider implements ChunkSnapshotProvider {
                 return ChunkSnapshot.snapshot(levelChunk, biomesOnly);
             }
             return null;
-        }, level.getServer()));
+        }, this.level.getServer()));
     }
 }

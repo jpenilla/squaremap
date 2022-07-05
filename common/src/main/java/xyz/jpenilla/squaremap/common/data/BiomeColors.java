@@ -17,10 +17,10 @@ import net.minecraft.world.level.material.Material;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.ColorBlender;
 import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
 
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
@@ -213,7 +213,7 @@ public final class BiomeColors {
                 return cached;
             }
 
-            @Nullable final ChunkSnapshot chunk = this.chunkSnapshotProvider.asyncSnapshot(this.level(), chunkPos.x, chunkPos.z, true)
+            final @Nullable ChunkSnapshot chunk = this.chunkSnapshotProvider.asyncSnapshot(chunkPos, true)
                 // todo respect cancellation
                 .join();
             if (chunk == null) {
