@@ -522,9 +522,13 @@ public abstract class AbstractRender implements Runnable {
         );
     }
 
-    protected static int getThreads(int threads) {
+    protected static int getThreads(final int threads) {
+        return getThreads(threads, 2);
+    }
+
+    protected static int getThreads(int threads, final int factor) {
         if (threads == -1) {
-            threads = Runtime.getRuntime().availableProcessors() / 3;
+            threads = Runtime.getRuntime().availableProcessors() / factor;
         }
         return Math.max(1, threads);
     }

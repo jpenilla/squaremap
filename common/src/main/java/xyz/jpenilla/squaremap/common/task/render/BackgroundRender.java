@@ -95,7 +95,7 @@ public final class BackgroundRender extends AbstractRender {
 
     private static ExecutorService createBackgroundRenderWorkerPool(final MapWorldInternal world) {
         return Util.newFixedThreadPool(
-            getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS),
+            getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS, 3),
             Util.squaremapThreadFactory("bg-render-worker", world.serverLevel()),
             new ThreadPoolExecutor.DiscardPolicy()
         );
