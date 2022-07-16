@@ -1,4 +1,4 @@
-# Translators: [FreeMonoid]
+# Translators: [FreeMonoid, bottleofench]
 
 render-in-progress: <red>Создание карты для <world> уже в процессе
 render-not-in-progress: <red>Карта для <world> сейчас не создается
@@ -19,50 +19,49 @@ command:
             /<command> confirm.
         no-pending-commands: <red>У вас нет команд, ожидающих выполнения.
         progresslogging:
-            enabled: <green>Render progress logging has been enabled.
-            disabled: <green>Render progress logging has been disabled.
-            set-rate: <green>Render progress logging interval has been set to </green><seconds>
+            enabled: <green>Логирование хода рендеринга включено.
+            disabled: <green>Логирование хода рендеринга выключено.
+            set-rate: <green>Интервал логирования хода рендеринга установлен на </green><seconds>
                 seconds
-            statusmessage: 'Render progress logging enabled: <enabled>, interval:
+            statusmessage: 'Логирование хода рендеринга включено: <enabled>, interval:
                 <green><seconds></green> seconds'
         help:
-            help: squaremap command help
-            command: Command
-            description: Description
-            no_description: No description
-            arguments: Arguments
-            optional: Optional
-            showing_results_for_query: Showing search results for query
-            no_results_for_query: No results for query
-            available_commands: Available Commands
-            click_to_show_help: Click to show help for this command
-            page_out_of_range: 'Error: Page <page> is not in range. Must be in range
+            help: помощь по команде squaremap
+            command: Команда
+            description: Описание
+            no_description: Нет описания
+            arguments: Аргументы
+            optional: Дополнительно
+            showing_results_for_query: Показаны результаты поиска по запросу
+            no_results_for_query: Нет результатов для запроса
+            available_commands: Доступные команды
+            click_to_show_help: Нажмите, чтобы показать справку для этой команды
+            page_out_of_range: 'Ошибка: Страница <page> не находится в диапазоне
                 [1, <max_pages>]'
-            click_for_next_page: Click for next page
-            click_for_previous_page: Click for previous page
+            click_for_next_page: Нажмите для следующей страницы
+            click_for_previous_page: Нажмите для предыдущей страницы
         exception:
-            command-execution: <red>An internal error occurred while attempting to
-                perform this command.
+            command-execution: <red>При попытке выполнить эту команду произошла внутренняя ошибка.
             no-permission: |-
-                <red>I'm sorry, but you do not have permission to perform this command.
-                Please contact the server administrators if you believe that this is in error.
-            invalid-argument: <red>Invalid command argument<white>:</white> <gray><message>
-            invalid-sender-type: <red>Invalid command sender type. You must be of
-                type <gray><required_sender_type></gray>.
-            invalid-syntax: <red>Invalid command syntax. Correct command syntax is<white>:</white>
+                <red>Извините, но у вас нет разрешения на выполнение этой команды.
+                Пожалуйста, свяжитесь с администраторами сервера, если вы считаете, что это ошибка.
+            invalid-argument: <red>Недопустимый аргумент команды<white>:</white> <gray><message>
+            invalid-sender-type: <red>Неверный тип отправителя команды. Вы должны иметь
+                тип <gray><required_sender_type></gray>.
+            invalid-syntax: <red>Неправильный синтаксис команды. Попробуйте так<white>:</white>
                 <gray><correct_syntax>
         parser-exception:
-            string: '''<input>'' is not a valid string of type <string_mode>'
-            number: '''<input>'' is not a valid number in the range <min> to <max>'
+            string: '''<input>'' не является допустимой строкой типа <string_mode>'
+            number: '''<input>'' не является действительным числом в диапазоне от <min> до <max>'
             location:
-                invalid_format: '''<input>'' is not a valid location. Required format
-                    is ''<x> <z>'''
-                mixed_local_absolute: Cannot mix local and absolute coordinates. (either
-                    all coordinates use '^' or none do)
+                invalid_format: '''<input>'' не является допустимым местоположением. Требуемый формат<white>:<white>
+                    ''<x> <z>'''
+                mixed_local_absolute: Невозможно смешивать локальные и абсолютные координаты. (либо
+                    все координаты используют '^' или ни одна не использует)
             selector:
-                malformed: Selector '<input>' is malformed
-                too_many_players: More than 1 player selected in single player selector
-                non_player_in_player_selector: Non-player(s) selected in player selector
+                malformed: Селектор '<input>' неправильно сформирован
+                too_many_players: В селекторе одного игрока выбрано более 1 игрока
+                non_player_in_player_selector: Неигрок(и), выбран(ы) в селекторе игроков
     prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
     description:
         help: Получить справку по командам squaremap
@@ -74,9 +73,9 @@ command:
         pause-render: Приостановить создание всех карт для указанного мира
         radius-render: Запустить создание карты в радиусе
         progresslogging:
-            status: Prints the current settings for render progress logging
-            toggle: Toggles render progress logging on or off
-            rate: Sets the interval in seconds for logging render progress
+            status: Выводит текущие настройки для логирования хода рендеринга
+            toggle: Включение / выключение логирования хода рендеринга
+            rate: Устанавливает интервал логирования хода рендеринга (в секундах)
         hide: Скрыть игрока на карте
         show: Показать игрока на карте
     argument:
@@ -91,10 +90,10 @@ command:
     show:
         not-hidden: <red><player> не скрыт на карте
         shown: <green><player> больше не скрыт на карте
-click-to-copy: Click to copy to clipboard
+click-to-copy: Нажмите, чтобы скопировать в буфер обмена
 click-for-help: Кликните для помощи
-click-to-confirm: Click to confirm
-click-to-toggle: Click to toggle
+click-to-confirm: Нажмите для подтверждения
+click-to-toggle: Нажмите для переключения
 plugin-reloaded: <green><name> v<version> перезагружен
 ui:
     page-title: squaremap - {world}
@@ -124,14 +123,14 @@ log:
     internal-web-stopped: Внутренний веб-сервер остановлен
     internal-web-start-error: Не удалось запустить внутренний веб-сервер
     could-not-create-directory: Не удалось создать папку! <path>
-    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
-        It will be overwritten.
+    could-not-read-region: Не удалось прочитать изображение карты для региона <x>, <z> (изображение повреждено?).
+        Она будет перезаписана.
     could-not-save-region: Не удалось сохранить карту для региона <x>,<z>
     internal-web-not-running: Ошибка внутреннего веб-сервера
     update-checker:
-        fetching-version-information: Fetching version information...
-        behind-branch: squaremap is <behind> version(s) behind branch '<branch>'!
-        download-dev-builds: Download dev builds from <link>
-        unknown-commit: Unknown commit '<commit>', cannot check for updates.
-        behind-releases: squaremap is <behind> version(s) out of date.
-        download-release: Download the latest release (<latest>) from <link>
+        fetching-version-information: Получение информации о версии...
+        behind-branch: squaremap отстаёт на <behind> версию(ии) от ветки '<branch>'!
+        download-dev-builds: Скачивайте dev-сборки: <link>
+        unknown-commit: Неизвестный коммит '<commit>', нельзя проверить наличие обновлений.
+        behind-releases: squaremap устарел на <behind> версию(ии).
+        download-release: Загрузите последнюю версию (<latest>) по ссылке <link>.
