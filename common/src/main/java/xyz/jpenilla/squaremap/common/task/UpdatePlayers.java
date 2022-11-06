@@ -94,7 +94,7 @@ public class UpdatePlayers implements Runnable {
         map.put("players", players);
         map.put("max", this.serverAccess.maxPlayers());
 
-        FileUtil.writeStringAsync(this.directoryProvider.tilesDirectory().resolve("players.json"), () -> Util.gson().toJson(map));
+        FileUtil.atomicWriteJsonAsync(this.directoryProvider.tilesDirectory().resolve("players.json"), map);
     }
 
     private static int armorPoints(final ServerPlayer player) {

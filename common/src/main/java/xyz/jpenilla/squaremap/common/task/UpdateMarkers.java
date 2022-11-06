@@ -26,7 +26,6 @@ import xyz.jpenilla.squaremap.api.marker.Polyline;
 import xyz.jpenilla.squaremap.api.marker.Rectangle;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
-import xyz.jpenilla.squaremap.common.util.Util;
 
 public final class UpdateMarkers implements Runnable {
     private final MapWorldInternal mapWorld;
@@ -76,7 +75,7 @@ public final class UpdateMarkers implements Runnable {
         });
 
         final Path file = this.mapWorld.tilesPath().resolve("markers.json");
-        FileUtil.writeStringAsync(file, () -> Util.gson().toJson(layers));
+        FileUtil.atomicWriteJsonAsync(file, layers);
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {

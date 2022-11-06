@@ -104,16 +104,13 @@ public final class Image {
 
     private void save(final int zoom, final int scaledX, final int scaledZ, final BufferedImage image) {
         final Path out = this.imageInDirectory(zoom, scaledX, scaledZ);
-        final Path tmp = FileUtil.siblingTempFile(out);
-        try (final OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(tmp))) {
-            save(image, outputStream);
-            FileUtil.atomicMove(tmp, out, true);
+        try {
+            FileUtil.atomicWrite(out, tmp -> {
+                try (final OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(tmp))) {
+                    save(image, outputStream);
+                }
+            });
         } catch (final IOException ex) {
-            try {
-                Files.deleteIfExists(tmp);
-            } catch (final IOException ex0) {
-                ex.addSuppressed(ex0);
-            }
             this.logCouldNotSave(ex);
         }
     }

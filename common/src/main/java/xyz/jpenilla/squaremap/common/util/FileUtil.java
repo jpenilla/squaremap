@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.common.util;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +19,6 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -117,21 +117,29 @@ public final class FileUtil {
         }
     }
 
-    public static void writeStringAsync(final Path file, final Supplier<String> string) {
+    public static void atomicWriteJsonAsync(final Path file, final Object object) {
+        atomicWriteAsync(file, tmp -> {
+            try (final BufferedWriter writer = Files.newBufferedWriter(tmp)) {
+                Util.gson().toJson(object, writer);
+            }
+        });
+    }
+
+    public static void atomicWriteAsync(final Path file, final CheckedConsumer<Path, IOException> op) {
         ForkJoinPool.commonPool().execute(() -> {
             try {
-                writeString(file, string.get());
+                atomicWrite(file, op);
             } catch (final IOException ex) {
                 Logging.logger().warn("Failed to write file '{}'", file, ex);
             }
         });
     }
 
-    private static void writeString(final Path path, final String str) throws IOException {
+    public static void atomicWrite(final Path path, final CheckedConsumer<Path, IOException> op) throws IOException {
         final Path tmp = siblingTempFile(path);
 
         try {
-            Files.writeString(tmp, str);
+            op.accept(tmp);
             atomicMove(tmp, path, true);
         } catch (final IOException ex) {
             try {
@@ -143,7 +151,7 @@ public final class FileUtil {
         }
     }
 
-    public static Path siblingTempFile(final Path path) {
+    private static Path siblingTempFile(final Path path) {
         return path.resolveSibling("." + System.nanoTime() + "-" + ThreadLocalRandom.current().nextInt() + "-" + path.getFileName().toString() + ".tmp");
     }
 
