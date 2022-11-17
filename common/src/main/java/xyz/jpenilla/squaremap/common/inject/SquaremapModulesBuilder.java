@@ -15,6 +15,7 @@ import xyz.jpenilla.squaremap.common.inject.module.PlatformModule;
 import xyz.jpenilla.squaremap.common.inject.module.VanillaChunkSnapshotProviderFactoryModule;
 import xyz.jpenilla.squaremap.common.inject.module.VanillaRegionFileDirectoryResolverModule;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
+import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,6 +26,7 @@ public final class SquaremapModulesBuilder {
     private boolean vanillaRegionFileDirectoryResolver;
     private boolean vanillaChunkSnapshotProviderFactory;
     private @Nullable Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass;
+    private Class<? extends SquaremapJarAccess> squaremapJarAccess = SquaremapJarAccess.JarFromCodeSource.class;
 
     private SquaremapModulesBuilder(final SquaremapPlatform platform) {
         this.platform = platform;
@@ -55,12 +57,17 @@ public final class SquaremapModulesBuilder {
         return this;
     }
 
+    public SquaremapModulesBuilder squaremapJarAccess(final Class<? extends SquaremapJarAccess> squaremapJarAccess) {
+        this.squaremapJarAccess = squaremapJarAccess;
+        return this;
+    }
+
     public List<Module> build() {
         requireNonNull(this.mapWorldFactoryClass, "mapWorldFactoryClass");
 
         final List<Module> baseModules = List.of(
             new ApiModule(),
-            new PlatformModule(this.platform),
+            new PlatformModule(this.platform, this.squaremapJarAccess),
             new FactoryModuleBuilder().build(RenderFactory.class),
             new FactoryModuleBuilder().build(this.mapWorldFactoryClass)
         );

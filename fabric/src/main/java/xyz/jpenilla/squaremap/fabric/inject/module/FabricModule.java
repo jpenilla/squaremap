@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import java.nio.file.Path;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -47,6 +48,9 @@ public final class FabricModule extends AbstractModule {
 
         this.bind(WorldManager.class)
             .to(FabricWorldManager.class);
+
+        this.bind(ModContainer.class)
+            .toInstance(FabricLoader.getInstance().getModContainer("squaremap").orElseThrow());
     }
 
     @Provides
