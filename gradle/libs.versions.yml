@@ -5,9 +5,9 @@ metadata:
 
 plugins:
     org.spongepowered.gradle.plugin: 2.0.2
-    xyz.jpenilla.run-paper: 1.1.0
+    xyz.jpenilla.run-paper: 2.0.0
     net.minecrell.plugin-yml.bukkit: 0.5.1
-    io.papermc.paperweight.userdev: 1.3.8
+    io.papermc.paperweight.userdev: 1.3.9
     quiet-fabric-loom: 1.0-SNAPSHOT
 
 versions:
@@ -21,7 +21,7 @@ versions:
     bStats: 3.0.0
     fabricApi: 0.59.0+1.19.2
     fabricLoader: 0.14.8
-    cardinalComponents: 5.0.1
+    cardinalComponents: 5.0.2
     guice: 5.1.0
 
     # buildSrc
