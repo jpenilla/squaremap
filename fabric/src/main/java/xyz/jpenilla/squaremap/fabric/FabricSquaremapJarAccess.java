@@ -23,7 +23,7 @@ final class FabricSquaremapJarAccess implements SquaremapJarAccess {
     public void useJar(final CheckedConsumer<Path, IOException> consumer) throws IOException {
         final List<Path> roots = this.modContainer.getRootPaths();
         if (roots.size() != 1) {
-            throw new IllegalStateException("Expected one root!");
+            throw new IllegalStateException("Expected one root, got " + roots.size() + "!");
         }
         consumer.accept(roots.get(0));
     }
