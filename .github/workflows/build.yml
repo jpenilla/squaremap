@@ -1,8 +1,8 @@
 name: Build
 on:
   push:
-    branches: "*"
-    tags-ignore: [ "*" ]
+    branches: "**"
+    tags-ignore: [ "**" ]
   pull_request:
   release:
     types: [ released ]
@@ -12,25 +12,28 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: gradle/wrapper-validation-action@v1
-      - name: "jdk"
+      - name: "checkout git repository"
+        uses: actions/checkout@v3
+      - name: "validate gradle wrapper"
+        uses: gradle/wrapper-validation-action@v1
+      - name: "setup jdk"
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
-      - uses: actions/cache@v3
+      - name: "setup gradle"
+        uses: gradle/gradle-build-action@v2
+        # gradle-build-action doesn't support caching files in the project dir
+      - name: "cache project local caches"
+        uses: actions/cache@v3
         with:
           path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
             .gradle/caches/VanillaGradle
             .gradle/loom-cache
-            paper/.gradle/caches/paperweight
-          key: ${{ runner.os }}-gradle1-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-project-local-gradle-caches-${{ hashFiles('**/libs.versions.yml', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle1-
-      - name: "build"
+            ${{ runner.os }}-project-local-gradle-caches-
+      - name: "execute gradle build"
         run: ./gradlew build
       - name: "determine status"
         run: |
