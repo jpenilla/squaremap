@@ -6,21 +6,21 @@ metadata:
 plugins:
     org.spongepowered.gradle.plugin: 2.0.2
     xyz.jpenilla.run-paper: 2.0.0
-    net.minecrell.plugin-yml.bukkit: 0.5.1
+    net.minecrell.plugin-yml.bukkit: 0.5.2
     io.papermc.paperweight.userdev: 1.3.11
     quiet-fabric-loom: 1.0-SNAPSHOT
 
 versions:
-    minecraft: 1.19.2
-    checkerQual: 3.24.0
+    minecraft: 1.19.3
+    checkerQual: 3.28.0
     cloud: 1.8.0-SNAPSHOT
     configurate: 4.1.2
-    adventure: 4.11.0
-    adventurePlatformFabric: 5.5.0-SNAPSHOT
-    paperApi: 1.19.2-R0.1-SNAPSHOT
+    adventure: 4.12.0
+    adventurePlatformFabric: 5.6.0
+    paperApi: 1.19.3-R0.1-SNAPSHOT
     bStats: 3.0.0
-    fabricApi: 0.59.0+1.19.2
-    fabricLoader: 0.14.8
+    fabricApi: 0.68.1+1.19.3
+    fabricLoader: 0.14.11
     cardinalComponents: 5.0.2
     guice: 5.1.0
 
@@ -111,7 +111,7 @@ dependencies:
     undertow:
         group: io.undertow
         name: undertow-core
-        version: 2.2.18.Final
+        version: 2.3.0.Final
     jBossLoggingAnnotations:
         group: org.jboss.logging
         name: jboss-logging-annotations

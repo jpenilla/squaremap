@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -108,6 +109,6 @@ public final class Util {
     }
 
     public static Registry<Biome> biomeRegistry(final RegistryAccess registryAccess) {
-        return registryAccess.ownedRegistryOrThrow(Registry.BIOME_REGISTRY);
+        return registryAccess.registryOrThrow(Registries.BIOME);
     }
 }

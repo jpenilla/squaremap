@@ -27,7 +27,7 @@ dependencies {
 }
 
 sponge {
-  apiVersion("9.0.0")
+  apiVersion("10.0.0-SNAPSHOT")
   plugin("squaremap") {
     loader {
       name(PluginLoaders.JAVA_PLAIN)

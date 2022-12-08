@@ -136,8 +136,8 @@ public final class NetworkingHandler {
         out.writeInt(Constants.RESPONSE_SUCCESS);
         out.writeInt(id);
         out.writeByte(mapData.scale);
-        out.writeInt(mapData.x);
-        out.writeInt(mapData.z);
+        out.writeInt(mapData.centerX);
+        out.writeInt(mapData.centerZ);
         out.writeUTF(world.dimension().location().toString());
 
         return out;
