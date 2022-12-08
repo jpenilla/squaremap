@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.paper.command;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.bukkit.arguments.selector.SinglePlayerSelector;
 import cloud.commandframework.bukkit.parsers.location.Location2D;
 import cloud.commandframework.bukkit.parsers.location.Location2DArgument;
@@ -10,7 +11,6 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.paper.PaperCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
@@ -19,12 +19,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.BrigadierSetup;
 import xyz.jpenilla.squaremap.common.command.Commander;
-import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
-import xyz.jpenilla.squaremap.common.command.commands.HideShowCommands;
-import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
@@ -64,14 +60,12 @@ public final class PaperCommands implements PlatformCommands {
     }
 
     @Override
-    public void registerCommands(final Commands commands) {
-        List.of(
-            new RadiusRenderCommand(commands, Location2DArgument::optional, PaperCommands::resolveColumnPos),
-            new HideShowCommands(commands, SinglePlayerSelectorArgument::of, PaperCommands::resolvePlayer)
-        ).forEach(SquaremapCommand::register);
+    public CommandArgument<Commander, ?> columnPosArgument(final String name) {
+        return Location2DArgument.optional(name);
     }
 
-    private static @Nullable BlockPos resolveColumnPos(final String argName, final CommandContext<Commander> context) {
+    @Override
+    public @Nullable BlockPos extractColumnPos(final String argName, final CommandContext<Commander> context) {
         final @Nullable Location2D loc = context.getOrDefault(argName, null);
         if (loc == null) {
             return null;
@@ -79,7 +73,13 @@ public final class PaperCommands implements PlatformCommands {
         return new BlockPos(loc.getBlockX(), 0, loc.getBlockZ());
     }
 
-    private static ServerPlayer resolvePlayer(final String argName, final CommandContext<Commander> context) {
+    @Override
+    public CommandArgument<Commander, ?> singlePlayerSelectorArgument(final String name) {
+        return SinglePlayerSelectorArgument.of(name);
+    }
+
+    @Override
+    public ServerPlayer extractPlayer(final String argName, final CommandContext<Commander> context) {
         final Commander sender = context.getSender();
         final @Nullable SinglePlayerSelector selector = context.getOrDefault(argName, null);
 

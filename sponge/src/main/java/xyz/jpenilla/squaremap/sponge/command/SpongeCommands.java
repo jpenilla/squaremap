@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.sponge.command;
 
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.arguments.CommandArgument;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.sponge.SpongeCommandManager;
@@ -10,7 +11,6 @@ import cloud.commandframework.sponge.data.SinglePlayerSelector;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
-import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -20,14 +20,10 @@ import org.spongepowered.api.command.registrar.tree.CommandTreeNodeTypes;
 import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.plugin.PluginContainer;
 import xyz.jpenilla.squaremap.common.command.Commander;
-import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
 import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
-import xyz.jpenilla.squaremap.common.command.commands.HideShowCommands;
-import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Messages;
 
@@ -66,24 +62,28 @@ public final class SpongeCommands implements PlatformCommands {
     }
 
     @Override
-    public void registerCommands(final Commands commands) {
-        List.of(
-            new RadiusRenderCommand(commands, Vector2iArgument::optional, SpongeCommands::resolveColumnPos),
-            new HideShowCommands(commands, SinglePlayerSelectorArgument::of, SpongeCommands::resolvePlayer)
-        ).forEach(SquaremapCommand::register);
+    public CommandArgument<Commander, ?> columnPosArgument(final String name) {
+        return Vector2iArgument.optional(name);
     }
 
-    private static @Nullable BlockPos resolveColumnPos(final String argName, final CommandContext<Commander> context) {
-        final @Nullable Vector2i loc = context.getOrDefault(argName, null);
+    @Override
+    public @Nullable BlockPos extractColumnPos(final String name, final CommandContext<Commander> ctx) {
+        final @Nullable Vector2i loc = ctx.getOrDefault(name, null);
         if (loc == null) {
             return null;
         }
         return new BlockPos(loc.x(), 0, loc.y());
     }
 
-    private static ServerPlayer resolvePlayer(final String argName, final CommandContext<Commander> context) {
-        final Commander sender = context.getSender();
-        final @Nullable SinglePlayerSelector selector = context.getOrDefault(argName, null);
+    @Override
+    public CommandArgument<Commander, ?> singlePlayerSelectorArgument(final String name) {
+        return SinglePlayerSelectorArgument.of(name);
+    }
+
+    @Override
+    public ServerPlayer extractPlayer(final String name, final CommandContext<Commander> ctx) throws CommandCompleted {
+        final Commander sender = ctx.getSender();
+        final @Nullable SinglePlayerSelector selector = ctx.getOrDefault(name, null);
 
         if (selector == null) {
             if (sender instanceof PlayerCommander player) {

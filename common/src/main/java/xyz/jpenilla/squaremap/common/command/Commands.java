@@ -21,8 +21,10 @@ import xyz.jpenilla.squaremap.common.command.commands.CancelRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ConfirmCommand;
 import xyz.jpenilla.squaremap.common.command.commands.FullRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.HelpCommand;
+import xyz.jpenilla.squaremap.common.command.commands.HideShowCommands;
 import xyz.jpenilla.squaremap.common.command.commands.PauseRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ProgressLoggingCommand;
+import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ReloadCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
@@ -40,7 +42,6 @@ public final class Commands {
 
     private final Injector injector;
     private final CommandManager<Commander> commandManager;
-    private final PlatformCommands platformCommands;
 
     @Inject
     private Commands(
@@ -54,7 +55,6 @@ public final class Commands {
         final WorldManager worldManager
     ) {
         this.injector = injector;
-        this.platformCommands = platformCommands;
         this.commandManager = platformCommands.createCommandManager();
 
         this.commandManager.registerCommandPreProcessor(preprocessContext -> {
@@ -78,14 +78,14 @@ public final class Commands {
             CancelRenderCommand.class,
             PauseRenderCommand.class,
             ResetMapCommand.class,
-            ProgressLoggingCommand.class
+            ProgressLoggingCommand.class,
+            RadiusRenderCommand.class,
+            HideShowCommands.class
         );
 
         for (final Class<? extends SquaremapCommand> command : commands) {
             this.injector.getInstance(command).register();
         }
-
-        this.platformCommands.registerCommands(this);
     }
 
     public void register(final Command.Builder<Commander> builder) {
