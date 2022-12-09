@@ -27,8 +27,8 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.Components;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
+import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
 
 @DefaultQualifier(NonNull.class)
 @SuppressWarnings("unused") // Some messages are retrieved from the map instead of the field
@@ -268,8 +268,11 @@ public final class Messages {
     private Messages() {
     }
 
-    public static void reload(final DirectoryProvider directoryProvider) {
-        FileUtil.extract("/locale/", directoryProvider.localeDirectory(), false);
+    public static void reload(
+        final SquaremapJarAccess squaremapJar,
+        final DirectoryProvider directoryProvider
+    ) {
+        squaremapJar.extract("locale", directoryProvider.localeDirectory(), false);
 
         final Path configFile = directoryProvider.localeDirectory().resolve(Config.LANGUAGE_FILE);
         final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()

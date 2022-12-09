@@ -8,6 +8,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -38,6 +39,16 @@ public final class Util {
     @SuppressWarnings("unchecked")
     public static <X extends Throwable> RuntimeException rethrow(final Throwable t) throws X {
         throw (X) t;
+    }
+
+    public static <T, X extends Throwable> Consumer<T> sneaky(final CheckedConsumer<T, X> consumer) {
+        return t -> {
+            try {
+                consumer.accept(t);
+            } catch (final Throwable thr) {
+                rethrow(thr);
+            }
+        };
     }
 
     public static ThreadFactory squaremapThreadFactory(final String name) {

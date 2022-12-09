@@ -1,29 +1,24 @@
 package xyz.jpenilla.squaremap.common.util;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.JarURLConnection;
-import java.net.URL;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.CopyOption;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 
+@DefaultQualifier(NonNull.class)
 public final class FileUtil {
     private FileUtil() {
     }
@@ -33,13 +28,7 @@ public final class FileUtil {
             return;
         }
         try (final Stream<Path> files = Files.list(directory)) {
-            files.forEach(path -> {
-                try {
-                    deleteRecursively(path);
-                } catch (final IOException ex) {
-                    Util.rethrow(ex);
-                }
-            });
+            files.forEach(Util.sneaky(FileUtil::deleteRecursively));
         }
     }
 
@@ -48,73 +37,77 @@ public final class FileUtil {
             return;
         }
         try (final Stream<Path> stream = Files.walk(path)) {
-            stream.sorted(Comparator.reverseOrder())
-                .forEach(file -> {
-                    try {
-                        Files.delete(file);
-                    } catch (final IOException ex) {
-                        Util.rethrow(ex);
-                    }
-                });
+            // Reverse order: visit files before directories
+            stream.sorted(Comparator.reverseOrder()).forEach(Util.sneaky(Files::delete));
         }
     }
 
-    public static void extract(final String inDir, final Path outDir, final boolean replaceExisting) {
-        extract(inDir, outDir.toFile(), replaceExisting);
+    public static void openJar(final Path jar, final CheckedConsumer<FileSystem, IOException> consumer) throws IOException {
+        try (final FileSystem fileSystem = FileSystems.newFileSystem(jar)) {
+            consumer.accept(fileSystem);
+        }
     }
 
-    private static void extract(final String inDir, final File outDir, final boolean replaceExisting) {
-        // https://coderanch.com/t/472574/java/extract-directory-current-jar
-        final URL dirURL = FileUtil.class.getResource(inDir);
-        final String path = inDir.substring(1);
-
-        if (dirURL == null) {
-            throw new IllegalStateException("can't find " + inDir + " on the classpath");
-        } else if (!dirURL.getProtocol().equals("jar")) {
-            throw new IllegalStateException("don't know how to handle extracting from " + dirURL);
+    /**
+     * Special recursive copy function which will silently ignore existing files
+     * when {@code replaceExisting} is false instead of throwing an exception as
+     * might be expected.
+     *
+     * <p>When {@code replaceExisting} is true and a directory is encountered in the
+     * place where we are trying to extract a file, the directory will be deleted
+     * via {@link #deleteRecursively(Path)} before the copy as
+     * {@link StandardCopyOption#REPLACE_EXISTING} only handles replacing files.</p>
+     *
+     * @param from            source directory
+     * @param to              destination directory
+     * @param replaceExisting whether to replace existing files and directories
+     * @throws IOException if an I/O error occurs
+     */
+    public static void specialCopyRecursively(
+        final Path from,
+        final Path to,
+        final boolean replaceExisting
+    ) throws IOException {
+        if (!Files.exists(from)) {
+            return;
         }
-
-        Logging.debug(() -> "Extracting " + inDir + " directory from jar...");
-        try (final ZipFile jar = ((JarURLConnection) dirURL.openConnection()).getJarFile()) {
-            final Enumeration<? extends ZipEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                final ZipEntry entry = entries.nextElement();
-                final String name = entry.getName();
-                if (!name.startsWith(path)) {
-                    continue;
-                }
-                final String filename = name.substring(path.length());
-                final File file = new File(outDir, filename);
-                if (!replaceExisting && file.exists()) {
-                    Logging.debug(() -> "  exists   " + name);
-                    continue;
-                }
-                if (entry.isDirectory()) {
-                    if (!file.exists()) {
-                        final boolean result = file.mkdir();
-                        Logging.debug(() -> (result ? "  creating " : "  unable to create ") + name);
-                    } else {
-                        Logging.debug(() -> "  exists   " + name);
+        if (!Files.exists(to)) {
+            Files.createDirectories(to);
+        }
+        try (final Stream<Path> stream = Files.walk(from)) {
+            stream.forEach(Util.sneaky(path -> {
+                final Path target = to.resolve(invariantSeparatorsPathString(from.relativize(path)));
+                if (Files.isDirectory(path)) {
+                    if (Files.isDirectory(target)) {
+                        return;
                     }
-                } else {
-                    Logging.debug(() -> "  writing  " + name);
-                    try (
-                        final InputStream inputStream = jar.getInputStream(entry);
-                        final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))
-                    ) {
-                        final byte[] buffer = new byte[4096];
-                        int readCount;
-                        while ((readCount = inputStream.read(buffer)) > 0) {
-                            outputStream.write(buffer, 0, readCount);
+                    if (Files.exists(target)) {
+                        if (replaceExisting) {
+                            Files.delete(target);
+                        } else {
+                            return;
                         }
-                    } catch (IOException e) {
-                        Logging.logger().error("Failed to extract file '{}' from jar!", name, e);
                     }
+                    Files.createDirectories(target);
+                } else {
+                    if (!replaceExisting && Files.exists(target)) {
+                        return;
+                    }
+                    if (replaceExisting && Files.isDirectory(target)) {
+                        deleteRecursively(target);
+                    }
+                    Files.copy(path, target, StandardCopyOption.REPLACE_EXISTING);
                 }
-            }
-        } catch (IOException e) {
-            Logging.logger().error("Failed to extract directory '{}' from jar to '{}'", inDir, outDir, e);
+            }));
         }
+    }
+
+    public static String invariantSeparatorsPathString(final Path path) {
+        final String separator = path.getFileSystem().getSeparator();
+        final String pathString = path.toString();
+        return separator.equals("/")
+            ? pathString
+            : pathString.replace(separator, "/");
     }
 
     public static void atomicWriteJsonAsync(final Path file, final Object object) {
