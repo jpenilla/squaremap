@@ -50,11 +50,9 @@ public final class FabricCommands implements PlatformCommands {
 
     @Override
     public @Nullable BlockPos extractColumnPos(final String argName, final CommandContext<Commander> context) {
-        final Coordinates.@Nullable ColumnCoordinates loc = context.getOrDefault(argName, null);
-        if (loc == null) {
-            return null;
-        }
-        return loc.blockPos();
+        return context.<Coordinates.ColumnCoordinates>getOptional(argName)
+            .map(Coordinates::blockPos)
+            .orElse(null);
     }
 
     @Override

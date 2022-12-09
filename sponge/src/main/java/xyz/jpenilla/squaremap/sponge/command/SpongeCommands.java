@@ -68,11 +68,9 @@ public final class SpongeCommands implements PlatformCommands {
 
     @Override
     public @Nullable BlockPos extractColumnPos(final String name, final CommandContext<Commander> ctx) {
-        final @Nullable Vector2i loc = ctx.getOrDefault(name, null);
-        if (loc == null) {
-            return null;
-        }
-        return new BlockPos(loc.x(), 0, loc.y());
+        return ctx.<Vector2i>getOptional(name)
+            .map(loc -> new BlockPos(loc.x(), 0, loc.y()))
+            .orElse(null);
     }
 
     @Override

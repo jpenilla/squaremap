@@ -66,11 +66,9 @@ public final class PaperCommands implements PlatformCommands {
 
     @Override
     public @Nullable BlockPos extractColumnPos(final String argName, final CommandContext<Commander> context) {
-        final @Nullable Location2D loc = context.getOrDefault(argName, null);
-        if (loc == null) {
-            return null;
-        }
-        return new BlockPos(loc.getBlockX(), 0, loc.getBlockZ());
+        return context.<Location2D>getOptional(argName)
+            .map(loc -> new BlockPos(loc.getBlockX(), 0, loc.getBlockZ()))
+            .orElse(null);
     }
 
     @Override
