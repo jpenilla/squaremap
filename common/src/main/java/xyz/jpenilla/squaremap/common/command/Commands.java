@@ -3,6 +3,7 @@ package xyz.jpenilla.squaremap.common.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
 import cloud.commandframework.keys.CloudKey;
 import cloud.commandframework.keys.SimpleCloudKey;
 import cloud.commandframework.meta.CommandMeta;
@@ -56,6 +57,10 @@ public final class Commands {
     ) {
         this.injector = injector;
         this.commandManager = platformCommands.createCommandManager();
+
+        this.commandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
+            FilteringCommandSuggestionProcessor.Filter.<Commander>contains(true).andTrimBeforeLastSpace()
+        ));
 
         this.commandManager.registerCommandPreProcessor(preprocessContext -> {
             final CommandContext<Commander> commandContext = preprocessContext.getCommandContext();
