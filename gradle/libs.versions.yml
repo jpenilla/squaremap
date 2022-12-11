@@ -21,7 +21,7 @@ versions:
     bStats: 3.0.0
     fabricApi: 0.68.1+1.19.3
     fabricLoader: 0.14.11
-    cardinalComponents: 5.0.2
+    cardinalComponents: 5.1.0
     guice: 5.1.0
 
     # buildSrc
