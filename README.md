@@ -3,7 +3,7 @@
 # squaremap
 
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jpenilla/squaremap/Build)](https://github.com/jpenilla/squaremap/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jpenilla/squaremap/build.yml?branch=master)](https://github.com/jpenilla/squaremap/actions)
 [![Discord](https://img.shields.io/discord/390942438061113344?color=8C9CFE&label=discord&logo=discord&logoColor=white)](https://discord.gg/PHpuzZS)
 
 </div>
