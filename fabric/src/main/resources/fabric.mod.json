@@ -35,8 +35,8 @@
     "accessWidener": "squaremap-fabric.accesswidener",
     "depends": {
         "fabric": "*",
-        "fabricloader": ">=0.14.6",
-        "minecraft": ">=1.19",
+        "fabricloader": ">=0.14.10",
+        "minecraft": ">=1.19.3",
         "cloud": "*",
         "adventure-platform-fabric": "*"
     }

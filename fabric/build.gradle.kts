@@ -35,6 +35,12 @@ dependencies {
 
   modImplementation(libs.cloudFabric)
   include(libs.cloudFabric)
+
+  // loom doesn't properly copy non-mod transitive deps of mod
+  // dependencies (cloud in this case), so we need to manually
+  // add this dependency to avoid hundreds of compile warnings.
+  compileOnly("org.apiguardian:apiguardian-api:1.1.2")
+
   implementation(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately
   }

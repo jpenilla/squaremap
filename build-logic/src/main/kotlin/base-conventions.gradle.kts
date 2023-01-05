@@ -1,5 +1,3 @@
-import net.kyori.indra.IndraExtension
-
 plugins {
   id("java-library")
   id("net.kyori.indra")
@@ -10,7 +8,7 @@ group = rootProject.group
 version = rootProject.version
 description = rootProject.description
 
-configure<IndraExtension> {
+indra {
   javaVersions {
     minimumToolchain(17)
     target(17)
@@ -26,12 +24,8 @@ repositories {
       snapshotsOnly()
     }
   }
-  maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-    mavenContent { snapshotsOnly() }
-  }
-  maven("https://oss.sonatype.org/content/repositories/snapshots/") {
-    mavenContent { snapshotsOnly() }
-  }
+  sonatype.s01Snapshots()
+  sonatype.ossSnapshots()
   maven("https://repo.papermc.io/repository/maven-public/")
   maven("https://maven.fabricmc.net/") {
     mavenContent { includeGroup("net.fabricmc") }
