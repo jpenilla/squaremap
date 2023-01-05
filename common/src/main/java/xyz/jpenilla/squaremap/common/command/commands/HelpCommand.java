@@ -60,7 +60,7 @@ public final class HelpCommand extends SquaremapCommand {
             commandHelpHandler.queryRootIndex(context.getSender()).getEntries().stream()
                 .map(CommandHelpHandler.VerboseHelpEntry::getSyntaxString)
                 .toList();
-        return StringArgument.<Commander>newBuilder("query")
+        return StringArgument.<Commander>builder("query")
             .greedy()
             .withSuggestionsProvider(suggestions)
             .asOptional()

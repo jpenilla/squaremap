@@ -48,7 +48,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION.asComponent())
             .handler(this::executeToggle));
         this.commands.register(progressLogging.literal("rate")
-            .argument(IntegerArgument.<Commander>newBuilder("seconds").withMin(1))
+            .argument(IntegerArgument.<Commander>builder("seconds").withMin(1))
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.PROGRESSLOGGING_RATE_COMMAND_DESCRIPTION.asComponent())
             .handler(this::executeRate));
     }

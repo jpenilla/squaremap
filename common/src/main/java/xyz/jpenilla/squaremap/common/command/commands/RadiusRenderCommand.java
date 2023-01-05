@@ -36,7 +36,7 @@ public final class RadiusRenderCommand extends SquaremapCommand {
         this.commands.registerSubcommand(builder ->
             builder.literal("radiusrender")
                 .argument(MapWorldArgument.of("world"))
-                .argument(IntegerArgument.<Commander>newBuilder("radius").withMin(1).build())
+                .argument(IntegerArgument.<Commander>builder("radius").withMin(1).build())
                 .argument(this.platformCommands.columnPosArgument("center"), RichDescription.of(Messages.OPTIONAL_CENTER_ARGUMENT_DESCRIPTION))
                 .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.RADIUSRENDER_COMMAND_DESCRIPTION.asComponent())
                 .permission("squaremap.command.radiusrender")
