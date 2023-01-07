@@ -23,7 +23,7 @@ command:
             disabled: <green>Логирование хода рендеринга выключено.
             set-rate: <green>Интервал логирования хода рендеринга установлен на </green><seconds>
                 seconds
-            statusmessage: 'Логирование хода рендеринга включено: <enabled>, interval:
+            statusmessage: 'Логирование хода рендеринга включено: <enabled>, интервал:
                 <green><seconds></green> seconds'
         help:
             help: помощь по команде squaremap
