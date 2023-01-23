@@ -8,7 +8,7 @@ plugins:
     xyz.jpenilla.run-paper: 2.0.1
     net.minecrell.plugin-yml.bukkit: 0.5.2
     io.papermc.paperweight.userdev: 1.4.1
-    quiet-fabric-loom: 1.0-SNAPSHOT
+    quiet-fabric-loom: 1.1-SNAPSHOT
 
 versions:
     minecraft: 1.19.3
@@ -17,6 +17,7 @@ versions:
     configurate: 4.1.2
     adventure: 4.12.0
     adventurePlatformFabric: 5.6.1
+    fabricPermissionsApi: 0.2-SNAPSHOT
     paperApi: 1.19.3-R0.1-SNAPSHOT
     bStats: 3.0.0
     fabricApi: 0.71.0+1.19.3
@@ -148,6 +149,11 @@ dependencies:
         group: dev.onyxstudios.cardinal-components-api
         name: cardinal-components-entity
         version: { ref: cardinalComponents }
+
+    fabricPermissionsApi:
+        group: me.lucko
+        name: fabric-permissions-api
+        version: { ref: fabricPermissionsApi }
 
     # buildSrc
     indraCommon:
