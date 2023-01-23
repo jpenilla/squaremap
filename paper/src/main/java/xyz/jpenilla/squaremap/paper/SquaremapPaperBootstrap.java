@@ -17,6 +17,8 @@ import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapPaperBootstrap extends JavaPlugin {
+    private static final String PAPER_DOWNLOADS_URL = "https://papermc.io/downloads";
+    private static final String SQUAREMAP_RELEASES_URL = "https://github.com/jpenilla/squaremap/releases";
     private static final String TARGET_MINECRAFT_VERSION = Objects.requireNonNull(
         Objects.requireNonNull(
             Util.manifest(SquaremapPaperBootstrap.class),
@@ -53,23 +55,30 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig");
         } catch (final ClassNotFoundException ex) {
-            return this.incompatible("squaremap requires a Paper-based server to run. Get Paper from https://papermc.io/downloads");
+            return this.incompatible("squaremap requires a Paper-based server to run. Get Paper from " + PAPER_DOWNLOADS_URL);
         }
         if (!Bukkit.getMinecraftVersion().equals(TARGET_MINECRAFT_VERSION)) {
             if (CraftBukkitReflection.mojangMapped()) {
+                // Main issue is mappings, so in a Mojang mapped environment we can try to load anyway,
+                // but print a message indicating that things might go wrong and this is unsupported
                 this.logIncompatibilityMessage(
                     Level.WARNING,
-                    "This squaremap jar was built for Minecraft " + TARGET_MINECRAFT_VERSION + ".",
+                    "This squaremap jar is built for Minecraft " + TARGET_MINECRAFT_VERSION + ".",
                     "It will attempt to load even though the current Minecraft version is " + Bukkit.getMinecraftVersion(),
                     "as the environment is Mojang-mapped. This may or may not work, prefer running",
-                    "the correct squaremap version for your server. Keep in mind only the latest",
-                    "build of squaremap running on the intended Minecraft version is officially supported."
+                    "the correct squaremap version for your server. Check for newer or older releases",
+                    "which are intended for your Minecraft version at " + SQUAREMAP_RELEASES_URL + ".",
+                    "Keep in mind only the latest release of squaremap running on the intended Minecraft",
+                    "version is officially supported."
                 );
                 return true;
             }
             return this.incompatible(
-                "This squaremap jar was built for Minecraft " + TARGET_MINECRAFT_VERSION + ".",
-                "It cannot run in the current environment (Minecraft " + Bukkit.getMinecraftVersion() + ")."
+                "This squaremap jar is built for Minecraft " + TARGET_MINECRAFT_VERSION + ".",
+                "It cannot run in the current environment (Minecraft " + Bukkit.getMinecraftVersion() + ").",
+                "Check for newer or older releases which are compatible with your Minecraft version",
+                "at " + SQUAREMAP_RELEASES_URL + ". Keep in mind only the latest release",
+                "of squaremap is officially supported."
             );
         }
         return true;
