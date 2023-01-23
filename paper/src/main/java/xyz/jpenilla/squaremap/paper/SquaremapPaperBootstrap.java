@@ -59,8 +59,8 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
         }
         if (!Bukkit.getMinecraftVersion().equals(TARGET_MINECRAFT_VERSION)) {
             if (CraftBukkitReflection.mojangMapped()) {
-                // Main issue is mappings, so in a Mojang mapped environment we can try to load anyway,
-                // but print a message indicating that things might go wrong and this is unsupported
+                // When we have proper mappings, we may be able to load on a newer version than we compiled for
+                // if Minecraft's code didn't change in a way that breaks squaremap. Still print a warning.
                 this.logIncompatibilityMessage(
                     Level.WARNING,
                     "This squaremap jar is built for Minecraft " + TARGET_MINECRAFT_VERSION + ".",
