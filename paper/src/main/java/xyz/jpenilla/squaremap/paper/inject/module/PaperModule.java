@@ -5,6 +5,7 @@ import io.papermc.paper.text.PaperComponents;
 import java.nio.file.Path;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import org.bukkit.Server;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
@@ -17,22 +18,21 @@ import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFac
 import xyz.jpenilla.squaremap.paper.PaperPlayerManager;
 import xyz.jpenilla.squaremap.paper.PaperServerAccess;
 import xyz.jpenilla.squaremap.paper.PaperWorldManager;
-import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.command.PaperCommands;
 import xyz.jpenilla.squaremap.paper.util.PaperRegionFileDirectoryResolver;
 import xyz.jpenilla.squaremap.paper.util.chunksnapshot.PaperChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperModule extends AbstractModule {
-    private final SquaremapPaper plugin;
+    private final JavaPlugin plugin;
 
-    public PaperModule(final SquaremapPaper plugin) {
+    public PaperModule(final JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
     protected void configure() {
-        this.bind(SquaremapPaper.class)
+        this.bind(JavaPlugin.class)
             .toInstance(this.plugin);
 
         this.bind(Server.class)

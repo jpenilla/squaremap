@@ -21,6 +21,11 @@ configurations.mojangMappedServer {
 }
 
 tasks {
+  jar {
+    manifest {
+      attributes("squaremap-target-minecraft-version" to libs.versions.minecraft.get())
+    }
+  }
   shadowJar {
     listOf(
       "cloud.commandframework",
@@ -41,7 +46,7 @@ squaremapPlatform {
 }
 
 bukkit {
-  main = "xyz.jpenilla.squaremap.paper.SquaremapPaper"
+  main = "xyz.jpenilla.squaremap.paper.SquaremapPaperBootstrap"
   name = rootProject.name
   apiVersion = "1.19"
   website = providers.gradleProperty("githubUrl").get()

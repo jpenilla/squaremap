@@ -10,21 +10,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.map.MapRenderer;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.network.NetworkingHandler;
-import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperNetworking implements Listener {
-    private final SquaremapPaper plugin;
+    private final JavaPlugin plugin;
     private final Server server;
     private final NetworkingHandler networking;
 
     @Inject
     private PaperNetworking(
-        final SquaremapPaper plugin,
+        final JavaPlugin plugin,
         final Server server,
         final NetworkingHandler networking
     ) {

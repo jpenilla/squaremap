@@ -4,6 +4,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import net.minecraft.server.level.ServerLevel;
 import org.bukkit.Server;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -12,7 +13,6 @@ import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.task.UpdateMarkers;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
-import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperMapWorld extends MapWorldInternal {
@@ -21,7 +21,7 @@ public final class PaperMapWorld extends MapWorldInternal {
     @AssistedInject
     private PaperMapWorld(
         @Assisted final ServerLevel level,
-        final SquaremapPaper platform,
+        final JavaPlugin plugin,
         final RenderFactory renderFactory,
         final DirectoryProvider directoryProvider,
         final Server server,
@@ -30,7 +30,7 @@ public final class PaperMapWorld extends MapWorldInternal {
         super(level, renderFactory, directoryProvider, configManager);
 
         this.updateMarkersTask = server.getScheduler()
-            .runTaskTimer(platform, new UpdateMarkers(this), 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
+            .runTaskTimer(plugin, new UpdateMarkers(this), 20 * 5, 20L * this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
     }
 
     @Override

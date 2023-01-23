@@ -39,21 +39,21 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.paper.PaperWorldManager;
-import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.config.PaperAdvanced;
 
 public final class MapUpdateListeners {
-    private final SquaremapPaper plugin;
+    private final JavaPlugin plugin;
     private final PaperWorldManager worldManager;
     private final List<Listener> registeredListeners = new ArrayList<>();
 
     @Inject
     private MapUpdateListeners(
-        final @NonNull SquaremapPaper plugin,
+        final @NonNull JavaPlugin plugin,
         final @NonNull PaperWorldManager worldManager
     ) {
         this.plugin = plugin;

@@ -21,7 +21,8 @@ import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapModulesBuilder {
-    private final SquaremapPlatform platform;
+    private final @Nullable SquaremapPlatform platform;
+    private final @Nullable Class<? extends SquaremapPlatform> platformClass;
     private final List<Module> extraModules = new ArrayList<>();
     private boolean vanillaRegionFileDirectoryResolver;
     private boolean vanillaChunkSnapshotProviderFactory;
@@ -30,6 +31,12 @@ public final class SquaremapModulesBuilder {
 
     private SquaremapModulesBuilder(final SquaremapPlatform platform) {
         this.platform = platform;
+        this.platformClass = null;
+    }
+
+    private SquaremapModulesBuilder(final Class<? extends SquaremapPlatform> platformClass) {
+        this.platform = null;
+        this.platformClass = platformClass;
     }
 
     public SquaremapModulesBuilder mapWorldFactory(final Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass) {
@@ -67,7 +74,7 @@ public final class SquaremapModulesBuilder {
 
         final List<Module> baseModules = List.of(
             new ApiModule(),
-            new PlatformModule(this.platform, this.squaremapJarAccess),
+            new PlatformModule(this.platform, this.platformClass, this.squaremapJarAccess),
             new FactoryModuleBuilder().build(RenderFactory.class),
             new FactoryModuleBuilder().build(this.mapWorldFactoryClass)
         );
@@ -88,5 +95,9 @@ public final class SquaremapModulesBuilder {
 
     public static SquaremapModulesBuilder forPlatform(final SquaremapPlatform platform) {
         return new SquaremapModulesBuilder(platform);
+    }
+
+    public static SquaremapModulesBuilder forPlatform(final Class<? extends SquaremapPlatform> platformClass) {
+        return new SquaremapModulesBuilder(platformClass);
     }
 }

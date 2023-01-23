@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
@@ -20,7 +21,7 @@ public final class PaperPlayerManager extends AbstractPlayerManager {
 
     @Inject
     private PaperPlayerManager(
-        final SquaremapPaper plugin,
+        final JavaPlugin plugin,
         final ServerAccess serverAccess
     ) {
         super(serverAccess);

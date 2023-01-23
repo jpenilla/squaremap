@@ -14,6 +14,7 @@ import com.google.inject.Singleton;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -24,16 +25,15 @@ import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
-import xyz.jpenilla.squaremap.paper.SquaremapPaper;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class PaperCommands implements PlatformCommands {
-    private final SquaremapPaper plugin;
+    private final JavaPlugin plugin;
 
     @Inject
-    private PaperCommands(final SquaremapPaper plugin) {
+    private PaperCommands(final JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
