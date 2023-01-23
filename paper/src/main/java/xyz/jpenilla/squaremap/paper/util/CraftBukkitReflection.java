@@ -27,11 +27,6 @@ public final class CraftBukkitReflection {
         CB_PKG_VERSION = name;
     }
 
-    public static boolean mojangMapped() {
-        final String serverPlayerRuntimeName = ServerPlayer.class.getSimpleName();
-        return serverPlayerRuntimeName.equals("ServerPlayer");
-    }
-
     public static @NonNull Class<?> needOBCClass(final @NonNull String className) {
         return ReflectionUtil.needClass(PREFIX_CRAFTBUKKIT + CB_PKG_VERSION + className);
     }

@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import java.util.Objects;
 import java.util.logging.Level;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -13,7 +14,6 @@ import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 import xyz.jpenilla.squaremap.paper.inject.module.PaperModule;
-import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapPaperBootstrap extends JavaPlugin {
@@ -57,8 +57,16 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
         } catch (final ClassNotFoundException ex) {
             return this.incompatible("squaremap requires a Paper-based server to run. Get Paper from " + PAPER_DOWNLOADS_URL);
         }
+        final boolean mojangMapped = mojangMapped();
+        if (!mappingsMatch()) {
+            return this.incompatible(
+                "This squaremap jar is built using " + (mojangMapped ? "reobfuscated" : "Mojang") + " mappings,",
+                "but the current server runtime is " + (mojangMapped ? "Mojang-mapped" : "reobfuscated") + ".",
+                "Cannot proceed to load squaremap with mappings mismatch."
+            );
+        }
         if (!Bukkit.getMinecraftVersion().equals(TARGET_MINECRAFT_VERSION)) {
-            if (CraftBukkitReflection.mojangMapped()) {
+            if (mojangMapped) {
                 // When we have proper mappings, we may be able to load on a newer version than we compiled for
                 // if Minecraft's code didn't change in a way that breaks squaremap. Still print a warning.
                 this.logIncompatibilityMessage(
@@ -97,5 +105,22 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
         }
         builder.append("**********************************************\n");
         this.getLogger().log(level, builder.toString());
+    }
+
+    private static boolean mappingsMatch() {
+        try {
+            return ServerPlayer.class.getSimpleName() != null;
+        } catch (final NoClassDefFoundError err) {
+            return false;
+        }
+    }
+
+    private static boolean mojangMapped() {
+        try {
+            Class.forName("net.minecraft.server.level.ServerPlayer");
+            return true;
+        } catch (final ClassNotFoundException ex) {
+            return false;
+        }
     }
 }
