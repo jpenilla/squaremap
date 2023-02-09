@@ -8,7 +8,7 @@ plugins {
 val minecraftVersion = libs.versions.minecraft.get()
 
 dependencies {
-  paperDevBundle("$minecraftVersion-R0.1-SNAPSHOT")
+  paperweight.paperDevBundle("$minecraftVersion-R0.1-SNAPSHOT")
 
   implementation(projects.squaremapCommon)
 
