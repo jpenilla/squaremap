@@ -184,6 +184,9 @@ public abstract class MapWorldInternal implements MapWorld {
 
     private void serializeDirtyChunks() {
         final Path file = this.dataPath.resolve(DIRTY_CHUNKS_FILE_NAME);
+        if (this.modifiedChunks.size() > 200000) { // ~6MB
+            Logging.logger().warn("Map for world '{}' has a large amount ({}) of chunks queued for background render! If this notice appears frequently, consider adjusting the background render and or update trigger settings.", this.identifier().asString(), this.modifiedChunks.size());
+        }
         try {
             Files.writeString(file, Util.gson().toJson(this.modifiedChunks));
         } catch (final IOException ex) {
