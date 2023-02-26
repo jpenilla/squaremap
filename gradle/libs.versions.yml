@@ -6,7 +6,7 @@ metadata:
 plugins:
     org.spongepowered.gradle.plugin: 2.1.1
     xyz.jpenilla.run-paper: 2.0.1
-    net.minecrell.plugin-yml.bukkit: 0.5.2
+    net.minecrell.plugin-yml.bukkit: 0.5.3
     io.papermc.paperweight.userdev: 1.5.1
     quiet-fabric-loom: 1.1-SNAPSHOT
 
