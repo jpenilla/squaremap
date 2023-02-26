@@ -35,7 +35,6 @@ dependencies {
 
   modImplementation(libs.cloudFabric)
   include(libs.cloudFabric)
-  modImplementation(libs.fabricPermissionsApi) // `include`d by cloud
 
   implementation(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately

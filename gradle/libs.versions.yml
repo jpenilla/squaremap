@@ -13,11 +13,11 @@ plugins:
 versions:
     minecraft: 1.19.3
     checkerQual: 3.29.0
-    cloud: 1.8.0-SNAPSHOT
+    cloud: 1.8.1
+    cloudSponge: 1.8.0-SNAPSHOT
     configurate: 4.1.2
     adventure: 4.12.0
     adventurePlatformFabric: 5.6.1
-    fabricPermissionsApi: 0.2-SNAPSHOT
     paperApi: 1.19.3-R0.1-SNAPSHOT
     bStats: 3.0.0
     fabricApi: 0.71.0+1.19.3
@@ -59,16 +59,14 @@ dependencies:
         name: adventure-platform-fabric
         version: { ref: adventurePlatformFabric }
 
-    cloudBom:
-        group: cloud.commandframework
-        name: cloud-bom
-        version: { ref: cloud }
     cloudCore:
         group: cloud.commandframework
         name: cloud-core
+        version: { ref: cloud }
     cloudBrigadier:
         group: cloud.commandframework
         name: cloud-brigadier
+        version: { ref: cloud }
     cloudMinecraftExtras:
         group: cloud.commandframework
         name: cloud-minecraft-extras
@@ -76,6 +74,7 @@ dependencies:
     cloudPaper:
         group: cloud.commandframework
         name: cloud-paper
+        version: { ref: cloud }
     cloudFabric:
         group: cloud.commandframework
         name: cloud-fabric
@@ -83,6 +82,7 @@ dependencies:
     cloudSponge:
         group: cloud.commandframework
         name: cloud-sponge
+        version: { ref: cloudSponge }
 
     configurateBom:
         group: org.spongepowered
@@ -149,11 +149,6 @@ dependencies:
         group: dev.onyxstudios.cardinal-components-api
         name: cardinal-components-entity
         version: { ref: cardinalComponents }
-
-    fabricPermissionsApi:
-        group: me.lucko
-        name: fabric-permissions-api
-        version: { ref: fabricPermissionsApi }
 
     # buildSrc
     indraCommon:
