@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +19,10 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
@@ -36,10 +37,10 @@ public final class FullRender extends AbstractRender {
     private FullRender(
         @Assisted final MapWorldInternal world,
         @Assisted final int wait,
-        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
         final RegionFileDirectoryResolver regionFileDirectoryResolver
     ) {
-        super(world, chunkSnapshotProvider);
+        super(world, chunkSnapshotProviderFactory);
         this.regionFileDirectoryResolver = regionFileDirectoryResolver;
         this.wait = wait;
     }
@@ -47,10 +48,10 @@ public final class FullRender extends AbstractRender {
     @AssistedInject
     private FullRender(
         @Assisted final MapWorldInternal world,
-        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
         final RegionFileDirectoryResolver regionFileDirectoryResolver
     ) {
-        this(world, 0, chunkSnapshotProvider, regionFileDirectoryResolver);
+        this(world, 0, chunkSnapshotProviderFactory, regionFileDirectoryResolver);
     }
 
     @Override
@@ -62,7 +63,7 @@ public final class FullRender extends AbstractRender {
         // order preserved map of regions with boolean to signify if it was already scanned
         final Map<RegionCoordinate, Boolean> regions;
 
-        final @Nullable Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.getRenderProgress();
+        final @Nullable Map<RegionCoordinate, Boolean> resumedMap = this.mapWorld.renderManager().readRenderProgress();
         if (resumedMap != null) {
             Logging.info(Messages.LOG_RESUMED_RENDERING, "world", this.mapWorld.identifier().asString());
 
@@ -80,7 +81,7 @@ public final class FullRender extends AbstractRender {
 
             // setup a spiral iterator
             final BlockPos spawn = this.level.getSharedSpawnPos();
-            final SpiralIterator<RegionCoordinate> spiral = SpiralIterator.region(
+            final Iterator<RegionCoordinate> spiral = SpiralIterator.region(
                 Numbers.blockToRegion(spawn.getX()),
                 Numbers.blockToRegion(spawn.getZ()),
                 this.maxRadius
@@ -96,7 +97,7 @@ public final class FullRender extends AbstractRender {
                     regionFiles.forEach(region -> regions.put(region, false));
                     break;
                 }
-                RegionCoordinate region = spiral.next();
+                final RegionCoordinate region = spiral.next();
                 if (regionFiles.contains(region)) {
                     regions.put(region, false);
                     failsafe = 0;
@@ -111,7 +112,7 @@ public final class FullRender extends AbstractRender {
             return;
         }
 
-        VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
+        final VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
         this.totalRegions = regions.size();
         this.totalChunks = regions.keySet().stream().mapToInt(visibility::countChunksInRegion).sum();
 
@@ -132,7 +133,7 @@ public final class FullRender extends AbstractRender {
             this.processedRegions.incrementAndGet();
             // only save progress if task is not cancelled
             if (this.running()) {
-                this.mapWorld.saveRenderProgress(regions);
+                this.mapWorld.renderManager().saveRenderProgress(regions);
             }
         }
     }

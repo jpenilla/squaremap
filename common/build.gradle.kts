@@ -23,7 +23,6 @@ dependencies {
   compileOnlyApi(libs.adventureTextSerializerPlain)
   compileOnlyApi(libs.miniMessage)
 
-  api(platform(libs.cloudBom))
   api(libs.cloudCore)
   compileOnly(libs.cloudBrigadier)
   api(libs.cloudMinecraftExtras) {

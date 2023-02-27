@@ -199,6 +199,10 @@ public abstract class AbstractConfig {
     }
 
     public final void migrateLevelSection(final ServerLevel level, final String oldName) {
+        if (oldName.equals("default")) {
+            // sorry, no migration for worlds named "default"!
+            return;
+        }
         final ConfigurationNode oldNode = this.config.node("world-settings", oldName);
         if (oldNode.virtual()) {
             return;

@@ -12,22 +12,31 @@ import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.module.ApiModule;
 import xyz.jpenilla.squaremap.common.inject.module.PlatformModule;
-import xyz.jpenilla.squaremap.common.inject.module.VanillaChunkSnapshotProviderModule;
+import xyz.jpenilla.squaremap.common.inject.module.VanillaChunkSnapshotProviderFactoryModule;
 import xyz.jpenilla.squaremap.common.inject.module.VanillaRegionFileDirectoryResolverModule;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
+import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
 
 import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapModulesBuilder {
-    private final SquaremapPlatform platform;
+    private final @Nullable SquaremapPlatform platform;
+    private final @Nullable Class<? extends SquaremapPlatform> platformClass;
     private final List<Module> extraModules = new ArrayList<>();
     private boolean vanillaRegionFileDirectoryResolver;
-    private boolean vanillaChunkSnapshotProvider;
+    private boolean vanillaChunkSnapshotProviderFactory;
     private @Nullable Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass;
+    private Class<? extends SquaremapJarAccess> squaremapJarAccess = SquaremapJarAccess.JarFromCodeSource.class;
 
     private SquaremapModulesBuilder(final SquaremapPlatform platform) {
         this.platform = platform;
+        this.platformClass = null;
+    }
+
+    private SquaremapModulesBuilder(final Class<? extends SquaremapPlatform> platformClass) {
+        this.platform = null;
+        this.platformClass = platformClass;
     }
 
     public SquaremapModulesBuilder mapWorldFactory(final Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass) {
@@ -35,8 +44,8 @@ public final class SquaremapModulesBuilder {
         return this;
     }
 
-    public SquaremapModulesBuilder vanillaChunkSnapshotProvider() {
-        this.vanillaChunkSnapshotProvider = true;
+    public SquaremapModulesBuilder vanillaChunkSnapshotProviderFactory() {
+        this.vanillaChunkSnapshotProviderFactory = true;
         return this;
     }
 
@@ -55,20 +64,25 @@ public final class SquaremapModulesBuilder {
         return this;
     }
 
+    public SquaremapModulesBuilder squaremapJarAccess(final Class<? extends SquaremapJarAccess> squaremapJarAccess) {
+        this.squaremapJarAccess = squaremapJarAccess;
+        return this;
+    }
+
     public List<Module> build() {
         requireNonNull(this.mapWorldFactoryClass, "mapWorldFactoryClass");
 
         final List<Module> baseModules = List.of(
             new ApiModule(),
-            new PlatformModule(this.platform),
+            new PlatformModule(this.platform, this.platformClass, this.squaremapJarAccess),
             new FactoryModuleBuilder().build(RenderFactory.class),
             new FactoryModuleBuilder().build(this.mapWorldFactoryClass)
         );
 
         final List<Module> modules = new ArrayList<>(baseModules);
 
-        if (this.vanillaChunkSnapshotProvider) {
-            modules.add(new VanillaChunkSnapshotProviderModule());
+        if (this.vanillaChunkSnapshotProviderFactory) {
+            modules.add(new VanillaChunkSnapshotProviderFactoryModule());
         }
 
         if (this.vanillaRegionFileDirectoryResolver) {
@@ -81,5 +95,9 @@ public final class SquaremapModulesBuilder {
 
     public static SquaremapModulesBuilder forPlatform(final SquaremapPlatform platform) {
         return new SquaremapModulesBuilder(platform);
+    }
+
+    public static SquaremapModulesBuilder forPlatform(final Class<? extends SquaremapPlatform> platformClass) {
+        return new SquaremapModulesBuilder(platformClass);
     }
 }

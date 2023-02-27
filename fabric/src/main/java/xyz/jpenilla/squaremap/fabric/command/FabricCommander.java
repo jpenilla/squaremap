@@ -2,9 +2,9 @@ package xyz.jpenilla.squaremap.fabric.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Objects;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -27,7 +27,12 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
 
     @Override
     public Audience audience() {
-        return FabricServerAudiences.of(this.stack.getServer()).audience(this.stack);
+        return this.stack;
+    }
+
+    @Override
+    public boolean hasPermission(final String permission) {
+        return Permissions.check(this.stack, permission, this.stack.getServer().getOperatorUserPermissionLevel());
     }
 
     public CommandSourceStack stack() {

@@ -1,92 +1,86 @@
 package xyz.jpenilla.squaremap.paper;
 
-import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Server;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Squaremap;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
-import xyz.jpenilla.squaremap.paper.inject.module.PaperModule;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
 
-public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatform {
-    private Injector injector;
-    private SquaremapCommon common;
-    private Squaremap api;
-    private BukkitTask updateWorldData;
-    private BukkitTask updatePlayers;
-    private MapUpdateListeners mapUpdateListeners;
-    private WorldLoadListener worldLoadListener;
-    private PaperNetworking networking;
+@DefaultQualifier(NonNull.class)
+@Singleton
+public final class SquaremapPaper implements SquaremapPlatform {
+    private final Injector injector;
+    private final SquaremapCommon common;
+    private final PaperNetworking networking;
+    private final JavaPlugin plugin;
+    private final Server server;
+    private @MonotonicNonNull Squaremap api;
+    private @Nullable BukkitTask updateWorldData;
+    private @Nullable BukkitTask updatePlayers;
+    private @Nullable MapUpdateListeners mapUpdateListeners;
+    private @Nullable WorldLoadListener worldLoadListener;
 
-    @Override
-    public void onEnable() {
-        try {
-            Class.forName("com.destroystokyo.paper.PaperConfig");
-        } catch (final ClassNotFoundException ex) {
-            this.getLogger().severe("squaremap requires Paper or one of its forks to run. Get Paper from https://papermc.io/downloads");
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
-        this.injector = Guice.createInjector(
-            SquaremapModulesBuilder.forPlatform(this)
-                .mapWorldFactory(PaperMapWorld.Factory.class)
-                .withModule(new PaperModule(this))
-                .build()
-        );
-
-        this.common = this.injector.getInstance(SquaremapCommon.class);
-        this.common.init();
-
-        this.api = this.injector.getInstance(Squaremap.class);
-        this.getServer().getServicesManager().register(Squaremap.class, this.api, this, ServicePriority.Normal);
-
-        this.networking = this.injector.getInstance(PaperNetworking.class);
-        this.networking.register();
-
-        new Metrics(this, 13571); // https://bstats.org/plugin/bukkit/squaremap/13571
-
-        this.getServer().getScheduler().runTask(this, this.common::updateCheck);
+    @Inject
+    private SquaremapPaper(
+        final Injector injector,
+        final SquaremapCommon squaremapCommon,
+        final Server server,
+        final JavaPlugin plugin,
+        final PaperNetworking networking
+    ) {
+        this.injector = injector;
+        this.common = squaremapCommon;
+        this.server = server;
+        this.plugin = plugin;
+        this.networking = networking;
     }
 
-    @Override
-    public void onDisable() {
-        if (this.networking != null) {
-            this.networking.unregister();
-        }
+    void init() {
+        this.common.init();
+        this.api = this.injector.getInstance(Squaremap.class);
+        this.server.getServicesManager().register(Squaremap.class, this.api, this.plugin, ServicePriority.Normal);
+        this.networking.register();
+        new Metrics(this.plugin, 13571); // https://bstats.org/plugin/bukkit/squaremap/13571
+        this.server.getScheduler().runTask(this.plugin, this.common::updateCheck);
+    }
+
+    void onDisable() {
+        this.networking.unregister();
         if (this.api != null) {
-            this.getServer().getServicesManager().unregister(Squaremap.class, this.api);
+            this.server.getServicesManager().unregister(Squaremap.class, this.api);
         }
-        if (this.common != null) {
-            this.common.shutdown();
-        }
+        this.common.shutdown();
     }
 
     @Override
     public void startCallback() {
         this.worldLoadListener = this.injector.getInstance(WorldLoadListener.class);
-        this.getServer().getPluginManager().registerEvents(this.worldLoadListener, this);
+        this.server.getPluginManager().registerEvents(this.worldLoadListener, this.plugin);
 
         this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);
         this.mapUpdateListeners.register();
 
-        this.updatePlayers = this.getServer().getScheduler()
-            .runTaskTimer(this, this.injector.getInstance(UpdatePlayers.class), 20, 20);
+        this.updatePlayers = this.server.getScheduler()
+            .runTaskTimer(this.plugin, this.injector.getInstance(UpdatePlayers.class), 20, 20);
 
-        this.updateWorldData = this.getServer().getScheduler()
-            .runTaskTimer(this, this.injector.getInstance(UpdateWorldData.class), 0, 20 * 5);
+        this.updateWorldData = this.server.getScheduler()
+            .runTaskTimer(this.plugin, this.injector.getInstance(UpdateWorldData.class), 0, 20 * 5);
     }
 
     @Override
@@ -115,11 +109,11 @@ public final class SquaremapPaper extends JavaPlugin implements SquaremapPlatfor
             this.worldLoadListener = null;
         }
 
-        this.getServer().getScheduler().cancelTasks(this);
+        this.server.getScheduler().cancelTasks(this.plugin);
     }
 
     @Override
     public @NonNull String version() {
-        return this.getDescription().getVersion();
+        return this.plugin.getDescription().getVersion();
     }
 }

@@ -12,21 +12,25 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
+import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class ConfigManager {
     private final DirectoryProvider directoryProvider;
+    private final SquaremapJarAccess squaremapJar;
     private final WorldConfigContainer<WorldConfig, Config> worldConfigContainer;
     private final WorldConfigContainer<WorldAdvanced, Advanced> worldAdvancedContainer;
 
     @Inject
     private ConfigManager(
         final DirectoryProvider directoryProvider,
+        final SquaremapJarAccess squaremapJar,
         final ServerAccess serverAccess
     ) {
         this.directoryProvider = directoryProvider;
+        this.squaremapJar = squaremapJar;
         this.worldConfigContainer = new WorldConfigContainer<>(WorldConfig::new, Config::config, serverAccess);
         this.worldAdvancedContainer = new WorldConfigContainer<>(WorldAdvanced::new, Advanced::config, serverAccess);
     }
@@ -42,7 +46,7 @@ public final class ConfigManager {
         Advanced.reload(this.directoryProvider);
         this.worldAdvancedContainer.reload();
 
-        Messages.reload(this.directoryProvider);
+        Messages.reload(this.squaremapJar, this.directoryProvider);
     }
 
     public WorldConfig worldConfig(final ServerLevel level) {

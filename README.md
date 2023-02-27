@@ -3,7 +3,7 @@
 # squaremap
 
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/jpenilla/squaremap/Build)](https://github.com/jpenilla/squaremap/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jpenilla/squaremap/build.yml?branch=master)](https://github.com/jpenilla/squaremap/actions)
 [![Discord](https://img.shields.io/discord/390942438061113344?color=8C9CFE&label=discord&logo=discord&logoColor=white)](https://discord.gg/PHpuzZS)
 
 </div>
@@ -26,7 +26,7 @@ squaremap hooks into your Minecraft server as a plugin or mod on a [supported pl
 ## Supported platforms
 
 - [Paper](https://papermc.io/)
-- [Sponge 9](https://www.spongepowered.org/)
+- [Sponge 10](https://www.spongepowered.org/)
 - [Fabric](https://fabricmc.net/) (requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api))
 
 ## Downloads
@@ -70,7 +70,7 @@ Maven
 <dependency>
     <groupId>xyz.jpenilla</groupId>
     <artifactId>squaremap-api</artifactId>
-    <version>1.1.3</version>
+    <version>1.1.9</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -82,7 +82,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("xyz.jpenilla", "squaremap-api", "1.1.3")
+    compileOnly("xyz.jpenilla", "squaremap-api", "1.1.9")
 }
 ```
 

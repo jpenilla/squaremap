@@ -25,6 +25,11 @@ public class PaperCommander implements Commander, ForwardingAudience.Single {
         return this.sender;
     }
 
+    @Override
+    public boolean hasPermission(final String permission) {
+        return this.sender.hasPermission(permission);
+    }
+
     public CommandSender sender() {
         return this.sender;
     }

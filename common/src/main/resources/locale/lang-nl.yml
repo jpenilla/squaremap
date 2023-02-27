@@ -13,8 +13,8 @@ command:
         player-not-found-for-input: <red>Geen speler gevonden voor invoer '<input>'
         console-must-specify-world: <red>Je moet een wereld opgeven bij het uitvoeren
             van dit commando vanuit de console
-        no-such-world: <red>Geen dergelijke wereld '<world>'
-        map-not-enabled-for-world: <red>Kaart is niet ingeschakeld voor wereld '<world>'
+        no-such-world: Geen dergelijke wereld '<world>'
+        map-not-enabled-for-world: Kaart is niet ingeschakeld voor wereld '<world>'
         confirmation-required: <red>Bevestiging vereist. Bevestig met /<command> confirm.
         no-pending-commands: <red>Je hebt geen openstaande commando's.
         progresslogging:
@@ -24,6 +24,44 @@ command:
                 seconds
             statusmessage: 'Render progress logging enabled: <enabled>, interval:
                 <green><seconds></green> seconds'
+        help:
+            help: squaremap command help
+            command: Command
+            description: Description
+            no_description: No description
+            arguments: Arguments
+            optional: Optional
+            showing_results_for_query: Showing search results for query
+            no_results_for_query: No results for query
+            available_commands: Available Commands
+            click_to_show_help: Click to show help for this command
+            page_out_of_range: 'Error: Page <page> is not in range. Must be in range
+                [1, <max_pages>]'
+            click_for_next_page: Click for next page
+            click_for_previous_page: Click for previous page
+        exception:
+            command-execution: <red>An internal error occurred while attempting to
+                perform this command.
+            no-permission: |-
+                <red>I'm sorry, but you do not have permission to perform this command.
+                Please contact the server administrators if you believe that this is in error.
+            invalid-argument: <red>Invalid command argument<white>:</white> <gray><message>
+            invalid-sender-type: <red>Invalid command sender type. You must be of
+                type <gray><required_sender_type></gray>.
+            invalid-syntax: <red>Invalid command syntax. Correct command syntax is<white>:</white>
+                <gray><correct_syntax>
+        parser-exception:
+            string: '''<input>'' is not a valid string of type <string_mode>'
+            number: '''<input>'' is not a valid number in the range <min> to <max>'
+            location:
+                invalid_format: '''<input>'' is not a valid location. Required format
+                    is ''<x> <z>'''
+                mixed_local_absolute: Cannot mix local and absolute coordinates. (either
+                    all coordinates use '^' or none do)
+            selector:
+                malformed: Selector '<input>' is malformed
+                too_many_players: More than 1 player selected in single player selector
+                non_player_in_player_selector: Non-player(s) selected in player selector
     prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
     description:
         help: Krijg hulp voor squaremap commando's
@@ -54,6 +92,7 @@ command:
     show:
         not-hidden: <red><player> is niet verborgen van de kaart
         shown: <green><player> is niet langer verborgen van de kaart
+click-to-copy: Click to copy to clipboard
 click-for-help: Klik hier voor hulp
 click-to-confirm: Click to confirm
 click-to-toggle: Click to toggle

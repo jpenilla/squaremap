@@ -1,6 +1,8 @@
 package xyz.jpenilla.squaremap.fabric.mixin;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
@@ -17,7 +19,7 @@ public interface ChunkMapAccess extends xyz.jpenilla.squaremap.common.util.Chunk
 
     @Invoker("readChunk")
     @Override
-    CompoundTag squaremap$readChunk(ChunkPos pos);
+    CompletableFuture<Optional<CompoundTag>> squaremap$readChunk(ChunkPos pos);
 
     @Accessor("pendingUnloads")
     @Override

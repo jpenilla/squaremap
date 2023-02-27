@@ -5,10 +5,13 @@ import com.google.inject.Injector;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -30,6 +33,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
     private final SquaremapCommon common;
     private final FabricServerAccess serverAccess;
     private final FabricWorldManager worldManager;
+    private final ModContainer modContainer;
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
 
@@ -38,10 +42,12 @@ public final class SquaremapFabric implements SquaremapPlatform {
             SquaremapModulesBuilder.forPlatform(this)
                 .mapWorldFactory(FabricMapWorld.Factory.class)
                 .withModule(new FabricModule(this))
-                .vanillaChunkSnapshotProvider()
+                .vanillaChunkSnapshotProviderFactory()
                 .vanillaRegionFileDirectoryResolver()
+                .squaremapJarAccess(FabricSquaremapJarAccess.class)
                 .build()
         );
+        this.modContainer = this.injector.getInstance(ModContainer.class);
         this.common = this.injector.getInstance(SquaremapCommon.class);
         this.common.init();
         this.worldManager = this.injector.getInstance(FabricWorldManager.class);
@@ -65,7 +71,10 @@ public final class SquaremapFabric implements SquaremapPlatform {
             ServerLifecycleEvents.SERVER_STARTED.register($ -> this.common.updateCheck());
         }
 
-        ServerWorldEvents.LOAD.register((server, level) -> this.worldManager.initWorld(level));
+        final ResourceLocation early = new ResourceLocation("squaremap:early");
+        ServerWorldEvents.LOAD.register(early, (server, level) -> this.worldManager.initWorld(level));
+        ServerWorldEvents.LOAD.addPhaseOrdering(early, Event.DEFAULT_PHASE);
+
         ServerWorldEvents.UNLOAD.register((server, level) -> this.worldManager.worldUnloaded(level));
 
         ServerTickEvents.END_SERVER_TICK.register(new TickEndListener());
@@ -85,8 +94,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
 
     @Override
     public String version() {
-        return FabricLoader.getInstance().getModContainer("squaremap")
-            .orElseThrow().getMetadata().getVersion().getFriendlyString();
+        return this.modContainer.getMetadata().getVersion().getFriendlyString();
     }
 
     private final class TickEndListener implements ServerTickEvents.EndTick {

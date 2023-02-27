@@ -15,7 +15,6 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Components;
 
 import static net.kyori.adventure.text.Component.text;
@@ -49,7 +48,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.PROGRESSLOGGING_TOGGLE_COMMAND_DESCRIPTION.asComponent())
             .handler(this::executeToggle));
         this.commands.register(progressLogging.literal("rate")
-            .argument(IntegerArgument.<Commander>newBuilder("seconds").withMin(1))
+            .argument(IntegerArgument.<Commander>builder("seconds").withMin(1))
             .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.PROGRESSLOGGING_RATE_COMMAND_DESCRIPTION.asComponent())
             .handler(this::executeRate));
     }
@@ -67,7 +66,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         Config.toggleProgressLogging();
 
         this.worldManager.worlds()
-            .forEach(MapWorldInternal::restartRenderProgressLogging);
+            .forEach(mapWorld -> mapWorld.renderManager().restartRenderProgressLogging());
 
         final ComponentLike message;
         if (Config.PROGRESS_LOGGING) {
@@ -88,7 +87,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         Config.setLoggingInterval(seconds);
 
         this.worldManager.worlds()
-            .forEach(MapWorldInternal::restartRenderProgressLogging);
+            .forEach(mapWorld -> mapWorld.renderManager().restartRenderProgressLogging());
 
         context.getSender().sendMessage(Messages.PROGRESSLOGGING_SET_RATE_MESSAGE.withPlaceholders(Components.placeholder("seconds", seconds)));
     }

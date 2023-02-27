@@ -1,13 +1,17 @@
 package xyz.jpenilla.squaremap.common.config;
 
+import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -23,10 +27,19 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.Components;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
+import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
+import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
 
 @DefaultQualifier(NonNull.class)
+@SuppressWarnings("unused") // Some messages are retrieved from the map instead of the field
 public final class Messages {
+    private static final Map<Class<?>, MessageFieldType<?>> MESSAGE_FIELD_TYPES = Map.of(
+        ComponentMessage.class, ComponentMessage.FIELD_TYPE,
+        StringMessage.class, StringMessage.FIELD_TYPE,
+        String.class, StringMessage.STRING_FIELD_TYPE
+    );
+
+    private static final Map<String, Message> MESSAGES = new HashMap<>();
 
     // MiniMessage
     @MessageKey("render-in-progress")
@@ -49,9 +62,9 @@ public final class Messages {
     @MessageKey("command.message.console-must-specify-world")
     public static ComponentMessage CONSOLE_MUST_SPECIFY_WORLD = new ComponentMessage("<red>You must specify the world when running this command from console");
     @MessageKey("command.message.no-such-world")
-    public static ComponentMessage NO_SUCH_WORLD = new ComponentMessage("<red>No such world '<world>'");
+    public static ComponentMessage NO_SUCH_WORLD = new ComponentMessage("No such world '<world>'");
     @MessageKey("command.message.map-not-enabled-for-world")
-    public static ComponentMessage MAP_NOT_ENABLED_FOR_WORLD = new ComponentMessage("<red>Map is not enabled for world '<world>'");
+    public static ComponentMessage MAP_NOT_ENABLED_FOR_WORLD = new ComponentMessage("Map is not enabled for world '<world>'");
     @MessageKey("command.message.confirmation-required")
     public static ComponentMessage CONFIRMATION_REQUIRED_MESSAGE = new ComponentMessage("<red>Confirmation required. Confirm using /<command> confirm.");
     @MessageKey("command.message.no-pending-commands")
@@ -65,6 +78,69 @@ public final class Messages {
     @MessageKey("command.message.progresslogging.statusmessage")
     public static ComponentMessage PROGRESSLOGGING_STATUS_MESSAGE = new ComponentMessage("Render progress logging enabled: <enabled>, interval: <green><seconds></green> seconds");
 
+    public static final String COMMAND_HELP_MESSAGE_PREFIX = "command.message.help.";
+
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_HELP_TITLE)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_HELP_TITLE = new ComponentMessage("squaremap command help");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_COMMAND)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_COMMAND = new ComponentMessage("Command");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_DESCRIPTION)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_DESCRIPTION = new ComponentMessage("Description");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_NO_DESCRIPTION)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_NO_DESCRIPTION = new ComponentMessage("No description");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_ARGUMENTS)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_ARGUMENTS = new ComponentMessage("Arguments");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_OPTIONAL)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_OPTIONAL = new ComponentMessage("Optional");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_SHOWING_RESULTS_FOR_QUERY)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_SHOWING_RESULTS_FOR_QUERY = new ComponentMessage("Showing search results for query");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_NO_RESULTS_FOR_QUERY)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_NO_RESULTS_FOR_QUERY = new ComponentMessage("No results for query");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_AVAILABLE_COMMANDS)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_AVAILABLE_COMMANDS = new ComponentMessage("Available Commands");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_CLICK_TO_SHOW_HELP)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_CLICK_TO_SHOW_HELP = new ComponentMessage("Click to show help for this command");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_PAGE_OUT_OF_RANGE)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_PAGE_OUT_OF_RANGE = new ComponentMessage("Error: Page <page> is not in range. Must be in range [1, <max_pages>]");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_CLICK_FOR_NEXT_PAGE)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_CLICK_FOR_NEXT_PAGE = new ComponentMessage("Click for next page");
+    @MessageKey(COMMAND_HELP_MESSAGE_PREFIX + MinecraftHelp.MESSAGE_CLICK_FOR_PREVIOUS_PAGE)
+    public static ComponentMessage COMMAND_HELP_MESSAGE_CLICK_FOR_PREVIOUS_PAGE = new ComponentMessage("Click for previous page");
+
+    private static final String COMMAND_EXCEPTION_MESSAGE_PREFIX = "command.message.exception.";
+
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "command-execution")
+    public static ComponentMessage COMMAND_EXCEPTION_COMMAND_EXECUTION = new ComponentMessage("<red>An internal error occurred while attempting to perform this command.");
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "no-permission")
+    public static ComponentMessage COMMAND_EXCEPTION_NO_PERMISSION = new ComponentMessage("<red>I'm sorry, but you do not have permission to perform this command.\n"
+        + "Please contact the server administrators if you believe that this is in error.");
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "invalid-argument")
+    public static ComponentMessage COMMAND_EXCEPTION_INVALID_ARGUMENT = new ComponentMessage("<red>Invalid command argument<white>:</white> <gray><message>");
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "invalid-sender-type")
+    public static ComponentMessage COMMAND_EXCEPTION_INVALID_SENDER_TYPE = new ComponentMessage("<red>Invalid command sender type. You must be of type <gray><required_sender_type></gray>.");
+    @MessageKey(COMMAND_EXCEPTION_MESSAGE_PREFIX + "invalid-syntax")
+    public static ComponentMessage COMMAND_EXCEPTION_INVALID_SYNTAX = new ComponentMessage("<red>Invalid command syntax. Correct command syntax is<white>:</white> <gray><correct_syntax>");
+
+    public static final String PARSER_EXCEPTION_MESSAGE_PREFIX = "command.message.parser-exception.";
+
+    // We use _ in these keys for simplicity - it matches what cloud is using. We could normalize them, but seems like more effort than it's worth
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "string")
+    public static ComponentMessage STRING_PARSE_EXCEPTION = new ComponentMessage("'<input>' is not a valid string of type <string_mode>");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "number")
+    public static ComponentMessage NUMBER_PARSE_EXCEPTION = new ComponentMessage("'<input>' is not a valid number in the range <min> to <max>");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "location.invalid_format")
+    public static ComponentMessage LOCATION_PARSE_EXCEPTION_INVALID_FORMAT = new ComponentMessage("'<input>' is not a valid location. Required format is '<x> <z>'");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "location.mixed_local_absolute")
+    public static ComponentMessage LOCATION_PARSE_EXCEPTION_MIXED_LOCAL_ABSOLUTE = new ComponentMessage("Cannot mix local and absolute coordinates. (either all coordinates use '^' or none do)");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "selector.malformed")
+    public static ComponentMessage SELECTOR_PARSE_EXCEPTION_MALFORMED = new ComponentMessage("Selector '<input>' is malformed");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "selector.too_many_players")
+    public static ComponentMessage SELECTOR_PARSE_EXCEPTION_TOO_MANY_PLAYERS = new ComponentMessage("More than 1 player selected in single player selector");
+    @MessageKey(PARSER_EXCEPTION_MESSAGE_PREFIX + "selector.non_player_in_player_selector")
+    public static ComponentMessage SELECTOR_PARSE_EXCEPTION_NON_PLAYER_IN_PLAYER_SELECTOR = new ComponentMessage("Non-player(s) selected in player selector");
+
+    @MessageKey("click-to-copy")
+    public static ComponentMessage CLICK_TO_COPY = new ComponentMessage("Click to copy to clipboard");
     @MessageKey("click-for-help")
     public static ComponentMessage CLICK_FOR_HELP = new ComponentMessage("Click for help");
     @MessageKey("click-to-confirm")
@@ -192,8 +268,11 @@ public final class Messages {
     private Messages() {
     }
 
-    public static void reload(final DirectoryProvider directoryProvider) {
-        FileUtil.extract("/locale/", directoryProvider.localeDirectory(), false);
+    public static void reload(
+        final SquaremapJarAccess squaremapJar,
+        final DirectoryProvider directoryProvider
+    ) {
+        squaremapJar.extract("locale", directoryProvider.localeDirectory(), false);
 
         final Path configFile = directoryProvider.localeDirectory().resolve(Config.LANGUAGE_FILE);
         final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
@@ -207,6 +286,7 @@ public final class Messages {
             throw new RuntimeException("Could not load " + Config.LANGUAGE_FILE + ", please correct your syntax errors", ex);
         }
 
+        MESSAGES.clear();
         loadValues(Messages.class, config);
 
         try {
@@ -218,48 +298,63 @@ public final class Messages {
 
     private static void loadValues(final Class<?> clazz, final CommentedConfigurationNode config) {
         Arrays.stream(clazz.getDeclaredFields())
-            .filter(Messages::isStatic)
+            .filter(ReflectionUtil::isStatic)
             .filter(Messages::checkTypeAndAnnotation)
             .forEach(field -> loadValue(config, field));
     }
 
-    private static boolean isStatic(final Field field) {
-        return Modifier.isStatic(field.getModifiers());
-    }
-
     private static boolean checkTypeAndAnnotation(final Field field) {
-        return field.isAnnotationPresent(MessageKey.class)
-            && (field.getType().equals(String.class) || field.getType().equals(ComponentMessage.class));
+        if (!field.isAnnotationPresent(MessageKey.class)) {
+            return false;
+        }
+        if (MESSAGE_FIELD_TYPES.containsKey(field.getType())) {
+            return true;
+        } else {
+            Logging.logger().warn("Field '{}.{}' of type '{}' is annotated with @MessageKey, but is not a supported MessageFieldType.", field.getDeclaringClass().getName(), field.getName(), field.getType().getName());
+            return false;
+        }
     }
 
     private static void loadValue(final CommentedConfigurationNode config, final Field field) {
         final MessageKey messageKey = field.getAnnotation(MessageKey.class);
-        final @Nullable String defaultValue = messageKey.defaultValue().equals("") ? null : messageKey.defaultValue();
         try {
-            if (field.getType() == String.class) {
-                final String value = getString(
-                    config,
-                    messageKey.value(),
-                    defaultValue != null ? defaultValue : (String) field.get(null)
-                );
-                field.set(null, value);
-            } else if (field.getType() == ComponentMessage.class) {
-                final String value = getString(
-                    config,
-                    messageKey.value(),
-                    defaultValue != null ? defaultValue : ((ComponentMessage) field.get(null)).miniMessage()
-                );
-                field.set(null, new ComponentMessage(value));
-            } else {
-                throw new IllegalStateException();
-            }
-        } catch (final IllegalAccessException ex) {
-            Logging.logger().warn("Failed to load {}", Config.LANGUAGE_FILE, ex);
+            loadValue(config, field, messageKey);
+        } catch (final Exception ex) {
+            Logging.logger().warn("Failed to load message with key '{}' from '{}'", messageKey.value(), Config.LANGUAGE_FILE, ex);
         }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void loadValue(
+        final CommentedConfigurationNode config,
+        final Field field,
+        final MessageKey messageKey
+    ) throws ReflectiveOperationException {
+        final @Nullable MessageFieldType<?> messageFieldType = MESSAGE_FIELD_TYPES.get(field.getType());
+        if (messageFieldType == null) {
+            throw new IllegalStateException("Could not find MessageFieldType for field with type " + field.getType().getName());
+        }
+        final String defaultValue = !messageKey.defaultValue().equals("")
+            ? messageKey.defaultValue()
+            : (String) ((Function) messageFieldType.defaultGetter()).apply(field.get(null));
+        final MessageFieldType.ReadResult<?> readResult = messageFieldType.messageFactory().apply(getString(config, messageKey.value(), defaultValue));
+        field.set(null, readResult.fieldValue());
+        MESSAGES.put(messageKey.value(), readResult.message());
     }
 
     private static String getString(final ConfigurationNode node, final String path, final String def) {
         return node.node(AbstractConfig.splitPath(path)).getString(def);
+    }
+
+    public static ComponentMessage componentMessage(final String key) {
+        final @Nullable Message message = MESSAGES.get(key);
+        if (message == null) {
+            throw new IllegalArgumentException("Message with key '" + key + "' does not exist!");
+        }
+        if (!(message instanceof ComponentMessage componentMessage)) {
+            throw new IllegalArgumentException("Message with key '" + key + "' is not a ComponentMessage!");
+        }
+        return componentMessage;
     }
 
     @Target(ElementType.FIELD)
@@ -270,7 +365,24 @@ public final class Messages {
         String defaultValue() default "";
     }
 
-    public static final class ComponentMessage implements ComponentLike {
+    public sealed interface Message permits StringMessage, ComponentMessage {
+    }
+
+    public record StringMessage(String message) implements Message {
+        private static final MessageFieldType<StringMessage> FIELD_TYPE = MessageFieldType.create(StringMessage::new, StringMessage::message);
+        private static final MessageFieldType<String> STRING_FIELD_TYPE = new MessageFieldType<>(
+            string -> new MessageFieldType.ReadResult<>(new StringMessage(string), string),
+            UnaryOperator.identity()
+        );
+
+        public String withPlaceholders(final Object... keyValuePairs) {
+            return Logging.replace(this.message, keyValuePairs);
+        }
+    }
+
+    public static final class ComponentMessage implements Message, ComponentLike {
+        private static final MessageFieldType<ComponentMessage> FIELD_TYPE = MessageFieldType.create(ComponentMessage::new, ComponentMessage::miniMessage);
+
         private final String miniMessage;
         private volatile @MonotonicNonNull Component noPlaceholders;
 
@@ -279,6 +391,9 @@ public final class Messages {
         }
 
         public Component withPlaceholders(final TagResolver... placeholders) {
+            if (placeholders.length == 0) {
+                return this.asComponent();
+            }
             return Components.miniMessage(this.miniMessage, placeholders);
         }
 
@@ -296,6 +411,27 @@ public final class Messages {
 
         public String miniMessage() {
             return this.miniMessage;
+        }
+    }
+
+    private record MessageFieldType<T>(
+        Function<String, ReadResult<T>> messageFactory,
+        Function<T, String> defaultGetter
+    ) {
+        static <T extends Message> MessageFieldType<T> create(
+            Function<String, T> messageFactory,
+            Function<T, String> defaultGetter
+        ) {
+            return new MessageFieldType<>(
+                string -> {
+                    final T message = messageFactory.apply(string);
+                    return new ReadResult<>(message, message);
+                },
+                defaultGetter
+            );
+        }
+
+        record ReadResult<T>(Message message, T fieldValue) {
         }
     }
 }

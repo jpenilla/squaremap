@@ -87,7 +87,7 @@ public record LevelBiomeColorData(
         return array;
     }
 
-    private static int defaultGrassColor(double temperature, double humidity) {
+    private static int defaultGrassColor(final double temperature, final double humidity) {
         int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
         int i = (int) ((1.0 - temperature) * 255.0);
         int k = j << 8 | i;
@@ -97,7 +97,7 @@ public record LevelBiomeColorData(
         return MAP_GRASS[k];
     }
 
-    private static int defaultFoliageColor(double temperature, double humidity) {
+    private static int defaultFoliageColor(final double temperature, final double humidity) {
         int i = (int) ((1.0 - temperature) * 255.0);
         int j = (int) ((1.0 - (humidity * temperature)) * 255.0);
         return MAP_FOLIAGE[(j << 8 | i)];

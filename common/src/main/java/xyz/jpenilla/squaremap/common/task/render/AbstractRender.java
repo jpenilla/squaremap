@@ -11,8 +11,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -35,17 +39,19 @@ import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractRender implements Runnable {
     private final ExecutorService executorService;
     private final Executor executor;
-    private final ChunkSnapshotProvider chunkSnapshotProvider;
+    private final Supplier<ChunkSnapshotProvider> createChunkSnapshotProvider;
+    private ChunkSnapshotProvider chunkSnapshotProvider;
     private volatile @MonotonicNonNull Thread thread;
     protected volatile State state = State.RUNNING;
 
@@ -61,21 +67,22 @@ public abstract class AbstractRender implements Runnable {
 
     protected AbstractRender(
         final MapWorldInternal world,
-        final ChunkSnapshotProvider chunkSnapshotProvider
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory
     ) {
-        this(world, chunkSnapshotProvider, createRenderWorkerPool(world));
+        this(world, chunkSnapshotProviderFactory, createRenderWorkerPool(world));
     }
 
     protected AbstractRender(
         final MapWorldInternal mapWorld,
-        final ChunkSnapshotProvider chunkSnapshotProvider,
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
         final ExecutorService workerPool
     ) {
         this.mapWorld = mapWorld;
         this.executorService = workerPool;
         this.executor = new RenderWorkerExecutor(workerPool, this::running);
         this.level = mapWorld.serverLevel();
-        this.chunkSnapshotProvider = chunkSnapshotProvider;
+        this.createChunkSnapshotProvider = () -> chunkSnapshotProviderFactory.createChunkSnapshotProvider(this.level);
+        this.chunkSnapshotProvider = this.createChunkSnapshotProvider.get();
         this.biomeColors = this.mapWorld.config().MAP_BIOMES
             ? new ConcurrentHashMap<>()
             : null; // this should be null if we are not mapping biomes
@@ -110,7 +117,7 @@ public abstract class AbstractRender implements Runnable {
         }
         final State state = this.state;
         this.shutdown();
-        this.mapWorld.renderStopped(state == State.CANCELLED || state == State.RUNNING);
+        this.mapWorld.renderManager().renderStopped(state == State.CANCELLED || state == State.RUNNING);
         final String msg = state == State.RUNNING ? Messages.LOG_FINISHED_RENDERING : Messages.LOG_CANCELLED_RENDERING;
         Logging.info(msg, "world", this.mapWorld.identifier().asString());
     }
@@ -160,6 +167,10 @@ public abstract class AbstractRender implements Runnable {
         return this.processedRegions.get();
     }
 
+    protected final void resetChunkSnapshotProvider() {
+        this.chunkSnapshotProvider = this.createChunkSnapshotProvider.get();
+    }
+
     public final void restartProgressLogger() {
         final @Nullable RenderProgress old;
         final @Nullable Pair<Timer, RenderProgress> progress = this.progress;
@@ -176,7 +187,7 @@ public abstract class AbstractRender implements Runnable {
         final int startZ = region.getChunkZ();
         final List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (int chunkX = startX; chunkX < startX + 32; chunkX++) {
-            futures.add(this.mapChunkColumn(image, chunkX, startZ));
+            futures.add(this.mapChunkColumnFuture(image, chunkX, startZ));
         }
         for (final CompletableFuture<Void> future : futures) {
             try {
@@ -192,81 +203,89 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    protected final CompletableFuture<Void> mapChunkColumn(final Image image, final int chunkX, final int startChunkZ) {
-        return CompletableFuture.runAsync(() -> {
-            int[] lastY = new int[16];
-            for (int chunkZ = startChunkZ; chunkZ < startChunkZ + 32; chunkZ++) {
-                if (!this.running()) {
-                    return;
-                }
-                if (!this.mapWorld.visibilityLimit().shouldRenderChunk(chunkX, chunkZ)) {
-                    // skip rendering this chunk in the chunk column - it's outside the visibility limit
-                    // (this chunk was already excluded from the chunk count, so not incrementing that is on purpose)
-                    continue;
-                }
-
-                @Nullable ChunkSnapshot chunk;
-                if (chunkZ == startChunkZ) {
-                    // this is the top line of the image, we need to
-                    // scan the bottom line of the region to the north
-                    // in order to get the correct lastY for shading
-                    chunk = this.chunkSnapshot(chunkX, chunkZ - 1);
-                    if (chunk != null) {
-                        lastY = this.getLastYFromBottomRow(chunk);
-                    }
-                }
-                chunk = this.chunkSnapshot(chunkX, chunkZ);
-                if (chunk != null) {
-                    this.scanChunk(image, lastY, chunk);
-                }
-                this.processedChunks.incrementAndGet();
-            }
-        }, this.executor).exceptionally(thr -> {
-            Logging.logger().warn("Exception mapping chunk column starting at [{}, {}] in {}", chunkX, startChunkZ, this.mapWorld.identifier().asString(), thr);
+    protected final CompletableFuture<Void> mapSingleChunkFuture(final Image image, final int chunkX, final int chunkZ) {
+        final Function<Throwable, @Nullable Void> handleError = thr -> {
+            Logging.logger().warn("Exception mapping chunk at [{}, {}] in {}", chunkX, chunkZ, this.mapWorld.identifier().asString(), thr);
             return null;
-        });
+        };
+
+        return CompletableFuture.runAsync(() -> this.mapSingleChunk(image, chunkX, chunkZ), this.executor).exceptionally(handleError);
     }
 
-    protected final CompletableFuture<Void> mapSingleChunk(final Image image, final int chunkX, final int chunkZ) {
-        return CompletableFuture.runAsync(() -> {
-            int[] lastY = new int[16];
+    protected final CompletableFuture<Void> mapChunkColumnFuture(final Image image, final int chunkX, final int startChunkZ) {
+        final Function<Throwable, @Nullable Void> handleError = thr -> {
+            Logging.logger().warn("Exception mapping chunk column starting at [{}, {}] in {}", chunkX, startChunkZ, this.mapWorld.identifier().asString(), thr);
+            return null;
+        };
 
-            @Nullable ChunkSnapshot chunk;
+        return CompletableFuture.runAsync(() -> this.mapChunkColumn(image, chunkX, startChunkZ), this.executor).exceptionally(handleError);
+    }
 
-            // try scanning south row of northern chunk to get proper yDiff
-            chunk = this.chunkSnapshot(chunkX, chunkZ - 1);
+    private void mapSingleChunk(final Image image, final int chunkX, final int chunkZ) {
+        int[] lastY = new int[16];
+
+        @Nullable ChunkSnapshot chunk;
+
+        // try scanning south row of northern chunk to get proper yDiff
+        chunk = this.chunkSnapshot(chunkX, chunkZ - 1);
+        if (chunk != null) {
+            lastY = this.getLastYFromBottomRow(chunk);
+        }
+
+        // scan the chunk itself
+        chunk = this.chunkSnapshot(chunkX, chunkZ);
+        if (chunk != null) {
+            this.scanChunk(image, lastY, chunk);
+        }
+
+        // queue up the southern chunk in case it was stored with improper yDiff
+        // https://github.com/pl3xgaming/Pl3xMap/issues/15
+        final int down = chunkZ + 1;
+        if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
+            chunk = this.chunkSnapshot(chunkX, down);
             if (chunk != null) {
-                lastY = this.getLastYFromBottomRow(chunk);
+                this.scanTopRow(image, lastY, chunk);
+            }
+        } else {
+            // chunk belongs to a different region, add to queue
+            this.mapWorld.chunkModified(new ChunkCoordinate(chunkX, down));
+        }
+
+        this.processedChunks.incrementAndGet();
+    }
+
+    private void mapChunkColumn(final Image image, final int chunkX, final int startChunkZ) {
+        int[] lastY = new int[16];
+        for (int chunkZ = startChunkZ; chunkZ < startChunkZ + 32; chunkZ++) {
+            if (!this.running()) {
+                return;
+            }
+            if (!this.mapWorld.visibilityLimit().shouldRenderChunk(chunkX, chunkZ)) {
+                // skip rendering this chunk in the chunk column - it's outside the visibility limit
+                // (this chunk was already excluded from the chunk count, so not incrementing that is on purpose)
+                continue;
             }
 
-            // scan the chunk itself
+            @Nullable ChunkSnapshot chunk;
+            if (chunkZ == startChunkZ) {
+                // this is the top line of the image, we need to
+                // scan the bottom line of the region to the north
+                // in order to get the correct lastY for shading
+                chunk = this.chunkSnapshot(chunkX, chunkZ - 1);
+                if (chunk != null) {
+                    lastY = this.getLastYFromBottomRow(chunk);
+                }
+            }
             chunk = this.chunkSnapshot(chunkX, chunkZ);
             if (chunk != null) {
                 this.scanChunk(image, lastY, chunk);
             }
-
-            // queue up the southern chunk in case it was stored with improper yDiff
-            // https://github.com/pl3xgaming/Pl3xMap/issues/15
-            final int down = chunkZ + 1;
-            if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
-                chunk = this.chunkSnapshot(chunkX, down);
-                if (chunk != null) {
-                    this.scanTopRow(image, lastY, chunk);
-                }
-            } else {
-                // chunk belongs to a different region, add to queue
-                this.mapWorld.chunkModified(new ChunkCoordinate(chunkX, down));
-            }
-
             this.processedChunks.incrementAndGet();
-        }, this.executor).exceptionally(thr -> {
-            Logging.logger().warn("Exception mapping chunk at [{}, {}] in {}", chunkX, chunkZ, this.mapWorld.identifier().asString(), thr);
-            return null;
-        });
+        }
     }
 
     private void scanChunk(final Image image, final int[] lastY, final ChunkSnapshot chunk) {
-        while (this.mapWorld.rendersPaused() && this.running()) {
+        while (this.mapWorld.renderManager().rendersPaused() && this.running()) {
             sleep(500);
         }
         final int blockX = chunk.pos().getMinBlockX();
@@ -364,7 +383,7 @@ public abstract class AbstractRender implements Runnable {
                 .modifyColorFromBiome(color, chunk, mutablePos);
         }
 
-        int odd = (imgX + imgZ & 1);
+        final int odd = (imgX + imgZ & 1);
 
         final @Nullable DepthResult fluidDepthResult = findDepthIfFluid(mutablePos, state, chunk);
         if (fluidDepthResult != null) {
@@ -374,8 +393,8 @@ public abstract class AbstractRender implements Runnable {
         }
 
         final int curY = mutablePos.getY();
-        double diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
-        byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
+        final double diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
+        final byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
         lastY[imgX] = curY;
         return Colors.shade(color, colorOffset);
     }
@@ -482,10 +501,14 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private @Nullable ChunkSnapshot chunkSnapshot(final int x, final int z) {
-        final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(this.level, x, z, false);
-        while (!future.isDone()) {
+        final CompletableFuture<ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(x, z, false);
+        for (int failures = 1; !future.isDone(); ++failures) {
             if (!this.running()) {
                 return null;
+            }
+            try {
+                future.get(Math.min(50, failures), TimeUnit.MILLISECONDS);
+            } catch (final InterruptedException | TimeoutException | ExecutionException ignore) {
             }
         }
         return future.join();
@@ -499,9 +522,13 @@ public abstract class AbstractRender implements Runnable {
         );
     }
 
-    protected static int getThreads(int threads) {
+    protected static int getThreads(final int threads) {
+        return getThreads(threads, 2);
+    }
+
+    protected static int getThreads(int threads, final int factor) {
         if (threads == -1) {
-            threads = Runtime.getRuntime().availableProcessors() / 3;
+            threads = Runtime.getRuntime().availableProcessors() / factor;
         }
         return Math.max(1, threads);
     }

@@ -3,22 +3,17 @@ package xyz.jpenilla.squaremap.common.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.exceptions.CommandExecutionException;
+import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
 import cloud.commandframework.keys.CloudKey;
 import cloud.commandframework.keys.SimpleCloudKey;
 import cloud.commandframework.meta.CommandMeta;
-import cloud.commandframework.minecraft.extras.AudienceProvider;
-import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.UnaryOperator;
-import net.kyori.adventure.text.Component;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
@@ -27,18 +22,15 @@ import xyz.jpenilla.squaremap.common.command.commands.CancelRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ConfirmCommand;
 import xyz.jpenilla.squaremap.common.command.commands.FullRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.HelpCommand;
+import xyz.jpenilla.squaremap.common.command.commands.HideShowCommands;
 import xyz.jpenilla.squaremap.common.command.commands.PauseRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ProgressLoggingCommand;
+import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ReloadCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ResetMapCommand;
-import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
-import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
-
-import static net.kyori.adventure.text.Component.text;
-import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -51,12 +43,12 @@ public final class Commands {
 
     private final Injector injector;
     private final CommandManager<Commander> commandManager;
-    private final PlatformCommands platformCommands;
 
     @Inject
     private Commands(
         final Injector injector,
         final PlatformCommands platformCommands,
+        final ExceptionHandler exceptionHandler,
         final AbstractPlayerManager playerManager,
         final ServerAccess serverAccess,
         final RenderFactory renderFactory,
@@ -64,8 +56,11 @@ public final class Commands {
         final WorldManager worldManager
     ) {
         this.injector = injector;
-        this.platformCommands = platformCommands;
         this.commandManager = platformCommands.createCommandManager();
+
+        this.commandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
+            FilteringCommandSuggestionProcessor.Filter.<Commander>contains(true).andTrimBeforeLastSpace()
+        ));
 
         this.commandManager.registerCommandPreProcessor(preprocessContext -> {
             final CommandContext<Commander> commandContext = preprocessContext.getCommandContext();
@@ -76,7 +71,7 @@ public final class Commands {
             commandContext.store(WORLD_MANAGER, worldManager);
         });
 
-        this.registerExceptionHandlers();
+        exceptionHandler.registerExceptionHandlers(this.commandManager);
     }
 
     public void registerCommands() {
@@ -88,41 +83,14 @@ public final class Commands {
             CancelRenderCommand.class,
             PauseRenderCommand.class,
             ResetMapCommand.class,
-            ProgressLoggingCommand.class
+            ProgressLoggingCommand.class,
+            RadiusRenderCommand.class,
+            HideShowCommands.class
         );
 
         for (final Class<? extends SquaremapCommand> command : commands) {
             this.injector.getInstance(command).register();
         }
-
-        this.platformCommands.registerCommands(this);
-    }
-
-    private void registerExceptionHandlers() {
-        new MinecraftExceptionHandler<Commander>()
-            .withDefaultHandlers()
-            .withDecorator(component -> text()
-                .append(Messages.COMMAND_PREFIX.asComponent()
-                    .hoverEvent(Messages.CLICK_FOR_HELP.asComponent())
-                    .clickEvent(runCommand(String.format("/%s help", Config.MAIN_COMMAND_LABEL))))
-                .append(component)
-                .build())
-            .apply(this.commandManager, AudienceProvider.nativeAudience());
-
-        final var minecraftExtrasDefaultHandler = Objects.requireNonNull(this.commandManager.getExceptionHandler(CommandExecutionException.class));
-        this.commandManager.registerExceptionHandler(CommandExecutionException.class, (sender, exception) -> {
-            final Throwable cause = exception.getCause();
-
-            if (cause instanceof CommandCompleted commandCompleted) {
-                final @Nullable Component message = commandCompleted.componentMessage();
-                if (message != null) {
-                    sender.sendMessage(message);
-                }
-                return;
-            }
-
-            minecraftExtrasDefaultHandler.accept(sender, exception);
-        });
     }
 
     public void register(final Command.Builder<Commander> builder) {

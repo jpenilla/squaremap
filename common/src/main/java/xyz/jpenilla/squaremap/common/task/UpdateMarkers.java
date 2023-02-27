@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.task;
 
-import com.google.gson.Gson;
 import java.awt.Color;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,8 +28,6 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 public final class UpdateMarkers implements Runnable {
-    private static final Gson GSON = new Gson();
-
     private final MapWorldInternal mapWorld;
     private final Map<Key, Long> lastUpdatedTime = new HashMap<>();
     private final Map<Key, Map<String, Object>> layerCache = new HashMap<>();
@@ -78,7 +75,7 @@ public final class UpdateMarkers implements Runnable {
         });
 
         final Path file = this.mapWorld.tilesPath().resolve("markers.json");
-        FileUtil.writeStringAsync(file, () -> GSON.toJson(layers));
+        FileUtil.atomicWriteJsonAsync(file, layers);
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {

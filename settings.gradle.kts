@@ -3,7 +3,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
   repositories {
     gradlePluginPortal()
-    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.spongepowered.org/repository/maven-public/")
     maven("https://maven.fabricmc.net/")
     maven("https://maven.quiltmc.org/repository/release/")
@@ -13,7 +12,8 @@ pluginManagement {
 }
 
 plugins {
-  id("ca.stellardrift.polyglot-version-catalogs") version "5.0.1"
+  id("org.gradle.toolchains.foojay-resolver-convention") version "0.4.0"
+  id("ca.stellardrift.polyglot-version-catalogs") version "6.0.1"
 }
 
 rootProject.name = "squaremap"

@@ -21,10 +21,10 @@ import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.LevelBiomeColorData;
 import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
-import xyz.jpenilla.squaremap.common.layer.SpawnIconProvider;
+import xyz.jpenilla.squaremap.common.layer.SpawnIconLayer;
 import xyz.jpenilla.squaremap.common.util.Components;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
+import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
 import xyz.jpenilla.squaremap.common.util.UpdateChecker;
 
 @DefaultQualifier(NonNull.class)
@@ -37,6 +37,7 @@ public final class SquaremapCommon {
     private final AbstractPlayerManager playerManager;
     private final AbstractWorldManager worldManager;
     private final Commands commands;
+    private final SquaremapJarAccess squaremapJar;
 
     @Inject
     private SquaremapCommon(
@@ -46,7 +47,8 @@ public final class SquaremapCommon {
         final ConfigManager configManager,
         final AbstractPlayerManager playerManager,
         final WorldManager worldManager,
-        final Commands commands
+        final Commands commands,
+        final SquaremapJarAccess squaremapJar
     ) {
         this.injector = injector;
         this.platform = platform;
@@ -55,6 +57,7 @@ public final class SquaremapCommon {
         this.playerManager = playerManager;
         this.worldManager = (AbstractWorldManager) worldManager;
         this.commands = commands;
+        this.squaremapJar = squaremapJar;
     }
 
     public void init() {
@@ -66,7 +69,7 @@ public final class SquaremapCommon {
     }
 
     private void start() {
-        FileUtil.extract("/web/", this.directoryProvider.webDirectory(), Config.UPDATE_WEB_DIR);
+        this.squaremapJar.extract("web", this.directoryProvider.webDirectory(), Config.UPDATE_WEB_DIR);
         LevelBiomeColorData.loadImages(this.directoryProvider);
         this.worldManager.start();
         this.platform.startCallback();
@@ -111,7 +114,7 @@ public final class SquaremapCommon {
         final Squaremap api = this.injector.getInstance(Squaremap.class);
 
         try {
-            api.iconRegistry().register(SpawnIconProvider.SPAWN_ICON_KEY, ImageIO.read(this.directoryProvider.webDirectory().resolve("images/icon/spawn.png").toFile()));
+            api.iconRegistry().register(SpawnIconLayer.KEY, ImageIO.read(this.directoryProvider.webDirectory().resolve("images/icon/spawn.png").toFile()));
         } catch (final IOException ex) {
             Logging.logger().warn("Failed to register spawn icon", ex);
         }

@@ -50,14 +50,36 @@ public final class DirectoryProvider {
         return this.localeDirectory;
     }
 
+    public Path getAndCreateDataDirectory(final ServerLevel level) {
+        final Path data = this.dataDirectory()
+            .resolve("data")
+            .resolve(Util.levelWebName(level));
+        try {
+            if (!Files.exists(data)) {
+                Files.createDirectories(data);
+            }
+        } catch (final IOException ex) {
+            Logging.error(
+                Messages.LOG_COULD_NOT_CREATE_DIR,
+                new IllegalStateException("Failed to create data directory for world '%s'".formatted(level.dimension().location()), ex),
+                "path", data.toAbsolutePath()
+            );
+        }
+        return data;
+    }
+
     public Path getAndCreateTilesDirectory(final ServerLevel level) {
         final Path dir = this.tilesDirectory.resolve(Util.levelWebName(level));
-        if (!Files.exists(dir)) {
-            try {
+        try {
+            if (!Files.exists(dir)) {
                 Files.createDirectories(dir);
-            } catch (final IOException e) {
-                Logging.error(Messages.LOG_COULD_NOT_CREATE_DIR, e, "path", dir.toAbsolutePath());
             }
+        } catch (final IOException ex) {
+            Logging.error(
+                Messages.LOG_COULD_NOT_CREATE_DIR,
+                new IllegalStateException("Failed to create tiles directory for world '%s'".formatted(level.dimension().location()), ex),
+                "path", dir.toAbsolutePath()
+            );
         }
         return dir;
     }

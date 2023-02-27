@@ -17,9 +17,10 @@ import net.minecraft.world.level.material.Material;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshot;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.common.util.ColorBlender;
 import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
 
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
@@ -55,6 +56,7 @@ public final class BiomeColors {
         Material.REPLACEABLE_WATER_PLANT
     );
 
+    private final ColorBlender colorBlender = new ColorBlender();
     private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
     private final LevelBiomeColorData colorData;
     private final MapWorldInternal world;
@@ -95,7 +97,7 @@ public final class BiomeColors {
     }
 
     private int grassColorSampler(final Biome biome, final BlockPos pos) {
-        return this.modifiedGrassColor(biome, pos, this.colorData.grassColors().getInt(biome));
+        return biome.getSpecialEffects().getGrassColorModifier().modifyColor(pos.getX(), pos.getZ(), this.colorData.grassColors().getInt(biome));
     }
 
     private int foliage(final BlockPos pos) {
@@ -118,52 +120,22 @@ public final class BiomeColors {
     }
 
     private int sampleNeighbors(final BlockPos pos, final int radius, final ColorSampler colorSampler) {
-        int rgb;
-        int r = 0;
-        int g = 0;
-        int b = 0;
-        int count = 0;
+        this.colorBlender.reset();
+
         // Sampling in the y direction as well would improve output, however would complicate caching (low priority, PRs accepted)
         for (int x = pos.getX() - radius; x < pos.getX() + radius; x++) {
             for (int z = pos.getZ() - radius; z < pos.getZ() + radius; z++) {
                 this.mutablePos.set(x, pos.getY(), z);
-                final Biome biome = this.biome(this.mutablePos);
-                rgb = colorSampler.sample(biome, this.mutablePos);
-                r += (rgb >> 16) & 0xFF;
-                g += (rgb >> 8) & 0xFF;
-                b += rgb & 0xFF;
-                count++;
+
+                this.colorBlender.addColor(colorSampler.sample(this.biome(this.mutablePos), this.mutablePos));
             }
         }
-        rgb = r / count;
-        rgb = (rgb << 8) + g / count;
-        rgb = (rgb << 8) + b / count;
-        return rgb;
+
+        return this.colorBlender.result();
     }
 
     private Biome biome(final BlockPos pos) {
         return this.biomeCache.biome(pos);
-    }
-
-    private int modifiedGrassColor(final Biome biome, final BlockPos pos, final int color) {
-        return switch (biome.getSpecialEffects().getGrassColorModifier()) {
-            case NONE -> color;
-            case SWAMP -> modifiedSwampGrassColor(pos);
-            case DARK_FOREST -> (color & 0xFEFEFE) + 2634762 >> 1;
-        };
-    }
-
-    private static int modifiedSwampGrassColor(final BlockPos pos) {
-        // swamps have 2 grass colors, depends on sample from noise generator
-        final double sample = Biome.BIOME_INFO_NOISE.getValue(
-            pos.getX() * 0.0225,
-            pos.getZ() * 0.0225,
-            false
-        );
-        if (sample < -0.1) {
-            return 5011004;
-        }
-        return 6975545;
     }
 
     private static final class BiomeCache {
@@ -241,7 +213,7 @@ public final class BiomeColors {
                 return cached;
             }
 
-            @Nullable final ChunkSnapshot chunk = this.chunkSnapshotProvider.asyncSnapshot(this.level(), chunkPos.x, chunkPos.z, true)
+            final @Nullable ChunkSnapshot chunk = this.chunkSnapshotProvider.asyncSnapshot(chunkPos, true)
                 // todo respect cancellation
                 .join();
             if (chunk == null) {

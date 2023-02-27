@@ -33,6 +33,6 @@ public final class FabricPlayerManager extends AbstractPlayerManager {
     }
 
     private static SquaremapComponentInitializer.PlayerComponent component(final ServerPlayer player) {
-        return SquaremapComponentInitializer.SQUAREMAP_PLAYER_COMPONENT.get(player);
+        return player.getComponent(SquaremapComponentInitializer.SQUAREMAP_PLAYER_COMPONENT);
     }
 }

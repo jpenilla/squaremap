@@ -1,14 +1,11 @@
 package xyz.jpenilla.squaremap.common.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -26,12 +23,10 @@ import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 public record UpdateChecker(Logger logger, String githubRepo) {
-    private static final Gson GSON = new GsonBuilder().create();
-
     public void checkVersion() {
         this.logger.info(Messages.UPDATE_CHECKER_FETCHING_VERSION_INFORMATION);
 
-        final @Nullable Manifest manifest = manifest(UpdateChecker.class); // we expect to be shaded into platform jars
+        final @Nullable Manifest manifest = Util.manifest(UpdateChecker.class); // we expect to be shaded into platform jars
         if (manifest == null) {
             this.logger.warn("Failed to locate manifest, cannot check for updates.");
             return;
@@ -95,7 +90,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
     private Releases fetchReleases() throws IOException {
         final JsonArray result;
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://api.github.com/repos/%s/releases".formatted(this.githubRepo)).openStream(), StandardCharsets.UTF_8))) {
-            result = GSON.fromJson(reader, JsonArray.class);
+            result = Util.gson().fromJson(reader, JsonArray.class);
         }
 
         final Map<String, String> versionMap = new LinkedHashMap<>();
@@ -117,7 +112,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
                 return new Distance.UnknownCommit();
             }
             try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
-                final JsonObject response = GSON.fromJson(reader, JsonObject.class);
+                final JsonObject response = Util.gson().fromJson(reader, JsonObject.class);
                 final String status = response.get("status").getAsString();
                 return switch (status) {
                     case "identical" -> new Distance.UpToDate();
@@ -127,21 +122,6 @@ public record UpdateChecker(Logger logger, String githubRepo) {
             }
         } catch (final IOException | JsonSyntaxException | NumberFormatException ex) {
             return new Distance.Failure(ex);
-        }
-    }
-
-    private static @Nullable Manifest manifest(final Class<?> clazz) {
-        final String classLocation = "/" + clazz.getName().replace(".", "/") + ".class";
-        final @Nullable URL resource = clazz.getResource(classLocation);
-        if (resource == null) {
-            return null;
-        }
-        final String classFilePath = resource.toString().replace("\\", "/");
-        final String archivePath = classFilePath.substring(0, classFilePath.length() - classLocation.length());
-        try (final InputStream stream = new URL(archivePath + "/META-INF/MANIFEST.MF").openStream()) {
-            return new Manifest(stream);
-        } catch (final IOException ex) {
-            return null;
         }
     }
 

@@ -30,13 +30,12 @@ dependencies {
     exclude("io.leangen.geantyref")
   }
 
-  modImplementation(libs.adventurePlatformFabric) {
-    exclude("ca.stellardrift", "colonel")
-  }
+  modImplementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)
 
   modImplementation(libs.cloudFabric)
   include(libs.cloudFabric)
+
   implementation(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately
   }

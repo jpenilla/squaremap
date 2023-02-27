@@ -11,8 +11,8 @@ command:
         console-must-specify-player: <red>从控制台执行此命令时必须指定一个玩家
         player-not-found-for-input: <red>没有找到玩家 '<input>'
         console-must-specify-world: <red>从控制台执行此命令时必须指定一个世界
-        no-such-world: <red>没有找到世界 '<world>'
-        map-not-enabled-for-world: <red>世界 '<world>' 的渲染未启用'
+        no-such-world: 没有找到世界 '<world>'
+        map-not-enabled-for-world: 世界 '<world>' 的渲染未启用'
         confirmation-required: <red>请输入 /<command> confirm 确认操作
         no-pending-commands: <red>你没有任何待处理的命令
         progresslogging:
@@ -20,6 +20,44 @@ command:
             disabled: <green>渲染进度日志已禁用
             set-rate: <green>渲染进度日志的间隔已设置为 </green><seconds> 秒
             statusmessage: '渲染进度日志状态: <enabled>, 间隔: <green><seconds></green> 秒'
+        help:
+            help: squaremap command help
+            command: Command
+            description: Description
+            no_description: No description
+            arguments: Arguments
+            optional: Optional
+            showing_results_for_query: Showing search results for query
+            no_results_for_query: No results for query
+            available_commands: Available Commands
+            click_to_show_help: Click to show help for this command
+            page_out_of_range: 'Error: Page <page> is not in range. Must be in range
+                [1, <max_pages>]'
+            click_for_next_page: Click for next page
+            click_for_previous_page: Click for previous page
+        exception:
+            command-execution: <red>An internal error occurred while attempting to
+                perform this command.
+            no-permission: |-
+                <red>I'm sorry, but you do not have permission to perform this command.
+                Please contact the server administrators if you believe that this is in error.
+            invalid-argument: <red>Invalid command argument<white>:</white> <gray><message>
+            invalid-sender-type: <red>Invalid command sender type. You must be of
+                type <gray><required_sender_type></gray>.
+            invalid-syntax: <red>Invalid command syntax. Correct command syntax is<white>:</white>
+                <gray><correct_syntax>
+        parser-exception:
+            string: '''<input>'' is not a valid string of type <string_mode>'
+            number: '''<input>'' is not a valid number in the range <min> to <max>'
+            location:
+                invalid_format: '''<input>'' is not a valid location. Required format
+                    is ''<x> <z>'''
+                mixed_local_absolute: Cannot mix local and absolute coordinates. (either
+                    all coordinates use '^' or none do)
+            selector:
+                malformed: Selector '<input>' is malformed
+                too_many_players: More than 1 player selected in single player selector
+                non_player_in_player_selector: Non-player(s) selected in player selector
     prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
     description:
         help: 获取 squaremap 的命令帮助
@@ -47,6 +85,7 @@ command:
     show:
         not-hidden: <red><player> 没有在地图中隐藏
         shown: <green><player> 已在地图中显示
+click-to-copy: Click to copy to clipboard
 click-for-help: 点击获取帮助
 click-to-confirm: 点击进行确认
 click-to-toggle: 点击进行切换

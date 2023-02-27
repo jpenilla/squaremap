@@ -87,11 +87,8 @@ public final class Image {
         try {
             final @Nullable BufferedImage read = ImageIO.read(file.toFile());
             if (read == null) {
-                this.logCouldNotRead(
-                    new IOException("Failed to read image file '" + file.toAbsolutePath() + "', result is null. This means no supported " +
-                        "image format was able to read it. The image file may have been malformed or corrupted, it will be overwritten.")
-                );
-                return newBufferedImage();
+                throw new IOException("Failed to read image file '" + file.toAbsolutePath() + "', ImageIO.read(File) result is null. This means no " +
+                    "supported image format was able to read it. The image file may have been malformed or corrupted, it will be overwritten.");
             }
             return read;
         } catch (final IOException ex) {
@@ -107,16 +104,13 @@ public final class Image {
 
     private void save(final int zoom, final int scaledX, final int scaledZ, final BufferedImage image) {
         final Path out = this.imageInDirectory(zoom, scaledX, scaledZ);
-        final Path tmp = FileUtil.siblingTempFile(out);
-        try (final OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(tmp))) {
-            save(image, outputStream);
-            FileUtil.atomicMove(tmp, out, true);
+        try {
+            FileUtil.atomicWrite(out, tmp -> {
+                try (final OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(tmp))) {
+                    save(image, outputStream);
+                }
+            });
         } catch (final IOException ex) {
-            try {
-                Files.deleteIfExists(tmp);
-            } catch (final IOException ex0) {
-                ex.addSuppressed(ex0);
-            }
             this.logCouldNotSave(ex);
         }
     }

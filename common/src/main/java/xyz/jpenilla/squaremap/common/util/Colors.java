@@ -3,7 +3,9 @@ package xyz.jpenilla.squaremap.common.util;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public final class Colors {
     private Colors() {
     }
@@ -69,7 +71,7 @@ public final class Colors {
         return rgb(MaterialColor.NONE);
     }
 
-    public static int parseHex(final @NonNull String color) {
+    public static int parseHex(final String color) {
         return (int) Long.parseLong(color.replace("#", ""), 16);
     }
 

@@ -60,7 +60,7 @@ public final class RenderProgress extends TimerTask {
 
     @Override
     public void run() {
-        if (this.render.mapWorld.rendersPaused()) {
+        if (this.render.mapWorld.renderManager().rendersPaused()) {
             return;
         }
 

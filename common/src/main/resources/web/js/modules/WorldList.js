@@ -51,6 +51,26 @@ class WorldList {
                 return "images/icon/green-cube-smol.png";
         }
     }
+    loadInitialWorld(json, callback) {
+        let updateUrl = false
+        let name = P.getUrlParam("world", null)
+        if (name != null) {
+            const world = this.worlds.get(name);
+            if (world == null) {
+                updateUrl = true
+                name = null;
+            }
+        }
+        if (name == null) {
+            name = json.worlds.sort((a, b) => a.order - b.order)[0].name
+        }
+        this.loadWorld(name, (a) => {
+            callback(a)
+            if (updateUrl) {
+                P.updateBrowserUrl(`?world=${this.curWorld.name}`);
+            }
+        })
+    }
     loadWorld(name, callback) {
         // unload current world
         if (this.curWorld != null) {

@@ -43,7 +43,7 @@ public final class FullRenderCommand extends SquaremapCommand {
     private void executeFullRender(final CommandContext<Commander> context) {
         final Commander sender = context.getSender();
         final MapWorldInternal world = CommandUtil.resolveWorld(context);
-        if (world.isRendering()) {
+        if (world.renderManager().isRendering()) {
             sender.sendMessage(Messages.RENDER_IN_PROGRESS.withPlaceholders(Components.worldPlaceholder(world)));
             return;
         }
@@ -51,6 +51,6 @@ public final class FullRenderCommand extends SquaremapCommand {
         if (sender instanceof PlayerCommander) {
             sender.sendMessage(Components.miniMessage(Messages.LOG_STARTED_FULLRENDER, Components.worldPlaceholder(world)));
         }
-        world.startRender(this.renderFactory.createFullRender(world));
+        world.renderManager().startRender(this.renderFactory.createFullRender(world));
     }
 }

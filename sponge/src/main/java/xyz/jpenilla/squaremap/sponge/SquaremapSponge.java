@@ -61,7 +61,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
             SquaremapModulesBuilder.forPlatform(this)
                 .mapWorldFactory(SpongeMapWorld.Factory.class)
                 .withModule(new SpongeModule(dataDirectory))
-                .vanillaChunkSnapshotProvider()
+                .vanillaChunkSnapshotProviderFactory()
                 .vanillaRegionFileDirectoryResolver()
                 .build()
         );

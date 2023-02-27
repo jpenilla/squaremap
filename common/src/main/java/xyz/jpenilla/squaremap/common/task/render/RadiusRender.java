@@ -1,10 +1,11 @@
 package xyz.jpenilla.squaremap.common.task.render;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -18,9 +19,9 @@ import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
+import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
@@ -35,9 +36,9 @@ public final class RadiusRender extends AbstractRender {
         @Assisted final MapWorldInternal world,
         @Assisted final BlockPos center,
         @Assisted final int radius,
-        final ChunkSnapshotProvider chunkSnapshotProvider
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory
     ) {
-        super(world, chunkSnapshotProvider);
+        super(world, chunkSnapshotProviderFactory);
         this.radius = Numbers.blockToChunk(radius);
         this.centerX = Numbers.blockToChunk(center.getX());
         this.centerZ = Numbers.blockToChunk(center.getZ());
@@ -46,7 +47,7 @@ public final class RadiusRender extends AbstractRender {
 
     private int countTotalChunks() {
         int count = 0;
-        VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
+        final VisibilityLimitImpl visibility = this.mapWorld.visibilityLimit();
         for (int chunkX = this.centerX - this.radius; chunkX <= this.centerX + this.radius; chunkX++) {
             for (int chunkZ = this.centerZ - this.radius; chunkZ <= this.centerZ + this.radius; chunkZ++) {
                 if (visibility.shouldRenderChunk(chunkX, chunkZ)) {
@@ -73,9 +74,8 @@ public final class RadiusRender extends AbstractRender {
 
         this.progress = RenderProgress.printProgress(this);
 
-        final SpiralIterator<ChunkCoordinate> spiral = SpiralIterator.chunk(this.centerX, this.centerZ, this.radius);
-        final Map<RegionCoordinate, Image> images = new HashMap<>();
-        final Multimap<RegionCoordinate, CompletableFuture<Void>> futures = ArrayListMultimap.create();
+        final Iterator<ChunkCoordinate> spiral = SpiralIterator.chunk(this.centerX, this.centerZ, this.radius);
+        final Map<RegionCoordinate, List<ChunkCoordinate>> chunks = new LinkedHashMap<>();
 
         while (spiral.hasNext() && this.running()) {
             final ChunkCoordinate chunkCoord = spiral.next();
@@ -86,27 +86,35 @@ public final class RadiusRender extends AbstractRender {
                 continue;
             }
 
-            final Image image = images.computeIfAbsent(region, r -> new Image(r, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX));
-
-            futures.put(region, this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));
+            chunks.computeIfAbsent(region, $ -> new ArrayList<>()).add(chunkCoord);
         }
 
-        final Map<RegionCoordinate, CompletableFuture<Void>> regionFutures = new HashMap<>();
-        futures.asMap().forEach((region, chunkFutures) -> regionFutures.put(
-            region,
-            CompletableFuture.allOf(chunkFutures.toArray(CompletableFuture[]::new))
-                .thenRun(() -> {
-                    if (this.running()) {
-                        this.mapWorld.saveImage(images.get(region));
-                    }
-                })
-        ));
-
-        try {
-            CompletableFuture.allOf(regionFutures.values().toArray(CompletableFuture[]::new)).get();
-        } catch (final InterruptedException ignore) {
-        } catch (final CancellationException | ExecutionException ex) {
-            Logging.logger().error("Exception executing radius render", ex);
+        for (final Map.Entry<RegionCoordinate, List<ChunkCoordinate>> entry : chunks.entrySet()) {
+            if (!this.running()) {
+                break;
+            }
+            final RegionCoordinate region = entry.getKey();
+            final List<ChunkCoordinate> chunkCoords = entry.getValue();
+            if (chunkCoords.size() == 1024) {
+                this.mapRegion(region);
+                continue;
+            }
+            final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+            final List<CompletableFuture<Void>> chunkFutures = new ArrayList<>();
+            for (final ChunkCoordinate chunkCoord : chunkCoords) {
+                chunkFutures.add(this.mapSingleChunkFuture(image, chunkCoord.x(), chunkCoord.z()));
+            }
+            try {
+                CompletableFuture.allOf(chunkFutures.toArray(CompletableFuture[]::new)).get();
+            } catch (final InterruptedException ignore) {
+                break;
+            } catch (final CancellationException | ExecutionException ex) {
+                Logging.logger().error("Exception executing radius render for region {}", region, ex);
+                break;
+            }
+            if (this.running()) {
+                this.mapWorld.saveImage(image);
+            }
         }
     }
 }
