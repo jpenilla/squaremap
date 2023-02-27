@@ -21,43 +21,35 @@ command:
             set-rate: <green>渲染进度日志的间隔已设置为 </green><seconds> 秒
             statusmessage: '渲染进度日志状态: <enabled>, 间隔: <green><seconds></green> 秒'
         help:
-            help: squaremap command help
-            command: Command
-            description: Description
-            no_description: No description
-            arguments: Arguments
-            optional: Optional
-            showing_results_for_query: Showing search results for query
-            no_results_for_query: No results for query
-            available_commands: Available Commands
-            click_to_show_help: Click to show help for this command
-            page_out_of_range: 'Error: Page <page> is not in range. Must be in range
-                [1, <max_pages>]'
-            click_for_next_page: Click for next page
-            click_for_previous_page: Click for previous page
+            help: squaremap 命令帮助
+            command: 命令
+            description: 描述
+            no_description: 没有描述
+            arguments: 参数
+            optional: 可选
+            showing_results_for_query: 显示查询的搜索结果
+            no_results_for_query: 没有查询结果
+            available_commands: 可用命令
+            click_to_show_help: 点击显示此命令的帮助
+            page_out_of_range: '错误: 第<page>页不在范围内. 范围必须为 [1, <max_pages>]'
+            click_for_next_page: 下一页
+            click_for_previous_page: 上一页
         exception:
-            command-execution: <red>An internal error occurred while attempting to
-                perform this command.
-            no-permission: |-
-                <red>I'm sorry, but you do not have permission to perform this command.
-                Please contact the server administrators if you believe that this is in error.
-            invalid-argument: <red>Invalid command argument<white>:</white> <gray><message>
-            invalid-sender-type: <red>Invalid command sender type. You must be of
-                type <gray><required_sender_type></gray>.
-            invalid-syntax: <red>Invalid command syntax. Correct command syntax is<white>:</white>
-                <gray><correct_syntax>
+            command-execution: <red>尝试执行此命令时发生内部错误.
+            no-permission: <red>你没有执行此命令的权限. 如有异议请联系服务器管理员.
+            invalid-argument: <red>命令参数无效<white>:</white> <gray><message>
+            invalid-sender-type: <red>无效的命令发送类型. 类型必须是 <gray><required_sender_type></gray>.
+            invalid-syntax: <red>无效的命令语法. 正确的命令语法是<white>:</white> <gray><correct_syntax>
         parser-exception:
-            string: '''<input>'' is not a valid string of type <string_mode>'
-            number: '''<input>'' is not a valid number in the range <min> to <max>'
+            string: '''<input>'' 不是有效的 <string_mode> 字符串类型'
+            number: '''<input>'' 不是 <min> 到 <max> 范围内的有效数字'
             location:
-                invalid_format: '''<input>'' is not a valid location. Required format
-                    is ''<x> <z>'''
-                mixed_local_absolute: Cannot mix local and absolute coordinates. (either
-                    all coordinates use '^' or none do)
+                invalid_format: '''<input>'' 不是有效的位置. 需要的格式是 ''<x> <z>'''
+                mixed_local_absolute: 不能混合使用局部坐标和绝对坐标. (要么所有坐标都使用'^', 要么都不使用)
             selector:
-                malformed: Selector '<input>' is malformed
-                too_many_players: More than 1 player selected in single player selector
-                non_player_in_player_selector: Non-player(s) selected in player selector
+                malformed: 选择器 '<input>' 格式错误
+                too_many_players: 在单人游戏选择器中选择了超过1名玩家
+                non_player_in_player_selector: 没有玩家在选择器中被选择
     prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
     description:
         help: 获取 squaremap 的命令帮助
@@ -85,7 +77,7 @@ command:
     show:
         not-hidden: <red><player> 没有在地图中隐藏
         shown: <green><player> 已在地图中显示
-click-to-copy: Click to copy to clipboard
+click-to-copy: 点击复制到剪贴板
 click-for-help: 点击获取帮助
 click-to-confirm: 点击进行确认
 click-to-toggle: 点击进行切换
@@ -108,11 +100,8 @@ log:
     finished-rendering: 世界 <world> 的渲染已完成
     cancelled-rendering: 世界 <world> 的渲染已取消
     resumed-rendering: 世界 <world> 的渲染已恢复
-    scanning-region-progress: '(<percent>) 世界: <world> 区块: <current_chunks>/<total_chunks>
-        已用时: <elapsed> 剩余时间: <eta> 速度: <rate> cps'
-    scanning-region-progress-with-regions: '(<percent>) 世界: <world> 区域: <current_regions>/<total_regions>
-        区块: <current_chunks>/<total_chunks> 已用时: <elapsed> 剩余时间: <eta> 速度: <rate>
-        cps'
+    scanning-region-progress: '(<percent>) 世界: <world> 区块: <current_chunks>/<total_chunks> 已用时: <elapsed> 剩余时间: <eta> 速度: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) 世界: <world> 区域: <current_regions>/<total_regions> 区块: <current_chunks>/<total_chunks> 已用时: <elapsed> 剩余时间: <eta> 速度: <rate> cps'
     internal-web-disabled: 内部Web服务器已在 config.yml 设置为关闭
     internal-web-started: 内部Web服务器已启动于 <bind>:<port>
     internal-web-stopped: 内部Web服务器已停止
