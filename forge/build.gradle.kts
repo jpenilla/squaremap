@@ -3,6 +3,8 @@ plugins {
   id("platform-conventions")
 }
 
+// todo reduce duplication with fabric script
+
 val squaremap: Configuration by configurations.creating
 configurations.implementation {
   extendsFrom(squaremap)
@@ -10,19 +12,15 @@ configurations.implementation {
 
 loom.silentMojangMappingsLicense()
 
-repositories {
-  maven("https://ladysnake.jfrog.io/artifactory/mods/") {
-    mavenContent {
-      includeGroup("dev.onyxstudios.cardinal-components-api")
-    }
-  }
+loom {
+  forge.mixinConfig("squaremap-forge.mixins.json")
 }
 
 dependencies {
+  // todo move dependencies to catalog
   minecraft(libs.minecraft)
   mappings(loom.officialMojangMappings())
-  modImplementation(libs.fabricLoader)
-  modImplementation(libs.fabricApi)
+  forge("net.minecraftforge:forge:1.19.3-44.1.0")
 
   squaremap(projects.squaremapCommon) {
     exclude("cloud.commandframework", "cloud-core")
@@ -30,29 +28,28 @@ dependencies {
     exclude("io.leangen.geantyref")
   }
 
-  modImplementation(libs.adventurePlatformFabric)
-  include(libs.adventurePlatformFabric)
+  implementation(platform(libs.adventureBom))
+  include(platform(platform(libs.adventureBom)))
+  implementation(libs.adventureApi)
+  include(libs.adventureApi)
+  include("net.kyori:examination-api:1.3.0")
+  include("net.kyori:examination-string:1.3.0")
+  include("net.kyori:adventure-key")
+  include(libs.miniMessage)
+  implementation(libs.adventureTextSerializerGson)
+  include(libs.adventureTextSerializerGson)
 
-  modImplementation(libs.cloudFabric)
-  include(libs.cloudFabric)
+  modImplementation(libs.cloudForge)
+  include(libs.cloudForge)
 
   implementation(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately
   }
   include(libs.cloudMinecraftExtras)
-
-  modImplementation(libs.cardinalComponentsBase)
-  include(libs.cardinalComponentsBase)
-  modImplementation(libs.cardinalComponentsEntity)
-  include(libs.cardinalComponentsEntity)
 }
 
 squaremapPlatform {
   productionJar.set(tasks.remapJar.flatMap { it.archiveFile })
-}
-
-loom {
-  accessWidenerPath.set(layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener"))
 }
 
 tasks {
@@ -74,7 +71,7 @@ tasks {
       "description" to project.description,
     )
     inputs.properties(props)
-    filesMatching("fabric.mod.json") {
+    filesMatching("META-INF/mods.toml") {
       // filter manually to avoid trying to replace $Initializer in initializer class name...
       filter { string ->
         var result = string
@@ -88,5 +85,20 @@ tasks {
   remapJar {
     inputFile.set(shadowJar.flatMap { it.archiveFile })
     archiveFileName.set(productionJarName(libs.versions.minecraft))
+  }
+}
+
+// todo https://github.com/FabricMC/fabric-loom/pull/838
+configurations.include {
+  isTransitive = true
+  withDependencies {
+    all {
+      if (this !is ModuleDependency) return@all
+      val category: Category? = attributes.getAttribute(Category.CATEGORY_ATTRIBUTE)
+      if (category != null && (category.name == Category.REGULAR_PLATFORM || category.name == Category.ENFORCED_PLATFORM)) {
+        return@all
+      }
+      isTransitive = false
+    }
   }
 }

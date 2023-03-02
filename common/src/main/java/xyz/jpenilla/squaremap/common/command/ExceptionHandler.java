@@ -8,6 +8,7 @@ import cloud.commandframework.exceptions.InvalidSyntaxException;
 import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.exceptions.parsing.ParserException;
 import com.google.inject.Inject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -18,7 +19,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.util.ComponentMessageThrowable;
+import net.minecraft.network.chat.ComponentUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -80,7 +83,7 @@ final class ExceptionHandler {
 
     private void argumentParsing(final Commander commander, final ArgumentParseException exception) {
         final Throwable cause = exception.getCause();
-        final Supplier<Component> fallback = () -> Objects.requireNonNull(ComponentMessageThrowable.getOrConvertMessage(cause));
+        final Supplier<Component> fallback = () -> Objects.requireNonNull(componentMessage(cause));
         final Component message;
         if (cause instanceof final ParserException parserException) {
             final TagResolver[] placeholders = Arrays.stream(parserException.captionVariables())
@@ -133,7 +136,7 @@ final class ExceptionHandler {
         cause.printStackTrace(new PrintWriter(writer));
         final String stackTrace = writer.toString().replaceAll("\t", "    ");
         final TextComponent.Builder hoverText = text();
-        final @Nullable Component throwableMessage = ComponentMessageThrowable.getOrConvertMessage(cause);
+        final @Nullable Component throwableMessage = componentMessage(cause);
         if (throwableMessage != null) {
             hoverText.append(throwableMessage)
                 .append(newline())
@@ -146,5 +149,15 @@ final class ExceptionHandler {
 
         message.hoverEvent(hoverText.build());
         message.clickEvent(copyToClipboard(stackTrace));
+    }
+
+    private static @Nullable Component componentMessage(final Throwable cause) {
+        if (cause instanceof ComponentMessageThrowable || !(cause instanceof CommandSyntaxException commandSyntaxException)) {
+            return ComponentMessageThrowable.getOrConvertMessage(cause);
+        }
+
+        // Fallback for when CommandSyntaxException isn't a ComponentMessageThrowable
+        final net.minecraft.network.chat.Component component = ComponentUtils.fromMessage(commandSyntaxException.getRawMessage());
+        return GsonComponentSerializer.gson().deserializeFromTree(net.minecraft.network.chat.Component.Serializer.toJsonTree(component));
     }
 }

@@ -5,10 +5,10 @@ plugins {
   id("xyz.jpenilla.run-paper")
 }
 
-val minecraftVersion = libs.versions.minecraft.get()
+val minecraftVersion = libs.versions.minecraft
 
 dependencies {
-  paperweight.paperDevBundle("$minecraftVersion-R0.1-SNAPSHOT")
+  paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
 
   implementation(projects.squaremapCommon)
 
@@ -23,7 +23,7 @@ configurations.mojangMappedServer {
 tasks {
   jar {
     manifest {
-      attributes("squaremap-target-minecraft-version" to libs.versions.minecraft.get())
+      attributes("squaremap-target-minecraft-version" to minecraftVersion.get())
     }
   }
   shadowJar {
@@ -37,7 +37,7 @@ tasks {
     ).forEach(::reloc)
   }
   reobfJar {
-    outputJar.set(layout.buildDirectory.file("libs/${base.archivesName.get()}-mc$minecraftVersion-$version.jar"))
+    outputJar.set(productionJarLocation(minecraftVersion))
   }
 }
 

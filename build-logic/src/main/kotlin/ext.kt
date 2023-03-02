@@ -2,6 +2,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.kyori.indra.git.IndraGitExtension
 import org.eclipse.jgit.lib.Repository
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
+import org.gradle.api.plugins.BasePluginExtension
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
 
 fun Project.lastCommitHash(): String = the<IndraGitExtension>().commit()?.name?.substring(0, 7)
@@ -33,3 +36,9 @@ fun Project.currentBranch(): String {
 
   return Repository.shortenRefName(ref.name)
 }
+
+fun Project.productionJarName(mcVer: Provider<String>): Provider<String> = the<BasePluginExtension>()
+  .archivesName.zip(mcVer) { archivesName, mc -> "$archivesName-mc$mc-$version.jar" }
+
+fun Project.productionJarLocation(mcVer: Provider<String>): Provider<RegularFile> =
+  productionJarName(mcVer).flatMap { layout.buildDirectory.file("libs/$it") }
