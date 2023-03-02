@@ -7,13 +7,14 @@ plugins:
     org.spongepowered.gradle.plugin: 2.1.1
     xyz.jpenilla.run-paper: 2.0.1
     net.minecrell.plugin-yml.bukkit: 0.5.3
-    io.papermc.paperweight.userdev: 1.5.1
-    quiet-fabric-loom: 1.1-SNAPSHOT
+    io.papermc.paperweight.userdev: 1.5.2
+    dev.architectury.loom: 1.1-SNAPSHOT
 
 versions:
     minecraft: 1.19.3
     checkerQual: 3.29.0
     cloud: 1.8.1
+    cloudForge: 1.0.0+1.19.3-SNAPSHOT
     cloudSponge: 1.8.0-SNAPSHOT
     configurate: 4.1.2
     adventure: 4.12.0
@@ -28,7 +29,7 @@ versions:
     # buildSrc
     indra: 3.0.1
     licenser: 0.6.1
-    shadow: 7.1.2
+    shadow: 8.1.0
     vanillaGradle: 0.2.1-20220508.185818-34
 
 dependencies:
@@ -51,6 +52,9 @@ dependencies:
     adventureTextSerializerPlain:
         group: net.kyori
         name: adventure-text-serializer-plain
+    adventureTextSerializerGson:
+        group: net.kyori
+        name: adventure-text-serializer-gson
     miniMessage:
         group: net.kyori
         name: adventure-text-minimessage
@@ -79,6 +83,10 @@ dependencies:
         group: cloud.commandframework
         name: cloud-fabric
         version: { ref: cloud }
+    cloudForge:
+        group: cloud.commandframework
+        name: cloud-forge
+        version: { ref: cloudForge }
     cloudSponge:
         group: cloud.commandframework
         name: cloud-sponge
@@ -136,7 +144,8 @@ dependencies:
         group: net.fabricmc
         name: fabric-loader
         version: { ref: fabricLoader }
-    fabricMinecraft:
+
+    minecraft:
         group: com.mojang
         name: minecraft
         version: { ref: minecraft }
@@ -164,7 +173,7 @@ dependencies:
         name: licenser
         version: { ref: licenser }
     shadow:
-        group: gradle.plugin.com.github.johnrengelman
+        group: com.github.johnrengelman
         name: shadow
         version: { ref: shadow }
     vanillaGradle:

@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[44,)"
+license = "MIT"
+issueTrackerURL = "${github_url}issues/"
+showAsResourcePack = false
+
+[[mods]]
+modId = "squaremap"
+version = "${version}"
+displayName = "squaremap"
+displayURL = "${github_url}"
+authors = "jmp"
+description = "${description}"
+displayTest = "IGNORE_ALL_VERSION"
+
+[[dependencies.squaremap]]
+modId = "forge"
+mandatory = true
+versionRange = "[44,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.squaremap]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.3,1.20)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.squaremap]]
+modId = "cloud"
+mandatory = true
+versionRange = "*"
+ordering = "AFTER"
+side = "BOTH"

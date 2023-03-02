@@ -5,8 +5,7 @@ pluginManagement {
     gradlePluginPortal()
     maven("https://repo.spongepowered.org/repository/maven-public/")
     maven("https://maven.fabricmc.net/")
-    maven("https://maven.quiltmc.org/repository/release/")
-    maven("https://repo.jpenilla.xyz/snapshots/")
+    maven("https://maven.architectury.dev/")
   }
   includeBuild("build-logic")
 }
@@ -18,23 +17,16 @@ plugins {
 
 rootProject.name = "squaremap"
 
-setupSubproject("squaremap-api") {
-  projectDir = file("api")
-}
-setupSubproject("squaremap-common") {
-  projectDir = file("common")
-}
-setupSubproject("squaremap-paper") {
-  projectDir = file("paper")
-}
-setupSubproject("squaremap-fabric") {
-  projectDir = file("fabric")
-}
-setupSubproject("squaremap-sponge") {
-  projectDir = file("sponge")
-}
+setupSubproject("api")
+setupSubproject("common")
+setupSubproject("paper")
+setupSubproject("fabric")
+setupSubproject("forge")
+setupSubproject("sponge")
 
-inline fun setupSubproject(name: String, block: ProjectDescriptor.() -> Unit) {
+fun setupSubproject(moduleName: String) {
+  val name = "squaremap-$moduleName"
   include(name)
-  project(":$name").apply(block)
+  val proj = project(":$name")
+  proj.projectDir = file(moduleName)
 }

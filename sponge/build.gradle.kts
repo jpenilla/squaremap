@@ -7,10 +7,10 @@ plugins {
   id("org.spongepowered.gradle.vanilla")
 }
 
-val minecraftVersion = libs.versions.minecraft.get()
+val minecraftVersion = libs.versions.minecraft
 
 minecraft {
-  version(minecraftVersion)
+  version().set(minecraftVersion)
   accessWideners(project(":squaremap-common").layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))
 }
 
@@ -44,7 +44,7 @@ sponge {
 
 tasks {
   shadowJar {
-    archiveFileName.set("squaremap-sponge-mc$minecraftVersion-${project.version}.jar")
+    archiveFileName.set(productionJarName(minecraftVersion))
     listOf(
       "cloud.commandframework",
       "com.google.inject.assistedinject",
