@@ -93,7 +93,10 @@ public final class Colors {
 
     public static int parseHex(final String color) {
         final int rgba = (int) Long.parseLong(color.replace("#", ""), 16);
-        return rgbaToArgb(rgba);
+        if (color.length() == 9) {
+            return rgbaToArgb(rgba);
+        }
+        return rgba;
     }
 
     public static int rgb(final MaterialColor color) {
