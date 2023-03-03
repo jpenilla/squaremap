@@ -12,12 +12,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DoublePlantBlock;
-import net.minecraft.world.level.block.GrassBlock;
-import net.minecraft.world.level.block.LeavesBlock;
-import net.minecraft.world.level.block.SugarCaneBlock;
-import net.minecraft.world.level.block.TallGrassBlock;
-import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -33,17 +27,23 @@ public final class BiomeColors {
     private static final int CHUNK_SNAPSHOT_CACHE_SIZE = 64;
     private static final int BLOCKPOS_BIOME_CACHE_SIZE = 4096;
 
-    private static boolean isGrass(final Block block) {
-        return block instanceof GrassBlock
-            || block instanceof TallGrassBlock
-            || block instanceof DoublePlantBlock
-            || block instanceof SugarCaneBlock;
-    }
+    private static final Set<Block> GRASS_COLOR_BLOCKS = Set.of(
+        Blocks.GRASS_BLOCK,
+        Blocks.GRASS,
+        Blocks.TALL_GRASS,
+        Blocks.FERN,
+        Blocks.LARGE_FERN,
+        Blocks.POTTED_FERN,
+        Blocks.SUGAR_CANE
+    );
 
-    private static boolean isFoliage(final Block block) {
-        return block instanceof VineBlock
-            || block instanceof LeavesBlock;
-    }
+    private static final Set<Block> FOLIAGE_COLOR_BLOCKS = Set.of(
+        Blocks.VINE,
+        Blocks.OAK_LEAVES,
+        Blocks.JUNGLE_LEAVES,
+        Blocks.ACACIA_LEAVES,
+        Blocks.DARK_OAK_LEAVES
+    );
 
     private static final Set<Block> WATER_COLOR_BLOCKS = Set.of(
         Blocks.WATER,
@@ -77,9 +77,9 @@ public final class BiomeColors {
         final Material mat = data.getMaterial();
         final Block block = data.getBlock();
 
-        if (isGrass(block)) {
+        if (GRASS_COLOR_BLOCKS.contains(block)) {
             color = this.grass(pos);
-        } else if (isFoliage(block)) {
+        } else if (FOLIAGE_COLOR_BLOCKS.contains(block)) {
             color = this.foliage(pos);
         } else if (WATER_COLOR_BLOCKS.contains(block) || WATER_COLOR_MATERIALS.contains(mat)) {
             int modColor = this.water(pos);
