@@ -10,13 +10,15 @@ import java.util.Map;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.IFluidBlock;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -32,16 +34,24 @@ public final class FluidColorExporter {
     }
 
     public void export(final RegistryAccess registryAccess, final Path file) {
-        final Registry<Fluid> fluids = registryAccess.registry(Registries.FLUID).orElseThrow();
         final Map<String, String> map = new HashMap<>();
-        fluids.holders().forEach(holder -> {
-            if (holder.value() == Fluids.WATER || holder.value() == Fluids.LAVA
-                || holder.value() == Fluids.FLOWING_WATER || holder.value() == Fluids.FLOWING_LAVA) {
+        registryAccess.registryOrThrow(Registries.BLOCK).holders().forEach(holder -> {
+            final Block block = holder.value();
+            final Fluid fluid;
+            if (block instanceof IFluidBlock fluidBlock) {
+                fluid = fluidBlock.getFluid();
+            } else if (block instanceof LiquidBlock liquidBlock) {
+                fluid = liquidBlock.getFluid();
+            } else {
+                return;
+            }
+            if (fluid == Fluids.WATER || fluid == Fluids.LAVA
+                || fluid == Fluids.FLOWING_WATER || fluid == Fluids.FLOWING_LAVA) {
                 return;
             }
             map.put(
                 holder.key().location().toString(),
-                Colors.toHexString(Colors.argbToRgba(color(holder.value().getFluidType())))
+                Colors.toHexString(Colors.argbToRgba(color(fluid.getFluidType())))
             );
         });
         final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
