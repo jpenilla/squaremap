@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.StainedGlassBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -471,7 +472,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private int getFluidColor(final int fluidCountY, int color, final BlockState fluidState, final BlockState underBlock, final int odd) {
-        final Fluid fluid = fluidState.getFluidState().getType();
+        final Fluid fluid = fluidTypeForRender(color, fluidState.getFluidState());
         boolean shaded = false;
         if (fluid == Fluids.WATER || fluid == Fluids.FLOWING_WATER) {
             if (this.mapWorld.config().MAP_WATER_CHECKERBOARD) {
@@ -492,6 +493,20 @@ public abstract class AbstractRender implements Runnable {
             }
         }
         return shaded ? color : Colors.removeAlpha(color);
+    }
+
+    private static Fluid fluidTypeForRender(final int color, final FluidState fluidState) {
+        // treat modded fluids with alpha like water, and those without like lava
+        Fluid fluid = fluidState.getType();
+        if (fluid != Fluids.WATER && fluid != Fluids.FLOWING_WATER && fluid != Fluids.LAVA && fluid != Fluids.FLOWING_LAVA) {
+            final int a = color >> 24 & 255;
+            if (a == 255) {
+                fluid = Fluids.LAVA;
+            } else {
+                fluid = Fluids.WATER;
+            }
+        }
+        return fluid;
     }
 
     private static int applyDepthCheckerboard(final double fluidCountY, final int color, final double odd) {

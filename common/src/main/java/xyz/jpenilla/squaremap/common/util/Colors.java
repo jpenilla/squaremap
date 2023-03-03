@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.common.util;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -31,9 +32,36 @@ public final class Colors {
         return (0xFF << 24) | (r << 16) | (g << 8) | b;
     }
 
+    public static int fromNativeImage(final int rgba) {
+        final int a = NativeImage.getA(rgba);
+        final int r = NativeImage.getR(rgba);
+        final int g = NativeImage.getG(rgba);
+        final int b = NativeImage.getB(rgba);
+        return a << 24 | r << 16 | g << 8 | b;
+    }
+
+    public static int argbToRgba(final int color) {
+        final int a = color >> 24 & 0xFF;
+        final int r = color >> 16 & 0xFF;
+        final int g = color >> 8 & 0xFF;
+        final int b = color & 0xFF;
+        return r << 24 | g << 16 | b << 8 | a;
+    }
+
+    public static int rgbaToArgb(final int color) {
+        final int r = color >> 24 & 0xFF;
+        final int g = color >> 16 & 0xFF;
+        final int b = color >> 8 & 0xFF;
+        final int a = color & 0xFF;
+        return a << 24 | r << 16 | g << 8 | b;
+    }
+
     public static int mix(int c1, int c2, float ratio) {
-        if (ratio >= 1F) return c2;
-        else if (ratio <= 0F) return c1;
+        if (ratio >= 1F) {
+            return c2;
+        } else if (ratio <= 0F) {
+            return c1;
+        }
         float iRatio = 1.0F - ratio;
 
         int r1 = c1 >> 16 & 0xFF;
@@ -48,11 +76,7 @@ public final class Colors {
         int g = (int) ((g1 * iRatio) + (g2 * ratio));
         int b = (int) ((b1 * iRatio) + (b2 * ratio));
 
-        return (0xFF << 24 | r << 16 | g << 8 | b);
-    }
-
-    public static int grassMapColor() {
-        return rgb(Material.GRASS.getColor());
+        return 0xFF << 24 | r << 16 | g << 8 | b;
     }
 
     public static int leavesMapColor() {
@@ -63,19 +87,20 @@ public final class Colors {
         return rgb(Material.PLANT.getColor());
     }
 
-    public static int waterMapColor() {
-        return rgb(Material.WATER.getColor());
-    }
-
     public static int clearMapColor() {
         return rgb(MaterialColor.NONE);
     }
 
     public static int parseHex(final String color) {
-        return (int) Long.parseLong(color.replace("#", ""), 16);
+        final int rgba = (int) Long.parseLong(color.replace("#", ""), 16);
+        return rgbaToArgb(rgba);
     }
 
-    public static int rgb(MaterialColor color) {
+    public static int rgb(final MaterialColor color) {
         return color.col;
+    }
+
+    public static String toHexString(final int color) {
+        return String.format("#%08X", color);
     }
 }
