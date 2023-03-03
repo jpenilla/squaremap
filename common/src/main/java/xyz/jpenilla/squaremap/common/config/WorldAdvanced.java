@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Util;
 
@@ -156,6 +157,21 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
             if (block != Blocks.AIR) {
                 this.COLOR_OVERRIDES_BLOCKS.put(block, Colors.parseHex(color));
             }
+        });
+    }
+
+    public final Reference2IntMap<Fluid> COLOR_OVERRIDES_FLUIDS = new Reference2IntOpenHashMap<>();
+
+    private void colorOverrideFluidsSettings() {
+        this.COLOR_OVERRIDES_FLUIDS.clear();
+        this.get(
+            new TypeToken<>() {
+            },
+            "color-overrides.fluids",
+            Map.<String, String>ofEntries()
+        ).forEach((key, color) -> {
+            final Fluid block = Util.requireEntry(BuiltInRegistries.FLUID, new ResourceLocation(key));
+            this.COLOR_OVERRIDES_FLUIDS.put(block, Colors.parseHex(color));
         });
     }
 }

@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.forge;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,6 +20,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
@@ -36,6 +38,7 @@ public final class SquaremapForge implements SquaremapPlatform {
     private final ForgeServerAccess serverAccess;
     private final ForgeWorldManager worldManager;
     private final ModContainer container;
+    private final DirectoryProvider directoryProvider;
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
 
@@ -54,6 +57,7 @@ public final class SquaremapForge implements SquaremapPlatform {
         this.worldManager = this.injector.getInstance(ForgeWorldManager.class);
         this.serverAccess = this.injector.getInstance(ForgeServerAccess.class);
         this.container = this.injector.getInstance(ModContainer.class);
+        this.directoryProvider = this.injector.getInstance(DirectoryProvider.class);
         this.registerLifecycleListeners();
         this.injector.getInstance(ForgeMapUpdates.class).register();
         this.injector.getInstance(ForgeNetworking.class).register();
@@ -63,7 +67,11 @@ public final class SquaremapForge implements SquaremapPlatform {
     private void registerLifecycleListeners() {
         MinecraftForge.EVENT_BUS.addListener((ServerStartingEvent event) -> this.serverAccess.setServer(event.getServer()));
         MinecraftForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> this.serverAccess.clearServer());
+        final AtomicBoolean exportedFluids = new AtomicBoolean(false);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, (LevelEvent.Load event) -> {
+            if (event.getLevel().isClientSide() && !exportedFluids.getAndSet(true)) {
+                this.injector.getInstance(FluidColorExporter.class).export(event.getLevel().registryAccess(), this.directoryProvider.dataDirectory().resolve("fluids-export.yml"));
+            }
             if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
                 return;
             }

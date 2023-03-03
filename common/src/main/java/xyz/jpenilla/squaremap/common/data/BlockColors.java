@@ -11,8 +11,10 @@ import java.util.Map;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -21,12 +23,18 @@ import xyz.jpenilla.squaremap.common.util.Colors;
 @DefaultQualifier(NonNull.class)
 public final class BlockColors {
     private final Reference2IntMap<Block> staticColorMap;
+    private final Reference2IntMap<Fluid> fluidOverrides;
     private final Reference2ObjectMap<Block, DynamicColorGetter> dynamicColorMap;
 
     private BlockColors(final MapWorldInternal world) {
         final Reference2IntMap<Block> staticColors = new Reference2IntOpenHashMap<>(world.advanced().COLOR_OVERRIDES_BLOCKS);
         staticColors.defaultReturnValue(-1);
         this.staticColorMap = Reference2IntMaps.unmodifiable(staticColors);
+
+        final Reference2IntMap<Fluid> fluidOverrides = new Reference2IntOpenHashMap<>(world.advanced().COLOR_OVERRIDES_FLUIDS);
+        fluidOverrides.defaultReturnValue(-1);
+        this.fluidOverrides = Reference2IntMaps.unmodifiable(fluidOverrides);
+
         this.dynamicColorMap = this.loadDynamicColors();
     }
 
@@ -53,6 +61,13 @@ public final class BlockColors {
         final int staticColor = this.staticColorMap.getInt(block);
         if (staticColor != -1) {
             return staticColor;
+        }
+
+        if (state.getBlock() instanceof LiquidBlock) {
+            final int fluid = this.fluidOverrides.getInt(state.getFluidState().getType());
+            if (fluid != -1) {
+                return fluid;
+            }
         }
 
         final @Nullable DynamicColorGetter func = this.dynamicColorMap.get(block);
