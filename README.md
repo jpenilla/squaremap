@@ -10,7 +10,7 @@
 
 ## What is squaremap
 
-squaremap (formerly known as Pl3xMap) is a minimalistic and lightweight live world map viewer for Minecraft servers.
+squaremap is a minimalistic and lightweight live world map viewer for Minecraft servers.
 
 squaremap hooks into your Minecraft server as a plugin or mod on a [supported platform](#supported-platforms), then generates and manages a live map of your server, viewable in any web browser.
 
@@ -28,6 +28,7 @@ squaremap hooks into your Minecraft server as a plugin or mod on a [supported pl
 - [Paper](https://papermc.io/)
 - [Sponge 10](https://www.spongepowered.org/)
 - [Fabric](https://fabricmc.net/) (requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api))
+- [Forge](https://minecraftforge.net)
 
 ## Downloads
 
