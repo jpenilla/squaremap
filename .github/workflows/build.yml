@@ -43,13 +43,13 @@ jobs:
           else
             echo "STATUS=release" >> $GITHUB_ENV
           fi
-      - name: "publish snapshot"
+      - name: "publish snapshot to sonatype snapshots"
         if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
         run: ./gradlew publish
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
-      - name: "publish release"
+      - name: "publish release to maven central"
         if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
         run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
@@ -57,3 +57,15 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
           ORG_GRADLE_PROJECT_signingKey: "${{ secrets.SIGNING_KEY }}"
           ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.SIGNING_PASSWORD }}"
+      - name: "publish release to modrinth"
+        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+        run: ./gradlew modrinth
+        env:
+          MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
+          RELEASE_NOTES: "${{ github.event.release.body }}"
+      - name: "publish release to hangar"
+        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+        run: ./gradlew publishAllPublicationsToHangar
+        env:
+          HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
+          RELEASE_NOTES: "${{ github.event.release.body }}"

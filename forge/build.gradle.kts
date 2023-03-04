@@ -1,26 +1,13 @@
 plugins {
-  id("dev.architectury.loom")
-  id("platform-conventions")
+  id("loom-platform-conventions")
 }
 
-// todo reduce duplication with fabric script
-
-val squaremap: Configuration by configurations.creating
-configurations.implementation {
-  extendsFrom(squaremap)
-}
-
-loom.silentMojangMappingsLicense()
-
-loom {
-  forge.mixinConfig("squaremap-forge.mixins.json")
-}
+loom.forge.mixinConfig("squaremap-forge.mixins.json")
 
 dependencies {
-  // todo move dependencies to catalog
   minecraft(libs.minecraft)
   mappings(loom.officialMojangMappings())
-  forge("net.minecraftforge:forge:1.19.3-44.1.0")
+  forge(libs.forge)
 
   squaremap(projects.squaremapCommon) {
     exclude("cloud.commandframework", "cloud-core")
@@ -32,9 +19,9 @@ dependencies {
   include(platform(platform(libs.adventureBom)))
   implementation(libs.adventureApi)
   include(libs.adventureApi)
-  include("net.kyori:examination-api:1.3.0")
-  include("net.kyori:examination-string:1.3.0")
-  include("net.kyori:adventure-key")
+  include(libs.examinationApi)
+  include(libs.examinationString)
+  include(libs.adventureKey)
   include(libs.miniMessage)
   implementation(libs.adventureTextSerializerGson)
   include(libs.adventureTextSerializerGson)
@@ -48,45 +35,11 @@ dependencies {
   include(libs.cloudMinecraftExtras)
 }
 
-squaremapPlatform {
-  productionJar.set(tasks.remapJar.flatMap { it.archiveFile })
+tasks.remapJar {
+  archiveFileName.set(productionJarName(libs.versions.minecraft))
 }
 
-tasks {
-  shadowJar {
-    configurations = listOf(squaremap)
-    listOf(
-      "javax.inject",
-      "com.google.inject",
-      "org.aopalliance",
-    ).forEach(::reloc)
-    dependencies {
-      exclude { it.moduleGroup == "org.checkerframework" || it.moduleGroup == "com.google.errorprone" }
-    }
-  }
-  processResources {
-    val props = mapOf(
-      "version" to project.version,
-      "github_url" to rootProject.providers.gradleProperty("githubUrl").get(),
-      "description" to project.description,
-    )
-    inputs.properties(props)
-    filesMatching("META-INF/mods.toml") {
-      // filter manually to avoid trying to replace $Initializer in initializer class name...
-      filter { string ->
-        var result = string
-        for ((key, value) in props) {
-          result = result.replace("\${$key}", value.toString())
-        }
-        result
-      }
-    }
-  }
-  remapJar {
-    inputFile.set(shadowJar.flatMap { it.archiveFile })
-    archiveFileName.set(productionJarName(libs.versions.minecraft))
-  }
-}
+squaremapLoomPlatform.modInfoFilePath.set("META-INF/mods.toml")
 
 // todo https://github.com/FabricMC/fabric-loom/pull/838
 configurations.include {

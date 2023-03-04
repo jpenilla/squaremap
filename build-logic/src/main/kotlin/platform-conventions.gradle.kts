@@ -1,9 +1,14 @@
 plugins {
   id("base-conventions")
   id("com.github.johnrengelman.shadow")
+  id("com.modrinth.minotaur")
 }
 
-val platformExt = extensions.create("squaremapPlatform", SquaremapPlatformExtension::class)
+val platformExt = extensions.create(
+  SquaremapPlatformExtension::class,
+  "squaremapPlatform",
+  SquaremapPlatformExtension.Loom::class
+)
 
 decorateVersion()
 
@@ -38,4 +43,12 @@ tasks {
   assemble {
     dependsOn(copyJar)
   }
+}
+
+modrinth {
+  projectId.set("PFb7ZqK6")
+  versionType.set("release")
+  file.set(platformExt.productionJar)
+  changelog.set(releaseNotes)
+  token.set(providers.environmentVariable("MODRINTH_TOKEN"))
 }

@@ -7,6 +7,9 @@ import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.the
 
+val Project.releaseNotes: Provider<String>
+  get() = providers.environmentVariable("RELEASE_NOTES")
+
 fun Project.lastCommitHash(): String = the<IndraGitExtension>().commit()?.name?.substring(0, 7)
   ?: error("Could not determine commit hash")
 

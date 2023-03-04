@@ -1,14 +1,8 @@
 plugins {
-  id("dev.architectury.loom")
-  id("platform-conventions")
+  id("loom-platform-conventions")
 }
 
-val squaremap: Configuration by configurations.creating
-configurations.implementation {
-  extendsFrom(squaremap)
-}
-
-loom.silentMojangMappingsLicense()
+loom.accessWidenerPath.set(layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener"))
 
 repositories {
   maven("https://ladysnake.jfrog.io/artifactory/mods/") {
@@ -47,46 +41,12 @@ dependencies {
   include(libs.cardinalComponentsEntity)
 }
 
-squaremapPlatform {
-  productionJar.set(tasks.remapJar.flatMap { it.archiveFile })
+squaremapLoomPlatform.modInfoFilePath.set("fabric.mod.json")
+
+tasks.remapJar {
+  archiveFileName.set(productionJarName(libs.versions.minecraft))
 }
 
-loom {
-  accessWidenerPath.set(layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener"))
-}
-
-tasks {
-  shadowJar {
-    configurations = listOf(squaremap)
-    listOf(
-      "javax.inject",
-      "com.google.inject",
-      "org.aopalliance",
-    ).forEach(::reloc)
-    dependencies {
-      exclude { it.moduleGroup == "org.checkerframework" || it.moduleGroup == "com.google.errorprone" }
-    }
-  }
-  processResources {
-    val props = mapOf(
-      "version" to project.version,
-      "github_url" to rootProject.providers.gradleProperty("githubUrl").get(),
-      "description" to project.description,
-    )
-    inputs.properties(props)
-    filesMatching("fabric.mod.json") {
-      // filter manually to avoid trying to replace $Initializer in initializer class name...
-      filter { string ->
-        var result = string
-        for ((key, value) in props) {
-          result = result.replace("\${$key}", value.toString())
-        }
-        result
-      }
-    }
-  }
-  remapJar {
-    inputFile.set(shadowJar.flatMap { it.archiveFile })
-    archiveFileName.set(productionJarName(libs.versions.minecraft))
-  }
+modrinth {
+  required.project("fabric-api")
 }
