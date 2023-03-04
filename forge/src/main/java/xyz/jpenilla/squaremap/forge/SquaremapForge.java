@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.GameShuttingDownEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -68,6 +69,7 @@ public final class SquaremapForge implements SquaremapPlatform {
         MinecraftForge.EVENT_BUS.addListener((ServerStartingEvent event) -> this.serverAccess.setServer(event.getServer()));
         MinecraftForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> this.serverAccess.clearServer());
         final AtomicBoolean exportedFluids = new AtomicBoolean(false);
+        MinecraftForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> exportedFluids.set(false));
         MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, (LevelEvent.Load event) -> {
             if (event.getLevel().isClientSide() && !exportedFluids.getAndSet(true)) {
                 this.injector.getInstance(FluidColorExporter.class).export(event.getLevel().registryAccess(), this.directoryProvider.dataDirectory().resolve("fluids-export.yml"));
