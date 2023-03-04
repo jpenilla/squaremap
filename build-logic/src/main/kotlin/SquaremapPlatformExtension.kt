@@ -1,7 +1,10 @@
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
-import javax.inject.Inject
+import org.gradle.api.provider.Property
 
-abstract class SquaremapPlatformExtension @Inject constructor(objects: ObjectFactory) {
-  val productionJar: RegularFileProperty = objects.fileProperty()
+abstract class SquaremapPlatformExtension {
+  abstract val productionJar: RegularFileProperty
+
+  abstract class Loom : SquaremapPlatformExtension() {
+      abstract val modInfoFilePath: Property<String>
+  }
 }

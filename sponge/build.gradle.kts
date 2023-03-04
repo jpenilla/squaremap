@@ -61,3 +61,7 @@ tasks {
 squaremapPlatform {
   productionJar.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
+
+modrinth {
+  gameVersions.add(minecraftVersion)
+}

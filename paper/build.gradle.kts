@@ -1,8 +1,11 @@
+import io.papermc.hangarpublishplugin.model.Platforms
+
 plugins {
   id("platform-conventions")
   id("io.papermc.paperweight.userdev")
   id("net.minecrell.plugin-yml.bukkit")
   id("xyz.jpenilla.run-paper")
+  id("io.papermc.hangar-publish-plugin")
 }
 
 val minecraftVersion = libs.versions.minecraft
@@ -51,4 +54,17 @@ bukkit {
   apiVersion = "1.19"
   website = providers.gradleProperty("githubUrl").get()
   authors = listOf("jmp")
+}
+
+hangarPublish.publications.register("plugin") {
+  version.set(project.version as String)
+  owner.set("jmp")
+  slug.set("squaremap")
+  channel.set("Release")
+  changelog.set(releaseNotes)
+  apiKey.set(providers.environmentVariable("HANGAR_UPLOAD_KEY"))
+  platforms.register(Platforms.PAPER) {
+    jar.set(squaremapPlatform.productionJar)
+    platformVersions.add(minecraftVersion)
+  }
 }
