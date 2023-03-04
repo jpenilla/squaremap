@@ -7,7 +7,6 @@ plugins:
     org.spongepowered.gradle.plugin: 2.1.1
     xyz.jpenilla.run-paper: 2.0.1
     net.minecrell.plugin-yml.bukkit: 0.5.3
-    io.papermc.paperweight.userdev: 1.5.3
     io.papermc.hangar-publish-plugin: 0.0.3
 
 versions:
@@ -35,6 +34,7 @@ versions:
     vanillaGradle: 0.2.1-20220508.185818-34
     minotaur: 2.7.3
     loom: 1.1-SNAPSHOT
+    paperweight: 1.5.3
 
 dependencies:
     guice:
@@ -208,5 +208,9 @@ dependencies:
         group: dev.architectury
         name: architectury-loom
         version: { ref: loom }
+    paperweightUserdev:
+        group: io.papermc.paperweight
+        name: paperweight-userdev
+        version: { ref: paperweight }
 
 bundles: []

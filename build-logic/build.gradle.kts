@@ -16,4 +16,5 @@ dependencies {
   implementation(libs.shadow)
   implementation(libs.minotaur)
   implementation(libs.loom)
+  implementation(libs.paperweightUserdev)
 }
