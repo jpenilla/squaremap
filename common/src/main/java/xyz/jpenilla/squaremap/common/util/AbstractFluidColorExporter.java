@@ -1,86 +1,69 @@
-package xyz.jpenilla.squaremap.forge;
+package xyz.jpenilla.squaremap.common.util;
 
-import com.google.inject.Inject;
 import io.leangen.geantyref.TypeToken;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.IFluidBlock;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
-import xyz.jpenilla.squaremap.common.util.ColorBlender;
-import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
 @DefaultQualifier(NonNull.class)
-public final class FluidColorExporter {
-    @Inject
-    private FluidColorExporter() {
+public abstract class AbstractFluidColorExporter {
+    private final DirectoryProvider directoryProvider;
+
+    protected AbstractFluidColorExporter(final DirectoryProvider directoryProvider) {
+        this.directoryProvider = directoryProvider;
     }
 
-    public void export(final RegistryAccess registryAccess, final Path file) {
+    public final void export(final RegistryAccess registryAccess) {
         final Map<String, String> map = new HashMap<>();
         registryAccess.registryOrThrow(Registries.BLOCK).holders().forEach(holder -> {
             final Block block = holder.value();
-            final Fluid fluid;
-            if (block instanceof IFluidBlock fluidBlock) {
-                fluid = fluidBlock.getFluid();
-            } else if (block instanceof LiquidBlock liquidBlock) {
-                fluid = liquidBlock.getFluid();
-            } else {
-                return;
-            }
-            if (fluid == Fluids.WATER || fluid == Fluids.LAVA
+            final @Nullable Fluid fluid = this.fluid(block);
+            if (fluid == null
+                || fluid == Fluids.WATER || fluid == Fluids.LAVA
                 || fluid == Fluids.FLOWING_WATER || fluid == Fluids.FLOWING_LAVA) {
                 return;
             }
-            map.put(
-                holder.key().location().toString(),
-                Colors.toHexString(Colors.argbToRgba(color(fluid.getFluidType())))
-            );
+            final @Nullable String color = this.color(fluid);
+            if (color != null) {
+                map.put(holder.key().location().toString(), color);
+            }
         });
+
+        final Path file = this.directoryProvider.dataDirectory().resolve("fluids-export.yml");
         final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
             .path(file)
             .nodeStyle(NodeStyle.BLOCK)
-            .defaultOptions(options -> options.header("Automatically generated list of fluid colors. You may want to copy this into your server's advanced.yml."))
+            .defaultOptions(options -> options.header("Automatically generated list of fluid colors. You may want to copy these into your server's advanced.yml as block color overrides. See "))
             .build();
         try {
             Files.createDirectories(file.getParent());
             final CommentedConfigurationNode node = loader.createNode();
             node.set(new TypeToken<>() {}, map);
             loader.save(node);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
+        } catch (final IOException ex) {
+            throw new RuntimeException("Failed to write fluid color export to " + file, ex);
         }
     }
 
-    public static int color(final FluidType fluidType) {
-        final IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(fluidType);
-        final TextureAtlasSprite sprite = new Material(TextureAtlas.LOCATION_BLOCKS, ext.getStillTexture()).sprite();
-        final ColorBlender blender = new ColorBlender();
-        for (int i = 0; i < sprite.contents().width(); i++) {
-            for (int h = 0; h < sprite.contents().height(); h++) {
-                final int rgba = sprite.getPixelRGBA(0, i, h);
-                blender.addColor(rgba);
-            }
-        }
-        final int blended = Colors.fromNativeImage(blender.result());
-        final int tint = ext.getTintColor();
+    protected abstract @Nullable Fluid fluid(Block block);
+
+    protected abstract @Nullable String color(Fluid fluid);
+
+    protected static int color(final int blended, final int tint) {
         final int tintA = tint >> 24 & 0xFF;
         final int blendedA = blended >> 24 & 0xFF;
 
@@ -106,4 +89,5 @@ public final class FluidColorExporter {
         b *= tint & 0xFF;
         return a << 24 | (int) r << 16 | (int) g << 8 | (int) b;
     }
+
 }

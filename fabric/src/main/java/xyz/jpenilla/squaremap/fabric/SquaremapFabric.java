@@ -1,10 +1,14 @@
 package xyz.jpenilla.squaremap.fabric;
 
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -66,7 +70,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
             this.serverAccess.clearServer();
         });
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            new ClientLifecycleListeners().register();
+            this.injector.getInstance(ClientLifecycleListeners.class).register();
         } else {
             ServerLifecycleEvents.SERVER_STARTED.register($ -> this.common.updateCheck());
         }
@@ -124,10 +128,30 @@ public final class SquaremapFabric implements SquaremapPlatform {
 
     // this must be a separate class to SquaremapFabric to avoid attempting to load client
     // classes on the server when guice scans for methods
-    private final class ClientLifecycleListeners {
+    private static final class ClientLifecycleListeners {
+        private final FabricFluidColorExporter fluidColorExporter;
+        private final SquaremapCommon squaremap;
+
+        @Inject
+        ClientLifecycleListeners(
+            final FabricFluidColorExporter fluidColorExporter,
+            final SquaremapCommon squaremap
+        ) {
+            this.fluidColorExporter = fluidColorExporter;
+            this.squaremap = squaremap;
+        }
+
         void register() {
-            ClientLifecycleEvents.CLIENT_STARTED.register($ -> SquaremapFabric.this.common.updateCheck());
-            ClientLifecycleEvents.CLIENT_STOPPING.register($ -> SquaremapFabric.this.common.shutdown());
+            ClientLifecycleEvents.CLIENT_STARTED.register($ -> this.squaremap.updateCheck());
+            ClientLifecycleEvents.CLIENT_STOPPING.register($ -> this.squaremap.shutdown());
+
+            final AtomicBoolean exportedFluids = new AtomicBoolean(false);
+            ClientTickEvents.START_WORLD_TICK.register((clientLevel) -> {
+                if (!exportedFluids.getAndSet(true)) {
+                    this.fluidColorExporter.export(clientLevel.registryAccess());
+                }
+            });
+            ClientPlayConnectionEvents.DISCONNECT.register(($, $$) -> exportedFluids.set(false));
         }
     }
 

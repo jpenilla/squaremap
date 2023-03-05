@@ -11,6 +11,10 @@
     "PlayerListMixin",
     "ServerPlayerMixin"
   ],
+  "client": [
+    "LiquidBlockAccess",
+    "SpriteContentsMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
