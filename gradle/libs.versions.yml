@@ -12,7 +12,7 @@ plugins:
 versions:
     minecraft: 1.19.3
     checkerQual: 3.29.0
-    cloud: 1.8.1
+    cloud: 1.8.2
     cloudForge: 1.0.0+1.19.3-SNAPSHOT
     cloudSponge: 1.8.0-SNAPSHOT
     configurate: 4.1.2
