@@ -130,7 +130,7 @@ log:
     update-checker:
         fetching-version-information: Получение информации о версии...
         behind-branch: squaremap отстаёт на <behind> версию(ии) от ветки '<branch>'!
-        download-dev-builds: Скачивайте dev-сборки: <link>
+        download-dev-builds: 'Скачивайте dev-сборки: <link>'
         unknown-commit: Неизвестный коммит '<commit>', нельзя проверить наличие обновлений.
         behind-releases: squaremap устарел на <behind> версию(ии).
         download-release: Загрузите последнюю версию (<latest>) по ссылке <link>.
