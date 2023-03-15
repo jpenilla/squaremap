@@ -17,7 +17,7 @@ public final class WorldBorderShape implements VisibilityShape {
     @Override
     public boolean shouldRenderChunk(final MapWorld world, final int chunkX, final int chunkZ) {
         final WorldBorder border = ((MapWorldInternal) world).serverLevel().getWorldBorder();
-        final BlockPos center = new BlockPos(border.getCenterX(), 0, border.getCenterZ());
+        final BlockPos center = new BlockPos((int) border.getCenterX(), 0, (int) border.getCenterZ());
         int radius = (int) Math.ceil(border.getSize() / 2);
         if (chunkX < Numbers.blockToChunk(center.getX() - radius)
             || chunkX > Numbers.blockToChunk(center.getX() + radius)) {
@@ -33,7 +33,7 @@ public final class WorldBorderShape implements VisibilityShape {
     @Override
     public boolean shouldRenderRegion(final MapWorld world, final int regionX, final int regionZ) {
         final WorldBorder border = ((MapWorldInternal) world).serverLevel().getWorldBorder();
-        final BlockPos center = new BlockPos(border.getCenterX(), 0, border.getCenterZ());
+        final BlockPos center = new BlockPos((int) border.getCenterX(), 0, (int) border.getCenterZ());
         int radius = (int) Math.ceil(border.getSize() / 2);
         if (regionX < Numbers.blockToRegion(center.getX() - radius)
             || regionX > Numbers.blockToRegion(center.getX() + radius)) {
@@ -49,7 +49,7 @@ public final class WorldBorderShape implements VisibilityShape {
     @Override
     public boolean shouldRenderColumn(final MapWorld world, final int blockX, final int blockZ) {
         final WorldBorder border = ((MapWorldInternal) world).serverLevel().getWorldBorder();
-        final BlockPos center = new BlockPos(border.getCenterX(), 0, border.getCenterZ());
+        final BlockPos center = new BlockPos((int) border.getCenterX(), 0, (int) border.getCenterZ());
         int radius = (int) Math.ceil(border.getSize() / 2);
         if (blockX < center.getX() - radius || blockX >= center.getX() + radius) {
             return false;
@@ -68,7 +68,7 @@ public final class WorldBorderShape implements VisibilityShape {
         int regionMinChunkZ = Numbers.regionToChunk(regionZ);
         int regionMaxChunkZ = Numbers.regionToChunk(regionZ + 1) - 1;
 
-        final BlockPos center = new BlockPos(border.getCenterX(), 0, border.getCenterZ());
+        final BlockPos center = new BlockPos((int) border.getCenterX(), 0, (int) border.getCenterZ());
         int radius = (int) Math.ceil(border.getSize() / 2);
         int borderMinChunkX = Numbers.blockToChunk(center.getX() - radius);
         int borderMaxChunkX = Numbers.blockToChunk(center.getX() + radius);

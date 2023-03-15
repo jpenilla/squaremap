@@ -50,7 +50,7 @@ public final class FabricFluidColorExporter extends AbstractFluidColorExporter {
             }
         }
         return color(
-            Colors.fromNativeImage(blender.result()),
+            Colors.abgrToArgb(blender.result()),
             renderHandler.getFluidColor(null, null, fluid.defaultFluidState())
         );
     }

@@ -5,7 +5,11 @@ import it.unimi.dsi.fastutil.objects.Reference2IntMaps;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.Path;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
@@ -43,7 +47,7 @@ public record LevelBiomeColorData(
 
         for (final Biome biome : Util.biomeRegistry(world.serverLevel())) {
             float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
-            float humidity = Mth.clamp(biome.getDownfall(), 0.0F, 1.0F);
+            float humidity = Mth.clamp(downfall(biome), 0.0F, 1.0F);
             grassColors.put(
                 biome,
                 biome.getSpecialEffects().getGrassColorOverride()
@@ -71,6 +75,36 @@ public record LevelBiomeColorData(
             Reference2IntMaps.unmodifiable(foliageColors),
             Reference2IntMaps.unmodifiable(waterColors)
         );
+    }
+
+    private static float downfall(final Biome biome) {
+        // climateSettings is the first instance field in Biome
+        final Field climateSettingsField = Arrays.stream(biome.getClass().getDeclaredFields())
+            .filter(it -> !Modifier.isStatic(it.getModifiers()))
+            .findFirst()
+            .orElseThrow();
+        climateSettingsField.setAccessible(true);
+        float downfall = Float.MAX_VALUE;
+        // downfall() record accessor is second float returning method on Biome.ClimateSettings
+        try {
+            final Object climateSettings = climateSettingsField.get(biome);
+            int count = 0;
+            for (final Method m : climateSettings.getClass().getDeclaredMethods()) {
+                if (m.getReturnType() == Float.TYPE) {
+                    count++;
+                    if (count == 2) {
+                        downfall = (float) m.invoke(climateSettings);
+                        break;
+                    }
+                }
+            }
+        } catch (final ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+        if (downfall == Float.MAX_VALUE) {
+            throw new IllegalStateException("Could not determine 'downfall' for biome: " + biome);
+        }
+        return downfall;
     }
 
     private static int[] toArray(final BufferedImage image) {
