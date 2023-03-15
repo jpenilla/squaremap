@@ -50,6 +50,6 @@ public final class ForgeFluidColorExporter extends AbstractFluidColorExporter {
                 blender.addColor(rgba);
             }
         }
-        return color(Colors.fromNativeImage(blender.result()), ext.getTintColor());
+        return color(Colors.abgrToArgb(blender.result()), ext.getTintColor());
     }
 }

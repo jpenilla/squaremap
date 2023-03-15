@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.util;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -32,11 +31,11 @@ public final class Colors {
         return (0xFF << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public static int fromNativeImage(final int rgba) {
-        final int a = NativeImage.getA(rgba);
-        final int r = NativeImage.getR(rgba);
-        final int g = NativeImage.getG(rgba);
-        final int b = NativeImage.getB(rgba);
+    public static int abgrToArgb(final int abgr) {
+        final int a = abgr >> 24 & 0xFF;
+        final int r = abgr & 0xFF;
+        final int g = abgr >> 8 & 0xFF;
+        final int b = abgr >> 16 & 0xFF;
         return a << 24 | r << 16 | g << 8 | b;
     }
 
