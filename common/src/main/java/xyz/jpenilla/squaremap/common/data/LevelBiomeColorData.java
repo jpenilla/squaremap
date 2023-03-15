@@ -78,16 +78,18 @@ public record LevelBiomeColorData(
     }
 
     private static float downfall(final Biome biome) {
-        final Field f = Arrays.stream(biome.getClass().getDeclaredFields())
+        // climateSettings is the first instance field in Biome
+        final Field climateSettingsField = Arrays.stream(biome.getClass().getDeclaredFields())
             .filter(it -> !Modifier.isStatic(it.getModifiers()))
             .findFirst()
             .orElseThrow();
-        f.setAccessible(true);
+        climateSettingsField.setAccessible(true);
         float downfall = Float.MAX_VALUE;
+        // downfall() record accessor is second float returning method on Biome.ClimateSettings
         try {
-            final Object climateSettings = f.get(biome);
+            final Object climateSettings = climateSettingsField.get(biome);
             int count = 0;
-            for (Method m : climateSettings.getClass().getDeclaredMethods()) {
+            for (final Method m : climateSettings.getClass().getDeclaredMethods()) {
                 if (m.getReturnType() == Float.TYPE) {
                     count++;
                     if (count == 2) {
@@ -100,7 +102,7 @@ public record LevelBiomeColorData(
             throw new RuntimeException(e);
         }
         if (downfall == Float.MAX_VALUE) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Could not determine 'downfall' for biome: " + biome);
         }
         return downfall;
     }
