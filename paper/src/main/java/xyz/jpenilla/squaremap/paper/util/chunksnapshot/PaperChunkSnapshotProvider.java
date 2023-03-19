@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.paper.util.chunksnapshot;
 
+import ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor;
+import io.papermc.paper.chunk.system.ChunkSystem;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -21,15 +23,22 @@ record PaperChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotPro
         final boolean biomesOnly
     ) {
         return CompletableFuture.supplyAsync(() -> {
-            @Nullable ChunkAccess existing = this.level.getChunkIfLoadedImmediately(x, z);
-            if (existing == null) {
-                existing = this.level.getChunkSource().chunkMap.getUnloadingChunk(x, z);
-            }
+            final @Nullable ChunkAccess existing = this.level.getChunkIfLoadedImmediately(x, z);
             if (existing != null && existing.getStatus().isOrAfter(ChunkStatus.FULL)) {
                 return CompletableFuture.completedFuture(existing);
+            } else if (existing != null) {
+                return CompletableFuture.<@Nullable ChunkAccess>completedFuture(null);
             }
             final CompletableFuture<@Nullable ChunkAccess> load = new CompletableFuture<>();
-            this.level.getChunkSource().getChunkAtAsynchronously(x, z, ChunkStatus.EMPTY, false, false, load::complete);
+            ChunkSystem.scheduleChunkLoad(
+                this.level,
+                x,
+                z,
+                ChunkStatus.EMPTY,
+                true,
+                PrioritisedExecutor.Priority.NORMAL,
+                load::complete
+            );
             return load;
         }, this.level.getServer()).thenCompose(chunkFuture -> chunkFuture.thenApplyAsync(chunk -> {
             if (chunk == null || !chunk.getStatus().isOrAfter(ChunkStatus.FULL)) {
