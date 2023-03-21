@@ -16,7 +16,7 @@ displayTest = "IGNORE_ALL_VERSION"
 [[dependencies.squaremap]]
 modId = "forge"
 mandatory = true
-versionRange = "[45,)"
+versionRange = "[45.0.18,)"
 ordering = "NONE"
 side = "BOTH"
 

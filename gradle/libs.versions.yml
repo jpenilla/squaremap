@@ -25,7 +25,7 @@ versions:
     fabricLoader: 0.14.17
     cardinalComponents: 5.1.0
     guice: 5.1.0
-    forge: 1.19.4-45.0.0
+    forge: 1.19.4-45.0.18
 
     # buildSrc
     indra: 3.0.1

@@ -12,6 +12,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.level.PistonEvent;
 import net.minecraftforge.event.level.SaplingGrowTreeEvent;
@@ -79,7 +80,12 @@ public final class ForgeMapUpdates {
                 .forEach(pos -> this.markBlock(level, pos));
             this.markBlock(level, event.getPos());
         });
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (ChunkGenerateEvent event) -> this.markChunk(event.level(), event.chunkPos()));
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (ChunkEvent.Load event) -> {
+            if (!(event.getLevel() instanceof ServerLevel level) || !event.isNewChunk()) {
+                return;
+            }
+            this.markChunk(level, event.getChunk().getPos());
+        });
     }
 
     private void markBlock(final ServerLevel level, final BlockPos pos) {
