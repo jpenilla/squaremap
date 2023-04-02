@@ -1,0 +1,9 @@
+name: squaremap
+version: $version
+main: xyz.jpenilla.squaremap.paper.SquaremapPaperBootstrap
+description: $description
+authors:
+ - jmp
+website: $website
+api-version: $apiVersion
+folia-supported: true

@@ -14,6 +14,7 @@ import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
 import xyz.jpenilla.squaremap.paper.inject.module.PaperModule;
+import xyz.jpenilla.squaremap.paper.util.PaperEntityScheduler;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapPaperBootstrap extends JavaPlugin {
@@ -37,6 +38,7 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
         final Injector injector = Guice.createInjector(
             SquaremapModulesBuilder.forPlatform(SquaremapPaper.class)
                 .mapWorldFactory(PaperMapWorld.Factory.class)
+                .entityScheduler(PaperEntityScheduler.class)
                 .withModule(new PaperModule(this))
                 .build()
         );
