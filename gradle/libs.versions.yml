@@ -34,7 +34,7 @@ versions:
     vanillaGradle: 0.2.1-20220508.185818-34
     minotaur: 2.7.4
     loom: 1.1-SNAPSHOT
-    paperweight: 1.5.3
+    paperweight: 1.5.4
 
 dependencies:
     guice:
