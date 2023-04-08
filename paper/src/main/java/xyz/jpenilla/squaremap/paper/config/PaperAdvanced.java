@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.paper.config;
 
+import io.papermc.paper.event.packet.PlayerChunkLoadEvent;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import java.util.Set;
@@ -78,7 +79,8 @@ public final class PaperAdvanced {
             BlockPhysicsEvent.class,
             BlockPistonExtendEvent.class,
             BlockPistonRetractEvent.class,
-            ChunkLoadEvent.class
+            ChunkLoadEvent.class,
+            PlayerChunkLoadEvent.class
         );
         for (final Class<? extends Event> clazz : defaultOff) {
             EVENT_LISTENER_TOGGLES.put(clazz, Advanced.config().getBoolean("settings.event-listeners." + clazz.getSimpleName(), false));

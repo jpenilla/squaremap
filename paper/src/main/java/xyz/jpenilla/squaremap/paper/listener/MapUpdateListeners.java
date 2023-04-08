@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.paper.listener;
 
 import com.google.inject.Inject;
+import io.papermc.paper.event.packet.PlayerChunkLoadEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -86,6 +87,7 @@ public final class MapUpdateListeners {
         this.registerListener(StructureGrowEvent.class, this::handleStructureGrowEvent);
         this.registerListener(ChunkPopulateEvent.class, this::handleChunkPopulateEvent);
         this.registerListener(ChunkLoadEvent.class, this::handleChunkLoadEvent);
+        this.registerListener(PlayerChunkLoadEvent.class, this::handlePlayerChunkLoadEvent);
     }
 
     public void unregister() {
@@ -221,6 +223,11 @@ public final class MapUpdateListeners {
     }
 
     private void handleChunkLoadEvent(final @NonNull ChunkLoadEvent event) {
+        final Chunk chunk = event.getChunk();
+        this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())), true);
+    }
+
+    private void handlePlayerChunkLoadEvent(final @NonNull PlayerChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
         this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())), true);
     }
