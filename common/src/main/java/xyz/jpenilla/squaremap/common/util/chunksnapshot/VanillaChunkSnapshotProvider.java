@@ -1,8 +1,10 @@
 package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -17,6 +19,8 @@ import xyz.jpenilla.squaremap.common.util.ChunkMapAccess;
 
 @DefaultQualifier(NonNull.class)
 record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotProvider {
+    private static final ResourceLocation FULL = BuiltInRegistries.CHUNK_STATUS.getKey(ChunkStatus.FULL);
+
     @Override
     public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(
         final int x,
@@ -54,7 +58,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
 
         final @Nullable CompoundTag chunkTag = chunkMap.squaremap$readChunk(chunkPos).join().orElse(null);
         if (chunkTag != null && chunkTag.contains("Status", Tag.TAG_STRING)) {
-            if (ChunkStatus.FULL.getName().equals(chunkTag.getString("Status"))) {
+            if (isFullStatus(chunkTag)) {
                 @Nullable ChunkAccess chunk = level.getChunkSource()
                     .getChunkFuture(x, z, ChunkStatus.EMPTY, true)
                     .join()
@@ -67,6 +71,10 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
         return null;
     }
 
+    private static boolean isFullStatus(final CompoundTag chunkTag) {
+        return FULL.equals(ResourceLocation.tryParse(chunkTag.getString("Status")));
+    }
+
     private static @Nullable LevelChunk fullIfPresent(final ChunkHolder chunkHolder) {
         return unwrap(chunkHolder.getLastAvailable());
     }
@@ -77,6 +85,10 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
         }
         if (chunk instanceof ImposterProtoChunk imposter) {
             chunk = imposter.getWrapped();
+        }
+        if (!(chunk instanceof LevelChunk)) {
+            // TODO 1.20 - full status ProtoChunks?
+            return null;
         }
         return (LevelChunk) chunk;
     }

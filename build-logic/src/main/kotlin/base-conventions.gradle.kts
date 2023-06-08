@@ -30,4 +30,7 @@ repositories {
   maven("https://maven.fabricmc.net/") {
     mavenContent { includeGroup("net.fabricmc") }
   }
+    mavenLocal() {
+        mavenContent { snapshotsOnly()}
+    }
 }

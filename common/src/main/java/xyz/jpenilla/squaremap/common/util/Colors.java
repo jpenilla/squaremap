@@ -1,7 +1,6 @@
 package xyz.jpenilla.squaremap.common.util;
 
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -78,16 +77,12 @@ public final class Colors {
         return 0xFF << 24 | r << 16 | g << 8 | b;
     }
 
-    public static int leavesMapColor() {
-        return rgb(Material.LEAVES.getColor());
-    }
-
-    public static int plantsMapColor() {
-        return rgb(Material.PLANT.getColor());
+    public static int plantMapColor() {
+        return rgb(MapColor.PLANT);
     }
 
     public static int clearMapColor() {
-        return rgb(MaterialColor.NONE);
+        return rgb(MapColor.NONE);
     }
 
     public static int parseHex(final String color) {
@@ -98,7 +93,7 @@ public final class Colors {
         return rgba;
     }
 
-    public static int rgb(final MaterialColor color) {
+    public static int rgb(final MapColor color) {
         return color.col;
     }
 

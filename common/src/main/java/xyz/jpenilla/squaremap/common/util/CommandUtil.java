@@ -26,7 +26,7 @@ public final class CommandUtil {
             return world;
         }
         if (sender instanceof final PlayerCommander player) {
-            final ServerLevel level = player.player().getLevel();
+            final ServerLevel level = (ServerLevel) player.player().level();
             final Optional<MapWorldInternal> mapWorld = context.get(Commands.WORLD_MANAGER).getWorldIfEnabled(level);
             if (mapWorld.isPresent()) {
                 return mapWorld.get();

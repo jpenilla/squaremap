@@ -90,7 +90,7 @@ public final class NetworkingHandler {
             out.writeInt(mapWorld.config().ZOOM_EXTRA);
         }
 
-        out.writeUTF(player.getLevel().dimension().location().toString());
+        out.writeUTF(player.level().dimension().location().toString());
 
         send(player, out);
     }
@@ -113,7 +113,7 @@ public final class NetworkingHandler {
         out.writeInt(Constants.MAP_DATA);
         out.writeInt(Constants.PROTOCOL);
 
-        final @Nullable MapItemSavedData mapData = player.level.getMapData(MapItem.makeKey(id));
+        final @Nullable MapItemSavedData mapData = player.level().getMapData(MapItem.makeKey(id));
         if (mapData == null) {
             out.writeInt(Constants.ERROR_NO_SUCH_MAP);
             out.writeInt(id);
@@ -153,7 +153,7 @@ public final class NetworkingHandler {
         out.writeInt(Constants.PROTOCOL);
         out.writeInt(Constants.RESPONSE_SUCCESS);
 
-        out.writeUTF(player.getLevel().dimension().location().toString());
+        out.writeUTF(player.level().dimension().location().toString());
 
         send(player, out);
     }
