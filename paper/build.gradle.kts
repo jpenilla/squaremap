@@ -42,6 +42,9 @@ tasks {
   reobfJar {
     outputJar.set(productionJarLocation(minecraftVersion))
   }
+  processResources {
+    filter { it.replace("1.20", "'1.20'") }
+  }
 }
 
 squaremapPlatform {
