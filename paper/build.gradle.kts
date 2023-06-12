@@ -43,7 +43,9 @@ tasks {
     outputJar.set(productionJarLocation(minecraftVersion))
   }
   processResources {
-    filter { it.replace("1.20", "'1.20'") }
+    filesMatching("plugin.yml") {
+      filter { it.replace("1.20", "'1.20'") }
+    }
   }
 }
 
