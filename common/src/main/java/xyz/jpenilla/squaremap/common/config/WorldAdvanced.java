@@ -126,6 +126,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
             Map.ofEntries(
                 Map.entry("minecraft:mycelium", "#6F6265"),
                 Map.entry("minecraft:terracotta", "#9E6246"),
+                Map.entry("minecraft:pink_petals", "#FFB4DB"),
                 Map.entry("minecraft:dandelion", "#FFEC4F"),
                 Map.entry("minecraft:poppy", "#ED302C"),
                 Map.entry("minecraft:blue_orchid", "#2ABFFD"),
