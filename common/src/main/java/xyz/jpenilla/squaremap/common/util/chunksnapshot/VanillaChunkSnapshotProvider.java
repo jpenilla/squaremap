@@ -86,10 +86,6 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
         if (chunk instanceof ImposterProtoChunk imposter) {
             chunk = imposter.getWrapped();
         }
-        // TODO 1.20.1 - remove check (https://bugs.mojang.com/browse/MC-263340 fixed)
-        if (!(chunk instanceof LevelChunk)) {
-            return null;
-        }
         return (LevelChunk) chunk;
     }
 }

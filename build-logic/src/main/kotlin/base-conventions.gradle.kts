@@ -21,6 +21,7 @@ repositories {
     mavenContent {
       includeGroup("cloud.commandframework")
       includeGroup("xyz.jpenilla")
+      includeModule("net.kyori", "adventure-platform-fabric") // TODO remove when updating platform-fabric to release
       snapshotsOnly()
     }
   }
@@ -30,7 +31,4 @@ repositories {
   maven("https://maven.fabricmc.net/") {
     mavenContent { includeGroup("net.fabricmc") }
   }
-    mavenLocal() {
-        mavenContent { snapshotsOnly()}
-    }
 }
