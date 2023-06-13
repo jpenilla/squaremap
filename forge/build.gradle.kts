@@ -16,7 +16,7 @@ dependencies {
   }
 
   implementation(platform(libs.adventureBom))
-  include(platform(platform(libs.adventureBom)))
+  include(platform(libs.adventureBom))
   implementation(libs.adventureApi)
   include(libs.adventureApi)
   include(libs.examinationApi)
@@ -25,6 +25,7 @@ dependencies {
   include(libs.miniMessage)
   implementation(libs.adventureTextSerializerGson)
   include(libs.adventureTextSerializerGson)
+  include(libs.adventureTextSerializerJson)
 
   modImplementation(libs.cloudForge)
   include(libs.cloudForge)

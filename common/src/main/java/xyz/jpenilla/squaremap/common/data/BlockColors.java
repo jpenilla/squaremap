@@ -74,7 +74,7 @@ public final class BlockColors {
 
     private static int wheat(final BlockState state) {
         float factor = (state.getValue(CropBlock.AGE) + 1) / 8F;
-        return Colors.mix(Colors.plantsMapColor(), 0xDCBB65, factor);
+        return Colors.mix(Colors.plantMapColor(), 0xDCBB65, factor);
     }
 
     public static BlockColors create(final MapWorldInternal mapWorld) {

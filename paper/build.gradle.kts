@@ -42,6 +42,11 @@ tasks {
   reobfJar {
     outputJar.set(productionJarLocation(minecraftVersion))
   }
+  processResources {
+    filesMatching("plugin.yml") {
+      filter { it.replace("1.20", "'1.20'") }
+    }
+  }
 }
 
 squaremapPlatform {
@@ -51,7 +56,7 @@ squaremapPlatform {
 bukkit {
   main = "xyz.jpenilla.squaremap.paper.SquaremapPaperBootstrap"
   name = rootProject.name
-  apiVersion = "1.19"
+  apiVersion = "1.20"
   website = providers.gradleProperty("githubUrl").get()
   authors = listOf("jmp")
 }

@@ -57,7 +57,7 @@ public record LevelBiomeColorData(
             foliageColors.put(
                 biome,
                 biome.getSpecialEffects().getFoliageColorOverride()
-                    .orElse(Colors.mix(Colors.leavesMapColor(), defaultFoliageColor(temperature, humidity), 0.85f))
+                    .orElse(Colors.mix(Colors.plantMapColor(), defaultFoliageColor(temperature, humidity), 0.85f))
                     .intValue()
             );
             waterColors.put(
