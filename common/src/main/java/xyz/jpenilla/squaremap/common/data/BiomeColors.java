@@ -42,7 +42,8 @@ public final class BiomeColors {
         Blocks.OAK_LEAVES,
         Blocks.JUNGLE_LEAVES,
         Blocks.ACACIA_LEAVES,
-        Blocks.DARK_OAK_LEAVES
+        Blocks.DARK_OAK_LEAVES,
+        Blocks.MANGROVE_LEAVES
     );
 
     private final ColorBlender colorBlender = new ColorBlender();
