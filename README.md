@@ -26,9 +26,9 @@ squaremap hooks into your Minecraft server as a plugin or mod on a [supported pl
 ## Supported platforms
 
 - [Paper](https://papermc.io/)
-- [Sponge 10](https://www.spongepowered.org/)
-- [Fabric](https://fabricmc.net/) (requires [Fabric API](https://www.curseforge.com/minecraft/mc-mods/fabric-api))
+- [Fabric](https://fabricmc.net/) (requires [Fabric API](https://modrinth.com/mod/fabric-api))
 - [Forge](https://minecraftforge.net)
+- [Sponge](https://www.spongepowered.org/)
 
 ## Downloads
 
@@ -71,7 +71,7 @@ Maven
 <dependency>
     <groupId>xyz.jpenilla</groupId>
     <artifactId>squaremap-api</artifactId>
-    <version>1.1.13</version>
+    <version>1.1.14</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -83,7 +83,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("xyz.jpenilla", "squaremap-api", "1.1.13")
+    compileOnly("xyz.jpenilla", "squaremap-api", "1.1.14")
 }
 ```
 
