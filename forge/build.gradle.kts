@@ -25,6 +25,7 @@ dependencies {
   include(libs.miniMessage)
   implementation(libs.adventureTextSerializerGson)
   include(libs.adventureTextSerializerGson)
+  include(libs.adventureTextSerializerJson)
 
   modImplementation(libs.cloudForge)
   include(libs.cloudForge)

@@ -59,6 +59,9 @@ dependencies:
     adventureTextSerializerGson:
         group: net.kyori
         name: adventure-text-serializer-gson
+    adventureTextSerializerJson:
+        group: net.kyori
+        name: adventure-text-serializer-json
     miniMessage:
         group: net.kyori
         name: adventure-text-minimessage
