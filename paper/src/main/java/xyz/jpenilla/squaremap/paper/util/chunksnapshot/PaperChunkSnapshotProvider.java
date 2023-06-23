@@ -26,11 +26,7 @@ record PaperChunkSnapshotProvider(
     JavaPlugin plugin
 ) implements ChunkSnapshotProvider {
     @Override
-    public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(
-        final int x,
-        final int z,
-        final boolean biomesOnly
-    ) {
+    public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(final int x, final int z) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable ChunkAccess existing = this.level.getChunkIfLoadedImmediately(x, z);
             if (existing != null && existing.getStatus().isOrAfter(ChunkStatus.FULL)) {
@@ -57,7 +53,7 @@ record PaperChunkSnapshotProvider(
                 chunk = imposter.getWrapped();
             }
             if (chunk instanceof LevelChunk levelChunk && !levelChunk.isEmpty()) {
-                return ChunkSnapshot.snapshot(levelChunk, biomesOnly);
+                return ChunkSnapshot.snapshot(levelChunk, false);
             }
             return null;
         }, this.executor(x, z)));

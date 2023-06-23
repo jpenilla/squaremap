@@ -10,7 +10,9 @@ minecraft {
 
 dependencies {
   api(projects.squaremapApi)
-
+  api(libs.caffeine) {
+    exclude("com.google.errorprone")
+  }
   api(libs.guice) {
     exclude("com.google.guava") // provided by minecraft
   }

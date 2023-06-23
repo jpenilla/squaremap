@@ -10,6 +10,10 @@ public final class ChunkHashMapKey implements Comparable<ChunkHashMapKey> {
         this.key = key;
     }
 
+    public ChunkHashMapKey(final ChunkPos pos) {
+        this(pos.toLong());
+    }
+
     @Override
     public int hashCode() {
         return (int) HashCommon.mix(this.key);

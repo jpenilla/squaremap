@@ -22,17 +22,13 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
     private static final ResourceLocation FULL = BuiltInRegistries.CHUNK_STATUS.getKey(ChunkStatus.FULL);
 
     @Override
-    public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(
-        final int x,
-        final int z,
-        final boolean biomesOnly
-    ) {
+    public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(final int x, final int z) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable LevelChunk chunk = fullChunkIfGenerated(this.level, x, z);
             if (chunk == null || chunk.isEmpty()) {
                 return null;
             }
-            return ChunkSnapshot.snapshot(chunk, biomesOnly);
+            return ChunkSnapshot.snapshot(chunk, false);
         }, this.level.getServer());
     }
 

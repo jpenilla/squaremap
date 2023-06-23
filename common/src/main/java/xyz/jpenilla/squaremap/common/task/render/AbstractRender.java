@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.common.task.render;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +15,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
@@ -91,7 +92,9 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private int maximumActiveChunkRequests() {
-        return ((ThreadPoolExecutor) this.executorService).getCorePoolSize() * 512;
+        final int factor = Integer.getInteger("squaremap.maximumActiveChunkRequestsFactor", 48);
+        final int value = ((ThreadPoolExecutor) this.executorService).getCorePoolSize() * factor;
+        return Integer.getInteger("squaremap.maximumActiveChunkRequests", value);
     }
 
     protected abstract void render();
@@ -222,8 +225,8 @@ public abstract class AbstractRender implements Runnable {
     }
 
     protected final CompletableFuture<Void> mapSingleChunk(final Image image, final int chunkX, final int chunkZ) {
-        final CompletableFuture<@Nullable ChunkSnapshot> northChunk = this.chunks.snapshotDirect(new ChunkPos(chunkX, chunkZ - 1));
         final CompletableFuture<@Nullable ChunkSnapshot> chunkFuture = this.chunks.snapshot(new ChunkPos(chunkX, chunkZ));
+        final CompletableFuture<@Nullable ChunkSnapshot> northChunk = this.chunks.snapshotDirect(new ChunkPos(chunkX, chunkZ - 1));
 
         // queue up the southern chunk in case it was stored with improper yDiff
         // https://github.com/pl3xgaming/Pl3xMap/issues/15
@@ -267,13 +270,11 @@ public abstract class AbstractRender implements Runnable {
         });
     }
 
-    private static final Object TOP_CHUNK = new Object();
-
     protected final CompletableFuture<Void> mapChunkColumn(final Image image, final int chunkX, final int startChunkZ) {
-        final List<CompletableFuture<?>> futures = new ArrayList<>();
+        final List<CompletableFuture<ChunkSnapshot>> futures = new ArrayList<>(33);
 
-        final CompletableFuture<@Nullable ChunkSnapshot> topChunkFuture = this.chunks.snapshotDirect(new ChunkPos(chunkX, startChunkZ - 1));
-        futures.add(topChunkFuture.thenApply($ -> TOP_CHUNK));
+        final CompletableFuture<@Nullable ChunkSnapshot> aboveChunkFuture = this.chunks.snapshotDirect(new ChunkPos(chunkX, startChunkZ - 1));
+        futures.add(aboveChunkFuture);
 
         for (int chunkZ = startChunkZ; chunkZ < startChunkZ + 32; chunkZ++) {
             if (!this.mapWorld.visibilityLimit().shouldRenderChunk(chunkX, chunkZ)) {
@@ -289,14 +290,11 @@ public abstract class AbstractRender implements Runnable {
                 return;
             }
             final int[] lastY = new int[16];
-            for (final CompletableFuture<?> future : futures) {
-                final Object result = future.join();
-                if (result == TOP_CHUNK) {
-                    final @Nullable ChunkSnapshot topChunk = topChunkFuture.join();
-                    if (topChunk != null) {
-                        System.arraycopy(this.getLastYFromBottomRow(topChunk), 0, lastY, 0, lastY.length);
-                    }
-                } else if (result instanceof ChunkSnapshot snapshot) {
+            for (final CompletableFuture<ChunkSnapshot> future : futures) {
+                final @Nullable ChunkSnapshot snapshot = future.join();
+                if (future == aboveChunkFuture && snapshot != null) {
+                    System.arraycopy(this.getLastYFromBottomRow(snapshot), 0, lastY, 0, lastY.length);
+                } else if (snapshot != null) {
                     this.scanChunk(image, lastY, snapshot);
                     this.processedChunks.incrementAndGet();
                 } else {
@@ -567,73 +565,43 @@ public abstract class AbstractRender implements Runnable {
 
     public static final class ChunkSnapshotManager {
         private final ChunkSnapshotProvider chunkSnapshotProvider;
-        private final int capacity;
-        private final Map<ChunkHashMapKey, CompletableFuture<@Nullable ChunkSnapshot>> active;
-        private final Long2ObjectLinkedOpenHashMap<CompletableFuture<@Nullable ChunkSnapshot>> cache;
+        private final int maximumActiveRequests;
+        private final LoadingCache<ChunkHashMapKey, CompletableFuture<@Nullable ChunkSnapshot>> cache;
+        public final AtomicLong active = new AtomicLong();
+        public final AtomicLong done = new AtomicLong();
         private final boolean biomeBlend;
         private final BooleanSupplier running;
-        private final ReentrantLock lock;
 
         public ChunkSnapshotManager(
             final ChunkSnapshotProvider chunkSnapshotProvider,
-            final int capacity,
+            final int maximumActiveRequests,
             final boolean biomeBlend,
             final BooleanSupplier running
         ) {
             this.chunkSnapshotProvider = chunkSnapshotProvider;
-            this.capacity = capacity;
-            this.active = new ConcurrentHashMap<>(capacity);
-            this.cache = new Long2ObjectLinkedOpenHashMap<>(capacity);
+            this.maximumActiveRequests = maximumActiveRequests;
+            this.cache = Caffeine.newBuilder()
+                .maximumSize(10L * maximumActiveRequests)
+                .executor(Runnable::run)
+                .build(this::load);
             this.biomeBlend = biomeBlend;
             this.running = running;
-            this.lock = new ReentrantLock();
         }
 
-        // requests neighbors when biomes are mapped
-        public CompletableFuture<@Nullable ChunkSnapshot> snapshot(final ChunkPos chunkPos) {
-            if (this.biomeBlend) {
-                final int x = chunkPos.x;
-                final int z = chunkPos.z;
-
-                final List<CompletableFuture<@Nullable ChunkSnapshot>> futures = List.of(
-                    this.snapshotDirect(new ChunkPos(x - 1, z - 1)),
-                    this.snapshotDirect(new ChunkPos(x - 1, z)),
-                    this.snapshotDirect(new ChunkPos(x - 1, z + 1)),
-                    this.snapshotDirect(new ChunkPos(x, z - 1)),
-                    this.snapshotDirect(new ChunkPos(x, z + 1)),
-                    this.snapshotDirect(new ChunkPos(x + 1, z - 1)),
-                    this.snapshotDirect(new ChunkPos(x + 1, z)),
-                    this.snapshotDirect(new ChunkPos(x + 1, z + 1))
-                );
-
-                final CompletableFuture<@Nullable ChunkSnapshot> thisChunk = this.snapshotDirect(chunkPos);
-                return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenCompose($ -> thisChunk);
+        private CompletableFuture<ChunkSnapshot> load(final ChunkHashMapKey key) {
+            if (!this.maybeWait()) {
+                return CompletableFuture.completedFuture(null);
             }
-            return this.snapshotDirect(chunkPos);
+            this.active.incrementAndGet();
+            final CompletableFuture<@Nullable ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(ChunkPos.getX(key.key), ChunkPos.getZ(key.key));
+            future.whenComplete(($, $$) -> this.done.incrementAndGet());
+            return future;
         }
 
-        // only requests the specific chunk
-        public CompletableFuture<@Nullable ChunkSnapshot> snapshotDirect(final ChunkPos chunkPos) {
-            final long chunkKey = chunkPos.toLong();
-
-            final @Nullable CompletableFuture<@Nullable ChunkSnapshot> active = this.active.get(key(chunkKey));
-            if (active != null) {
-                return active;
-            }
-
-            this.lock.lock();
-            try {
-                final @Nullable CompletableFuture<@Nullable ChunkSnapshot> done = this.cache.getAndMoveToFirst(chunkKey);
-                if (done != null) {
-                    return done;
-                }
-            } finally {
-                this.lock.unlock();
-            }
-
-            for (int failures = 1; this.active.size() >= this.capacity; ++failures) {
+        private boolean maybeWait() {
+            for (int failures = 1; (this.active.get() - this.done.get()) >= this.maximumActiveRequests; ++failures) {
                 if (!this.running.getAsBoolean()) {
-                    return CompletableFuture.completedFuture(null);
+                    return false;
                 }
                 final boolean interrupted = Thread.interrupted();
                 Thread.yield();
@@ -642,27 +610,35 @@ public abstract class AbstractRender implements Runnable {
                     Thread.currentThread().interrupt();
                 }
             }
-
-            return this.active.computeIfAbsent(key(chunkKey), key -> {
-                final CompletableFuture<@Nullable ChunkSnapshot> future = this.chunkSnapshotProvider.asyncSnapshot(chunkPos.x, chunkPos.z, false);
-                future.whenComplete(($$, $$$) -> {
-                    this.lock.lock();
-                    try {
-                        if (this.cache.size() >= this.capacity) {
-                            this.cache.removeLast();
-                        }
-                        this.cache.putAndMoveToFirst(chunkKey, future);
-                        this.active.remove(key);
-                    } finally {
-                        this.lock.unlock();
-                    }
-                });
-                return future;
-            });
+            return true;
         }
 
-        private static ChunkHashMapKey key(final long key) {
-            return new ChunkHashMapKey(key);
+        // requests neighbors when biomes are mapped
+        public CompletableFuture<@Nullable ChunkSnapshot> snapshot(final ChunkPos chunkPos) {
+            final CompletableFuture<@Nullable ChunkSnapshot> future = this.snapshotDirect(chunkPos);
+            if (!this.biomeBlend) {
+                return future;
+            }
+
+            final int x = chunkPos.x;
+            final int z = chunkPos.z;
+
+            this.snapshotDirect(new ChunkPos(x - 1, z - 1));
+            this.snapshotDirect(new ChunkPos(x - 1, z));
+            this.snapshotDirect(new ChunkPos(x - 1, z + 1));
+            this.snapshotDirect(new ChunkPos(x, z - 1));
+            this.snapshotDirect(new ChunkPos(x, z + 1));
+            this.snapshotDirect(new ChunkPos(x + 1, z - 1));
+            this.snapshotDirect(new ChunkPos(x + 1, z));
+            this.snapshotDirect(new ChunkPos(x + 1, z + 1));
+
+            // return CompletableFuture.allOf(neighborFutures.toArray(CompletableFuture[]::new)).thenCompose($ -> future);
+            return future;
+        }
+
+        // only requests the specific chunk
+        public CompletableFuture<@Nullable ChunkSnapshot> snapshotDirect(final ChunkPos chunkPos) {
+            return this.cache.get(new ChunkHashMapKey(chunkPos));
         }
     }
 

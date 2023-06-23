@@ -73,3 +73,7 @@ hangarPublish.publications.register("plugin") {
     platformVersions.add(minecraftVersion)
   }
 }
+
+modrinth {
+  loaders.set(listOf("paper", "folia"))
+}
