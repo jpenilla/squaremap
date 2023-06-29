@@ -75,7 +75,7 @@ public final class LevelArgument<C> extends CommandArgument<C, ServerLevel> {
             }
 
             final @Nullable ResourceLocation key = ResourceLocation.tryParse(input);
-            if (key == null) {
+            if (key == null || key.getPath().isEmpty()) {
                 return failure(new MapWorldArgument.MapWorldParseException(input, MapWorldArgument.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
