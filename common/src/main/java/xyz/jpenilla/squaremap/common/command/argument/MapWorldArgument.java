@@ -118,7 +118,7 @@ public final class MapWorldArgument<C> extends CommandArgument<C, MapWorldIntern
             }
 
             final @Nullable ResourceLocation key = ResourceLocation.tryParse(input);
-            if (key == null) {
+            if (key == null || key.getPath().isEmpty()) {
                 return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
             }
 
