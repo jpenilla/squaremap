@@ -1,7 +1,5 @@
 package xyz.jpenilla.squaremap.common.task.render;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +48,7 @@ import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.util.ConcurrentFIFOLoadingCache;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractRender implements Runnable {
@@ -233,7 +232,10 @@ public abstract class AbstractRender implements Runnable {
         final CompletableFuture<@Nullable ChunkSnapshot> southChunk;
         final int down = chunkZ + 1;
         if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
-            southChunk = this.chunks.snapshot(new ChunkPos(chunkX, down));
+            // Prime left and right (don't need bottom 3 neighbors primed by #snapshot)
+            this.chunks.snapshotDirect(new ChunkPos(chunkX + 1, down));
+            this.chunks.snapshotDirect(new ChunkPos(chunkX - 1, down));
+            southChunk = this.chunks.snapshotDirect(new ChunkPos(chunkX, down));
         } else {
             // chunk belongs to a different region, add to queue
             this.mapWorld.chunkModified(new ChunkCoordinate(chunkX, down));
@@ -566,7 +568,7 @@ public abstract class AbstractRender implements Runnable {
     public static final class ChunkSnapshotManager {
         private final ChunkSnapshotProvider chunkSnapshotProvider;
         private final int maximumActiveRequests;
-        private final LoadingCache<ChunkHashMapKey, CompletableFuture<@Nullable ChunkSnapshot>> cache;
+        private final ConcurrentFIFOLoadingCache<ChunkHashMapKey, CompletableFuture<@Nullable ChunkSnapshot>> cache;
         public final AtomicLong active = new AtomicLong();
         public final AtomicLong done = new AtomicLong();
         private final boolean biomeBlend;
@@ -580,10 +582,11 @@ public abstract class AbstractRender implements Runnable {
         ) {
             this.chunkSnapshotProvider = chunkSnapshotProvider;
             this.maximumActiveRequests = maximumActiveRequests;
-            this.cache = Caffeine.newBuilder()
-                .maximumSize(10L * maximumActiveRequests)
-                .executor(Runnable::run)
-                .build(this::load);
+            this.cache = new ConcurrentFIFOLoadingCache<>(
+                10 * maximumActiveRequests,
+                8 * maximumActiveRequests,
+                this::load
+            );
             this.biomeBlend = biomeBlend;
             this.running = running;
         }
@@ -624,13 +627,13 @@ public abstract class AbstractRender implements Runnable {
             final int z = chunkPos.z;
 
             this.snapshotDirect(new ChunkPos(x - 1, z - 1));
-            this.snapshotDirect(new ChunkPos(x - 1, z));
-            this.snapshotDirect(new ChunkPos(x - 1, z + 1));
             this.snapshotDirect(new ChunkPos(x, z - 1));
+            this.snapshotDirect(new ChunkPos(x + 1, z + 1));
+            this.snapshotDirect(new ChunkPos(x - 1, z));
+            this.snapshotDirect(new ChunkPos(x + 1, z));
+            this.snapshotDirect(new ChunkPos(x - 1, z + 1));
             this.snapshotDirect(new ChunkPos(x, z + 1));
             this.snapshotDirect(new ChunkPos(x + 1, z - 1));
-            this.snapshotDirect(new ChunkPos(x + 1, z));
-            this.snapshotDirect(new ChunkPos(x + 1, z + 1));
 
             // return CompletableFuture.allOf(neighborFutures.toArray(CompletableFuture[]::new)).thenCompose($ -> future);
             return future;

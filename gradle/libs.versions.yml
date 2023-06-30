@@ -26,7 +26,6 @@ versions:
     cardinalComponents: 5.2.1
     guice: 5.1.0
     forge: 1.20.1-47.0.0
-    caffeine: 3.1.6
 
     # buildSrc
     indra: 3.0.1
@@ -81,11 +80,6 @@ dependencies:
         group: net.kyori
         name: examination-string
         version: { ref: examination }
-
-    caffeine:
-        group: com.github.ben-manes.caffeine
-        name: caffeine
-        version: { ref: caffeine }
 
     cloudCore:
         group: cloud.commandframework
