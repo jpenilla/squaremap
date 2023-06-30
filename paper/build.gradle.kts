@@ -10,7 +10,7 @@ plugins {
 val minecraftVersion = libs.versions.minecraft
 
 dependencies {
-  paperweight.devBundle("dev.folia", minecraftVersion.map { "$it-R0.1-SNAPSHOT" }.get())
+  paperweight.foliaDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
 
   implementation(projects.squaremapCommon)
 
