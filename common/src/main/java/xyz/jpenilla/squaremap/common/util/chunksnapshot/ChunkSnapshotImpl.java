@@ -1,5 +1,6 @@
 package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 
+import java.util.EnumMap;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -24,7 +25,7 @@ record ChunkSnapshotImpl(
     LevelHeightAccessor heightAccessor,
     PalettedContainer<BlockState>[] states,
     PalettedContainer<Holder<Biome>>[] biomes,
-    Map<Heightmap.Types, Heightmap> heightmaps,
+    Map<Heightmap.Types, HeightmapSnapshot> heightmaps,
     boolean[] emptySections,
     DimensionType dimensionType,
     ChunkPos pos
@@ -34,6 +35,7 @@ record ChunkSnapshotImpl(
         Blocks.AIR.defaultBlockState(),
         PalettedContainer.Strategy.SECTION_STATES
     );
+    static final EnumMap<Heightmap.Types, HeightmapSnapshot> EMPTY_HEIGHTMAPS = new EnumMap<>(Heightmap.Types.class);
 
     @Override
     public BlockState getBlockState(final BlockPos pos) {
@@ -63,7 +65,7 @@ record ChunkSnapshotImpl(
 
     @Override
     public int getHeight(final Heightmap.Types type, final int x, final int z) {
-        final Heightmap heightmap = this.heightmaps.get(type);
+        final HeightmapSnapshot heightmap = this.heightmaps.get(type);
         if (heightmap == null) {
             throw new RuntimeException("Missing heightmaps " + type);
         }
