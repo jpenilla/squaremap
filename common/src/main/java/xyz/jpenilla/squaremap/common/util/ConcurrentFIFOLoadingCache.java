@@ -55,11 +55,10 @@ public final class ConcurrentFIFOLoadingCache<K, V> {
         if (this.map.size() > this.maximumCapacity) {
             while (this.map.size() > this.evictUntil) {
                 final @Nullable K remove = this.queue.poll();
-                if (remove != null) {
-                    this.map.remove(remove);
-                } else {
+                if (remove == null) {
                     break;
                 }
+                this.map.remove(remove);
             }
         }
     }

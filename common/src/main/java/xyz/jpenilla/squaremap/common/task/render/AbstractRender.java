@@ -43,12 +43,12 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.ChunkHashMapKey;
 import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.ConcurrentFIFOLoadingCache;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
-import xyz.jpenilla.squaremap.common.util.ConcurrentFIFOLoadingCache;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractRender implements Runnable {
@@ -566,6 +566,8 @@ public abstract class AbstractRender implements Runnable {
     }
 
     public static final class ChunkSnapshotManager {
+        private static final int MAXIMUM_CAPACITY = 2048;
+
         private final ChunkSnapshotProvider chunkSnapshotProvider;
         private final int maximumActiveRequests;
         private final ConcurrentFIFOLoadingCache<ChunkHashMapKey, CompletableFuture<@Nullable ChunkSnapshot>> cache;
@@ -583,8 +585,8 @@ public abstract class AbstractRender implements Runnable {
             this.chunkSnapshotProvider = chunkSnapshotProvider;
             this.maximumActiveRequests = maximumActiveRequests;
             this.cache = new ConcurrentFIFOLoadingCache<>(
-                10 * maximumActiveRequests,
-                8 * maximumActiveRequests,
+                MAXIMUM_CAPACITY,
+                (int) (MAXIMUM_CAPACITY * 0.8),
                 this::load
             );
             this.biomeBlend = biomeBlend;
