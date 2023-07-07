@@ -628,17 +628,19 @@ public abstract class AbstractRender implements Runnable {
             final int x = chunkPos.x;
             final int z = chunkPos.z;
 
-            this.snapshotDirect(new ChunkPos(x - 1, z - 1));
-            this.snapshotDirect(new ChunkPos(x, z - 1));
-            this.snapshotDirect(new ChunkPos(x + 1, z + 1));
-            this.snapshotDirect(new ChunkPos(x - 1, z));
-            this.snapshotDirect(new ChunkPos(x + 1, z));
-            this.snapshotDirect(new ChunkPos(x - 1, z + 1));
-            this.snapshotDirect(new ChunkPos(x, z + 1));
-            this.snapshotDirect(new ChunkPos(x + 1, z - 1));
+            final List<CompletableFuture<@Nullable ChunkSnapshot>> neighborFutures = List.of(
+                this.snapshotDirect(new ChunkPos(x - 1, z - 1)),
+                this.snapshotDirect(new ChunkPos(x, z - 1)),
+                this.snapshotDirect(new ChunkPos(x + 1, z + 1)),
+                this.snapshotDirect(new ChunkPos(x - 1, z)),
+                this.snapshotDirect(new ChunkPos(x + 1, z)),
+                this.snapshotDirect(new ChunkPos(x - 1, z + 1)),
+                this.snapshotDirect(new ChunkPos(x, z + 1)),
+                this.snapshotDirect(new ChunkPos(x + 1, z - 1))
+            );
 
-            // return CompletableFuture.allOf(neighborFutures.toArray(CompletableFuture[]::new)).thenCompose($ -> future);
-            return future;
+            return CompletableFuture.allOf(neighborFutures.toArray(CompletableFuture[]::new)).thenCompose($ -> future);
+            //return future;
         }
 
         // only requests the specific chunk
