@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.data;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceLinkedOpenHashMap;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
@@ -17,14 +16,13 @@ import net.minecraft.world.level.material.MapColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.common.util.ColorBlender;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
 
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
-    private static final int CHUNK_SNAPSHOT_CACHE_SIZE = 64;
     private static final int BLOCKPOS_BIOME_CACHE_SIZE = 4096;
 
     private static final Set<Block> GRASS_COLOR_BLOCKS = Set.of(
@@ -50,19 +48,15 @@ public final class BiomeColors {
     private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
     private final LevelBiomeColorData colorData;
     private final MapWorldInternal world;
-    private final ChunkSnapshotCache chunkSnapshotCache;
     private final BiomeCache biomeCache;
 
-    public BiomeColors(final MapWorldInternal world, final ChunkSnapshotProvider chunkSnapshotProvider) {
+    public BiomeColors(final MapWorldInternal world, final AbstractRender.ChunkSnapshotManager chunkSnapshotProvider) {
         this.world = world;
         this.colorData = world.levelBiomeColorData();
-        this.chunkSnapshotCache = ChunkSnapshotCache.sized(chunkSnapshotProvider, this.world.serverLevel(), CHUNK_SNAPSHOT_CACHE_SIZE);
-        this.biomeCache = BiomeCache.sized(this.world.serverLevel(), this.chunkSnapshotCache, BLOCKPOS_BIOME_CACHE_SIZE);
+        this.biomeCache = BiomeCache.sized(this.world.serverLevel(), chunkSnapshotProvider, BLOCKPOS_BIOME_CACHE_SIZE);
     }
 
     public int modifyColorFromBiome(int color, final ChunkSnapshot chunk, final BlockPos pos) {
-        this.chunkSnapshotCache.put(chunk);
-
         final BlockState data = chunk.getBlockState(pos);
         final Block block = data.getBlock();
 
@@ -129,18 +123,18 @@ public final class BiomeColors {
 
     private static final class BiomeCache {
         private final ServerLevel level;
-        private final ChunkSnapshotCache chunkSnapshotCache;
+        private final AbstractRender.ChunkSnapshotManager chunkSnapshotManager;
         private final int size;
         private final Long2ReferenceLinkedOpenHashMap<Biome> cache;
         private final BiomeManager biomeManager;
 
         private BiomeCache(
             final ServerLevel level,
-            final ChunkSnapshotCache chunkSnapshotCache,
+            final AbstractRender.ChunkSnapshotManager chunkSnapshotManager,
             final int size
         ) {
             this.level = level;
-            this.chunkSnapshotCache = chunkSnapshotCache;
+            this.chunkSnapshotManager = chunkSnapshotManager;
             this.size = size;
             this.cache = new Long2ReferenceLinkedOpenHashMap<>(size);
             this.biomeManager = this.level.getBiomeManager().withDifferentSource(this::noiseBiome);
@@ -167,7 +161,7 @@ public final class BiomeColors {
                 QuartPos.toSection(quartX),
                 QuartPos.toSection(quartZ)
             );
-            final @Nullable ChunkSnapshot chunk = this.chunkSnapshotCache.snapshot(chunkPos);
+            final @Nullable ChunkSnapshot chunk = this.chunkSnapshotManager.snapshotDirect(chunkPos).join();
 
             final BiomeManager.NoiseBiomeSource noiseBiomeSource = chunk == null
                 ? this.level::getUncachedNoiseBiome // no chunk exists, this will get from the chunk generator
@@ -176,53 +170,8 @@ public final class BiomeColors {
             return noiseBiomeSource.getNoiseBiome(quartX, quartY, quartZ);
         }
 
-        public static BiomeCache sized(final ServerLevel level, final ChunkSnapshotCache snapshotCache, final int size) {
+        public static BiomeCache sized(final ServerLevel level, final AbstractRender.ChunkSnapshotManager snapshotCache, final int size) {
             return new BiomeCache(level, snapshotCache, size);
-        }
-    }
-
-    private record ChunkSnapshotCache(
-        ChunkSnapshotProvider chunkSnapshotProvider,
-        ServerLevel level,
-        int size,
-        Long2ObjectLinkedOpenHashMap<ChunkSnapshot> cache
-    ) {
-        public void put(final ChunkSnapshot snapshot) {
-            if (this.cache.size() >= this.size()) {
-                this.cache.removeLast();
-            }
-            this.cache.putAndMoveToFirst(snapshot.pos().toLong(), snapshot);
-        }
-
-        public @Nullable ChunkSnapshot snapshot(final ChunkPos chunkPos) {
-            final long chunkKey = chunkPos.toLong();
-
-            final @Nullable ChunkSnapshot cached = this.cache.getAndMoveToFirst(chunkKey);
-            if (cached != null) {
-                return cached;
-            }
-
-            final @Nullable ChunkSnapshot chunk = this.chunkSnapshotProvider.asyncSnapshot(chunkPos, true)
-                // todo respect cancellation
-                .join();
-            if (chunk == null) {
-                return null;
-            }
-
-            if (this.cache.size() >= this.size()) {
-                this.cache.removeLast();
-            }
-            this.cache.putAndMoveToFirst(chunkKey, chunk);
-            return chunk;
-        }
-
-        public static ChunkSnapshotCache sized(final ChunkSnapshotProvider chunkSnapshotProvider, final ServerLevel level, final int size) {
-            return new ChunkSnapshotCache(
-                chunkSnapshotProvider,
-                level,
-                size,
-                new Long2ObjectLinkedOpenHashMap<>(size)
-            );
         }
     }
 }

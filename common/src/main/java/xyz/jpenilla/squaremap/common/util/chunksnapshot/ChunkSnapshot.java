@@ -1,7 +1,7 @@
 package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 
 import java.util.EnumMap;
-import net.minecraft.Util;
+import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.ChunkPos;
@@ -34,19 +34,20 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     static ChunkSnapshot snapshot(final LevelChunk chunk, final boolean biomesOnly) {
-        // AsyncCatcher.catchOp("Chunk Snapshot");
-        final int sectionCount = chunk.getSectionsCount();
+        final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(chunk.getMinBuildHeight(), chunk.getHeight());
+        final int sectionCount = heightAccessor.getSectionsCount();
         final LevelChunkSection[] sections = chunk.getSections();
         final PalettedContainer<BlockState>[] states = new PalettedContainer[sectionCount];
         final PalettedContainer<Holder<Biome>>[] biomes = new PalettedContainer[sectionCount];
 
         final boolean[] empty = new boolean[sectionCount];
-        final Heightmap heightmap = new Heightmap(chunk, Heightmap.Types.WORLD_SURFACE);
+        Map<Heightmap.Types, HeightmapSnapshot> heightmaps = ChunkSnapshotImpl.EMPTY_HEIGHTMAPS;
         if (!biomesOnly) {
             if (!chunk.hasPrimedHeightmap(Heightmap.Types.WORLD_SURFACE)) {
                 throw new IllegalStateException("Expected WORLD_SURFACE heightmap to be present, but it wasn't! " + chunk.getPos());
             }
-            heightmap.setRawData(chunk, Heightmap.Types.WORLD_SURFACE, chunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE).getRawData());
+            heightmaps = new EnumMap<>(ChunkSnapshotImpl.EMPTY_HEIGHTMAPS);
+            heightmaps.put(Heightmap.Types.WORLD_SURFACE, new HeightmapSnapshot(chunk, heightAccessor, Heightmap.Types.WORLD_SURFACE));
 
             for (int i = 0; i < sectionCount; i++) {
                 final boolean sectionEmpty = sections[i].hasOnlyAir();
@@ -67,10 +68,10 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
         }
 
         return new ChunkSnapshotImpl(
-            LevelHeightAccessor.create(chunk.getMinBuildHeight(), chunk.getHeight()),
+            heightAccessor,
             states,
             biomes,
-            Util.make(new EnumMap<>(Heightmap.Types.class), map -> map.put(Heightmap.Types.WORLD_SURFACE, heightmap)),
+            heightmaps,
             empty,
             chunk.getLevel().dimensionType(),
             chunk.getPos()

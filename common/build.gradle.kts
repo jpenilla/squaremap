@@ -10,7 +10,6 @@ minecraft {
 
 dependencies {
   api(projects.squaremapApi)
-
   api(libs.guice) {
     exclude("com.google.guava") // provided by minecraft
   }

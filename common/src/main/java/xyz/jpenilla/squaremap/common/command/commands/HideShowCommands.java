@@ -13,18 +13,22 @@ import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.common.util.EntityScheduler;
 
 @DefaultQualifier(NonNull.class)
 public final class HideShowCommands extends SquaremapCommand {
     private final PlatformCommands platformCommands;
+    private final EntityScheduler entityScheduler;
 
     @Inject
     private HideShowCommands(
         final Commands commands,
-        final PlatformCommands platformCommands
+        final PlatformCommands platformCommands,
+        final EntityScheduler entityScheduler
     ) {
         super(commands);
         this.platformCommands = platformCommands;
+        this.entityScheduler = entityScheduler;
     }
 
     @Override
@@ -54,27 +58,35 @@ public final class HideShowCommands extends SquaremapCommand {
                 .handler(this::executeShow));
     }
 
+    // we need to schedule command feedback due to command blocks :D
+
     private void executeHide(final CommandContext<Commander> context) {
         final ServerPlayer target = this.platformCommands.extractPlayer("player", context);
         final Commander sender = context.getSender();
-        if (context.get(Commands.PLAYER_MANAGER).hidden(target.getUUID())) {
-            sender.sendMessage(Messages.PLAYER_ALREADY_HIDDEN.withPlaceholders(Components.playerPlaceholder(target)));
-            return;
-        }
 
-        context.get(Commands.PLAYER_MANAGER).hide(target.getUUID(), true);
-        sender.sendMessage(Messages.PLAYER_HIDDEN.withPlaceholders(Components.playerPlaceholder(target)));
+        this.entityScheduler.scheduleFor(target, () -> {
+            if (context.get(Commands.PLAYER_MANAGER).hidden(target.getUUID())) {
+                this.entityScheduler.scheduleFor(sender, () -> sender.sendMessage(Messages.PLAYER_ALREADY_HIDDEN.withPlaceholders(Components.playerPlaceholder(target))));
+                return;
+            }
+
+            context.get(Commands.PLAYER_MANAGER).hide(target.getUUID(), true);
+            this.entityScheduler.scheduleFor(sender, () -> sender.sendMessage(Messages.PLAYER_HIDDEN.withPlaceholders(Components.playerPlaceholder(target))));
+        });
     }
 
     private void executeShow(final CommandContext<Commander> context) {
         final ServerPlayer target = this.platformCommands.extractPlayer("player", context);
         final Commander sender = context.getSender();
-        if (!context.get(Commands.PLAYER_MANAGER).hidden(target.getUUID())) {
-            sender.sendMessage(Messages.PLAYER_NOT_HIDDEN.withPlaceholders(Components.playerPlaceholder(target)));
-            return;
-        }
 
-        context.get(Commands.PLAYER_MANAGER).show(target.getUUID(), true);
-        sender.sendMessage(Messages.PLAYER_SHOWN.withPlaceholders(Components.playerPlaceholder(target)));
+        this.entityScheduler.scheduleFor(target, () -> {
+            if (!context.get(Commands.PLAYER_MANAGER).hidden(target.getUUID())) {
+                this.entityScheduler.scheduleFor(sender, () -> sender.sendMessage(Messages.PLAYER_NOT_HIDDEN.withPlaceholders(Components.playerPlaceholder(target))));
+                return;
+            }
+
+            context.get(Commands.PLAYER_MANAGER).show(target.getUUID(), true);
+            this.entityScheduler.scheduleFor(sender, () -> sender.sendMessage(Messages.PLAYER_SHOWN.withPlaceholders(Components.playerPlaceholder(target))));
+        });
     }
 }

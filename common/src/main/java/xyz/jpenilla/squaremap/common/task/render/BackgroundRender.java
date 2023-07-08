@@ -61,7 +61,7 @@ public final class BackgroundRender extends AbstractRender {
             final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
 
             final CompletableFuture<?>[] chunkFutures = chunksToRenderInRegion.stream()
-                .map(coord -> this.mapSingleChunkFuture(image, coord.x(), coord.z()))
+                .map(coord -> this.mapSingleChunk(image, coord.x(), coord.z()))
                 .toArray(CompletableFuture<?>[]::new);
 
             regionFutures.add(CompletableFuture.allOf(chunkFutures).thenRun(() -> {
@@ -80,10 +80,7 @@ public final class BackgroundRender extends AbstractRender {
             Logging.logger().error("Exception executing background render", ex);
         }
 
-        if (this.biomeColors != null) {
-            this.biomeColors.clear();
-        }
-        this.resetChunkSnapshotProvider();
+        this.clearCaches();
 
         chunks.forEach(this.mapWorld::chunkModified);
 

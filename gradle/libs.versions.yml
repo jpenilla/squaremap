@@ -5,7 +5,7 @@ metadata:
 
 plugins:
     org.spongepowered.gradle.plugin: 2.1.1
-    xyz.jpenilla.run-paper: 2.0.1
+    xyz.jpenilla.run-paper: 2.1.0
     net.minecrell.plugin-yml.bukkit: 0.5.3
     io.papermc.hangar-publish-plugin: 0.0.3
 

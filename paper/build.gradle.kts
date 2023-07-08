@@ -3,7 +3,6 @@ import io.papermc.hangarpublishplugin.model.Platforms
 plugins {
   id("platform-conventions")
   id("io.papermc.paperweight.userdev")
-  id("net.minecrell.plugin-yml.bukkit")
   id("xyz.jpenilla.run-paper")
   id("io.papermc.hangar-publish-plugin")
 }
@@ -11,7 +10,7 @@ plugins {
 val minecraftVersion = libs.versions.minecraft
 
 dependencies {
-  paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
+  paperweight.foliaDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
 
   implementation(projects.squaremapCommon)
 
@@ -43,8 +42,15 @@ tasks {
     outputJar.set(productionJarLocation(minecraftVersion))
   }
   processResources {
+    val props = mapOf(
+      "version" to project.version,
+      "website" to providers.gradleProperty("githubUrl").get(),
+      "description" to project.description,
+      "apiVersion" to "'" + minecraftVersion.get().take(4) + "'",
+    )
+    inputs.properties(props)
     filesMatching("plugin.yml") {
-      filter { it.replace("1.20", "'1.20'") }
+      expand(props)
     }
   }
 }
@@ -53,13 +59,7 @@ squaremapPlatform {
   productionJar.set(tasks.reobfJar.flatMap { it.outputJar })
 }
 
-bukkit {
-  main = "xyz.jpenilla.squaremap.paper.SquaremapPaperBootstrap"
-  name = rootProject.name
-  apiVersion = "1.20"
-  website = providers.gradleProperty("githubUrl").get()
-  authors = listOf("jmp")
-}
+runPaper.folia.registerTask()
 
 hangarPublish.publications.register("plugin") {
   version.set(project.version as String)
@@ -72,4 +72,8 @@ hangarPublish.publications.register("plugin") {
     jar.set(squaremapPlatform.productionJar)
     platformVersions.add(minecraftVersion)
   }
+}
+
+modrinth {
+  loaders.set(listOf("paper", "folia"))
 }

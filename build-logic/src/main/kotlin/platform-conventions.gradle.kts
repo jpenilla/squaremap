@@ -33,7 +33,7 @@ tasks {
     listOf(
       "org.owasp.html",
       "org.spongepowered.configurate",
-      "org.yaml.snakeyaml",
+      "org.yaml.snakeyaml"
     ).forEach(::reloc)
   }
   val copyJar = register("copyJar", CopyFile::class) {
