@@ -69,6 +69,10 @@ public final class VisibilityLimitImpl implements VisibilityLimit {
             if (type == null) {
                 continue;
             }
+            final @Nullable String enabled = visibilityLimit.get("enabled");
+            if (enabled != null && !Boolean.parseBoolean(enabled)) {
+                continue;
+            }
             switch (type) {
                 case "circle" -> this.parseCircleShape(visibilityLimit);
                 case "rectangle" -> this.parseRectangleShape(visibilityLimit);
@@ -109,9 +113,7 @@ public final class VisibilityLimitImpl implements VisibilityLimit {
     }
 
     private void parseWorldBorderShape(final Map<String, String> visibilityLimit) {
-        if (Boolean.parseBoolean(visibilityLimit.get("enabled"))) {
-            this.shapes.add(new WorldBorderShape());
-        }
+        this.shapes.add(new WorldBorderShape());
     }
 
     public boolean shouldRenderChunk(final ChunkCoordinate chunkCoord) {
