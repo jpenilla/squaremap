@@ -11,7 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -22,6 +23,8 @@ import xyz.jpenilla.squaremap.common.Logging;
 public final class FileUtil {
     private FileUtil() {
     }
+
+    private static final ExecutorService writeExecutor = Executors.newSingleThreadExecutor();
 
     public static void deleteContentsRecursively(final Path directory) throws IOException {
         if (!Files.isDirectory(directory)) {
@@ -119,7 +122,7 @@ public final class FileUtil {
     }
 
     public static void atomicWriteAsync(final Path file, final CheckedConsumer<Path, IOException> op) {
-        ForkJoinPool.commonPool().execute(() -> {
+        writeExecutor.execute(() -> {
             try {
                 atomicWrite(file, op);
             } catch (final IOException ex) {
@@ -188,6 +191,18 @@ public final class FileUtil {
             Files.move(from, to, options);
         } catch (final AtomicMoveNotSupportedException ex) {
             Files.move(from, to, replaceExisting ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING} : new CopyOption[]{});
+
+            public static void shutdownExecutor() {
+                writeExecutor.shutdown();
+                try {
+                    if (!writeExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+                        writeExecutor.shutdownNow();
+                        if (!writeExecutor.awaitTermination(60, TimeUnit.SECONDS))
+                            System.err.println("ExecutorService did not terminate");
+                    }
+                } catch (InterruptedException ie) {
+                    writeExecutor.shutdownNow();
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
-    }
-}
