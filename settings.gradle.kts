@@ -20,7 +20,6 @@ rootProject.name = "squaremap"
 setupSubproject("api")
 setupSubproject("common")
 setupSubproject("paper")
-setupSubproject("fabric")
 setupSubproject("forge")
 setupSubproject("sponge")
 

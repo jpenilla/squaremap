@@ -10,14 +10,11 @@ val platformExt = extensions.create(
   SquaremapPlatformExtension.Loom::class
 )
 
-decorateVersion()
-
 tasks {
   jar {
     manifest {
       attributes(
         "squaremap-version" to project.version,
-        "squaremap-commit" to lastCommitHash(),
         "squaremap-branch" to currentBranch(),
       )
     }

@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
+import java.util.concurrent.TimeUnit;
 
 @DefaultQualifier(NonNull.class)
 public final class FileUtil {
@@ -191,18 +192,20 @@ public final class FileUtil {
             Files.move(from, to, options);
         } catch (final AtomicMoveNotSupportedException ex) {
             Files.move(from, to, replaceExisting ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING} : new CopyOption[]{});
-
-            public static void shutdownExecutor() {
-                writeExecutor.shutdown();
-                try {
-                    if (!writeExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
-                        writeExecutor.shutdownNow();
-                        if (!writeExecutor.awaitTermination(60, TimeUnit.SECONDS))
-                            System.err.println("ExecutorService did not terminate");
-                    }
-                } catch (InterruptedException ie) {
-                    writeExecutor.shutdownNow();
-                    Thread.currentThread().interrupt();
-                }
-            }
         }
+    }
+
+    public static void shutdownExecutor() {
+        writeExecutor.shutdown();
+        try {
+            if (!writeExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+                writeExecutor.shutdownNow();
+                if (!writeExecutor.awaitTermination(60, TimeUnit.SECONDS))
+                    System.err.println("ExecutorService did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            writeExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+}
