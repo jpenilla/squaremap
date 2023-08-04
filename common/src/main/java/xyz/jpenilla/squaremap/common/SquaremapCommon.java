@@ -35,7 +35,7 @@ public final class SquaremapCommon {
     private final DirectoryProvider directoryProvider;
     private final ConfigManager configManager;
     private final AbstractPlayerManager playerManager;
-    private final AbstractWorldManager worldManager;
+    private final WorldManagerImpl worldManager;
     private final Commands commands;
     private final SquaremapJarAccess squaremapJar;
 
@@ -46,7 +46,7 @@ public final class SquaremapCommon {
         final DirectoryProvider directoryProvider,
         final ConfigManager configManager,
         final AbstractPlayerManager playerManager,
-        final WorldManager worldManager,
+        final WorldManagerImpl worldManager,
         final Commands commands,
         final SquaremapJarAccess squaremapJar
     ) {
@@ -55,7 +55,7 @@ public final class SquaremapCommon {
         this.directoryProvider = directoryProvider;
         this.configManager = configManager;
         this.playerManager = playerManager;
-        this.worldManager = (AbstractWorldManager) worldManager;
+        this.worldManager = worldManager;
         this.commands = commands;
         this.squaremapJar = squaremapJar;
     }

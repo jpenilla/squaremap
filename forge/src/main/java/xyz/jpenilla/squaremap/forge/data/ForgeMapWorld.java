@@ -32,9 +32,4 @@ public final class ForgeMapWorld extends MapWorldInternal {
             this.updateMarkers.run();
         }
     }
-
-    public interface Factory extends MapWorldInternal.Factory<ForgeMapWorld> {
-        @Override
-        ForgeMapWorld create(ServerLevel level);
-    }
 }

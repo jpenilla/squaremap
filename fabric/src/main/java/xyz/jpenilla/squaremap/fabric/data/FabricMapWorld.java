@@ -32,9 +32,4 @@ public final class FabricMapWorld extends MapWorldInternal {
             this.updateMarkers.run();
         }
     }
-
-    public interface Factory extends MapWorldInternal.Factory<FabricMapWorld> {
-        @Override
-        FabricMapWorld create(ServerLevel level);
-    }
 }

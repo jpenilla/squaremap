@@ -48,11 +48,6 @@ public final class PaperMapWorld extends MapWorldInternal {
         super.shutdown();
     }
 
-    public interface Factory extends MapWorldInternal.Factory<PaperMapWorld> {
-        @Override
-        PaperMapWorld create(ServerLevel level);
-    }
-
     private interface MarkerTaskHandler {
         void shutdown();
     }

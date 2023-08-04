@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -16,14 +18,16 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
-public abstract class AbstractWorldManager implements WorldManager {
+@Singleton
+public class WorldManagerImpl implements WorldManager {
     private final Map<WorldIdentifier, MapWorldInternal> worlds = new ConcurrentHashMap<>();
-    private final MapWorldInternal.Factory<?> factory;
+    private final MapWorldInternal.Factory factory;
     protected final ServerAccess serverAccess;
     private final ConfigManager configManager;
 
-    protected AbstractWorldManager(
-        final MapWorldInternal.Factory<?> factory,
+    @Inject
+    protected WorldManagerImpl(
+        final MapWorldInternal.Factory factory,
         final ServerAccess serverAccess,
         final ConfigManager configManager
     ) {

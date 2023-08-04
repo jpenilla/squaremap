@@ -22,6 +22,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
@@ -36,7 +37,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
     private final Injector injector;
     private final SquaremapCommon common;
     private final FabricServerAccess serverAccess;
-    private final FabricWorldManager worldManager;
+    private final WorldManagerImpl worldManager;
     private final ModContainer modContainer;
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
@@ -44,7 +45,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
     private SquaremapFabric() {
         this.injector = Guice.createInjector(
             SquaremapModulesBuilder.forPlatform(this)
-                .mapWorldFactory(FabricMapWorld.Factory.class)
+                .mapWorld(FabricMapWorld.class)
                 .withModule(new FabricModule(this))
                 .vanillaChunkSnapshotProviderFactory()
                 .vanillaRegionFileDirectoryResolver()
@@ -54,7 +55,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
         this.modContainer = this.injector.getInstance(ModContainer.class);
         this.common = this.injector.getInstance(SquaremapCommon.class);
         this.common.init();
-        this.worldManager = this.injector.getInstance(FabricWorldManager.class);
+        this.worldManager = this.injector.getInstance(WorldManagerImpl.class);
         this.serverAccess = this.injector.getInstance(FabricServerAccess.class);
         this.registerLifecycleListeners();
         this.injector.getInstance(FabricMapUpdates.class).register();

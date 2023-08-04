@@ -59,7 +59,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
         this.game = game;
         this.injector = injector.createChildInjector(
             SquaremapModulesBuilder.forPlatform(this)
-                .mapWorldFactory(SpongeMapWorld.Factory.class)
+                .mapWorld(SpongeMapWorld.class)
                 .withModule(new SpongeModule(dataDirectory))
                 .vanillaChunkSnapshotProviderFactory()
                 .vanillaRegionFileDirectoryResolver()

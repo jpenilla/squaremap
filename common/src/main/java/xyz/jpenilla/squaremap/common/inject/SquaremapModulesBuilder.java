@@ -9,6 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.module.ApiModule;
 import xyz.jpenilla.squaremap.common.inject.module.PlatformModule;
@@ -27,9 +28,10 @@ public final class SquaremapModulesBuilder {
     private final List<Module> extraModules = new ArrayList<>();
     private boolean vanillaRegionFileDirectoryResolver;
     private boolean vanillaChunkSnapshotProviderFactory;
-    private @Nullable Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass;
+    private @Nullable Class<? extends MapWorldInternal> mapWorldClass;
     private Class<? extends SquaremapJarAccess> squaremapJarAccess = SquaremapJarAccess.JarFromCodeSource.class;
     private Class<? extends EntityScheduler> entitySchedulerClass = EntityScheduler.NoneEntityScheduler.class;
+    private Class<? extends WorldManagerImpl> worldManagerClass = WorldManagerImpl.class;
 
     private SquaremapModulesBuilder(final SquaremapPlatform platform) {
         this.platform = platform;
@@ -41,8 +43,13 @@ public final class SquaremapModulesBuilder {
         this.platformClass = platformClass;
     }
 
-    public SquaremapModulesBuilder mapWorldFactory(final Class<? extends MapWorldInternal.Factory<?>> mapWorldFactoryClass) {
-        this.mapWorldFactoryClass = mapWorldFactoryClass;
+    public SquaremapModulesBuilder worldManager(final Class<? extends WorldManagerImpl> worldManagerClass) {
+        this.worldManagerClass = worldManagerClass;
+        return this;
+    }
+
+    public SquaremapModulesBuilder mapWorld(final Class<? extends MapWorldInternal> mapWorldClass) {
+        this.mapWorldClass = mapWorldClass;
         return this;
     }
 
@@ -77,13 +84,13 @@ public final class SquaremapModulesBuilder {
     }
 
     public List<Module> build() {
-        requireNonNull(this.mapWorldFactoryClass, "mapWorldFactoryClass");
+        requireNonNull(this.mapWorldClass, "mapWorldClass");
 
         final List<Module> baseModules = List.of(
             new ApiModule(),
-            new PlatformModule(this.platform, this.platformClass, this.squaremapJarAccess, this.entitySchedulerClass),
+            new PlatformModule(this.platform, this.platformClass, this.squaremapJarAccess, this.entitySchedulerClass, this.worldManagerClass),
             new FactoryModuleBuilder().build(RenderFactory.class),
-            new FactoryModuleBuilder().build(this.mapWorldFactoryClass)
+            new FactoryModuleBuilder().implement(MapWorldInternal.class, this.mapWorldClass).build(MapWorldInternal.Factory.class)
         );
 
         final List<Module> modules = new ArrayList<>(baseModules);

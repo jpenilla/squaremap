@@ -8,14 +8,14 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.UnloadWorldEvent;
-import xyz.jpenilla.squaremap.sponge.SpongeWorldManager;
+import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 
 @DefaultQualifier(NonNull.class)
 public final class WorldLoadListener {
-    private final SpongeWorldManager worldManager;
+    private final WorldManagerImpl worldManager;
 
     @Inject
-    private WorldLoadListener(final SpongeWorldManager worldManager) {
+    private WorldLoadListener(final WorldManagerImpl worldManager) {
         this.worldManager = worldManager;
     }
 

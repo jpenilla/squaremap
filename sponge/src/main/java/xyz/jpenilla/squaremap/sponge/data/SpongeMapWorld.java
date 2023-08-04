@@ -46,9 +46,4 @@ public final class SpongeMapWorld extends MapWorldInternal {
         this.updateMarkers.cancel();
         super.shutdown();
     }
-
-    public interface Factory extends MapWorldInternal.Factory<SpongeMapWorld> {
-        @Override
-        SpongeMapWorld create(ServerLevel level);
-    }
 }

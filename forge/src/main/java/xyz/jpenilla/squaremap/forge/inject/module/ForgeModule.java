@@ -11,13 +11,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
 import xyz.jpenilla.squaremap.forge.ForgeAdventure;
 import xyz.jpenilla.squaremap.forge.ForgePlayerManager;
 import xyz.jpenilla.squaremap.forge.ForgeServerAccess;
-import xyz.jpenilla.squaremap.forge.ForgeWorldManager;
 import xyz.jpenilla.squaremap.forge.SquaremapForge;
 import xyz.jpenilla.squaremap.forge.command.ForgeCommands;
 
@@ -46,9 +44,6 @@ public final class ForgeModule extends AbstractModule {
 
         this.bind(AbstractPlayerManager.class)
             .to(ForgePlayerManager.class);
-
-        this.bind(WorldManager.class)
-            .to(ForgeWorldManager.class);
 
         this.bind(ModContainer.class)
             .toInstance(ModList.get().getModContainerById("squaremap").orElseThrow());

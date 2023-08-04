@@ -37,7 +37,8 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
         }
         final Injector injector = Guice.createInjector(
             SquaremapModulesBuilder.forPlatform(SquaremapPaper.class)
-                .mapWorldFactory(PaperMapWorld.Factory.class)
+                .mapWorld(PaperMapWorld.class)
+                .worldManager(PaperWorldManager.class)
                 .entityScheduler(PaperEntityScheduler.class)
                 .withModule(new PaperModule(this))
                 .build()

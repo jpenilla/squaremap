@@ -19,15 +19,15 @@ import net.minecraftforge.event.level.SaplingGrowTreeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.forge.ForgeWorldManager;
 
 @DefaultQualifier(NonNull.class)
 public final class ForgeMapUpdates {
-    private final ForgeWorldManager worldManager;
+    private final WorldManagerImpl worldManager;
 
     @Inject
-    private ForgeMapUpdates(final ForgeWorldManager worldManager) {
+    private ForgeMapUpdates(final WorldManagerImpl worldManager) {
         this.worldManager = worldManager;
     }
 

@@ -21,6 +21,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
+import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
@@ -36,7 +37,7 @@ public final class SquaremapForge implements SquaremapPlatform {
     private final Injector injector;
     private final SquaremapCommon common;
     private final ForgeServerAccess serverAccess;
-    private final ForgeWorldManager worldManager;
+    private final WorldManagerImpl worldManager;
     private final ModContainer container;
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
@@ -44,7 +45,7 @@ public final class SquaremapForge implements SquaremapPlatform {
     public SquaremapForge() {
         this.injector = Guice.createInjector(
             SquaremapModulesBuilder.forPlatform(this)
-                .mapWorldFactory(ForgeMapWorld.Factory.class)
+                .mapWorld(ForgeMapWorld.class)
                 .withModule(new ForgeModule(this))
                 .vanillaChunkSnapshotProviderFactory()
                 .vanillaRegionFileDirectoryResolver()
@@ -53,7 +54,7 @@ public final class SquaremapForge implements SquaremapPlatform {
         );
         this.common = this.injector.getInstance(SquaremapCommon.class);
         this.common.init();
-        this.worldManager = this.injector.getInstance(ForgeWorldManager.class);
+        this.worldManager = this.injector.getInstance(WorldManagerImpl.class);
         this.serverAccess = this.injector.getInstance(ForgeServerAccess.class);
         this.container = this.injector.getInstance(ModContainer.class);
         this.registerLifecycleListeners();

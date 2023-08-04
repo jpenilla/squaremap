@@ -213,7 +213,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.modifiedChunks.addAll(deserialized);
     }
 
-    public interface Factory<W extends MapWorldInternal> {
-        W create(ServerLevel level);
+    public interface Factory {
+        MapWorldInternal create(ServerLevel level);
     }
 }
