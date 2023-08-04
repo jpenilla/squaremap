@@ -45,7 +45,7 @@ sponge {
       version("1.0")
     }
     license("MIT")
-    entrypoint("xyz.jpenilla.squaremap.sponge.SquaremapSponge")
+    entrypoint("xyz.jpenilla.squaremap.sponge.SquaremapSpongeBootstrap")
     dependency("spongeapi") {
       loadOrder(PluginDependency.LoadOrder.AFTER)
       optional(false)

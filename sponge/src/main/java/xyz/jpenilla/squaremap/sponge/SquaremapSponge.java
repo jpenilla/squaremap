@@ -2,7 +2,6 @@ package xyz.jpenilla.squaremap.sponge;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,31 +12,22 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.SystemSubject;
-import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.data.DataRegistration;
-import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.RefreshGameEvent;
-import org.spongepowered.api.event.lifecycle.RegisterDataEvent;
 import org.spongepowered.api.event.lifecycle.StartedEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
-import org.spongepowered.plugin.builtin.jvm.Plugin;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.sponge.data.SpongeMapWorld;
-import xyz.jpenilla.squaremap.sponge.inject.module.SpongeModule;
 import xyz.jpenilla.squaremap.sponge.listener.MapUpdateListener;
 import xyz.jpenilla.squaremap.sponge.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.sponge.network.SpongeNetworking;
 
 @DefaultQualifier(NonNull.class)
-@Plugin("squaremap")
 public final class SquaremapSponge implements SquaremapPlatform {
     private final PluginContainer pluginContainer;
     private final Game game;
@@ -50,29 +40,20 @@ public final class SquaremapSponge implements SquaremapPlatform {
 
     @Inject
     public SquaremapSponge(
-        @ConfigDir(sharedRoot = false) final Path dataDirectory,
         final PluginContainer pluginContainer,
         final Game game,
         final Injector injector
     ) {
+        game.eventManager().registerListeners(pluginContainer, this);
         this.pluginContainer = pluginContainer;
         this.game = game;
-        this.injector = injector.createChildInjector(
-            SquaremapModulesBuilder.forPlatform(this)
-                .mapWorld(SpongeMapWorld.class)
-                .withModule(new SpongeModule(dataDirectory))
-                .vanillaChunkSnapshotProviderFactory()
-                .vanillaRegionFileDirectoryResolver()
-                .build()
-        );
-        this.common = this.injector.getInstance(SquaremapCommon.class);
-        this.common.init();
-        this.game.eventManager().registerListeners(this.pluginContainer, this.injector.getInstance(SpongeNetworking.class));
+        this.injector = injector;
+        this.common = injector.getInstance(SquaremapCommon.class);
+        this.game.eventManager().registerListeners(this.pluginContainer, injector.getInstance(SpongeNetworking.class));
     }
 
-    @Listener
-    public void registerData(final RegisterDataEvent event) {
-        event.register(DataRegistration.of(SpongePlayerManager.HIDDEN_KEY, ServerPlayer.class));
+    void init() {
+        this.common.init();
     }
 
     @Listener
