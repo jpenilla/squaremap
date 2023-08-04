@@ -7,11 +7,11 @@ plugins:
     org.spongepowered.gradle.plugin: 2.1.1
     xyz.jpenilla.run-paper: 2.1.0
     net.minecrell.plugin-yml.bukkit: 0.5.3
-    io.papermc.hangar-publish-plugin: 0.0.3
+    io.papermc.hangar-publish-plugin: 0.0.5
 
 versions:
     minecraft: '1.20.1'
-    checkerQual: 3.32.0
+    checkerQual: 3.37.0
     cloud: 1.8.3
     cloudForge: 1.0.0+1.20-SNAPSHOT
     cloudSponge: 1.8.0-SNAPSHOT
@@ -23,17 +23,17 @@ versions:
     bStats: 3.0.0
     fabricApi: 0.83.0+1.20.1
     fabricLoader: 0.14.21
-    cardinalComponents: 5.2.1
+    cardinalComponents: 5.2.2
     guice: 5.1.0
     forge: 1.20.1-47.0.0
 
     # buildSrc
-    indra: 3.0.1
+    indra: 3.1.2
     licenser: 0.6.1
     shadow: 8.1.1
     vanillaGradle: 0.2.1-20220508.185818-34
     minotaur: 2.7.5
-    loom: 1.2-SNAPSHOT
+    loom: 1.3-SNAPSHOT
     paperweight: 1.5.5
 
 dependencies:

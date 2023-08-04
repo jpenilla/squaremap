@@ -26,6 +26,17 @@ dependencies {
   compileOnly(libs.mixin)
 }
 
+// https://github.com/SpongePowered/SpongeGradle/issues/70
+configurations.spongeRuntime {
+    resolutionStrategy {
+        eachDependency {
+            if (target.name == "spongevanilla") {
+                useVersion("1.20.+")
+            }
+        }
+    }
+}
+
 sponge {
   apiVersion("11.0.0-SNAPSHOT")
   plugin("squaremap") {

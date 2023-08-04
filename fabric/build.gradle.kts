@@ -5,7 +5,7 @@ plugins {
 loom.accessWidenerPath.set(layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener"))
 
 repositories {
-  maven("https://ladysnake.jfrog.io/artifactory/mods/") {
+  maven("https://maven.ladysnake.org/releases/") {
     mavenContent {
       includeGroup("dev.onyxstudios.cardinal-components-api")
     }
