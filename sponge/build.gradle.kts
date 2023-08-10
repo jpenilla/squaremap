@@ -5,6 +5,7 @@ plugins {
   id("platform-conventions")
   id("org.spongepowered.gradle.plugin")
   id("org.spongepowered.gradle.vanilla")
+  id("org.spongepowered.gradle.ore")
 }
 
 val minecraftVersion = libs.versions.minecraft
@@ -71,6 +72,13 @@ tasks {
 
 squaremapPlatform {
   productionJar.set(tasks.shadowJar.flatMap { it.archiveFile })
+}
+
+oreDeployment {
+  defaultPublication {
+    versionBody.set(releaseNotes)
+    publishArtifacts.setFrom(squaremapPlatform.productionJar)
+  }
 }
 
 modrinth {

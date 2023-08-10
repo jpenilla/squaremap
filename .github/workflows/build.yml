@@ -69,3 +69,9 @@ jobs:
         env:
           HANGAR_UPLOAD_KEY: "${{ secrets.HANGAR_UPLOAD_KEY }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
+      - name: "publish release to ore"
+        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+        run: ./gradlew publishDefaultPublicationToOre
+        env:
+          ORE_TOKEN: "${{ secrets.ORE_TOKEN }}"
+          RELEASE_NOTES: "${{ github.event.release.body }}"
