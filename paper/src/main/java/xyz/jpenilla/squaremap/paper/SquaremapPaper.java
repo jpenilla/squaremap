@@ -4,9 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.papermc.paper.threadedregions.RegionizedServerInitEvent;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
@@ -23,8 +21,6 @@ import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
-import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
@@ -39,11 +35,10 @@ public final class SquaremapPaper implements SquaremapPlatform {
     private final JavaPlugin plugin;
     private final Server server;
     private @MonotonicNonNull Squaremap api;
-    private @Nullable ScheduledFuture<?> updateWorldData;
-    private @Nullable ScheduledFuture<?> updatePlayers;
+    private @Nullable ScheduledTask updateWorldData;
+    private @Nullable ScheduledTask updatePlayers;
     private @Nullable MapUpdateListeners mapUpdateListeners;
     private @Nullable WorldLoadListener worldLoadListener;
-    private @Nullable ScheduledExecutorService taskPool;
 
     @Inject
     private SquaremapPaper(
@@ -96,35 +91,31 @@ public final class SquaremapPaper implements SquaremapPlatform {
         this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);
         this.mapUpdateListeners.register();
 
-        this.taskPool = new ExceptionLoggingScheduledThreadPoolExecutor(1, Util.squaremapThreadFactory("tasks"));
-
-        this.updatePlayers = this.taskPool.scheduleAtFixedRate(
-            this.injector.getInstance(UpdatePlayers.class),
-            1,
-            1,
-            TimeUnit.SECONDS
+        final Runnable updatePlayersTask = this.injector.getInstance(UpdatePlayers.class);
+        this.updatePlayers = this.server.getGlobalRegionScheduler().runAtFixedRate(
+            this.plugin,
+            $ -> updatePlayersTask.run(),
+            20,
+            20
         );
-        this.updateWorldData = this.taskPool.scheduleAtFixedRate(
-            this.injector.getInstance(UpdateWorldData.class),
-            0,
-            5,
-            TimeUnit.SECONDS
+        final Runnable updateWorldDataTask = this.injector.getInstance(UpdateWorldData.class);
+        this.updateWorldData = this.server.getGlobalRegionScheduler().runAtFixedRate(
+            this.plugin,
+            $ -> updateWorldDataTask.run(),
+            1,
+            5 * 20
         );
     }
 
     @Override
     public void stopCallback() {
         if (this.updateWorldData != null) {
-            if (!this.updateWorldData.isCancelled()) {
-                this.updateWorldData.cancel(false);
-            }
+            this.updateWorldData.cancel();
             this.updateWorldData = null;
         }
 
         if (this.updatePlayers != null) {
-            if (!this.updatePlayers.isCancelled()) {
-                this.updatePlayers.cancel(false);
-            }
+            this.updatePlayers.cancel();
             this.updatePlayers = null;
         }
 
@@ -136,10 +127,6 @@ public final class SquaremapPaper implements SquaremapPlatform {
         if (this.worldLoadListener != null) {
             HandlerList.unregisterAll(this.worldLoadListener);
             this.worldLoadListener = null;
-        }
-
-        if (this.taskPool != null) {
-            Util.shutdownExecutor(this.taskPool, TimeUnit.MILLISECONDS, 500);
         }
     }
 
