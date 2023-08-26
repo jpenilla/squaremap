@@ -64,6 +64,10 @@ div.leaflet-control-layers.coordinates {
   line-height: 14px;
   height: 30px;
 }
+div.leaflet-popup-content-wrapper,
+div.leaflet-tooltip {
+  white-space: pre-line
+}
 #sidebar {
   display: flex;
   flex-flow: column;

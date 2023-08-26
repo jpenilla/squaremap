@@ -11,23 +11,24 @@ class Marker {
     }
     init() {
         if (this.popup != null) {
+            const msg = document.createTextNode(this.popup);
             if (this.popup_sticky) {
                 this.marker.on('click', (e) => {
                     L.popup({
                         direction: this.opts.pop("tooltip_direction", "top")
                     })
                     .setLatLng(P.toLatLng(P.coordinates.coords.x, P.coordinates.coords.z))
-                    .setContent(this.popup)
+                    .setContent(msg)
                     .openOn(P.map);
                 });
             } else {
-                this.marker.bindPopup(() => this.popup, {
-                    direction: this.opts.pop("tooltip_direction", "top")
+                this.marker.bindPopup(() => msg, {
+                    direction: this.opts.pop("tooltip_direction", "top"),
                 });
             }
         }
         if (this.tooltip != null) {
-            this.marker.bindTooltip(() => this.tooltip, {
+            this.marker.bindTooltip(() => document.createTextNode(this.tooltip), {
                 direction: this.opts.pop("tooltip_direction", "top"),
                 sticky: this.tooltip_sticky
             });
