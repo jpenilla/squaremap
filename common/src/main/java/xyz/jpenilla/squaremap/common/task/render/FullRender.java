@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -19,7 +18,6 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
@@ -80,12 +78,7 @@ public final class FullRender extends AbstractRender {
             final List<RegionCoordinate> regionFiles = this.getRegions();
 
             // setup a spiral iterator
-            final BlockPos spawn = this.level.getSharedSpawnPos();
-            final Iterator<RegionCoordinate> spiral = SpiralIterator.region(
-                Numbers.blockToRegion(spawn.getX()),
-                Numbers.blockToRegion(spawn.getZ()),
-                this.maxRadius
-            );
+            final Iterator<RegionCoordinate> spiral = SpiralIterator.region(0, 0, this.maxRadius);
 
             // iterate the spiral to get all regions needed
             int failsafe = 0;
