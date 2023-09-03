@@ -3,7 +3,7 @@ package xyz.jpenilla.squaremap.common.util;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.ThreadLocalRandom;
-import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.flattener.FlattenerListener;
 import net.kyori.adventure.text.format.Style;
@@ -15,6 +15,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import xyz.jpenilla.squaremap.api.HtmlComponentSerializer;
 
 @DefaultQualifier(NonNull.class)
 final class HtmlComponentSerializerImpl implements HtmlComponentSerializer {
@@ -27,7 +28,7 @@ final class HtmlComponentSerializerImpl implements HtmlComponentSerializer {
     }
 
     @Override
-    public String serialize(final ComponentLike componentLike) {
+    public String serialize(final Component componentLike) {
         final HtmlFlattener state = new HtmlFlattener();
         this.flattener.flatten(componentLike.asComponent(), state);
         return SANITIZER.sanitize(state.toString());
@@ -116,6 +117,13 @@ final class HtmlComponentSerializerImpl implements HtmlComponentSerializer {
                 return "<span style='" + inner + "'>";
             }
             throw new IllegalArgumentException("Cannot handle format: " + format + " (" + format.getClass().getTypeName() + ")");
+        }
+    }
+
+    public static final class Provider implements HtmlComponentSerializer.Provider {
+        @Override
+        public HtmlComponentSerializer create(final ComponentFlattener flattener) {
+            return new HtmlComponentSerializerImpl(flattener);
         }
     }
 }
