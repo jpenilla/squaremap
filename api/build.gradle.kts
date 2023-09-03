@@ -11,6 +11,7 @@ java {
 dependencies {
   compileOnly(libs.paperApi)
   compileOnlyApi(libs.checkerQual)
+  compileOnlyApi(libs.adventureApi)
 }
 
 indra {

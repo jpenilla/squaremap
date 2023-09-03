@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -62,5 +63,12 @@ public interface Squaremap {
      * @return web directory
      */
     @NonNull Path webDir();
+
+    /**
+     * Get an {@link HtmlComponentSerializer} using the platform {@link ComponentFlattener}.
+     *
+     * @return serializer
+     */
+    @NonNull HtmlComponentSerializer htmlComponentSerializer();
 
 }
