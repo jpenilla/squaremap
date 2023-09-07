@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.MapWorld;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
@@ -24,6 +28,8 @@ import xyz.jpenilla.squaremap.common.util.Util;
 public final class UpdateWorldData implements Runnable {
     private final WorldManager worldManager;
     private final DirectoryProvider directoryProvider;
+    // spawn position is the only thing that needs updating until a /map reload - if this changes the value needs to be updated
+    private @MonotonicNonNull Map<WorldIdentifier, BlockPos> lastUpdateWorlds = null;
 
     @Inject
     private UpdateWorldData(
@@ -36,10 +42,22 @@ public final class UpdateWorldData implements Runnable {
 
     @Override
     public void run() {
+        if (this.lastUpdateWorlds != null) {
+            final Map<WorldIdentifier, BlockPos> current = this.worldManager.worlds().stream()
+                .collect(Collectors.toMap(MapWorld::identifier, w -> w.serverLevel().getSharedSpawnPos()));
+            if (this.lastUpdateWorlds.equals(current)) {
+                return;
+            }
+            this.lastUpdateWorlds.clear();
+        } else {
+            this.lastUpdateWorlds = new HashMap<>();
+        }
+
         List<Object> worlds = new ArrayList<>();
 
         this.worldManager.worlds().forEach(mapWorld -> {
             final ServerLevel level = mapWorld.serverLevel();
+            this.lastUpdateWorlds.put(mapWorld.identifier(), level.getSharedSpawnPos());
             final WorldConfig worldConfig = mapWorld.config();
 
             this.writeWorldSettings(mapWorld, level, worldConfig);
