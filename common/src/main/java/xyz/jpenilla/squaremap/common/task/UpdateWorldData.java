@@ -28,8 +28,7 @@ import xyz.jpenilla.squaremap.common.util.Util;
 public final class UpdateWorldData implements Runnable {
     private final WorldManager worldManager;
     private final DirectoryProvider directoryProvider;
-    // spawn position is the only thing that needs updating until a /map reload - if this changes the value needs to be updated
-    private @MonotonicNonNull Map<WorldIdentifier, BlockPos> lastUpdateWorlds = null;
+    private @MonotonicNonNull Map<WorldIdentifier, ChangingData> lastUpdate = null;
 
     @Inject
     private UpdateWorldData(
@@ -42,22 +41,23 @@ public final class UpdateWorldData implements Runnable {
 
     @Override
     public void run() {
-        if (this.lastUpdateWorlds != null) {
-            final Map<WorldIdentifier, BlockPos> current = this.worldManager.worlds().stream()
-                .collect(Collectors.toMap(MapWorld::identifier, w -> w.serverLevel().getSharedSpawnPos()));
-            if (this.lastUpdateWorlds.equals(current)) {
+        if (this.lastUpdate != null) {
+            final Map<WorldIdentifier, ChangingData> current = this.worldManager.worlds().stream()
+                .collect(Collectors.toMap(MapWorld::identifier, ChangingData::snapshot));
+            if (this.lastUpdate.equals(current)) {
                 return;
             }
-            this.lastUpdateWorlds.clear();
+            this.lastUpdate.clear();
         } else {
-            this.lastUpdateWorlds = new HashMap<>();
+            this.lastUpdate = new HashMap<>();
         }
 
         List<Object> worlds = new ArrayList<>();
 
         this.worldManager.worlds().forEach(mapWorld -> {
+            this.lastUpdate.put(mapWorld.identifier(), ChangingData.snapshot(mapWorld));
+
             final ServerLevel level = mapWorld.serverLevel();
-            this.lastUpdateWorlds.put(mapWorld.identifier(), level.getSharedSpawnPos());
             final WorldConfig worldConfig = mapWorld.config();
 
             this.writeWorldSettings(mapWorld, level, worldConfig);
@@ -153,5 +153,11 @@ public final class UpdateWorldData implements Runnable {
             return "normal";
         }
         return "custom";
+    }
+
+    private record ChangingData(BlockPos spawn, long lastReset) {
+        static ChangingData snapshot(final MapWorldInternal world) {
+            return new ChangingData(world.serverLevel().getSharedSpawnPos(), world.lastReset());
+        }
     }
 }

@@ -50,6 +50,7 @@ public abstract class MapWorldInternal implements MapWorld {
     private final BlockColors blockColors;
     private final LevelBiomeColorData levelBiomeColorData;
     private final VisibilityLimitImpl visibilityLimit;
+    private volatile long lastReset = -1;
 
     protected MapWorldInternal(
         final ServerLevel level,
@@ -211,6 +212,14 @@ public abstract class MapWorldInternal implements MapWorld {
             return;
         }
         this.modifiedChunks.addAll(deserialized);
+    }
+
+    public void didReset() {
+        this.lastReset = System.currentTimeMillis();
+    }
+
+    public long lastReset() {
+        return this.lastReset;
     }
 
     public interface Factory {

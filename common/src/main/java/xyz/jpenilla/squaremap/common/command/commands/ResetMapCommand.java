@@ -9,26 +9,31 @@ import java.nio.file.Path;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
+import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 @DefaultQualifier(NonNull.class)
 public final class ResetMapCommand extends SquaremapCommand {
     private final DirectoryProvider directoryProvider;
+    private final WorldManager worldManager;
 
     @Inject
     private ResetMapCommand(
         final Commands commands,
-        final DirectoryProvider directoryProvider
+        final DirectoryProvider directoryProvider,
+        final WorldManager worldManager
     ) {
         super(commands);
         this.directoryProvider = directoryProvider;
+        this.worldManager = worldManager;
     }
 
     @Override
@@ -51,6 +56,7 @@ public final class ResetMapCommand extends SquaremapCommand {
         } catch (final IOException ex) {
             throw new RuntimeException("Could not reset map for level '" + world.dimension().location() + "'", ex);
         }
+        this.worldManager.getWorldIfEnabled(world).ifPresent(MapWorldInternal::didReset);
         sender.sendMessage(Messages.SUCCESSFULLY_RESET_MAP.withPlaceholders(Components.worldPlaceholder(world)));
     }
 }
