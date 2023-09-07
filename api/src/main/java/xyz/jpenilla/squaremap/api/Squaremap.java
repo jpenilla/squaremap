@@ -68,6 +68,7 @@ public interface Squaremap {
      * Get an {@link HtmlComponentSerializer} using the platform {@link ComponentFlattener}.
      *
      * @return serializer
+     * @since 1.2.0
      */
     @NonNull HtmlComponentSerializer htmlComponentSerializer();
 

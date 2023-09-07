@@ -13,6 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>Mostly useful for marker tooltips.</p>
  *
  * @see Squaremap#htmlComponentSerializer()
+ * @since 1.2.0
  */
 @DefaultQualifier(NonNull.class)
 public interface HtmlComponentSerializer extends ComponentEncoder<Component, String> {

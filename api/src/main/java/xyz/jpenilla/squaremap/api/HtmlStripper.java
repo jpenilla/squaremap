@@ -7,6 +7,8 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Strips HTML tags from text. Allows sanitizing untrusted strings before use in
  * marker tooltips.
+ *
+ * @since 1.2.0
  */
 @DefaultQualifier(NonNull.class)
 public interface HtmlStripper {
