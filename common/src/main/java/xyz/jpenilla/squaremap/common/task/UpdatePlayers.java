@@ -32,6 +32,8 @@ public class UpdatePlayers implements Runnable {
     private final DirectoryProvider directoryProvider;
     private final ServerAccess serverAccess;
     private final ConfigManager configManager;
+    private boolean prevEmpty = false;
+    private int prevMaxPlayers = Integer.MIN_VALUE;
 
     @Inject
     private UpdatePlayers(
@@ -90,9 +92,16 @@ public class UpdatePlayers implements Runnable {
             });
         });
 
+        final int maxPlayers = this.serverAccess.maxPlayers();
+        if (players.isEmpty() && this.prevEmpty && maxPlayers == this.prevMaxPlayers) {
+            return;
+        }
+        this.prevEmpty = players.isEmpty();
+        this.prevMaxPlayers = maxPlayers;
+
         final Map<String, Object> map = new HashMap<>();
         map.put("players", players);
-        map.put("max", this.serverAccess.maxPlayers());
+        map.put("max", maxPlayers);
 
         FileUtil.atomicWriteJsonAsync(this.directoryProvider.tilesDirectory().resolve("players.json"), map);
     }
