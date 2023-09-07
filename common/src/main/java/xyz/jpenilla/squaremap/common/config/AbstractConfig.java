@@ -22,6 +22,8 @@ import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityShape;
+import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityShapeSerializer;
 
 import static java.util.Objects.requireNonNull;
 import static xyz.jpenilla.squaremap.common.util.Util.rethrow;
@@ -47,6 +49,7 @@ public abstract class AbstractConfig {
         this.loader = YamlConfigurationLoader.builder()
             .path(this.configFile)
             .nodeStyle(NodeStyle.BLOCK)
+            .defaultOptions(opts -> opts.serializers(serializers -> serializers.register(VisibilityShape.class, new VisibilityShapeSerializer())))
             .build();
 
         try {

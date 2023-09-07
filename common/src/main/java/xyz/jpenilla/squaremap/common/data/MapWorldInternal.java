@@ -79,7 +79,7 @@ public abstract class MapWorldInternal implements MapWorld {
         }
 
         this.visibilityLimit = new VisibilityLimitImpl(this);
-        this.visibilityLimit.parse(this.config().VISIBILITY_LIMITS);
+        this.visibilityLimit.load(this.config().VISIBILITY_LIMITS);
 
         this.deserializeDirtyChunks();
 

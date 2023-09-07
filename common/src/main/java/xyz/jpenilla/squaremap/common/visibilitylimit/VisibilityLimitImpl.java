@@ -1,11 +1,8 @@
 package xyz.jpenilla.squaremap.common.visibilitylimit;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
@@ -29,12 +26,10 @@ public final class VisibilityLimitImpl implements VisibilityLimit {
      * {@link #REGION_SIZE_CHUNKS}.
      */
     public int countChunksInRegion(final @NonNull RegionCoordinate region) {
-        switch (this.shapes.size()) {
-            case 0:
-                return REGION_SIZE_CHUNKS * REGION_SIZE_CHUNKS;
-            case 1:
-                return this.shapes.get(0).countChunksInRegion(world, region.x(), region.z());
-            default:
+        return switch (this.shapes.size()) {
+            case 0 -> REGION_SIZE_CHUNKS * REGION_SIZE_CHUNKS;
+            case 1 -> this.shapes.get(0).countChunksInRegion(world, region.x(), region.z());
+            default -> {
                 // multiple shapes overlap - need to check each chunk individually
 
                 int chunkXStart = region.getChunkX();
@@ -48,8 +43,9 @@ public final class VisibilityLimitImpl implements VisibilityLimit {
                         }
                     }
                 }
-                return count;
-        }
+                yield count;
+            }
+        };
     }
 
     @Override
@@ -62,58 +58,15 @@ public final class VisibilityLimitImpl implements VisibilityLimit {
         return this.shouldRenderColumn(blockX, blockZ);
     }
 
-    public void parse(final List<Map<String, String>> configLimits) {
+    public void load(final List<VisibilityShape> configLimits) {
         this.shapes.clear();
-        for (Map<String, String> visibilityLimit : configLimits) {
-            String type = visibilityLimit.get("type");
-            if (type == null) {
+        for (final VisibilityShape shape : configLimits) {
+            if (shape == VisibilityShape.NULL) {
+                // enabled: false
                 continue;
             }
-            final @Nullable String enabled = visibilityLimit.get("enabled");
-            if (enabled != null && !Boolean.parseBoolean(enabled)) {
-                continue;
-            }
-            switch (type) {
-                case "circle" -> this.parseCircleShape(visibilityLimit);
-                case "rectangle" -> this.parseRectangleShape(visibilityLimit);
-                case "world-border" -> this.parseWorldBorderShape(visibilityLimit);
-            }
+            this.shapes.add(shape);
         }
-    }
-
-    private static @Nullable Integer tryParseInt(final String s) {
-        try {
-            return Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    private void parseCircleShape(final Map<String, String> visibilityLimit) {
-        Integer centerX = tryParseInt(visibilityLimit.get("center-x"));
-        Integer centerZ = tryParseInt(visibilityLimit.get("center-z"));
-        Integer radius = tryParseInt(visibilityLimit.get("radius"));
-        if (centerX != null && centerZ != null && radius != null) {
-            if (radius > 0) {
-                this.shapes.add(new CircleShape(centerX, centerZ, radius));
-            }
-        }
-    }
-
-    private void parseRectangleShape(final Map<String, String> visibilityLimit) {
-        Integer minX = tryParseInt(visibilityLimit.get("min-x"));
-        Integer minZ = tryParseInt(visibilityLimit.get("min-z"));
-        Integer maxX = tryParseInt(visibilityLimit.get("max-x"));
-        Integer maxZ = tryParseInt(visibilityLimit.get("max-z"));
-        if (minX != null && minZ != null && maxX != null && maxZ != null) {
-            if (maxX >= minX && maxZ >= minZ) {
-                this.shapes.add(new RectangleShape(new BlockPos(minX, 0, minZ), new BlockPos(maxX, 0, maxZ)));
-            }
-        }
-    }
-
-    private void parseWorldBorderShape(final Map<String, String> visibilityLimit) {
-        this.shapes.add(new WorldBorderShape());
     }
 
     public boolean shouldRenderChunk(final ChunkCoordinate chunkCoord) {

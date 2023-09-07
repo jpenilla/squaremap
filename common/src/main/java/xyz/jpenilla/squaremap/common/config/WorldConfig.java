@@ -1,11 +1,10 @@
 package xyz.jpenilla.squaremap.common.config;
 
-import io.leangen.geantyref.TypeToken;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityShape;
+import xyz.jpenilla.squaremap.common.visibilitylimit.WorldBorderShape;
 
 @SuppressWarnings("unused")
 public final class WorldConfig extends AbstractWorldConfig<Config> {
@@ -148,21 +147,9 @@ public final class WorldConfig extends AbstractWorldConfig<Config> {
         this.WORLDBORDER_MARKER_Z_INDEX = this.getInt("map.markers.world-border.z-index", this.WORLDBORDER_MARKER_Z_INDEX);
     }
 
-    public List<Map<String, String>> VISIBILITY_LIMITS = new ArrayList<>();
+    public List<VisibilityShape> VISIBILITY_LIMITS = List.of(new WorldBorderShape());
 
     private void visibilityLimitSettings() {
-        this.VISIBILITY_LIMITS = this.getList(
-            new TypeToken<>() {
-            },
-            "map.visibility-limits",
-            List.of(
-                Map.of(
-                    "type",
-                    "world-border",
-                    "enabled",
-                    "false"
-                )
-            )
-        );
+        this.VISIBILITY_LIMITS = this.getList(VisibilityShape.class, "map.visibility-limits", this.VISIBILITY_LIMITS);
     }
 }
