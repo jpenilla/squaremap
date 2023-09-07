@@ -1,14 +1,18 @@
 package xyz.jpenilla.squaremap.common.task;
 
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import java.awt.Color;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Key;
@@ -29,9 +33,10 @@ import xyz.jpenilla.squaremap.common.util.FileUtil;
 
 public final class UpdateMarkers implements Runnable {
     private final MapWorldInternal mapWorld;
-    private final Map<Key, Long> lastUpdatedTime = new HashMap<>();
+    private final Object2LongMap<Key> lastUpdatedTime = new Object2LongOpenHashMap<>();
     private final Map<Key, Map<String, Object>> layerCache = new HashMap<>();
     private final Map<Key, Map<String, Object>> serializedLayerCache = new HashMap<>();
+    private long lastResetTime = Long.MIN_VALUE; // min value to ensure initial write even with no layers
 
     public UpdateMarkers(final @NonNull MapWorldInternal mapWorld) {
         this.mapWorld = mapWorld;
@@ -42,9 +47,12 @@ public final class UpdateMarkers implements Runnable {
         final Registry<LayerProvider> layerRegistry = this.mapWorld.layerRegistry();
 
         final List<Map<String, Object>> layers = new ArrayList<>();
+        final Set<Key> layerKeys = new HashSet<>();
+        boolean[] changed = {false};
         layerRegistry.entries().forEach(registeredLayer -> {
             final LayerProvider provider = registeredLayer.right();
             final Key key = registeredLayer.left();
+            layerKeys.add(key);
             final List<Marker> markers = List.copyOf(provider.getMarkers());
 
             final Map<String, Object> current = this.createMap(key, provider);
@@ -53,20 +61,21 @@ public final class UpdateMarkers implements Runnable {
             final Map<String, Object> previous = this.layerCache.get(key);
 
             if (previous == null || !previous.equals(current)) {
+                changed[0] = true; // new or changed layer
                 this.layerCache.put(key, current);
 
                 final Map<String, Object> serializedLayer = this.serializeLayer(key, provider, markers);
                 this.serializedLayerCache.put(key, serializedLayer);
 
                 final long time = System.currentTimeMillis();
-                this.lastUpdatedTime.put(key, System.currentTimeMillis());
+                this.lastUpdatedTime.put(key, time);
 
                 final Map<String, Object> timeStampedLayer = new HashMap<>(serializedLayer);
                 timeStampedLayer.put("timestamp", time);
                 layers.add(timeStampedLayer);
             } else {
                 final Map<String, Object> serializedLayer = this.serializedLayerCache.get(key);
-                final long lastUpdate = this.lastUpdatedTime.get(key);
+                final long lastUpdate = this.lastUpdatedTime.getLong(key);
 
                 final Map<String, Object> timeStampedLayer = new HashMap<>(serializedLayer);
                 timeStampedLayer.put("timestamp", lastUpdate);
@@ -74,8 +83,32 @@ public final class UpdateMarkers implements Runnable {
             }
         });
 
-        final Path file = this.mapWorld.tilesPath().resolve("markers.json");
-        FileUtil.atomicWriteJsonAsync(file, layers);
+        // set flag to ensure update on removed layers
+        changed[0] |= clearUnused(layerKeys, this.layerCache);
+        changed[0] |= clearUnused(layerKeys, this.serializedLayerCache);
+        changed[0] |= clearUnused(layerKeys, this.lastUpdatedTime);
+
+        if (changed[0] || this.mapWorld.lastReset() != this.lastResetTime) {
+            this.lastResetTime = this.mapWorld.lastReset();
+            final Path file = this.mapWorld.tilesPath().resolve("markers.json");
+            FileUtil.atomicWriteJsonAsync(file, layers);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static <K> boolean clearUnused(final Set<K> keepKeys, final Map<K, ?> map) {
+        boolean madeChange = false;
+        for (final K key : Set.copyOf(map.keySet())) {
+            if (!keepKeys.contains(key)) {
+                madeChange = true;
+                if (map instanceof Object2LongMap longMap) {
+                    longMap.removeLong(key);
+                } else {
+                    map.remove(key);
+                }
+            }
+        }
+        return madeChange;
     }
 
     private @NonNull Map<String, Object> serializeLayer(final @NonNull Key key, final @NonNull LayerProvider provider, final @NonNull List<Marker> markers) {
