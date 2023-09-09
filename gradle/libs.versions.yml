@@ -4,7 +4,7 @@ metadata:
         - plugins
 
 plugins:
-    org.spongepowered.gradle.plugin: &sg 2.1.1
+    org.spongepowered.gradle.plugin: &sg 2.2.0
     org.spongepowered.gradle.ore: *sg
     xyz.jpenilla.run-paper: 2.1.0
     net.minecrell.plugin-yml.bukkit: 0.5.3
