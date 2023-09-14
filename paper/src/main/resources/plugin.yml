@@ -1,6 +1,7 @@
 name: squaremap
 version: $version
 main: xyz.jpenilla.squaremap.paper.SquaremapPaperBootstrap
+load: STARTUP
 description: $description
 authors:
  - jmp
