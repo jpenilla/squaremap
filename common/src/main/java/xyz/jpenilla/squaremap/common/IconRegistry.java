@@ -51,11 +51,6 @@ public final class IconRegistry implements Registry<BufferedImage> {
         if (removed == null) {
             throw noImageRegistered(key);
         }
-        try {
-            Files.delete(this.directory.resolve(key.getKey() + ".png"));
-        } catch (IOException e) {
-            throw failedToDeleteImage(key, e);
-        }
     }
 
     @Override
@@ -81,10 +76,6 @@ public final class IconRegistry implements Registry<BufferedImage> {
 
     private static IllegalArgumentException failedToCreateRegistry(final IOException e) {
         return new IllegalArgumentException("Failed to setup icon registry", e);
-    }
-
-    private static IllegalArgumentException failedToDeleteImage(final Key key, final IOException e) {
-        return new IllegalArgumentException(String.format("Failed to delete image for key '%s'", key.getKey()), e);
     }
 
     private static IllegalArgumentException failedToWriteImage(final Key key, final IOException e) {
