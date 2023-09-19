@@ -2,14 +2,16 @@ package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -33,7 +35,7 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
     boolean sectionEmpty(int sectionIndex);
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    static ChunkSnapshot snapshot(final LevelChunk chunk, final boolean biomesOnly) {
+    static ChunkSnapshot snapshot(final Level level, final ChunkAccess chunk, final boolean biomesOnly) {
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(chunk.getMinBuildHeight(), chunk.getHeight());
         final int sectionCount = heightAccessor.getSectionsCount();
         final LevelChunkSection[] sections = chunk.getSections();
@@ -44,7 +46,11 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
         Map<Heightmap.Types, HeightmapSnapshot> heightmaps = ChunkSnapshotImpl.EMPTY_HEIGHTMAPS;
         if (!biomesOnly) {
             if (!chunk.hasPrimedHeightmap(Heightmap.Types.WORLD_SURFACE)) {
-                throw new IllegalStateException("Expected WORLD_SURFACE heightmap to be present, but it wasn't! " + chunk.getPos());
+                if (chunk.getBelowZeroRetrogen() == null) {
+                    throw new IllegalStateException("Expected WORLD_SURFACE heightmap to be present, but it wasn't! " + chunk.getPos());
+                } else {
+                    Heightmap.primeHeightmaps(chunk, Set.of(Heightmap.Types.WORLD_SURFACE));
+                }
             }
             heightmaps = new EnumMap<>(ChunkSnapshotImpl.EMPTY_HEIGHTMAPS);
             heightmaps.put(Heightmap.Types.WORLD_SURFACE, new HeightmapSnapshot(chunk, heightAccessor, Heightmap.Types.WORLD_SURFACE));
@@ -73,7 +79,7 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
             biomes,
             heightmaps,
             empty,
-            chunk.getLevel().dimensionType(),
+            level.dimensionType(),
             chunk.getPos()
         );
     }
