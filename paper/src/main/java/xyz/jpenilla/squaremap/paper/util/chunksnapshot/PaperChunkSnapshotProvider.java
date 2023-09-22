@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
-import net.minecraft.world.level.chunk.LevelChunk;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -46,16 +45,18 @@ record PaperChunkSnapshotProvider(
             );
             return load;
         }, this.executor(x, z)).thenCompose(chunkFuture -> chunkFuture.thenApplyAsync(chunk -> {
-            if (chunk == null || !chunk.getStatus().isOrAfter(ChunkStatus.FULL)) {
+            if (chunk == null) {
                 return null;
             }
             if (chunk instanceof ImposterProtoChunk imposter) {
                 chunk = imposter.getWrapped();
             }
-            if (chunk instanceof LevelChunk levelChunk && !levelChunk.isEmpty()) {
-                return ChunkSnapshot.snapshot(levelChunk, false);
+            if (!chunk.getStatus().isOrAfter(ChunkStatus.FULL)) {
+                if (chunk.getBelowZeroRetrogen() == null || !chunk.getBelowZeroRetrogen().targetStatus().isOrAfter(ChunkStatus.SPAWN)) {
+                    return null;
+                }
             }
-            return null;
+            return ChunkSnapshot.snapshot(this.level, chunk, false);
         }, this.executor(x, z)));
     }
 
