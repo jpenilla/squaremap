@@ -24,7 +24,7 @@ versions:
     bStats: 3.0.2
     fabricApi: 0.89.1+1.20.2
     fabricLoader: 0.14.22
-    cardinalComponents: 5.2.2
+    cardinalComponents: 5.3.0
     guice: 5.1.0
     forge: 1.20.1-47.0.0
 
