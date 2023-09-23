@@ -9,8 +9,13 @@ plugins {
 
 val minecraftVersion = libs.versions.minecraft
 
+configurations.compileOnly {
+  exclude("io.papermc.paper", "paper-api")
+}
+
 dependencies {
-  paperweight.foliaDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
+  paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
+  compileOnly("dev.folia", "folia-api", "1.20.1-R0.1-SNAPSHOT")
 
   implementation(projects.squaremapCommon)
 
@@ -63,8 +68,7 @@ runPaper.folia.registerTask()
 
 hangarPublish.publications.register("plugin") {
   version.set(project.version as String)
-  owner.set("jmp")
-  slug.set("squaremap")
+  id.set("squaremap")
   channel.set("Release")
   changelog.set(releaseNotes)
   apiKey.set(providers.environmentVariable("HANGAR_UPLOAD_KEY"))

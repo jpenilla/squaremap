@@ -4,14 +4,14 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
-import io.netty.buffer.Unpooled;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -159,19 +159,26 @@ public final class NetworkingHandler {
     }
 
     private static void send(final ServerPlayer player, final ByteArrayDataOutput out) {
-        final ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(
-            CHANNEL,
-            new FriendlyByteBuf(Unpooled.wrappedBuffer(out.toByteArray()))
-        );
+        final ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(new SquaremapClientPayload(out));
         player.connection.send(packet);
     }
 
-    @SuppressWarnings("UnstableApiUsage")
+    private record SquaremapClientPayload(ByteArrayDataOutput out) implements CustomPacketPayload {
+        @Override
+        public void write(final FriendlyByteBuf friendlyByteBuf) {
+            friendlyByteBuf.writeBytes(this.out.toByteArray());
+        }
+
+        @Override
+        public ResourceLocation id() {
+            return CHANNEL;
+        }
+    }
+
     private static ByteArrayDataOutput out() {
         return ByteStreams.newDataOutput();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private static ByteArrayDataInput in(final byte[] bytes) {
         return ByteStreams.newDataInput(bytes);
     }
