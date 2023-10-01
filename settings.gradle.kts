@@ -21,7 +21,7 @@ setupSubproject("api")
 setupSubproject("common")
 setupSubproject("paper")
 setupSubproject("fabric")
-setupSubproject("forge")
+// setupSubproject("forge")
 setupSubproject("sponge")
 
 fun setupSubproject(moduleName: String) {
