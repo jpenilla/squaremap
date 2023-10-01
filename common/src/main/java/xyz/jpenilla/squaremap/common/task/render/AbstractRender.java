@@ -292,7 +292,7 @@ public abstract class AbstractRender implements Runnable {
                 return;
             }
             final int[] lastY = new int[16];
-            for (final CompletableFuture<ChunkSnapshot> future : futures) {
+            for (final CompletableFuture<@Nullable ChunkSnapshot> future : futures) {
                 final @Nullable ChunkSnapshot snapshot = future.join();
                 if (future == aboveChunkFuture && snapshot != null) {
                     System.arraycopy(this.getLastYFromBottomRow(snapshot), 0, lastY, 0, lastY.length);
