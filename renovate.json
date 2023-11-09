@@ -2,5 +2,36 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
         "config:base"
-    ]
+    ],
+    "ignoreDeps": [
+        "com.mojang:minecraft"
+    ],
+    "labels": [
+        "dependencies"
+    ],
+    "packageRules": [
+        {
+            "description": "Correct version handling for dependencies with format major.minor.patch+mcver",
+            "matchPackageNames": [
+                "net.fabricmc.fabric-api:fabric-api",
+                "net.fabricmc.fabric-api:fabric-api-deprecated",
+                "cloud.commandframework:cloud-forge"
+            ],
+            "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(?:\\+(?<compatibility>.*))?$"
+        },
+        {
+            "matchManagers": ["github-actions", "gradle-wrapper"],
+            "groupName": "gradle and github actions"
+        },
+        {
+            "matchDepTypes": ["plugin"],
+            "groupName": "gradle and github actions"
+        },
+        {
+            "matchPaths": ["build-logic/*", "buildSrc/*"],
+            "groupName": "gradle and github actions"
+        }
+    ],
+    "semanticCommitType": "build",
+    "commitMessagePrefix": "chore(deps): "
 }
