@@ -64,7 +64,7 @@ bStatsBukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bS
 checkerQual = { group = "org.checkerframework", name = "checker-qual", version.ref = "checkerQual" }
 paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi" }
 
-undertow = { group = "io.undertow", name = "undertow-core", version = "2.3.8.Final" }
+undertow = { group = "io.undertow", name = "undertow-core", version = "2.3.10.Final" }
 jBossLoggingAnnotations = { group = "org.jboss.logging", name = "jboss-logging-annotations", version = "2.2.1.Final" }
 
 htmlSanitizer = { group = "com.googlecode.owasp-java-html-sanitizer", name = "owasp-java-html-sanitizer", version = "20220608.1" }
