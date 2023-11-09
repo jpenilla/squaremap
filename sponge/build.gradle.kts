@@ -3,9 +3,9 @@ import org.spongepowered.plugin.metadata.model.PluginDependency
 
 plugins {
   id("platform-conventions")
-  id("org.spongepowered.gradle.plugin")
+  alias(libs.plugins.sponge.gradle.plugin)
   id("org.spongepowered.gradle.vanilla")
-  id("org.spongepowered.gradle.ore")
+  alias(libs.plugins.sponge.gradle.ore)
 }
 
 val minecraftVersion = libs.versions.minecraft

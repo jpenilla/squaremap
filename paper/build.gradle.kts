@@ -3,8 +3,8 @@ import io.papermc.hangarpublishplugin.model.Platforms
 plugins {
   id("platform-conventions")
   id("io.papermc.paperweight.userdev")
-  id("xyz.jpenilla.run-paper")
-  id("io.papermc.hangar-publish-plugin")
+  alias(libs.plugins.run.paper)
+  alias(libs.plugins.hangar.publish)
 }
 
 val minecraftVersion = libs.versions.minecraft

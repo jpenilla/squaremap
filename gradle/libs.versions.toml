@@ -1,0 +1,93 @@
+[plugins]
+sponge-gradle-plugin = { id = "org.spongepowered.gradle.plugin", version.ref = "sponge-gradle" }
+sponge-gradle-ore = { id = "org.spongepowered.gradle.ore", version.ref = "sponge-gradle" }
+run-paper = { id = "xyz.jpenilla.run-paper", version = "2.2.0" }
+plugin-yml-bukkit = { id = "net.minecrell.plugin-yml.bukkit", version = "0.5.3" }
+hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.0" }
+
+[versions]
+minecraft = "1.20.2"
+checkerQual = "3.38.0"
+cloud = "1.8.4"
+cloudForge = "1.0.0+1.20-SNAPSHOT"
+cloudSponge = "1.8.0-SNAPSHOT"
+configurate = "4.1.2"
+adventure = "4.14.0"
+examination = "1.3.0"
+adventurePlatformFabric = "5.10.0"
+paperApi = "1.20.2-R0.1-SNAPSHOT"
+bStats = "3.0.2"
+fabricApi = "0.89.1+1.20.2"
+fabricLoader = "0.14.22"
+cardinalComponents = "5.3.0"
+guice = "5.1.0"
+forge = "1.20.1-47.0.0"
+
+# buildSrc
+indra = "3.1.3"
+sponge-gradle = "2.2.0"
+shadow = "8.1.1"
+vanillaGradle = "0.2.1-SNAPSHOT"
+minotaur = "2.7.5"
+loom = "1.3-SNAPSHOT"
+paperweight = "1.5.6"
+
+[libraries]
+guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
+guiceAssistedInject = { group = "com.google.inject.extensions", name = "guice-assistedinject", version.ref = "guice" }
+
+adventureBom = { group = "net.kyori", name = "adventure-bom", version.ref = "adventure" }
+adventureApi = { group = "net.kyori", name = "adventure-api" }
+adventureTextSerializerPlain = { group = "net.kyori", name = "adventure-text-serializer-plain" }
+adventureTextSerializerGson = { group = "net.kyori", name = "adventure-text-serializer-gson" }
+adventureTextSerializerJson = { group = "net.kyori", name = "adventure-text-serializer-json" }
+miniMessage = { group = "net.kyori", name = "adventure-text-minimessage" }
+adventurePlatformFabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventurePlatformFabric" }
+adventureKey = { group = "net.kyori", name = "adventure-key" }
+examinationApi = { group = "net.kyori", name = "examination-api", version.ref = "examination" }
+examinationString = { group = "net.kyori", name = "examination-string", version.ref = "examination" }
+
+cloudCore = { group = "cloud.commandframework", name = "cloud-core", version.ref = "cloud" }
+cloudBrigadier = { group = "cloud.commandframework", name = "cloud-brigadier", version.ref = "cloud" }
+cloudMinecraftExtras = { group = "cloud.commandframework", name = "cloud-minecraft-extras", version.ref = "cloud" }
+cloudPaper = { group = "cloud.commandframework", name = "cloud-paper", version.ref = "cloud" }
+cloudFabric = { group = "cloud.commandframework", name = "cloud-fabric", version.ref = "cloud" }
+cloudForge = { group = "cloud.commandframework", name = "cloud-forge", version.ref = "cloudForge" }
+cloudSponge = { group = "cloud.commandframework", name = "cloud-sponge", version.ref = "cloudSponge" }
+
+configurateBom = { group = "org.spongepowered", name = "configurate-bom", version.ref = "configurate" }
+configurateCore = { group = "org.spongepowered", name = "configurate-core" }
+configurateYaml = { group = "org.spongepowered", name = "configurate-yaml" }
+
+bStatsBukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bStats" }
+
+checkerQual = { group = "org.checkerframework", name = "checker-qual", version.ref = "checkerQual" }
+paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi" }
+
+undertow = { group = "io.undertow", name = "undertow-core", version = "2.3.8.Final" }
+jBossLoggingAnnotations = { group = "org.jboss.logging", name = "jboss-logging-annotations", version = "2.2.1.Final" }
+
+htmlSanitizer = { group = "com.googlecode.owasp-java-html-sanitizer", name = "owasp-java-html-sanitizer", version = "20220608.1" }
+
+mixin = { group = "org.spongepowered", name = "mixin", version = "0.8.5" }
+
+fabricApi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabricApi" }
+fabricLoader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabricLoader" }
+
+minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
+
+cardinalComponentsBase = { group = "dev.onyxstudios.cardinal-components-api", name = "cardinal-components-base", version.ref = "cardinalComponents" }
+cardinalComponentsEntity = { group = "dev.onyxstudios.cardinal-components-api", name = "cardinal-components-entity", version.ref = "cardinalComponents" }
+
+forge = { group = "net.minecraftforge", name = "forge", version.ref = "forge" }
+
+# buildSrc
+indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
+indraPublishingSonatype = { group = "net.kyori", name = "indra-publishing-sonatype", version.ref = "indra" }
+shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
+vanillaGradle = { group = "org.spongepowered", name = "vanillagradle", version.ref = "vanillaGradle" }
+minotaur = { group = "com.modrinth.minotaur", name = "Minotaur", version.ref = "minotaur" }
+loom = { group = "dev.architectury", name = "architectury-loom", version.ref = "loom" }
+paperweightUserdev = { group = "io.papermc.paperweight", name = "paperweight-userdev", version.ref = "paperweight" }
+
+[bundles]
