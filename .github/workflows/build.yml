@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "checkout git repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: "validate gradle wrapper"
         uses: gradle/wrapper-validation-action@v1
       - name: "setup jdk"
