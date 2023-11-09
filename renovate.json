@@ -4,7 +4,8 @@
         "config:base"
     ],
     "ignoreDeps": [
-        "com.mojang:minecraft"
+        "com.mojang:minecraft",
+        "dev.architectury:architectury-loom"
     ],
     "labels": [
         "dependencies"
