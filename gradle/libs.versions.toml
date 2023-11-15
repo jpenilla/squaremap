@@ -27,7 +27,7 @@ indra = "3.1.3"
 sponge-gradle = "2.2.0"
 shadow = "8.1.1"
 vanillaGradle = "0.2.1-SNAPSHOT"
-minotaur = "2.7.5"
+mod-publish-plugin = "0.4.5"
 loom = "1.3-SNAPSHOT"
 paperweight = "1.5.9"
 
@@ -85,7 +85,7 @@ indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra
 indraPublishingSonatype = { group = "net.kyori", name = "indra-publishing-sonatype", version.ref = "indra" }
 shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
 vanillaGradle = { group = "org.spongepowered", name = "vanillagradle", version.ref = "vanillaGradle" }
-minotaur = { group = "com.modrinth.minotaur", name = "Minotaur", version.ref = "minotaur" }
+mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
 loom = { group = "dev.architectury", name = "architectury-loom", version.ref = "loom" }
 paperweightUserdev = { group = "io.papermc.paperweight", name = "paperweight-userdev", version.ref = "paperweight" }
 

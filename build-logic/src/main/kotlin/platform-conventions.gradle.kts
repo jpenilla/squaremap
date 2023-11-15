@@ -1,7 +1,9 @@
+import me.modmuss50.mpp.ReleaseType
+
 plugins {
   id("base-conventions")
   id("com.github.johnrengelman.shadow")
-  id("com.modrinth.minotaur")
+  id("me.modmuss50.mod-publish-plugin")
 }
 
 val platformExt = extensions.create(
@@ -45,10 +47,10 @@ tasks {
   }
 }
 
-modrinth {
-  projectId.set("PFb7ZqK6")
-  versionType.set("release")
-  file.set(platformExt.productionJar)
-  changelog.set(releaseNotes)
-  token.set(providers.environmentVariable("MODRINTH_TOKEN"))
+publishMods.modrinth {
+  projectId = "PFb7ZqK6"
+  type = ReleaseType.STABLE
+  file = platformExt.productionJar
+  changelog = releaseNotes
+  accessToken = providers.environmentVariable("MODRINTH_TOKEN")
 }

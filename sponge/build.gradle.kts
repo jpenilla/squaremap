@@ -81,6 +81,7 @@ oreDeployment {
   }
 }
 
-modrinth {
-  gameVersions.add(minecraftVersion)
+publishMods.modrinth {
+  minecraftVersions.add(minecraftVersion)
+  modLoaders.add("sponge")
 }

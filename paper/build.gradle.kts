@@ -78,6 +78,7 @@ hangarPublish.publications.register("plugin") {
   }
 }
 
-modrinth {
-  loaders.set(listOf("paper", "folia"))
+publishMods.modrinth {
+  minecraftVersions.add(minecraftVersion)
+  modLoaders.addAll("paper", "folia")
 }

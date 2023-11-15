@@ -47,6 +47,8 @@ tasks.remapJar {
   archiveFileName.set(productionJarName(libs.versions.minecraft))
 }
 
-modrinth {
-  required.project("fabric-api")
+publishMods.modrinth {
+  minecraftVersions.add(libs.versions.minecraft)
+  modLoaders.add("fabric")
+  requires("fabric-api")
 }

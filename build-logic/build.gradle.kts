@@ -14,7 +14,7 @@ dependencies {
   implementation(libs.indraCommon)
   implementation(libs.indraPublishingSonatype)
   implementation(libs.shadow)
-  implementation(libs.minotaur)
+  implementation(libs.mod.publish.plugin)
   implementation(libs.loom)
   implementation(libs.paperweightUserdev)
 }
