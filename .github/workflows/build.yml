@@ -31,7 +31,7 @@ jobs:
             .gradle/caches/VanillaGradle
             .gradle/loom-cache
             paper/.gradle/caches/paperweight
-          key: ${{ runner.os }}-project-local-gradle-caches-${{ hashFiles('**/libs.versions.yml', '**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-project-local-gradle-caches-${{ hashFiles('**/libs.versions.toml', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-project-local-gradle-caches-
       - name: "execute gradle build"
@@ -59,7 +59,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingPassword: "${{ secrets.SIGNING_PASSWORD }}"
       - name: "publish release to modrinth"
         if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
-        run: ./gradlew modrinth
+        run: ./gradlew publishModrinth
         env:
           MODRINTH_TOKEN: "${{ secrets.MODRINTH_TOKEN }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
