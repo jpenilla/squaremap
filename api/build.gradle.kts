@@ -25,7 +25,7 @@ tasks.withType<Javadoc> {
   val options = options as StandardJavadocDocletOptions
   options.links(
     "https://jd.advntr.dev/api/${libs.versions.adventure.get()}/",
-    "https://javadocs.dev/org.checkerframework/checker-qual/${libs.versions.checkerQual.get()}/",
+    "https://checkerframework.org/api/",
     "https://jd.papermc.io/paper/${libs.versions.minecraft.get().split(".", "-").take(2).joinToString(".")}/",
   )
 }
