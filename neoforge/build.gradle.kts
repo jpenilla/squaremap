@@ -1,13 +1,26 @@
+import org.gradlex.javaecosystem.capabilities.rules.GuavaListenableFutureRule
+
 plugins {
   id("loom-platform-conventions")
 }
 
-loom.forge.mixinConfig("squaremap-forge.mixins.json")
+repositories {
+  maven("https://maven.neoforged.net/releases/")
+}
 
 dependencies {
+  components.withModule(GuavaListenableFutureRule.MODULES[0]) {
+    // Ad-hoc rule to revert the effect of 'GuavaListenableFutureRule' (NeoForge has broken dependencies)
+    allVariants {
+      withCapabilities {
+        removeCapability(GuavaListenableFutureRule.CAPABILITY_GROUP, GuavaListenableFutureRule.CAPABILITY_NAME)
+      }
+    }
+  }
+
   minecraft(libs.minecraft)
   mappings(loom.officialMojangMappings())
-  forge(libs.forge)
+  neoForge(libs.neoforge)
 
   squaremap(projects.squaremapCommon) {
     exclude("cloud.commandframework", "cloud-core")
@@ -28,8 +41,8 @@ dependencies {
   include(libs.adventureTextSerializerJson)
   include(libs.adventureTextSerializerPlain)
 
-  modImplementation(libs.cloudForge)
-  include(libs.cloudForge)
+  modImplementation(libs.cloudNeoForge)
+  include(libs.cloudNeoForge)
 
   implementation(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately
@@ -56,4 +69,9 @@ configurations.include {
       isTransitive = false
     }
   }
+}
+
+publishMods.modrinth {
+  minecraftVersions.add(libs.versions.minecraft)
+  modLoaders.add("neoforge")
 }
