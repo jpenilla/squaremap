@@ -7,8 +7,8 @@ import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.brigadier.argument.WrappedBrigadierParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.CommandExecutionCoordinator;
-import cloud.commandframework.forge.ForgeCommandContextKeys;
-import cloud.commandframework.forge.ForgeServerCommandManager;
+import cloud.commandframework.neoforge.NeoForgeCommandContextKeys;
+import cloud.commandframework.neoforge.NeoForgeServerCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -37,7 +37,7 @@ public final class ForgeCommands implements PlatformCommands {
 
     @Override
     public CommandManager<Commander> createCommandManager() {
-        final ForgeServerCommandManager<Commander> mgr = new ForgeServerCommandManager<>(
+        final NeoForgeServerCommandManager<Commander> mgr = new NeoForgeServerCommandManager<>(
             CommandExecutionCoordinator.simpleCoordinator(),
             ForgeCommander::from,
             commander -> ((ForgeCommander) commander).stack()
@@ -84,14 +84,14 @@ public final class ForgeCommands implements PlatformCommands {
     }
 
     private static <C> ArgumentParseResult<BlockPos> mapToCoordinates(final CommandContext<C> ctx, final Coordinates coordinates) {
-        return ArgumentParseResult.success(coordinates.getBlockPos(ctx.get(ForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)));
+        return ArgumentParseResult.success(coordinates.getBlockPos(ctx.get(NeoForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)));
     }
 
     public static <C> ArgumentParser<C, ServerPlayer> singlePlayerSelector() {
         return new WrappedBrigadierParser<C, EntitySelector>(EntityArgument.player())
             .map((ctx, entitySelector) ->
                 handleCommandSyntaxExceptionAsFailure(() ->
-                    ArgumentParseResult.success(entitySelector.findSinglePlayer(ctx.get(ForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)))));
+                    ArgumentParseResult.success(entitySelector.findSinglePlayer(ctx.get(NeoForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)))));
     }
 
     @FunctionalInterface
