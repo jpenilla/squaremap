@@ -5,11 +5,12 @@ import com.google.inject.assistedinject.AssistedInject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -150,7 +151,7 @@ public final class FullRender extends AbstractRender {
     }
 
     private List<RegionCoordinate> getRegions() {
-        final List<RegionCoordinate> regions = new ArrayList<>();
+        final Set<RegionCoordinate> regions = new LinkedHashSet<>();
 
         for (final Path path : this.getRegionFiles()) {
             if (path.toFile().length() == 0) {
@@ -178,14 +179,20 @@ public final class FullRender extends AbstractRender {
             regions.add(region);
         }
 
-        return regions;
+        return List.copyOf(regions);
     }
 
     private Path[] getRegionFiles() {
         final Path regionFolder = this.regionFileDirectoryResolver.resolveRegionFileDirectory(this.level);
         Logging.debug(() -> "Listing region files for directory '" + regionFolder + "'...");
         try (final Stream<Path> stream = Files.list(regionFolder)) {
-            return stream.filter(file -> file.getFileName().toString().endsWith(".mca")).toArray(Path[]::new);
+            return stream.filter(file -> {
+                final String fileName = file.getFileName().toString();
+                if (!fileName.startsWith("r.")) {
+                    return false;
+                }
+                return fileName.endsWith(".mca") || fileName.endsWith(".linear");
+            }).toArray(Path[]::new);
         } catch (final IOException ex) {
             throw new RuntimeException("Failed to list region files in directory '" + regionFolder.toAbsolutePath() + "'", ex);
         }
