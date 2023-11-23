@@ -5,17 +5,17 @@ import com.google.inject.Injector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.GameShuttingDownEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -64,11 +64,11 @@ public final class SquaremapForge implements SquaremapPlatform {
     }
 
     private void registerLifecycleListeners() {
-        MinecraftForge.EVENT_BUS.addListener((ServerStartingEvent event) -> this.serverAccess.setServer(event.getServer()));
-        MinecraftForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> this.serverAccess.clearServer());
+        NeoForge.EVENT_BUS.addListener((ServerStartingEvent event) -> this.serverAccess.setServer(event.getServer()));
+        NeoForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> this.serverAccess.clearServer());
         final AtomicBoolean exportedFluids = new AtomicBoolean(false);
-        MinecraftForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> exportedFluids.set(false));
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGH, (LevelEvent.Load event) -> {
+        NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> exportedFluids.set(false));
+        NeoForge.EVENT_BUS.addListener(EventPriority.HIGH, (LevelEvent.Load event) -> {
             if (event.getLevel().isClientSide() && !exportedFluids.getAndSet(true)) {
                 this.injector.getInstance(ForgeFluidColorExporter.class).export(event.getLevel().registryAccess());
             }
@@ -77,15 +77,15 @@ public final class SquaremapForge implements SquaremapPlatform {
             }
             this.worldManager.initWorld(serverLevel);
         });
-        MinecraftForge.EVENT_BUS.addListener((LevelEvent.Unload event) -> {
+        NeoForge.EVENT_BUS.addListener((LevelEvent.Unload event) -> {
             if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
                 return;
             }
             this.worldManager.worldUnloaded(serverLevel);
         });
-        MinecraftForge.EVENT_BUS.addListener(new TickEndListener());
-        MinecraftForge.EVENT_BUS.addListener((GameShuttingDownEvent event) -> this.common.shutdown());
-        MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent event) -> this.common.updateCheck());
+        NeoForge.EVENT_BUS.addListener(new TickEndListener());
+        NeoForge.EVENT_BUS.addListener((GameShuttingDownEvent event) -> this.common.shutdown());
+        NeoForge.EVENT_BUS.addListener((ServerStartedEvent event) -> this.common.updateCheck());
     }
 
     @Override

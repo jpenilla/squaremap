@@ -2,11 +2,11 @@ package xyz.jpenilla.squaremap.forge.network;
 
 import com.google.inject.Inject;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.event.EventNetworkChannel;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.event.EventNetworkChannel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -32,15 +32,15 @@ public final class ForgeNetworking {
 
     public void register() {
         CHANNEL.addListener((NetworkEvent.ClientCustomPayloadEvent event) -> {
-            final @Nullable ServerPlayer player = event.getSource().get().getSender();
+            final @Nullable ServerPlayer player = event.getSource().getSender();
             if (player == null) {
                 return;
             }
-            event.getSource().get().setPacketHandled(true);
+            event.getSource().setPacketHandled(true);
             this.networking.handleIncoming(player, Util.raw(event.getPayload()), map -> true);
         });
-        MinecraftForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> this.networking.onDisconnect(event.getEntity().getUUID()));
-        MinecraftForge.EVENT_BUS.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
+        NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> this.networking.onDisconnect(event.getEntity().getUUID()));
+        NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             if (!(event.getEntity() instanceof ServerPlayer player)) {
                 return;
             }

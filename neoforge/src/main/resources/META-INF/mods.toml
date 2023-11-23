@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "[1,)"
 license = "MIT"
 issueTrackerURL = "${github_url}issues/"
 showAsResourcePack = false
@@ -14,16 +14,16 @@ description = "${description}"
 displayTest = "IGNORE_ALL_VERSION"
 
 [[dependencies.squaremap]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
-versionRange = "[47,)"
+versionRange = "[20.2,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.squaremap]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.20.1,1.21)"
+versionRange = "[1.20.2,1.21)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -33,3 +33,6 @@ mandatory = true
 versionRange = "*"
 ordering = "AFTER"
 side = "BOTH"
+
+[[mixins]]
+config = "squaremap-forge.mixins.json"

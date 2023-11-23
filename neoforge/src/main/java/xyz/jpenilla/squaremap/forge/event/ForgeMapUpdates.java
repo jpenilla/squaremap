@@ -9,14 +9,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.piston.PistonStructureResolver;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.level.ChunkEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.event.level.PistonEvent;
-import net.minecraftforge.event.level.SaplingGrowTreeEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.PistonEvent;
+import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.WorldManagerImpl;
@@ -41,7 +41,7 @@ public final class ForgeMapUpdates {
             BlockEvent.FarmlandTrampleEvent.class,
             BlockEvent.FluidPlaceBlockEvent.class,
             BlockEvent.PortalSpawnEvent.class
-        ).forEach(cls -> MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, cls, event -> {
+        ).forEach(cls -> NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, cls, event -> {
             if (!(event.getLevel() instanceof ServerLevel level)) {
                 return;
             }
@@ -51,13 +51,13 @@ public final class ForgeMapUpdates {
             }
             this.markBlock(level, event.getPos());
         }));
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (BlockEvent.CreateFluidSourceEvent event) -> {
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (BlockEvent.CreateFluidSourceEvent event) -> {
             if (!(event.getLevel() instanceof ServerLevel level)) {
                 return;
             }
             this.markBlock(level, event.getPos());
         });
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (ExplosionEvent.Detonate event) -> {
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (ExplosionEvent.Detonate event) -> {
             if (!(event.getLevel() instanceof ServerLevel level)) {
                 return;
             }
@@ -65,13 +65,13 @@ public final class ForgeMapUpdates {
                 this.markBlock(level, affectedBlock);
             }
         });
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (SaplingGrowTreeEvent event) -> {
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (SaplingGrowTreeEvent event) -> {
             if (!(event.getLevel() instanceof ServerLevel level)) {
                 return;
             }
             this.markBlock(level, event.getPos());
         });
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (PistonEvent.Post event) -> {
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (PistonEvent.Post event) -> {
             if (!(event.getLevel() instanceof ServerLevel level)) {
                 return;
             }
@@ -80,7 +80,7 @@ public final class ForgeMapUpdates {
                 .forEach(pos -> this.markBlock(level, pos));
             this.markBlock(level, event.getPos());
         });
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (ChunkEvent.Load event) -> {
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (ChunkEvent.Load event) -> {
             if (!(event.getLevel() instanceof ServerLevel level) || !event.isNewChunk()) {
                 return;
             }

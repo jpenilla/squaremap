@@ -6,6 +6,7 @@ pluginManagement {
     maven("https://repo.spongepowered.org/repository/maven-public/")
     maven("https://maven.fabricmc.net/")
     maven("https://maven.architectury.dev/")
+    maven("https://maven.neoforged.net/releases/")
   }
   includeBuild("build-logic")
 }
@@ -20,7 +21,7 @@ setupSubproject("api")
 setupSubproject("common")
 setupSubproject("paper")
 setupSubproject("fabric")
-// setupSubproject("forge")
+setupSubproject("neoforge")
 setupSubproject("sponge")
 
 fun setupSubproject(moduleName: String) {

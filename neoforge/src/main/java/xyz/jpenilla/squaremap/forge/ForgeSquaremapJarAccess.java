@@ -3,7 +3,7 @@ package xyz.jpenilla.squaremap.forge;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Path;
-import net.minecraftforge.fml.ModContainer;
+import net.neoforged.fml.ModContainer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.util.CheckedConsumer;
