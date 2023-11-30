@@ -26,7 +26,7 @@ tasks {
   }
   shadowJar {
     from(rootProject.projectDir.resolve("LICENSE")) {
-      rename { "LICENSE_${rootProject.name}" }
+      rename("LICENSE", "META-INF/LICENSE_${rootProject.name}")
     }
     minimize {
       exclude { it.moduleName.contains("squaremap") }
