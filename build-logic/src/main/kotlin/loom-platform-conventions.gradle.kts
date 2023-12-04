@@ -1,22 +1,20 @@
 plugins {
   id("platform-conventions")
-  id("dev.architectury.loom")
+  id("xyz.jpenilla.quiet-architectury-loom")
 }
 
 extensions.add(
   SquaremapPlatformExtension.Loom::class.java,
   "squaremapLoomPlatform",
-  the<SquaremapPlatformExtension>() as SquaremapPlatformExtension.Loom
+  extensions.getByType<SquaremapPlatformExtension>() as SquaremapPlatformExtension.Loom
 )
-val loomExt = the<SquaremapPlatformExtension.Loom>()
-loomExt.productionJar.set(tasks.remapJar.flatMap { it.archiveFile })
+val loomExt = extensions.getByType<SquaremapPlatformExtension.Loom>()
+loomExt.productionJar = tasks.remapJar.flatMap { it.archiveFile }
 
 val squaremap: Configuration by configurations.creating
 configurations.implementation {
   extendsFrom(squaremap)
 }
-
-loom.silentMojangMappingsLicense()
 
 tasks {
   shadowJar {
@@ -29,9 +27,6 @@ tasks {
     dependencies {
       exclude { it.moduleGroup == "org.checkerframework" || it.moduleGroup == "com.google.errorprone" }
     }
-  }
-  remapJar {
-    inputFile.set(shadowJar.flatMap { it.archiveFile })
   }
 }
 

@@ -86,7 +86,7 @@ indraPublishingSonatype = { group = "net.kyori", name = "indra-publishing-sonaty
 shadow = { group = "com.github.johnrengelman", name = "shadow", version.ref = "shadow" }
 vanillaGradle = { group = "org.spongepowered", name = "vanillagradle", version.ref = "vanillaGradle" }
 mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
-loom = { group = "dev.architectury", name = "architectury-loom", version.ref = "loom" }
+loom = { group = "xyz.jpenilla", name = "quiet-architectury-loom", version.ref = "loom" }
 paperweightUserdev = { group = "io.papermc.paperweight", name = "paperweight-userdev", version.ref = "paperweight" }
 
 [bundles]
