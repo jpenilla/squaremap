@@ -122,10 +122,16 @@ class PlayerList {
         // follow highlighted player
         if (this.following != null) {
             const player = this.players.get(this.following);
-            if (player == null || P.worldList.curWorld == null || player.world !== P.worldList.curWorld.name) {
+            if (player == null || P.worldList.curWorld == null) {
                 this.followPlayerMarker(null);
             } else {
-                P.map.panTo(P.toLatLng(player.x, player.z));
+                if (player.world !== P.worldList.curWorld.name) {
+                    P.worldList.showWorld(player.world, () => {
+                        P.map.panTo(P.toLatLng(player.x, player.z));
+                    });
+                } else {
+                    P.map.panTo(P.toLatLng(player.x, player.z));
+                }
             }
         }
     }
