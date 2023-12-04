@@ -28,7 +28,7 @@ sponge-gradle = "2.2.0"
 shadow = "8.1.1"
 vanillaGradle = "0.2.1-SNAPSHOT"
 mod-publish-plugin = "0.4.5"
-loom = "1.4-SNAPSHOT"
+loom = "1.4.216"
 paperweight = "1.5.10"
 
 [libraries]
