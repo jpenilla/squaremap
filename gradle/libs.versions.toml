@@ -18,7 +18,7 @@ paperApi = "1.20.2-R0.1-SNAPSHOT"
 bStats = "3.0.2"
 fabricApi = "0.90.7+1.20.2"
 fabricLoader = "0.15.0"
-cardinalComponents = "5.3.0"
+cardinalComponents = "5.4.0"
 guice = "5.1.0"
 neoforge = "20.2.86"
 
