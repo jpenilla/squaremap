@@ -21,6 +21,11 @@
             "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(?:\\+(?<compatibility>.*))?$"
         },
         {
+            "description": "Correct version handling for NeoForge",
+            "matchPackageNames": ["net.neoforged:neoforge"],
+            "versioning": "regex:^(?<compatibility>(\\d+\\.){2})(?<minor>\\d+)$"
+        },
+        {
             "matchManagers": ["github-actions", "gradle-wrapper"],
             "groupName": "gradle and github actions"
         },
