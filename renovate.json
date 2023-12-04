@@ -5,7 +5,8 @@
     ],
     "ignoreDeps": [
         "com.mojang:minecraft",
-        "dev.architectury:architectury-loom"
+        "dev.architectury:architectury-loom",
+        "xyz.jpenilla:quiet-architectury-loom"
     ],
     "labels": [
         "dependencies"
