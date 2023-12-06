@@ -21,9 +21,9 @@ import xyz.jpenilla.squaremap.common.ServerAccess;
 @Singleton
 public final class ForgePlayerManager extends AbstractPlayerManager {
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, "squaremap");
-    private static final Supplier<AttachmentType<SquaremapPlayerCapability>> PLAYER_CAPABILITY = ATTACHMENT_TYPES.register(
-        "player_capability",
-        () -> AttachmentType.<CompoundTag, SquaremapPlayerCapability>serializable(SquaremapPlayerCapabilityProvider::new)
+    private static final Supplier<AttachmentType<SquaremapPlayerData>> PLAYER_DATA = ATTACHMENT_TYPES.register(
+        "player_data",
+        () -> AttachmentType.<CompoundTag, SquaremapPlayerData>serializable(SquaremapPlayerDataImpl::new)
             .copyOnDeath()
             .build()
     );
@@ -42,25 +42,25 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
 
     @Override
     protected boolean persistentHidden(final ServerPlayer player) {
-        return cap(player).hidden();
+        return data(player).hidden();
     }
 
     @Override
     protected void persistentHidden(final ServerPlayer player, final boolean value) {
-        cap(player).hidden(value);
+        data(player).hidden(value);
     }
 
     public void setupCapabilities() {
         ATTACHMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public interface SquaremapPlayerCapability extends INBTSerializable<CompoundTag> {
+    public interface SquaremapPlayerData extends INBTSerializable<CompoundTag> {
         void hidden(boolean value);
 
         boolean hidden();
     }
 
-    private static final class SquaremapPlayerCapabilityProvider implements SquaremapPlayerCapability {
+    private static final class SquaremapPlayerDataImpl implements SquaremapPlayerData {
 
         private boolean hidden;
 
@@ -87,7 +87,7 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
         }
     }
 
-    private static SquaremapPlayerCapability cap(final ServerPlayer player) {
-        return player.getData(PLAYER_CAPABILITY);
+    private static SquaremapPlayerData data(final ServerPlayer player) {
+        return player.getData(PLAYER_DATA);
     }
 }
