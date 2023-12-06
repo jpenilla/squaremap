@@ -2,25 +2,17 @@ package xyz.jpenilla.squaremap.forge;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.Optional;
+import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.CapabilityManager;
-import net.neoforged.neoforge.common.capabilities.CapabilityToken;
-import net.neoforged.neoforge.common.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.common.capabilities.ICapabilitySerializable;
-import net.neoforged.neoforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.event.AttachCapabilitiesEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
@@ -28,8 +20,13 @@ import xyz.jpenilla.squaremap.common.ServerAccess;
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class ForgePlayerManager extends AbstractPlayerManager {
-    private static final ResourceLocation PLAYER_CAPABILITY_KEY = new ResourceLocation("squaremap:player_capability");
-    private static final Capability<SquaremapPlayerCapability> PLAYER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, "squaremap");
+    private static final Supplier<AttachmentType<SquaremapPlayerCapability>> PLAYER_CAPABILITY = ATTACHMENT_TYPES.register(
+        "player_capability",
+        () -> AttachmentType.<CompoundTag, SquaremapPlayerCapability>serializable(SquaremapPlayerCapabilityProvider::new)
+            .copyOnDeath()
+            .build()
+    );
 
     @Inject
     private ForgePlayerManager(final ServerAccess serverAccess) {
@@ -38,7 +35,9 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
 
     @Override
     public Component displayName(final ServerPlayer player) {
-        return ForgeAdventure.fromNative(player.getDisplayName());
+        return Optional.ofNullable(player.getDisplayName())
+            .map(ForgeAdventure::fromNative)
+            .orElseGet(() -> ForgeAdventure.fromNative(player.getName()));
     }
 
     @Override
@@ -52,34 +51,17 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
     }
 
     public void setupCapabilities() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((RegisterCapabilitiesEvent event) -> event.register(SquaremapPlayerCapability.class));
-        NeoForge.EVENT_BUS.addGenericListener(Entity.class, (AttachCapabilitiesEvent<Entity> event) -> {
-            if (!(event.getObject() instanceof ServerPlayer)) {
-                return;
-            }
-            event.addCapability(PLAYER_CAPABILITY_KEY, new SquaremapPlayerCapabilityProvider());
-        });
-        NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerRespawnEvent.Clone event) -> {
-            if ((!(event.getOriginal() instanceof ServerPlayer original) || !(event.getEntity() instanceof ServerPlayer entity))) {
-                return;
-            }
-            cap(entity).copyFrom(cap(original));
-        });
+        ATTACHMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    public interface SquaremapPlayerCapability {
+    public interface SquaremapPlayerCapability extends INBTSerializable<CompoundTag> {
         void hidden(boolean value);
 
         boolean hidden();
-
-        default void copyFrom(final SquaremapPlayerCapability capability) {
-            this.hidden(capability.hidden());
-        }
     }
 
-    private static final class SquaremapPlayerCapabilityProvider implements SquaremapPlayerCapability, ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
+    private static final class SquaremapPlayerCapabilityProvider implements SquaremapPlayerCapability {
 
-        private final LazyOptional<SquaremapPlayerCapability> holder = LazyOptional.of(() -> this);
         private boolean hidden;
 
         @Override
@@ -95,11 +77,6 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
         }
 
         @Override
-        public <T> LazyOptional<T> getCapability(final Capability<T> capability, final @Nullable Direction arg) {
-            return PLAYER_CAPABILITY.orEmpty(capability, this.holder);
-        }
-
-        @Override
         public void hidden(final boolean value) {
             this.hidden = value;
         }
@@ -111,6 +88,6 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
     }
 
     private static SquaremapPlayerCapability cap(final ServerPlayer player) {
-        return player.getCapability(PLAYER_CAPABILITY).orElseThrow(() -> new IllegalStateException("No " + SquaremapPlayerCapability.class.getName() + " for player " + player.getGameProfile().getName()));
+        return player.getData(PLAYER_CAPABILITY);
     }
 }

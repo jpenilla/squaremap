@@ -5,7 +5,7 @@ run-paper = { id = "xyz.jpenilla.run-paper", version = "2.2.2" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.0" }
 
 [versions]
-minecraft = "1.20.2"
+minecraft = "1.20.3"
 checkerQual = "3.40.0"
 cloud = "1.8.4"
 cloudNeoForge = "1.0.0+1.20.2-SNAPSHOT"
@@ -20,7 +20,7 @@ fabricApi = "0.91.1+1.20.2"
 fabricLoader = "0.15.0"
 cardinalComponents = "5.3.0"
 guice = "5.1.0"
-neoforge = "20.2.86"
+neoforge = "20.3.2-beta"
 
 # buildSrc
 indra = "3.1.3"

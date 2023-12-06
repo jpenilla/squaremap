@@ -35,8 +35,8 @@ rootProject.name = "squaremap"
 
 setupSubproject("api")
 setupSubproject("common")
-setupSubproject("paper")
-setupSubproject("fabric")
+//setupSubproject("paper")
+//setupSubproject("fabric")
 setupSubproject("neoforge")
 setupSubproject("sponge")
 
