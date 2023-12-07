@@ -31,3 +31,8 @@ repositories {
     mavenContent { includeGroup("net.fabricmc") }
   }
 }
+
+tasks.withType(JavaCompile::class).configureEach {
+  // We don't care about annotations being unclaimed by processors
+  options.compilerArgs.add("-Xlint:-processing")
+}
