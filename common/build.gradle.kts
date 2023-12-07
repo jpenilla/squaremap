@@ -4,7 +4,7 @@ plugins {
 }
 
 minecraft {
-  version(libs.versions.minecraft.get())
+  version().set(libs.versions.minecraft)
   accessWideners(layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))
 }
 
