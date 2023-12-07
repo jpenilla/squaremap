@@ -4,9 +4,6 @@ import io.leangen.geantyref.TypeToken;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
@@ -40,42 +37,18 @@ public final class Advanced extends AbstractConfig {
             })
             .build();
         final ConfigurationTransformation twoToThree = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("world-settings"), (path, node) -> {
-                final Set<Object> childKeys = node.childrenMap().keySet();
-                for (final Object childKey : childKeys) {
-                    final ConfigurationNode worldSection = node.node(childKey);
-                    final List<ConfigurationNode> sections = List.of(
+            .addAction(NodePath.path("world-settings"), Transformations.eachMapChild(worldSection -> {
+                Transformations.applyMapKeyOrListValueRenames(
+                    List.of(
                         worldSection.node("invisible-blocks"),
                         worldSection.node("iterate-up-base-blocks"),
                         worldSection.node("color-overrides", "blocks")
-                    );
-                    for (final ConfigurationNode sectionNode : sections) {
-                        if (sectionNode.isList()) {
-                            final List<String> list = Objects.requireNonNull(sectionNode.getList(String.class));
-                            boolean removed = false;
-                            removed |= list.remove("minecraft:grass");
-                            removed |= list.remove("grass");
-                            if (removed) {
-                                list.add("minecraft:short_grass");
-                                sectionNode.setList(String.class, list);
-                            }
-                        } else if (sectionNode.isMap()) {
-                            final TypeToken<Map<String, String>> type = new TypeToken<>() {};
-                            final Map<String, String> map = Objects.requireNonNull(sectionNode.get(type));
-                            @Nullable String removed;
-                            removed = map.remove("minecraft:grass");
-                            if (removed == null) {
-                                removed = map.remove("grass");
-                            }
-                            if (removed != null) {
-                                map.put("minecraft:short_grass", removed);
-                                sectionNode.set(type, map);
-                            }
-                        }
-                    }
-                }
-                return null;
-            })
+                    ),
+                    Map.of(
+                        Transformations.maybeMinecraft("grass"), "minecraft:short_grass"
+                    )
+                );
+            }))
             .build();
 
         versionedBuilder.addVersion(2, oneToTwo);
