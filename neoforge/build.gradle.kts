@@ -18,7 +18,7 @@ dependencies {
   }
 
   implementation(platform(libs.adventureBom))
-  include(platform(libs.adventureBom))
+  include(platform(libs.adventureBom.get().group + ':' + libs.adventureBom.get().name + ":4.15.0-SNAPSHOT")) // todo
   implementation(libs.adventureApi)
   include(libs.adventureApi)
   include(libs.examinationApi)
