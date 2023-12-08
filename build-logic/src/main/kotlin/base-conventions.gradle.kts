@@ -21,6 +21,7 @@ repositories {
     mavenContent {
       includeGroup("cloud.commandframework")
       includeGroup("xyz.jpenilla")
+      includeModule("net.kyori", "adventure-platform-fabric") // todo
       snapshotsOnly()
     }
   }
