@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
@@ -42,11 +43,11 @@ public final class SquaremapForge implements SquaremapPlatform {
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
 
-    public SquaremapForge() {
+    public SquaremapForge(final IEventBus modEventBus, final ModContainer modContainer) {
         this.injector = Guice.createInjector(
             SquaremapModulesBuilder.forPlatform(this)
                 .mapWorld(ForgeMapWorld.class)
-                .withModule(new ForgeModule(this))
+                .withModule(new ForgeModule(this, modEventBus, modContainer))
                 .vanillaChunkSnapshotProviderFactory()
                 .vanillaRegionFileDirectoryResolver()
                 .squaremapJarAccess(ForgeSquaremapJarAccess.class)

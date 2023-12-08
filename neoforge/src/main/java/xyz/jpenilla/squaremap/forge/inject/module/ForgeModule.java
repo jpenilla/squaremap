@@ -5,8 +5,8 @@ import com.google.inject.Provides;
 import java.io.File;
 import java.nio.file.Path;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
@@ -22,9 +22,17 @@ import xyz.jpenilla.squaremap.forge.command.ForgeCommands;
 @DefaultQualifier(NonNull.class)
 public final class ForgeModule extends AbstractModule {
     private final SquaremapForge squaremapForge;
+    private final IEventBus modEventBus;
+    private final ModContainer modContainer;
 
-    public ForgeModule(final SquaremapForge squaremapForge) {
+    public ForgeModule(
+        final SquaremapForge squaremapForge,
+        final IEventBus modEventBus,
+        final ModContainer modContainer
+    ) {
         this.squaremapForge = squaremapForge;
+        this.modEventBus = modEventBus;
+        this.modContainer = modContainer;
     }
 
     @Override
@@ -46,7 +54,10 @@ public final class ForgeModule extends AbstractModule {
             .to(ForgePlayerManager.class);
 
         this.bind(ModContainer.class)
-            .toInstance(ModList.get().getModContainerById("squaremap").orElseThrow());
+            .toInstance(this.modContainer);
+
+        this.bind(IEventBus.class)
+            .toInstance(this.modEventBus);
     }
 
     @Provides

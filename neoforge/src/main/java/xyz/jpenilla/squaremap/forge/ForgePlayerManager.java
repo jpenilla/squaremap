@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -28,9 +28,12 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
             .build()
     );
 
+    private final IEventBus modEventBus;
+
     @Inject
-    private ForgePlayerManager(final ServerAccess serverAccess) {
+    private ForgePlayerManager(final ServerAccess serverAccess, final IEventBus modEventBus) {
         super(serverAccess);
+        this.modEventBus = modEventBus;
     }
 
     @Override
@@ -51,7 +54,7 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
     }
 
     public void setupCapabilities() {
-        ATTACHMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ATTACHMENT_TYPES.register(this.modEventBus);
     }
 
     public interface SquaremapPlayerData extends INBTSerializable<CompoundTag> {
