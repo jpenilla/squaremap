@@ -1,32 +1,30 @@
 plugins {
-  id("platform-conventions")
+  id("squaremap.platform")
   id("xyz.jpenilla.quiet-architectury-loom")
 }
 
-extensions.add(
-  SquaremapPlatformExtension.Loom::class.java,
-  "squaremapLoomPlatform",
-  extensions.getByType<SquaremapPlatformExtension>() as SquaremapPlatformExtension.Loom
-)
-val loomExt = extensions.getByType<SquaremapPlatformExtension.Loom>()
-loomExt.productionJar = tasks.remapJar.flatMap { it.archiveFile }
+val platformExt = extensions.getByType<SquaremapPlatformExtension>()
+platformExt.productionJar = tasks.remapJar.flatMap { it.archiveFile }
 
-val squaremap: Configuration by configurations.creating
+val shade: Configuration by configurations.creating
 configurations.implementation {
-  extendsFrom(squaremap)
+  extendsFrom(shade)
+}
+val shadeFiltered: Configuration by configurations.creating {
+  extendsFrom(shade)
+
+  exclude("org.checkerframework")
+  exclude("com.google.errorprone")
 }
 
 tasks {
   shadowJar {
-    configurations = listOf(squaremap)
+    configurations = listOf(shadeFiltered)
     listOf(
       "javax.inject",
       "com.google.inject",
       "org.aopalliance",
     ).forEach(::reloc)
-    dependencies {
-      exclude { it.moduleGroup == "org.checkerframework" || it.moduleGroup == "com.google.errorprone" }
-    }
   }
 }
 
@@ -38,7 +36,7 @@ afterEvaluate {
       "description" to project.description,
     )
     inputs.properties(props)
-    filesMatching(loomExt.modInfoFilePath.get()) {
+    filesMatching(platformExt.loom.modInfoFilePath.get()) {
       // filter manually to avoid trying to replace $Initializer in initializer class name...
       filter { string ->
         var result = string

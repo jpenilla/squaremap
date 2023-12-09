@@ -2,7 +2,7 @@ import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
 
 plugins {
-  id("platform-conventions")
+  id("squaremap.platform")
   alias(libs.plugins.sponge.gradle.plugin)
   id("org.spongepowered.gradle.vanilla")
   alias(libs.plugins.sponge.gradle.ore)

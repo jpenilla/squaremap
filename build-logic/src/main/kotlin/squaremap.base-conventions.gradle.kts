@@ -28,9 +28,6 @@ repositories {
   sonatype.s01Snapshots()
   sonatype.ossSnapshots()
   maven("https://repo.papermc.io/repository/maven-public/")
-  maven("https://maven.fabricmc.net/") {
-    mavenContent { includeGroup("net.fabricmc") }
-  }
 }
 
 tasks.withType(JavaCompile::class).configureEach {

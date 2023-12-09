@@ -1,8 +1,8 @@
 plugins {
-  id("loom-platform-conventions")
+  id("squaremap.platform.loom")
 }
 
-loom.accessWidenerPath.set(layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener"))
+loom.accessWidenerPath = layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener")
 
 repositories {
   maven("https://maven.ladysnake.org/releases/") {
@@ -18,7 +18,7 @@ dependencies {
   modImplementation(libs.fabricLoader)
   modImplementation(libs.fabricApi)
 
-  squaremap(projects.squaremapCommon) {
+  shade(projects.squaremapCommon) {
     exclude("cloud.commandframework", "cloud-core")
     exclude("cloud.commandframework", "cloud-minecraft-extras")
     exclude("io.leangen.geantyref")
@@ -41,7 +41,7 @@ dependencies {
   include(libs.cardinalComponentsEntity)
 }
 
-squaremapLoomPlatform.modInfoFilePath = "fabric.mod.json"
+squaremapPlatform.loom.modInfoFilePath = "fabric.mod.json"
 
 tasks.remapJar {
   archiveFileName = productionJarName(libs.versions.minecraft)

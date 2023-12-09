@@ -1,5 +1,5 @@
 plugins {
-  id("loom-platform-conventions")
+  id("squaremap.platform.loom")
 }
 
 repositories {
@@ -11,7 +11,7 @@ dependencies {
   mappings(loom.officialMojangMappings())
   neoForge(libs.neoforge)
 
-  squaremap(projects.squaremapCommon) {
+  shade(projects.squaremapCommon) {
     exclude("cloud.commandframework", "cloud-core")
     exclude("cloud.commandframework", "cloud-minecraft-extras")
     exclude("io.leangen.geantyref")
@@ -43,7 +43,7 @@ tasks.remapJar {
   archiveFileName = productionJarName(libs.versions.minecraft)
 }
 
-squaremapLoomPlatform.modInfoFilePath = "META-INF/mods.toml"
+squaremapPlatform.loom.modInfoFilePath = "META-INF/mods.toml"
 
 publishMods.modrinth {
   minecraftVersions.add(libs.versions.minecraft)

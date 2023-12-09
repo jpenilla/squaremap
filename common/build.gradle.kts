@@ -1,5 +1,5 @@
 plugins {
-  id("base-conventions")
+  id("squaremap.base-conventions")
   id("org.spongepowered.gradle.vanilla")
 }
 

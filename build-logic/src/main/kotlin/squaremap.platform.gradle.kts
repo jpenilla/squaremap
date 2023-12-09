@@ -1,16 +1,12 @@
 import me.modmuss50.mpp.ReleaseType
 
 plugins {
-  id("base-conventions")
+  id("squaremap.base-conventions")
   id("com.github.johnrengelman.shadow")
   id("me.modmuss50.mod-publish-plugin")
 }
 
-val platformExt = extensions.create(
-  SquaremapPlatformExtension::class,
-  "squaremapPlatform",
-  SquaremapPlatformExtension.Loom::class
-)
+val platformExt = extensions.create("squaremapPlatform", SquaremapPlatformExtension::class)
 
 decorateVersion()
 

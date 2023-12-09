@@ -1,7 +1,7 @@
 import io.papermc.hangarpublishplugin.model.Platforms
 
 plugins {
-  id("platform-conventions")
+  id("squaremap.platform")
   id("io.papermc.paperweight.userdev")
   alias(libs.plugins.run.paper)
   alias(libs.plugins.hangar.publish)
@@ -51,7 +51,7 @@ tasks {
       "version" to project.version,
       "website" to providers.gradleProperty("githubUrl").get(),
       "description" to project.description,
-      "apiVersion" to "'" + minecraftVersion.get().take(4) + "'",
+      "apiVersion" to minecraftVersion.get().take(4),
     )
     inputs.properties(props)
     filesMatching("plugin.yml") {

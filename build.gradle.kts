@@ -1,7 +1,3 @@
 plugins {
-  id("parent-conventions")
+  id("squaremap.parent")
 }
-
-group = "xyz.jpenilla"
-version = "1.2.3-SNAPSHOT"
-description = "Minimalistic and lightweight world map viewer for Minecraft servers"
