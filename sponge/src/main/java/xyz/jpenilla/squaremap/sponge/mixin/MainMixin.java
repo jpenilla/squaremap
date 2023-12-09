@@ -13,7 +13,7 @@ abstract class MainMixin {
         method = "main",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/server/packs/repository/ServerPacksSource;createPackRepository(Ljava/nio/file/Path;)Lnet/minecraft/server/packs/repository/PackRepository;"
+            target = "Lnet/minecraft/server/packs/repository/ServerPacksSource;createPackRepository(Lnet/minecraft/world/level/storage/LevelStorageSource$LevelStorageAccess;)Lnet/minecraft/server/packs/repository/PackRepository;"
         )
     )
     private static void startSquaremap(final String[] $$0, final CallbackInfo ci) {
