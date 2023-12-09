@@ -33,7 +33,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
             List.of(
                 "minecraft:tall_grass",
                 "minecraft:fern",
-                "minecraft:grass",
+                "minecraft:short_grass",
                 "minecraft:large_fern"
             )
         ).forEach(block -> this.invisibleBlocks.add(Util.requireEntry(BuiltInRegistries.BLOCK, new ResourceLocation(block))));

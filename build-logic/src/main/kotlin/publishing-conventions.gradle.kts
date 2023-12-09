@@ -17,9 +17,9 @@ indra {
     pom {
       developers {
         developer {
-          id.set("jmp")
-          name.set("Jason Penilla")
-          timezone.set("America/Phoenix")
+          id = "jmp"
+          name = "Jason Penilla"
+          timezone = "America/Phoenix"
         }
       }
     }

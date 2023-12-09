@@ -41,10 +41,10 @@ dependencies {
   include(libs.cardinalComponentsEntity)
 }
 
-squaremapLoomPlatform.modInfoFilePath.set("fabric.mod.json")
+squaremapLoomPlatform.modInfoFilePath = "fabric.mod.json"
 
 tasks.remapJar {
-  archiveFileName.set(productionJarName(libs.versions.minecraft))
+  archiveFileName = productionJarName(libs.versions.minecraft)
 }
 
 publishMods.modrinth {

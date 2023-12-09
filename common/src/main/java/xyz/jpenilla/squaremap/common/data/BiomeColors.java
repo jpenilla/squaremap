@@ -27,7 +27,7 @@ public final class BiomeColors {
 
     private static final Set<Block> GRASS_COLOR_BLOCKS = Set.of(
         Blocks.GRASS_BLOCK,
-        Blocks.GRASS,
+        Blocks.SHORT_GRASS,
         Blocks.TALL_GRASS,
         Blocks.FERN,
         Blocks.LARGE_FERN,

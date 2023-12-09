@@ -18,7 +18,7 @@ dependencies {
   }
 
   implementation(platform(libs.adventureBom))
-  include(platform(libs.adventureBom))
+  include(platform(libs.adventureBom.get().group + ':' + libs.adventureBom.get().name + ":4.15.0-SNAPSHOT")) // todo
   implementation(libs.adventureApi)
   include(libs.adventureApi)
   include(libs.examinationApi)
@@ -40,25 +40,10 @@ dependencies {
 }
 
 tasks.remapJar {
-  archiveFileName.set(productionJarName(libs.versions.minecraft))
+  archiveFileName = productionJarName(libs.versions.minecraft)
 }
 
-squaremapLoomPlatform.modInfoFilePath.set("META-INF/mods.toml")
-
-// todo https://github.com/FabricMC/fabric-loom/pull/838
-configurations.include {
-  isTransitive = true
-  withDependencies {
-    all {
-      if (this !is ModuleDependency) return@all
-      val category: Category? = attributes.getAttribute(Category.CATEGORY_ATTRIBUTE)
-      if (category != null && (category.name == Category.REGULAR_PLATFORM || category.name == Category.ENFORCED_PLATFORM)) {
-        return@all
-      }
-      isTransitive = false
-    }
-  }
-}
+squaremapLoomPlatform.modInfoFilePath = "META-INF/mods.toml"
 
 publishMods.modrinth {
   minecraftVersions.add(libs.versions.minecraft)

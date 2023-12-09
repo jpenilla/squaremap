@@ -39,8 +39,10 @@ tasks {
     ).forEach(::reloc)
   }
   val copyJar = register("copyJar", CopyFile::class) {
-    fileToCopy.set(platformExt.productionJar)
-    destination.set(platformExt.productionJar.flatMap { rootProject.layout.buildDirectory.file("libs/${it.asFile.name}") })
+    fileToCopy = platformExt.productionJar
+    destination = platformExt.productionJar.flatMap {
+      rootProject.layout.buildDirectory.file("libs/${it.asFile.name}")
+    }
   }
   assemble {
     dependsOn(copyJar)

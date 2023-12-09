@@ -5,12 +5,12 @@ import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.getByType
 
 val Project.releaseNotes: Provider<String>
   get() = providers.environmentVariable("RELEASE_NOTES")
 
-fun Project.lastCommitHash(): String = the<IndraGitExtension>().commit()?.name?.substring(0, 7)
+fun Project.lastCommitHash(): String = extensions.getByType<IndraGitExtension>().commit()?.name?.substring(0, 7)
   ?: error("Could not determine commit hash")
 
 fun Project.decorateVersion() {
@@ -32,7 +32,7 @@ fun Project.currentBranch(): String {
   System.getenv("GITHUB_REF")?.takeIf { it.isNotEmpty() }
     ?.let { return it.replaceFirst("refs/heads/", "") }
 
-  val indraGit = the<IndraGitExtension>().takeIf { it.isPresent }
+  val indraGit = extensions.getByType<IndraGitExtension>().takeIf { it.isPresent }
 
   val ref = indraGit?.git()?.repository?.exactRef("HEAD")?.target
     ?: return "detached-head"
@@ -40,7 +40,7 @@ fun Project.currentBranch(): String {
   return Repository.shortenRefName(ref.name)
 }
 
-fun Project.productionJarName(mcVer: Provider<String>): Provider<String> = the<BasePluginExtension>()
+fun Project.productionJarName(mcVer: Provider<String>): Provider<String> = extensions.getByType<BasePluginExtension>()
   .archivesName.zip(mcVer) { archivesName, mc -> "$archivesName-mc$mc-$version.jar" }
 
 fun Project.productionJarLocation(mcVer: Provider<String>): Provider<RegularFile> =

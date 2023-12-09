@@ -8,8 +8,10 @@ import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
 @SuppressWarnings("unused")
 public final class Config extends AbstractConfig {
+    private static final int LATEST_VERSION = 2;
+
     Config(final DirectoryProvider directoryProvider) {
-        super(directoryProvider.dataDirectory(), Config.class, "config.yml", 2);
+        super(directoryProvider.dataDirectory(), Config.class, "config.yml", LATEST_VERSION);
     }
 
     @Override
@@ -24,7 +26,7 @@ public final class Config extends AbstractConfig {
             })
             .build();
 
-        versionedBuilder.addVersion(2, oneToTwo);
+        versionedBuilder.addVersion(LATEST_VERSION, oneToTwo);
     }
 
     static Config config;

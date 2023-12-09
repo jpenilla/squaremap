@@ -15,7 +15,7 @@ configurations.compileOnly {
 
 dependencies {
   paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
-  compileOnly("dev.folia", "folia-api", "1.20.1-R0.1-SNAPSHOT")
+  compileOnly("dev.folia", "folia-api", "1.20.2-R0.1-SNAPSHOT")
 
   implementation(projects.squaremapCommon)
 
@@ -44,7 +44,7 @@ tasks {
     ).forEach(::reloc)
   }
   reobfJar {
-    outputJar.set(productionJarLocation(minecraftVersion))
+    outputJar = productionJarLocation(minecraftVersion)
   }
   processResources {
     val props = mapOf(
@@ -60,20 +60,18 @@ tasks {
   }
 }
 
-squaremapPlatform {
-  productionJar.set(tasks.reobfJar.flatMap { it.outputJar })
-}
+squaremapPlatform.productionJar = tasks.reobfJar.flatMap { it.outputJar }
 
 runPaper.folia.registerTask()
 
 hangarPublish.publications.register("plugin") {
-  version.set(project.version as String)
-  id.set("squaremap")
-  channel.set("Release")
-  changelog.set(releaseNotes)
-  apiKey.set(providers.environmentVariable("HANGAR_UPLOAD_KEY"))
+  version = project.version as String
+  id = "squaremap"
+  channel = "Release"
+  changelog = releaseNotes
+  apiKey = providers.environmentVariable("HANGAR_UPLOAD_KEY")
   platforms.register(Platforms.PAPER) {
-    jar.set(squaremapPlatform.productionJar)
+    jar = squaremapPlatform.productionJar
     platformVersions.add(minecraftVersion)
   }
 }

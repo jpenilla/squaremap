@@ -21,6 +21,7 @@ repositories {
     mavenContent {
       includeGroup("cloud.commandframework")
       includeGroup("xyz.jpenilla")
+      includeModule("net.kyori", "adventure-platform-fabric") // todo
       snapshotsOnly()
     }
   }
@@ -30,4 +31,9 @@ repositories {
   maven("https://maven.fabricmc.net/") {
     mavenContent { includeGroup("net.fabricmc") }
   }
+}
+
+tasks.withType(JavaCompile::class).configureEach {
+  // We don't care about annotations being unclaimed by processors
+  options.compilerArgs.add("-Xlint:-processing")
 }

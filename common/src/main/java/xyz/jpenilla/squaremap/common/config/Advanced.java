@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.common.config;
 
 import io.leangen.geantyref.TypeToken;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.NodePath;
@@ -11,8 +12,10 @@ import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
+    private static final int LATEST_VERSION = 3;
+
     Advanced(final DirectoryProvider directoryProvider) {
-        super(directoryProvider.dataDirectory(), Advanced.class, "advanced.yml", 2);
+        super(directoryProvider.dataDirectory(), Advanced.class, "advanced.yml", LATEST_VERSION);
     }
 
     @Override
@@ -33,8 +36,23 @@ public final class Advanced extends AbstractConfig {
                 return null;
             })
             .build();
+        final ConfigurationTransformation twoToThree = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("world-settings"), Transformations.eachMapChild(worldSection -> {
+                Transformations.applyMapKeyOrListValueRenames(
+                    List.of(
+                        worldSection.node("invisible-blocks"),
+                        worldSection.node("iterate-up-base-blocks"),
+                        worldSection.node("color-overrides", "blocks")
+                    ),
+                    Map.of(
+                        Transformations.maybeMinecraft("grass"), "minecraft:short_grass"
+                    )
+                );
+            }))
+            .build();
 
         versionedBuilder.addVersion(2, oneToTwo);
+        versionedBuilder.addVersion(LATEST_VERSION, twoToThree);
     }
 
     static Advanced config;
