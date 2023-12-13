@@ -1,5 +1,3 @@
-import io.papermc.hangarpublishplugin.model.Platforms
-
 plugins {
   id("squaremap.platform")
   id("io.papermc.paperweight.userdev")
@@ -70,7 +68,7 @@ hangarPublish.publications.register("plugin") {
   channel = "Release"
   changelog = releaseNotes
   apiKey = providers.environmentVariable("HANGAR_UPLOAD_KEY")
-  platforms.register(Platforms.PAPER) {
+  platforms.paper {
     jar = squaremapPlatform.productionJar
     platformVersions.add(minecraftVersion)
   }
