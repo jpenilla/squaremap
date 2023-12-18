@@ -18,11 +18,12 @@ dependencies {
   }
 
   implementation(platform(libs.adventureBom))
-  include(platform(libs.adventureBom.get().group + ':' + libs.adventureBom.get().name + ":4.15.0-SNAPSHOT")) // todo
+  include(platform(libs.adventureBom))
   implementation(libs.adventureApi)
   include(libs.adventureApi)
   include(libs.examinationApi)
   include(libs.examinationString)
+  include(libs.option)
   include(libs.adventureKey)
   include(libs.miniMessage)
   implementation(libs.adventureTextSerializerGson)
