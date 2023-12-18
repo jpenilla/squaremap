@@ -8,7 +8,7 @@ hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.1" }
 minecraft = "1.20.4"
 checkerQual = "3.40.0"
 cloud = "1.8.4"
-cloudNeoForge = "1.0.0+1.20.2-SNAPSHOT"
+cloudNeoForge = "1.0.0+1.20.4-SNAPSHOT"
 cloudSponge = "1.8.0-SNAPSHOT"
 configurate = "4.1.2"
 adventure = "4.14.0"
@@ -20,7 +20,7 @@ fabricApi = "0.91.1+1.20.4"
 fabricLoader = "0.15.1"
 cardinalComponents = "5.4.0"
 guice = "5.1.0"
-neoforge = "20.4.20-beta"
+neoforge = "20.4.43-beta"
 
 # buildSrc
 indra = "3.1.3"
