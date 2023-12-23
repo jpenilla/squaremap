@@ -15,7 +15,7 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "xyz.jpenilla.squaremap.fabric.SquaremapFabric$Initializer"
+            "xyz.jpenilla.squaremap.fabric.SquaremapFabric\u0024Initializer"
         ],
         "cardinal-components": [
             "xyz.jpenilla.squaremap.fabric.SquaremapComponentInitializer"

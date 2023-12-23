@@ -6,6 +6,7 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.language.jvm.tasks.ProcessResources
 
 val Project.releaseNotes: Provider<String>
   get() = providers.environmentVariable("RELEASE_NOTES")
@@ -45,3 +46,10 @@ fun Project.productionJarName(mcVer: Provider<String>): Provider<String> = exten
 
 fun Project.productionJarLocation(mcVer: Provider<String>): Provider<RegularFile> =
   productionJarName(mcVer).flatMap { layout.buildDirectory.file("libs/$it") }
+
+fun ProcessResources.expandIn(fileName: String, props: Map<String, Any?>) {
+  inputs.properties(props.mapKeys { "${fileName}_${it.key}" })
+  filesMatching(fileName) {
+    expand(props)
+  }
+}

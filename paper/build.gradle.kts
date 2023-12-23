@@ -45,16 +45,12 @@ tasks {
     outputJar = productionJarLocation(minecraftVersion)
   }
   processResources {
-    val props = mapOf(
+    expandIn("plugin.yml", mapOf(
       "version" to project.version,
       "website" to providers.gradleProperty("githubUrl").get(),
       "description" to project.description,
       "apiVersion" to minecraftVersion.get().take(4),
-    )
-    inputs.properties(props)
-    filesMatching("plugin.yml") {
-      expand(props)
-    }
+    ))
   }
 }
 
