@@ -1,13 +1,14 @@
 package xyz.jpenilla.squaremap.common.command.commands;
 
-import cloud.commandframework.extra.confirmation.CommandConfirmationManager;
-import cloud.commandframework.minecraft.extras.MinecraftExtrasMetaKeys;
 import com.google.inject.Inject;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.processors.cache.SimpleCache;
+import org.incendo.cloud.processors.confirmation.ConfirmationConfiguration;
+import org.incendo.cloud.processors.confirmation.ConfirmationManager;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -15,15 +16,18 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
 
+import static cloud.commandframework.minecraft.extras.RichDescription.richDescription;
 import static net.kyori.adventure.text.Component.text;
 
 @DefaultQualifier(NonNull.class)
 public final class ConfirmCommand extends SquaremapCommand {
-    private final CommandConfirmationManager<Commander> confirmationManager = new CommandConfirmationManager<>(
-        15L,
-        TimeUnit.SECONDS,
-        context -> context.getCommandContext().getSender().sendMessage(confirmationRequiredMessage()),
-        sender -> sender.sendMessage(Messages.NO_PENDING_COMMANDS_MESSAGE)
+    private final ConfirmationManager<Commander> confirmationManager = ConfirmationManager.of(
+        ConfirmationConfiguration.<Commander>builder()
+            .cache(SimpleCache.of())
+            .noPendingCommandNotifier(sender -> sender.sendMessage(Messages.NO_PENDING_COMMANDS_MESSAGE))
+            .confirmationRequiredNotifier((sender, ctx) -> sender.sendMessage(confirmationRequiredMessage()))
+            .expiration(Duration.ofSeconds(15))
+            .build()
     );
 
     private static ComponentLike confirmationRequiredMessage() {
@@ -40,11 +44,13 @@ public final class ConfirmCommand extends SquaremapCommand {
 
     @Override
     public void register() {
-        this.confirmationManager.registerConfirmationProcessor(this.commands.commandManager());
+        this.commands.commandManager().registerCommandPostProcessor(
+            this.confirmationManager.createPostprocessor()
+        );
 
         this.commands.registerSubcommand(builder ->
             builder.literal("confirm")
-                .meta(MinecraftExtrasMetaKeys.DESCRIPTION, Messages.CONFIRM_COMMAND_DESCRIPTION.asComponent())
-                .handler(this.confirmationManager.createConfirmationExecutionHandler()));
+                .commandDescription(richDescription(Messages.CONFIRM_COMMAND_DESCRIPTION))
+                .handler(this.confirmationManager.createExecutionHandler()));
     }
 }

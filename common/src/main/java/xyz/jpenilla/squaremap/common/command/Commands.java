@@ -2,11 +2,9 @@ package xyz.jpenilla.squaremap.common.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.CommandManager;
+import cloud.commandframework.Description;
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
 import cloud.commandframework.keys.CloudKey;
-import cloud.commandframework.keys.SimpleCloudKey;
-import cloud.commandframework.meta.CommandMeta;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
@@ -58,12 +56,8 @@ public final class Commands {
         this.injector = injector;
         this.commandManager = platformCommands.createCommandManager();
 
-        this.commandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
-            FilteringCommandSuggestionProcessor.Filter.<Commander>contains(true).andTrimBeforeLastSpace()
-        ));
-
         this.commandManager.registerCommandPreProcessor(preprocessContext -> {
-            final CommandContext<Commander> commandContext = preprocessContext.getCommandContext();
+            final CommandContext<Commander> commandContext = preprocessContext.commandContext();
             commandContext.store(PLAYER_MANAGER, playerManager);
             commandContext.store(SERVER_ACCESS, serverAccess);
             commandContext.store(RENDER_FACTORY, renderFactory);
@@ -97,15 +91,16 @@ public final class Commands {
         this.commandManager.command(builder);
     }
 
-    public void registerSubcommand(UnaryOperator<Command.Builder<Commander>> builderModifier) {
+    public void registerSubcommand(final UnaryOperator<Command.Builder<Commander>> builderModifier) {
         this.commandManager.command(builderModifier.apply(this.rootBuilder()));
     }
 
     public Command.Builder<Commander> rootBuilder() {
-        return this.commandManager.commandBuilder(Config.MAIN_COMMAND_LABEL, Config.MAIN_COMMAND_ALIASES.toArray(String[]::new))
-            /* MinecraftHelp uses the MinecraftExtrasMetaKeys.DESCRIPTION meta, this is just so we give Bukkit a description
-             * for our commands in the Bukkit and EssentialsX '/help' command */
-            .meta(CommandMeta.DESCRIPTION, String.format("squaremap command. '/%s help'", Config.MAIN_COMMAND_LABEL));
+        return this.commandManager.commandBuilder(
+            Config.MAIN_COMMAND_LABEL,
+            Description.of(String.format("squaremap command. '/%s help'", Config.MAIN_COMMAND_LABEL)),
+            Config.MAIN_COMMAND_ALIASES.toArray(String[]::new)
+        );
     }
 
     public CommandManager<Commander> commandManager() {
@@ -113,6 +108,6 @@ public final class Commands {
     }
 
     private static <T> CloudKey<T> createTypeKey(final Class<T> type) {
-        return SimpleCloudKey.of("squaremap-" + type.getName(), TypeToken.get(type));
+        return CloudKey.of("squaremap-" + type.getName(), TypeToken.get(type));
     }
 }

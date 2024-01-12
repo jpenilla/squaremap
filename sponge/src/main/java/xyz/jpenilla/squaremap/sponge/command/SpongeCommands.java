@@ -22,8 +22,8 @@ import org.spongepowered.plugin.PluginContainer;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.common.command.argument.LevelArgument;
-import xyz.jpenilla.squaremap.common.command.argument.MapWorldArgument;
+import xyz.jpenilla.squaremap.common.command.argument.parser.LevelArgument;
+import xyz.jpenilla.squaremap.common.command.argument.parser.MapWorldArgument;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Messages;
 

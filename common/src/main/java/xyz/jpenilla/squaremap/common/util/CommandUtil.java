@@ -20,7 +20,7 @@ public final class CommandUtil {
     }
 
     public static MapWorldInternal resolveWorld(final CommandContext<Commander> context) {
-        final Commander sender = context.getSender();
+        final Commander sender = context.sender();
         final @Nullable MapWorldInternal world = context.getOrDefault("world", null);
         if (world != null) {
             return world;

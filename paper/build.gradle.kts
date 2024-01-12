@@ -34,6 +34,7 @@ tasks {
   shadowJar {
     listOf(
       "cloud.commandframework",
+      "org.incendo.cloud",
       "io.leangen.geantyref",
       "org.bstats",
       "jakarta.inject",

@@ -8,8 +8,9 @@ javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = 
 [versions]
 minecraft = "1.20.4"
 checkerQual = "3.42.0"
-cloud = "1.8.4"
-cloudNeoForge = "1.0.0+1.20.4-SNAPSHOT"
+cloud = "2.0.0-SNAPSHOT"
+cloudProcessors = "1.0.0-SNAPSHOT"
+cloudNeoForge = "2.0.0+1.20.4-SNAPSHOT"
 cloudSponge = "1.8.0-SNAPSHOT"
 configurate = "4.1.2"
 adventure = "4.16.0"
@@ -50,6 +51,8 @@ examinationString = { group = "net.kyori", name = "examination-string", version.
 option = { group = "net.kyori", name = "option", version.ref = "option" }
 
 cloudCore = { group = "cloud.commandframework", name = "cloud-core", version.ref = "cloud" }
+cloudProcessorsCommon = { group = "org.incendo", name = "cloud-processors-common", version.ref = "cloudProcessors" }
+cloudConfirmation = { group = "org.incendo", name = "cloud-processors-confirmation", version.ref = "cloudProcessors" }
 cloudBrigadier = { group = "cloud.commandframework", name = "cloud-brigadier", version.ref = "cloud" }
 cloudMinecraftExtras = { group = "cloud.commandframework", name = "cloud-minecraft-extras", version.ref = "cloud" }
 cloudPaper = { group = "cloud.commandframework", name = "cloud-paper", version.ref = "cloud" }

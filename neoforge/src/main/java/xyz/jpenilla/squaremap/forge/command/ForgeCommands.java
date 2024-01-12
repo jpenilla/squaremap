@@ -1,17 +1,20 @@
 package xyz.jpenilla.squaremap.forge.command;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.CommandArgument;
+import cloud.commandframework.SenderMapper;
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
+import cloud.commandframework.arguments.parser.ParserDescriptor;
 import cloud.commandframework.brigadier.argument.WrappedBrigadierParser;
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.execution.ExecutionCoordinator;
 import cloud.commandframework.neoforge.NeoForgeCommandContextKeys;
 import cloud.commandframework.neoforge.NeoForgeServerCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
@@ -25,8 +28,6 @@ import xyz.jpenilla.squaremap.common.command.BrigadierSetup;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -38,9 +39,11 @@ public final class ForgeCommands implements PlatformCommands {
     @Override
     public CommandManager<Commander> createCommandManager() {
         final NeoForgeServerCommandManager<Commander> mgr = new NeoForgeServerCommandManager<>(
-            CommandExecutionCoordinator.simpleCoordinator(),
-            ForgeCommander::from,
-            commander -> ((ForgeCommander) commander).stack()
+            ExecutionCoordinator.simpleCoordinator(),
+            SenderMapper.create(
+                ForgeCommander::from,
+                commander -> ((ForgeCommander) commander).stack()
+            )
         );
 
         BrigadierSetup.setup(mgr);
@@ -49,47 +52,46 @@ public final class ForgeCommands implements PlatformCommands {
     }
 
     @Override
-    public CommandArgument<Commander, ?> columnPosArgument(final String name) {
-        return CommandArgument.<Commander, BlockPos>ofType(BlockPos.class, name)
-            .withParser(new WrappedBrigadierParser<Commander, Coordinates>(ColumnPosArgument::columnPos).map(ForgeCommands::mapToCoordinates))
-            .asOptional()
-            .build();
+    public ParserDescriptor<Commander, ?> columnPosParser() {
+        return ParserDescriptor.of(
+            new WrappedBrigadierParser<Commander, Coordinates>(ColumnPosArgument::columnPos)
+                .flatMapSuccess(ForgeCommands::mapToCoordinates),
+            BlockPos.class
+        );
     }
 
     @Override
-    public @Nullable BlockPos extractColumnPos(final String argName, final CommandContext<Commander> context) {
-        return context.<BlockPos>getOptional(argName).orElse(null);
+    public Optional<BlockPos> extractColumnPos(final String argName, final CommandContext<Commander> context) {
+        return context.<BlockPos>optional(argName);
     }
 
     @Override
-    public CommandArgument<Commander, ?> singlePlayerSelectorArgument(final String name) {
-        return CommandArgument.<Commander, ServerPlayer>ofType(ServerPlayer.class, name)
-            .withParser(singlePlayerSelector())
-            .build();
+    public ParserDescriptor<Commander, ?> singlePlayerSelectorParser() {
+        return ParserDescriptor.of(singlePlayerSelector(), ServerPlayer.class);
     }
 
     @Override
-    public ServerPlayer extractPlayer(final String argName, final CommandContext<Commander> context) {
-        final Commander sender = context.getSender();
+    public Optional<ServerPlayer> extractPlayer(final String argName, final CommandContext<Commander> context) {
+        final Commander sender = context.sender();
         final @Nullable ServerPlayer specified = context.getOrDefault(argName, null);
 
         if (specified == null) {
             if (sender instanceof PlayerCommander player) {
-                return player.player();
+                return Optional.of(player.player());
             }
-            throw CommandCompleted.withMessage(Messages.CONSOLE_MUST_SPECIFY_PLAYER);
+            return Optional.empty();
         }
 
-        return specified;
+        return Optional.of(specified);
     }
 
-    private static <C> ArgumentParseResult<BlockPos> mapToCoordinates(final CommandContext<C> ctx, final Coordinates coordinates) {
-        return ArgumentParseResult.success(coordinates.getBlockPos(ctx.get(NeoForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)));
+    private static <C> CompletableFuture<ArgumentParseResult<BlockPos>> mapToCoordinates(final CommandContext<C> ctx, final Coordinates coordinates) {
+        return ArgumentParseResult.successFuture(coordinates.getBlockPos(ctx.get(NeoForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)));
     }
 
     public static <C> ArgumentParser<C, ServerPlayer> singlePlayerSelector() {
         return new WrappedBrigadierParser<C, EntitySelector>(EntityArgument.player())
-            .map((ctx, entitySelector) ->
+            .flatMapSuccess((ctx, entitySelector) ->
                 handleCommandSyntaxExceptionAsFailure(() ->
                     ArgumentParseResult.success(entitySelector.findSinglePlayer(ctx.get(NeoForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)))));
     }
@@ -99,13 +101,13 @@ public final class ForgeCommands implements PlatformCommands {
         ArgumentParseResult<O> result() throws CommandSyntaxException;
     }
 
-    private static <O> ArgumentParseResult<O> handleCommandSyntaxExceptionAsFailure(
+    private static <O> CompletableFuture<ArgumentParseResult<O>> handleCommandSyntaxExceptionAsFailure(
         final CommandSyntaxExceptionThrowingParseResultSupplier<O> resultSupplier
     ) {
         try {
-            return resultSupplier.result();
+            return CompletableFuture.completedFuture(resultSupplier.result());
         } catch (final CommandSyntaxException ex) {
-            return ArgumentParseResult.failure(ex);
+            return ArgumentParseResult.failureFuture(ex);
         }
     }
 }

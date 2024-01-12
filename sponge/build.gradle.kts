@@ -58,7 +58,7 @@ tasks {
   shadowJar {
     archiveFileName.set(productionJarName(minecraftVersion))
     listOf(
-      "cloud.commandframework",
+      "org.incendo.cloud",
       "com.google.inject",
       "jakarta.inject",
     ).forEach(::reloc)

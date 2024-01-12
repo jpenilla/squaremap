@@ -24,6 +24,7 @@ dependencies {
   compileOnlyApi(libs.miniMessage)
 
   api(libs.cloudCore)
+  api(libs.cloudConfirmation)
   compileOnly(libs.cloudBrigadier)
   api(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately

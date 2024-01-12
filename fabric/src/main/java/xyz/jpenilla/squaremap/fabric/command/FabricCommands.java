@@ -1,16 +1,17 @@
 package xyz.jpenilla.squaremap.fabric.command;
 
 import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.CommandArgument;
+import cloud.commandframework.SenderMapper;
+import cloud.commandframework.arguments.parser.ParserDescriptor;
 import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.execution.CommandExecutionCoordinator;
+import cloud.commandframework.execution.ExecutionCoordinator;
 import cloud.commandframework.fabric.FabricServerCommandManager;
-import cloud.commandframework.fabric.argument.server.ColumnPosArgument;
-import cloud.commandframework.fabric.argument.server.SinglePlayerSelectorArgument;
+import cloud.commandframework.fabric.argument.FabricVanillaArgumentParsers;
 import cloud.commandframework.fabric.data.Coordinates;
 import cloud.commandframework.fabric.data.SinglePlayerSelector;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -20,8 +21,6 @@ import xyz.jpenilla.squaremap.common.command.BrigadierSetup;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
-import xyz.jpenilla.squaremap.common.config.Messages;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -33,9 +32,11 @@ public final class FabricCommands implements PlatformCommands {
     @Override
     public CommandManager<Commander> createCommandManager() {
         final FabricServerCommandManager<Commander> mgr = new FabricServerCommandManager<>(
-            CommandExecutionCoordinator.simpleCoordinator(),
-            FabricCommander::from,
-            commander -> ((FabricCommander) commander).stack()
+            ExecutionCoordinator.simpleCoordinator(),
+            SenderMapper.create(
+                FabricCommander::from,
+                commander -> ((FabricCommander) commander).stack()
+            )
         );
 
         BrigadierSetup.setup(mgr);
@@ -44,34 +45,33 @@ public final class FabricCommands implements PlatformCommands {
     }
 
     @Override
-    public CommandArgument<Commander, ?> columnPosArgument(final String name) {
-        return ColumnPosArgument.optional(name);
+    public ParserDescriptor<Commander, ?> columnPosParser() {
+        return FabricVanillaArgumentParsers.columnPosParser();
     }
 
     @Override
-    public @Nullable BlockPos extractColumnPos(final String argName, final CommandContext<Commander> context) {
-        return context.<Coordinates.ColumnCoordinates>getOptional(argName)
-            .map(Coordinates::blockPos)
-            .orElse(null);
+    public Optional<BlockPos> extractColumnPos(final String argName, final CommandContext<Commander> context) {
+        return context.<Coordinates.ColumnCoordinates>optional(argName)
+            .map(Coordinates::blockPos);
     }
 
     @Override
-    public CommandArgument<Commander, ?> singlePlayerSelectorArgument(final String name) {
-        return SinglePlayerSelectorArgument.of(name);
+    public ParserDescriptor<Commander, ?> singlePlayerSelectorParser() {
+        return FabricVanillaArgumentParsers.singlePlayerSelectorParser();
     }
 
     @Override
-    public ServerPlayer extractPlayer(final String argName, final CommandContext<Commander> context) {
-        final Commander sender = context.getSender();
+    public Optional<ServerPlayer> extractPlayer(final String argName, final CommandContext<Commander> context) {
+        final Commander sender = context.sender();
         final @Nullable SinglePlayerSelector selector = context.getOrDefault(argName, null);
 
         if (selector == null) {
             if (sender instanceof PlayerCommander player) {
-                return player.player();
+                return Optional.of(player.player());
             }
-            throw CommandCompleted.withMessage(Messages.CONSOLE_MUST_SPECIFY_PLAYER);
+            return Optional.empty();
         }
 
-        return selector.getSingle();
+        return Optional.of(selector.single());
     }
 }
