@@ -31,6 +31,7 @@ repositories {
 }
 
 tasks.withType(JavaCompile::class).configureEach {
-  // We don't care about annotations being unclaimed by processors
-  options.compilerArgs.add("-Xlint:-processing")
+  // We don't care about annotations being unclaimed by processors,
+  // missing annotation (values), or Java serialization
+  options.compilerArgs.add("-Xlint:-processing,-classfile,-serial")
 }
