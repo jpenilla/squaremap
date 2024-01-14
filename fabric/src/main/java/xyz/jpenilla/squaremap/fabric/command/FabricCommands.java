@@ -6,9 +6,9 @@ import cloud.commandframework.arguments.parser.ParserDescriptor;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.ExecutionCoordinator;
 import cloud.commandframework.fabric.FabricServerCommandManager;
-import cloud.commandframework.fabric.argument.FabricVanillaArgumentParsers;
-import cloud.commandframework.fabric.data.Coordinates;
-import cloud.commandframework.fabric.data.SinglePlayerSelector;
+import cloud.commandframework.minecraft.modded.data.Coordinates;
+import cloud.commandframework.minecraft.modded.data.SinglePlayerSelector;
+import cloud.commandframework.minecraft.modded.parser.VanillaArgumentParsers;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Optional;
@@ -46,7 +46,7 @@ public final class FabricCommands implements PlatformCommands {
 
     @Override
     public ParserDescriptor<Commander, ?> columnPosParser() {
-        return FabricVanillaArgumentParsers.columnPosParser();
+        return VanillaArgumentParsers.columnPosParser();
     }
 
     @Override
@@ -57,7 +57,7 @@ public final class FabricCommands implements PlatformCommands {
 
     @Override
     public ParserDescriptor<Commander, ?> singlePlayerSelectorParser() {
-        return FabricVanillaArgumentParsers.singlePlayerSelectorParser();
+        return VanillaArgumentParsers.singlePlayerSelectorParser();
     }
 
     @Override

@@ -10,7 +10,7 @@ minecraft = "1.20.4"
 checkerQual = "3.42.0"
 cloud = "2.0.0-SNAPSHOT"
 cloudProcessors = "1.0.0-SNAPSHOT"
-cloudNeoForge = "2.0.0+1.20.4-SNAPSHOT"
+cloudModded = "2.0.0-SNAPSHOT"
 cloudSponge = "1.8.0-SNAPSHOT"
 configurate = "4.1.2"
 adventure = "4.16.0"
@@ -56,8 +56,8 @@ cloudConfirmation = { group = "org.incendo", name = "cloud-processors-confirmati
 cloudBrigadier = { group = "cloud.commandframework", name = "cloud-brigadier", version.ref = "cloud" }
 cloudMinecraftExtras = { group = "cloud.commandframework", name = "cloud-minecraft-extras", version.ref = "cloud" }
 cloudPaper = { group = "cloud.commandframework", name = "cloud-paper", version.ref = "cloud" }
-cloudFabric = { group = "cloud.commandframework", name = "cloud-fabric", version.ref = "cloud" }
-cloudNeoForge = { group = "cloud.commandframework", name = "cloud-neoforge", version.ref = "cloudNeoForge" }
+cloudFabric = { group = "cloud.commandframework", name = "cloud-fabric", version.ref = "cloudModded" }
+cloudNeoForge = { group = "cloud.commandframework", name = "cloud-neoforge", version.ref = "cloudModded" }
 cloudSponge = { group = "cloud.commandframework", name = "cloud-sponge", version.ref = "cloudSponge" }
 
 configurateBom = { group = "org.spongepowered", name = "configurate-bom", version.ref = "configurate" }

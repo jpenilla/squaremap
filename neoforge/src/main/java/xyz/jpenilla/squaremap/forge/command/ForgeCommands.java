@@ -2,23 +2,15 @@ package xyz.jpenilla.squaremap.forge.command;
 
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.SenderMapper;
-import cloud.commandframework.arguments.parser.ArgumentParseResult;
-import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.arguments.parser.ParserDescriptor;
-import cloud.commandframework.brigadier.argument.WrappedBrigadierParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.execution.ExecutionCoordinator;
-import cloud.commandframework.neoforge.NeoForgeCommandContextKeys;
+import cloud.commandframework.minecraft.modded.data.Coordinates;
+import cloud.commandframework.minecraft.modded.parser.VanillaArgumentParsers;
 import cloud.commandframework.neoforge.NeoForgeServerCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.coordinates.ColumnPosArgument;
-import net.minecraft.commands.arguments.coordinates.Coordinates;
-import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -53,21 +45,18 @@ public final class ForgeCommands implements PlatformCommands {
 
     @Override
     public ParserDescriptor<Commander, ?> columnPosParser() {
-        return ParserDescriptor.of(
-            new WrappedBrigadierParser<Commander, Coordinates>(ColumnPosArgument::columnPos)
-                .flatMapSuccess(ForgeCommands::mapToCoordinates),
-            BlockPos.class
-        );
+        return VanillaArgumentParsers.columnPosParser();
     }
 
     @Override
     public Optional<BlockPos> extractColumnPos(final String argName, final CommandContext<Commander> context) {
-        return context.<BlockPos>optional(argName);
+        return context.<cloud.commandframework.minecraft.modded.data.Coordinates.ColumnCoordinates>optional(argName)
+            .map(Coordinates::blockPos);
     }
 
     @Override
     public ParserDescriptor<Commander, ?> singlePlayerSelectorParser() {
-        return ParserDescriptor.of(singlePlayerSelector(), ServerPlayer.class);
+        return VanillaArgumentParsers.singlePlayerSelectorParser();
     }
 
     @Override
@@ -83,31 +72,5 @@ public final class ForgeCommands implements PlatformCommands {
         }
 
         return Optional.of(specified);
-    }
-
-    private static <C> CompletableFuture<ArgumentParseResult<BlockPos>> mapToCoordinates(final CommandContext<C> ctx, final Coordinates coordinates) {
-        return ArgumentParseResult.successFuture(coordinates.getBlockPos(ctx.get(NeoForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)));
-    }
-
-    public static <C> ArgumentParser<C, ServerPlayer> singlePlayerSelector() {
-        return new WrappedBrigadierParser<C, EntitySelector>(EntityArgument.player())
-            .flatMapSuccess((ctx, entitySelector) ->
-                handleCommandSyntaxExceptionAsFailure(() ->
-                    ArgumentParseResult.success(entitySelector.findSinglePlayer(ctx.get(NeoForgeCommandContextKeys.NATIVE_COMMAND_SOURCE)))));
-    }
-
-    @FunctionalInterface
-    private interface CommandSyntaxExceptionThrowingParseResultSupplier<O> {
-        ArgumentParseResult<O> result() throws CommandSyntaxException;
-    }
-
-    private static <O> CompletableFuture<ArgumentParseResult<O>> handleCommandSyntaxExceptionAsFailure(
-        final CommandSyntaxExceptionThrowingParseResultSupplier<O> resultSupplier
-    ) {
-        try {
-            return CompletableFuture.completedFuture(resultSupplier.result());
-        } catch (final CommandSyntaxException ex) {
-            return ArgumentParseResult.failureFuture(ex);
-        }
     }
 }
