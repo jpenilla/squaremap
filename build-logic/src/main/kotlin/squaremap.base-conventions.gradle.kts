@@ -16,7 +16,6 @@ indra {
 }
 
 repositories {
-  mavenLocal()
   mavenCentral()
   maven("https://repo.jpenilla.xyz/snapshots/") {
     mavenContent {
@@ -26,7 +25,7 @@ repositories {
     }
   }
   sonatype.s01Snapshots()
-  //sonatype.ossSnapshots()
+  sonatype.ossSnapshots()
   maven("https://repo.papermc.io/repository/maven-public/")
 }
 
