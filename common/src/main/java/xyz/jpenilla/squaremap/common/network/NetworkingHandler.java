@@ -159,14 +159,14 @@ public final class NetworkingHandler {
     }
 
     private static void send(final ServerPlayer player, final ByteArrayDataOutput out) {
-        final ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(new SquaremapClientPayload(out));
+        final ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(new SquaremapClientPayload(out.toByteArray()));
         player.connection.send(packet);
     }
 
-    private record SquaremapClientPayload(ByteArrayDataOutput out) implements CustomPacketPayload {
+    public record SquaremapClientPayload(byte[] bytes) implements CustomPacketPayload {
         @Override
         public void write(final FriendlyByteBuf friendlyByteBuf) {
-            friendlyByteBuf.writeBytes(this.out.toByteArray());
+            friendlyByteBuf.writeBytes(this.bytes);
         }
 
         @Override

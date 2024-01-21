@@ -21,7 +21,7 @@ fabricApi = "0.95.0+1.20.4"
 fabricLoader = "0.15.6"
 cardinalComponents = "5.4.0"
 guice = "5.1.0"
-neoforge = "20.4.43-beta"
+neoforge = "20.4.120-beta"
 
 # buildSrc
 indra = "3.1.3"
