@@ -25,7 +25,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         # gradle-build-action doesn't support caching files in the project dir
       - name: "cache project local caches"
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .gradle/caches/VanillaGradle
