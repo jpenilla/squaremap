@@ -1,14 +1,5 @@
 package xyz.jpenilla.squaremap.common.command.commands;
 
-import cloud.commandframework.CommandComponent;
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.TypedCommandComponent;
-import cloud.commandframework.arguments.standard.StringParser;
-import cloud.commandframework.arguments.suggestion.BlockingSuggestionProvider;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.help.result.CommandEntry;
-import cloud.commandframework.minecraft.extras.ImmutableMinecraftHelp;
-import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import com.google.inject.Inject;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,6 +8,15 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.component.CommandComponent;
+import org.incendo.cloud.component.TypedCommandComponent;
+import org.incendo.cloud.context.CommandContext;
+import org.incendo.cloud.help.result.CommandEntry;
+import org.incendo.cloud.minecraft.extras.ImmutableMinecraftHelp;
+import org.incendo.cloud.minecraft.extras.MinecraftHelp;
+import org.incendo.cloud.parser.standard.StringParser;
+import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
@@ -24,7 +24,7 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
 
-import static cloud.commandframework.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
 @DefaultQualifier(NonNull.class)
 public final class HelpCommand extends SquaremapCommand {
@@ -75,7 +75,7 @@ public final class HelpCommand extends SquaremapCommand {
             manager
         );
         return ImmutableMinecraftHelp.copyOf(minecraftHelp).withColors(
-            MinecraftHelp.HelpColors.of(
+            MinecraftHelp.helpColors(
                 TextColor.color(0x5B00FF),
                 NamedTextColor.WHITE,
                 TextColor.color(0xC028FF),

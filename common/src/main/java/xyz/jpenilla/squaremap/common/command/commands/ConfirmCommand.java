@@ -16,8 +16,8 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
 
-import static cloud.commandframework.minecraft.extras.RichDescription.richDescription;
 import static net.kyori.adventure.text.Component.text;
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
 @DefaultQualifier(NonNull.class)
 public final class ConfirmCommand extends SquaremapCommand {

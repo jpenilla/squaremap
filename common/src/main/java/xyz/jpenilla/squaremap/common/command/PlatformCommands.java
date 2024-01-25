@@ -1,13 +1,13 @@
 package xyz.jpenilla.squaremap.common.command;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.arguments.parser.ParserDescriptor;
-import cloud.commandframework.context.CommandContext;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.context.CommandContext;
+import org.incendo.cloud.parser.ParserDescriptor;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 
 @DefaultQualifier(NonNull.class)

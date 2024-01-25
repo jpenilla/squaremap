@@ -1,13 +1,5 @@
 package xyz.jpenilla.squaremap.forge.command;
 
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.SenderMapper;
-import cloud.commandframework.arguments.parser.ParserDescriptor;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.execution.ExecutionCoordinator;
-import cloud.commandframework.minecraft.modded.data.Coordinates;
-import cloud.commandframework.minecraft.modded.parser.VanillaArgumentParsers;
-import cloud.commandframework.neoforge.NeoForgeServerCommandManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Optional;
@@ -16,6 +8,14 @@ import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.context.CommandContext;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.minecraft.modded.data.Coordinates;
+import org.incendo.cloud.minecraft.modded.parser.VanillaArgumentParsers;
+import org.incendo.cloud.neoforge.NeoForgeServerCommandManager;
+import org.incendo.cloud.parser.ParserDescriptor;
 import xyz.jpenilla.squaremap.common.command.BrigadierSetup;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
@@ -50,7 +50,7 @@ public final class ForgeCommands implements PlatformCommands {
 
     @Override
     public Optional<BlockPos> extractColumnPos(final String argName, final CommandContext<Commander> context) {
-        return context.<cloud.commandframework.minecraft.modded.data.Coordinates.ColumnCoordinates>optional(argName)
+        return context.<org.incendo.cloud.minecraft.modded.data.Coordinates.ColumnCoordinates>optional(argName)
             .map(Coordinates::blockPos);
     }
 

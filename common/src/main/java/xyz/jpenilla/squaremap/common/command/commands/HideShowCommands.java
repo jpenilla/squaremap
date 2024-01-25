@@ -1,10 +1,10 @@
 package xyz.jpenilla.squaremap.common.command.commands;
 
-import cloud.commandframework.context.CommandContext;
 import com.google.inject.Inject;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.context.CommandContext;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
@@ -14,7 +14,7 @@ import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.EntityScheduler;
 
-import static cloud.commandframework.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
 @DefaultQualifier(NonNull.class)
 public final class HideShowCommands extends SquaremapCommand {

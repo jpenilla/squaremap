@@ -19,7 +19,7 @@ repositories {
   mavenCentral()
   maven("https://repo.jpenilla.xyz/snapshots/") {
     mavenContent {
-      includeGroup("cloud.commandframework")
+      includeGroup("org.incendo")
       includeGroup("xyz.jpenilla")
       snapshotsOnly()
     }

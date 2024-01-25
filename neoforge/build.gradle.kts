@@ -12,8 +12,8 @@ dependencies {
   neoForge(libs.neoforge)
 
   shade(projects.squaremapCommon) {
-    exclude("cloud.commandframework", "cloud-core")
-    exclude("cloud.commandframework", "cloud-minecraft-extras")
+    exclude("org.incendo", "cloud-core")
+    exclude("org.incendo", "cloud-minecraft-extras")
     exclude("org.incendo", "cloud-processors-confirmation")
     exclude("io.leangen.geantyref")
   }

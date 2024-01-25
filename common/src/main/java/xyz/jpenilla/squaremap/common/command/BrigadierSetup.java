@@ -1,11 +1,11 @@
 package xyz.jpenilla.squaremap.common.command;
 
-import cloud.commandframework.brigadier.BrigadierManagerHolder;
-import cloud.commandframework.brigadier.CloudBrigadierManager;
 import io.leangen.geantyref.TypeToken;
 import net.minecraft.commands.arguments.DimensionArgument;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.brigadier.BrigadierManagerHolder;
+import org.incendo.cloud.brigadier.CloudBrigadierManager;
 import xyz.jpenilla.squaremap.common.command.argument.parser.LevelParser;
 import xyz.jpenilla.squaremap.common.command.argument.parser.MapWorldParser;
 

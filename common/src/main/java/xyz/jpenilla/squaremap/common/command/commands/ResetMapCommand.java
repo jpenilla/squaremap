@@ -1,12 +1,12 @@
 package xyz.jpenilla.squaremap.common.command.commands;
 
-import cloud.commandframework.context.CommandContext;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Path;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.processors.confirmation.ConfirmationManager;
 import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -18,7 +18,7 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
-import static cloud.commandframework.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static xyz.jpenilla.squaremap.common.command.argument.parser.LevelParser.levelParser;
 
 @DefaultQualifier(NonNull.class)

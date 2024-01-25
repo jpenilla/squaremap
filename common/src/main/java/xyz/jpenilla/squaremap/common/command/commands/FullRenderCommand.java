@@ -1,9 +1,9 @@
 package xyz.jpenilla.squaremap.common.command.commands;
 
-import cloud.commandframework.context.CommandContext;
 import com.google.inject.Inject;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.context.CommandContext;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
@@ -14,7 +14,7 @@ import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.CommandUtil;
 import xyz.jpenilla.squaremap.common.util.Components;
 
-import static cloud.commandframework.minecraft.extras.RichDescription.richDescription;
+import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static xyz.jpenilla.squaremap.common.command.argument.parser.MapWorldParser.mapWorldParser;
 
 @DefaultQualifier(NonNull.class)
