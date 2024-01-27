@@ -23,12 +23,12 @@ dependencies {
   compileOnly(libs.adventureTextSerializerGson)
   compileOnlyApi(libs.miniMessage)
 
+  api(platform(libs.cloudBom))
+  api(platform(libs.cloudMinecraftBom))
   api(libs.cloudCore)
   api(libs.cloudConfirmation)
   compileOnly(libs.cloudBrigadier)
-  api(libs.cloudMinecraftExtras) {
-    isTransitive = false // we depend on adventure separately
-  }
+  api(libs.cloudMinecraftExtras)
 
   api(platform(libs.configurateBom))
   api(libs.configurateYaml)

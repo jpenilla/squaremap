@@ -51,9 +51,11 @@ examinationApi = { group = "net.kyori", name = "examination-api", version.ref = 
 examinationString = { group = "net.kyori", name = "examination-string", version.ref = "examination" }
 option = { group = "net.kyori", name = "option", version.ref = "option" }
 
+cloudBom = { module = "org.incendo:cloud-bom", version.ref = "cloud" }
 cloudCore = { group = "org.incendo", name = "cloud-core", version.ref = "cloud" }
 cloudProcessorsCommon = { group = "org.incendo", name = "cloud-processors-common", version.ref = "cloudProcessors" }
 cloudConfirmation = { group = "org.incendo", name = "cloud-processors-confirmation", version.ref = "cloudProcessors" }
+cloudMinecraftBom = { module = "org.incendo:cloud-minecraft-bom", version.ref = "cloudMinecraft" }
 cloudBrigadier = { group = "org.incendo", name = "cloud-brigadier", version.ref = "cloudMinecraft" }
 cloudMinecraftExtras = { group = "org.incendo", name = "cloud-minecraft-extras", version.ref = "cloudMinecraft" }
 cloudPaper = { group = "org.incendo", name = "cloud-paper", version.ref = "cloudMinecraft" }
