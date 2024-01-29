@@ -15,14 +15,14 @@ jobs:
       - name: "checkout git repository"
         uses: actions/checkout@v4
       - name: "validate gradle wrapper"
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
       - name: "setup jdk"
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 17
       - name: "setup gradle"
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         # gradle-build-action doesn't support caching files in the project dir
       - name: "cache project local caches"
         uses: actions/cache@v4
