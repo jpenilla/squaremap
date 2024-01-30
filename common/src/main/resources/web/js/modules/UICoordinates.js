@@ -13,8 +13,8 @@ class UICoordinates {
                 return coords;
             },
             update: function (html, point) {
-                this.x = point == null ? "---" : Math.round(point.x);
-                this.z = point == null ? "---" : Math.round(point.y);
+                this.x = point == null ? "---" : Math.floor(point.x);
+                this.z = point == null ? "---" : Math.floor(point.y);
                 if (html != null) {
                     this._coords.innerHTML = html
                         .replace(/{x}/g, this.x)
