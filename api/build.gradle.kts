@@ -1,5 +1,6 @@
 plugins {
   id("squaremap.publishing")
+  id("org.incendo.cloud-build-logic.javadoc-links") version "0.0.8"
 }
 
 description = "API for extending squaremap, a minimalistic and lightweight world map viewer for Minecraft servers"
@@ -10,6 +11,9 @@ java {
 
 dependencies {
   compileOnly(libs.paperApi)
+  javadocLinks(libs.paperApi) {
+    isTransitive = false
+  }
   compileOnlyApi(libs.checkerQual)
   compileOnlyApi(platform(libs.adventureBom))
   compileOnlyApi(libs.adventureApi)
@@ -19,15 +23,6 @@ indra {
   javaVersions {
     target(8)
   }
-}
-
-tasks.withType<Javadoc>().configureEach {
-  val options = options as StandardJavadocDocletOptions
-  options.links(
-    "https://jd.advntr.dev/api/${libs.versions.adventure.get()}/",
-    "https://javadoc.io/doc/org.checkerframework/checker-qual/${libs.versions.checkerQual.get()}/",
-    "https://jd.papermc.io/paper/${libs.versions.minecraft.get().split(".", "-").take(2).joinToString(".")}/",
-  )
 }
 
 tasks.withType(JavaCompile::class).configureEach {
