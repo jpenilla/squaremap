@@ -1,8 +1,8 @@
 [plugins]
 sponge-gradle-plugin = { id = "org.spongepowered.gradle.plugin", version.ref = "sponge-gradle" }
 sponge-gradle-ore = { id = "org.spongepowered.gradle.ore", version.ref = "sponge-gradle" }
-run-paper = { id = "xyz.jpenilla.run-paper", version = "2.2.2" }
-hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.1" }
+run-paper = { id = "xyz.jpenilla.run-paper", version = "2.2.3" }
+hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.2" }
 
 [versions]
 minecraft = "1.20.4"
