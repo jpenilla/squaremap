@@ -26,6 +26,7 @@ import org.incendo.cloud.exception.InvalidSyntaxException;
 import org.incendo.cloud.exception.NoPermissionException;
 import org.incendo.cloud.exception.handling.ExceptionContext;
 import org.incendo.cloud.exception.parsing.ParserException;
+import org.incendo.cloud.util.TypeUtils;
 import org.spongepowered.configurate.util.NamingSchemes;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
@@ -110,7 +111,7 @@ final class ExceptionHandler {
 
     private void invalidSender(final ExceptionContext<Commander, InvalidCommandSenderException> ctx) {
         final Component message = Messages.COMMAND_EXCEPTION_INVALID_SENDER_TYPE.withPlaceholders(
-            placeholder("required_sender_type", text(ctx.exception().requiredSender().getSimpleName()))
+            placeholder("required_sender_type", text(TypeUtils.simpleName(ctx.exception().requiredSender())))
         );
         decorateAndSend(ctx.context().sender(), message);
     }
