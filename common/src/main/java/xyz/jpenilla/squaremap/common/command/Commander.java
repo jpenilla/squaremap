@@ -7,4 +7,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 public interface Commander extends Audience {
     boolean hasPermission(String permission);
+
+    Object commanderId();
 }

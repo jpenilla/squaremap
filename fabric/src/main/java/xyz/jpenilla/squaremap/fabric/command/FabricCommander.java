@@ -1,22 +1,18 @@
 package xyz.jpenilla.squaremap.fabric.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.Objects;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.fabric.mixin.CommandSourceStackAccess;
 
-// Commanders are used as Map keys by the CommandConfirmationManager to track who has confirmations pending
-// So our equals and hashcode only account for the source, not the entire stack
 @DefaultQualifier(NonNull.class)
 public class FabricCommander implements Commander, ForwardingAudience.Single {
     private final CommandSourceStack stack;
@@ -40,20 +36,8 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
     }
 
     @Override
-    public boolean equals(final @Nullable Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || this.getClass() != o.getClass()) {
-            return false;
-        }
-        final FabricCommander that = (FabricCommander) o;
-        return ((CommandSourceStackAccess) this.stack).source().equals(((CommandSourceStackAccess) that.stack).source());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(((CommandSourceStackAccess) this.stack).source());
+    public Object commanderId() {
+        return ((CommandSourceStackAccess) this.stack).source();
     }
 
     public static FabricCommander from(final CommandSourceStack stack) {
@@ -78,20 +62,8 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
         }
 
         @Override
-        public boolean equals(final @Nullable Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            final FabricCommander.Player that = (FabricCommander.Player) o;
-            return this.player().equals(that.player());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.player());
+        public Object commanderId() {
+            return this.player().getGameProfile().getId();
         }
     }
 }
