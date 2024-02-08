@@ -10,7 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -153,48 +155,49 @@ public final class FullRender extends AbstractRender {
     private List<RegionCoordinate> getRegions() {
         final Set<RegionCoordinate> regions = new LinkedHashSet<>();
 
-        for (final Path path : this.getRegionFiles()) {
-            if (path.toFile().length() == 0) {
-                continue;
-            }
-            final String[] split = path.getFileName().toString().split("\\.");
-            final int x;
-            final int z;
-            try {
-                x = Integer.parseInt(split[1]);
-                z = Integer.parseInt(split[2]);
-            } catch (final NumberFormatException ex) {
-                Logging.logger().warn("Failed to parse coordinates for region file '{}' (file name path: '{}')", path, path.getFileName(), ex);
-                continue;
-            }
-
-            final RegionCoordinate region = new RegionCoordinate(x, z);
-
+        for (final RegionCoordinate region : this.getRegionsRaw()) {
             // ignore regions completely outside the visibility limit
             if (!this.mapWorld.visibilityLimit().shouldRenderRegion(region)) {
                 continue;
             }
 
-            this.maxRadius = Math.max(Math.max(this.maxRadius, Math.abs(x)), Math.abs(z));
+            this.maxRadius = Math.max(Math.max(this.maxRadius, Math.abs(region.x())), Math.abs(region.z()));
             regions.add(region);
         }
 
         return List.copyOf(regions);
     }
 
-    private Path[] getRegionFiles() {
+    private List<RegionCoordinate> getRegionsRaw() {
         final Path regionFolder = this.regionFileDirectoryResolver.resolveRegionFileDirectory(this.level);
         Logging.debug(() -> "Listing region files for directory '" + regionFolder + "'...");
         try (final Stream<Path> stream = Files.list(regionFolder)) {
-            return stream.filter(file -> {
+            return stream.map(file -> {
                 final String fileName = file.getFileName().toString();
                 if (!fileName.startsWith("r.")) {
-                    return false;
+                    return parse(file, 0);
+                } else if (fileName.endsWith(".mca") || fileName.endsWith(".linear")) {
+                    return parse(file, 1);
                 }
-                return fileName.endsWith(".mca") || fileName.endsWith(".linear");
-            }).toArray(Path[]::new);
+                return null;
+            }).filter(Objects::nonNull).collect(Collectors.toList());
         } catch (final IOException ex) {
             throw new RuntimeException("Failed to list region files in directory '" + regionFolder.toAbsolutePath() + "'", ex);
+        }
+    }
+
+    private static @Nullable RegionCoordinate parse(final Path path, final int offset) {
+        if (path.toFile().length() == 0) {
+            return null;
+        }
+        final String[] split = path.getFileName().toString().split("\\.");
+        try {
+            final int x = Integer.parseInt(split[0] + offset);
+            final int z = Integer.parseInt(split[1] + offset);
+            return new RegionCoordinate(x, z);
+        } catch (final NumberFormatException ex) {
+            Logging.logger().warn("Failed to parse coordinates for region file '{}' (file name path: '{}')", path, path.getFileName(), ex);
+            return null;
         }
     }
 }

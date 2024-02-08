@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.paper.util;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -18,9 +19,14 @@ public final class PaperRegionFileDirectoryResolver implements RegionFileDirecto
 
     @Override
     public Path resolveRegionFileDirectory(final ServerLevel level) {
-        return LevelStorageSource.getStorageFolder(
+        final Path storageFolder = LevelStorageSource.getStorageFolder(
             CraftBukkitReflection.world(level).getWorldFolder().toPath(),
             level.getTypeKey()
-        ).resolve("region");
+        );
+        final Path sector = storageFolder.resolve("sectors");
+        if (Files.exists(sector)) {
+            return sector;
+        }
+        return storageFolder.resolve("region");
     }
 }
