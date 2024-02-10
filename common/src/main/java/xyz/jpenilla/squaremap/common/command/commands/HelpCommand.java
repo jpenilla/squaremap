@@ -10,10 +10,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.component.CommandComponent;
+import org.incendo.cloud.component.DefaultValue;
 import org.incendo.cloud.component.TypedCommandComponent;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.help.result.CommandEntry;
-import org.incendo.cloud.minecraft.extras.ImmutableMinecraftHelp;
+import org.incendo.cloud.minecraft.extras.AudienceProvider;
 import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
@@ -24,6 +25,7 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.Components;
 
+import static org.incendo.cloud.minecraft.extras.MinecraftHelp.helpColors;
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 
 @DefaultQualifier(NonNull.class)
@@ -49,10 +51,7 @@ public final class HelpCommand extends SquaremapCommand {
     }
 
     private void executeHelp(final CommandContext<Commander> context) {
-        this.minecraftHelp.queryCommands(
-            context.optional(this.helpQueryArgument).orElse(""),
-            context.sender()
-        );
+        this.minecraftHelp.queryCommands(context.get(this.helpQueryArgument), context.sender());
     }
 
     private static TypedCommandComponent<Commander, String> createHelpQueryArgument(final Commands commands) {
@@ -65,24 +64,25 @@ public final class HelpCommand extends SquaremapCommand {
             .parser(StringParser.greedyStringParser())
             .suggestionProvider(suggestions)
             .optional()
+            .defaultValue(DefaultValue.constant(""))
             .description(richDescription(Messages.HELP_QUERY_ARGUMENT_DESCRIPTION))
             .build();
     }
 
     private static MinecraftHelp<Commander> createMinecraftHelp(final CommandManager<Commander> manager) {
-        final MinecraftHelp<Commander> minecraftHelp = MinecraftHelp.createNative(
-            String.format("/%s help", Config.MAIN_COMMAND_LABEL),
-            manager
-        );
-        return ImmutableMinecraftHelp.copyOf(minecraftHelp).withColors(
-            MinecraftHelp.helpColors(
+        return MinecraftHelp.<Commander>builder()
+            .commandManager(manager)
+            .audienceProvider(AudienceProvider.nativeAudience())
+            .commandPrefix(String.format("/%s help", Config.MAIN_COMMAND_LABEL))
+            .colors(helpColors(
                 TextColor.color(0x5B00FF),
                 NamedTextColor.WHITE,
                 TextColor.color(0xC028FF),
                 NamedTextColor.GRAY,
                 NamedTextColor.DARK_GRAY
-            )
-        ).withMessageProvider(HelpCommand::helpMessage);
+            ))
+            .messageProvider(HelpCommand::helpMessage)
+            .build();
     }
 
     private static Component helpMessage(final Commander sender, final String key, final Map<String, String> args) {
