@@ -25,6 +25,7 @@ dependencies {
 
   api(platform(libs.cloudBom))
   api(platform(libs.cloudMinecraftBom))
+  api(platform(libs.cloudProcessorsBom))
   api(libs.cloudCore)
   api(libs.cloudConfirmation)
   compileOnly(libs.cloudBrigadier)
