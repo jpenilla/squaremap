@@ -9,7 +9,6 @@ unpaused-renders: <green>世界 <world> 的渲染已恢复
 command:
     message:
         console-must-specify-player: <red>从控制台执行此命令时必须指定一个玩家
-        player-not-found-for-input: <red>没有找到玩家 '<input>'
         console-must-specify-world: <red>从控制台执行此命令时必须指定一个世界
         no-such-world: 没有找到世界 '<world>'
         map-not-enabled-for-world: 世界 '<world>' 的渲染未启用'

@@ -10,7 +10,6 @@ command:
     message:
         console-must-specify-player: <red>При исполнении этой команды из консоли нужно
             указать игрока
-        player-not-found-for-input: <red>Игрок '<input>' не найден
         console-must-specify-world: <red>При выполнении этой команды из консоли необходимо
             указать мир
         no-such-world: Мир '<world>' не найден

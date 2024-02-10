@@ -58,9 +58,6 @@ public final class Messages {
 
     @MessageKey("command.message.console-must-specify-player")
     public static ComponentMessage CONSOLE_MUST_SPECIFY_PLAYER = new ComponentMessage("<red>You must specify a target player when running this command from console");
-    // todo
-    @MessageKey("command.message.player-not-found-for-input")
-    public static ComponentMessage PLAYER_NOT_FOUND_FOR_INPUT = new ComponentMessage("<red>No player found for input '<input>'");
     @MessageKey("command.message.console-must-specify-world")
     public static ComponentMessage CONSOLE_MUST_SPECIFY_WORLD = new ComponentMessage("<red>You must specify the world when running this command from console");
     @MessageKey("command.message.no-such-world")

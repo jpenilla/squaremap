@@ -10,7 +10,6 @@ command:
     message:
         console-must-specify-player: <red>Musisz określić docelowego gracza podczas
             uruchamiania tej komendy z konsoli
-        player-not-found-for-input: <red>Nie znaleziono gracza o nazwie '<input>'
         console-must-specify-world: <red>Musisz określić świat podczas uruchamiania
             tej komendy z konsoli
         no-such-world: Nie ma takiego świata '<world>'
