@@ -41,6 +41,7 @@ import static net.kyori.adventure.text.event.ClickEvent.runCommand;
 import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
+import static org.incendo.cloud.exception.handling.ExceptionHandler.unwrappingHandler;
 import static xyz.jpenilla.squaremap.common.util.Components.highlightSpecialCharacters;
 import static xyz.jpenilla.squaremap.common.util.Components.placeholder;
 
@@ -51,23 +52,25 @@ final class ExceptionHandler {
     }
 
     public void registerExceptionHandlers(final CommandManager<Commander> manager) {
-        manager.exceptionController().registerHandler(CommandExecutionException.class, this::commandExecution);
-        manager.exceptionController().registerHandler(NoPermissionException.class, this::noPermission);
-        manager.exceptionController().registerHandler(ArgumentParseException.class, this::argumentParsing);
-        manager.exceptionController().registerHandler(InvalidCommandSenderException.class, this::invalidSender);
-        manager.exceptionController().registerHandler(InvalidSyntaxException.class, this::invalidSyntax);
+        manager.exceptionController()
+            .registerHandler(CommandExecutionException.class, unwrappingHandler(CommandCompleted.class))
+            .registerHandler(CommandCompleted.class, this::commandCompleted)
+            .registerHandler(CommandExecutionException.class, this::commandExecution)
+            .registerHandler(NoPermissionException.class, this::noPermission)
+            .registerHandler(ArgumentParseException.class, this::argumentParsing)
+            .registerHandler(InvalidCommandSenderException.class, this::invalidSender)
+            .registerHandler(InvalidSyntaxException.class, this::invalidSyntax);
+    }
+
+    private void commandCompleted(final ExceptionContext<Commander, CommandCompleted> ctx) {
+        final @Nullable Component message = ctx.exception().componentMessage();
+        if (message != null) {
+            decorateAndSend(ctx.context().sender(), message);
+        }
     }
 
     private void commandExecution(final ExceptionContext<Commander, CommandExecutionException> ctx) {
         final Throwable cause = ctx.exception().getCause();
-
-        if (cause instanceof CommandCompleted completed) {
-            final @Nullable Component message = completed.componentMessage();
-            if (message != null) {
-                ctx.context().sender().sendMessage(message);
-            }
-            return;
-        }
 
         Logging.logger().warn("An unexpected error occurred during command execution", cause);
 

@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.List;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
@@ -87,12 +87,12 @@ public final class Commands {
         }
     }
 
-    public void register(final Command.Builder<Commander> builder) {
+    public void register(final Command.Builder<? extends Commander> builder) {
         this.commandManager.command(builder);
     }
 
-    public void registerSubcommand(final UnaryOperator<Command.Builder<Commander>> builderModifier) {
-        this.commandManager.command(builderModifier.apply(this.rootBuilder()));
+    public void registerSubcommand(final Function<Command.Builder<Commander>, Command.Builder<? extends Commander>> builderModifier) {
+        this.register(builderModifier.apply(this.rootBuilder()));
     }
 
     public Command.Builder<Commander> rootBuilder() {
