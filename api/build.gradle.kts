@@ -1,6 +1,6 @@
 plugins {
   id("squaremap.publishing")
-  id("org.incendo.cloud-build-logic.javadoc-links") version "0.0.9"
+  alias(libs.plugins.javadoc.links)
 }
 
 description = "API for extending squaremap, a minimalistic and lightweight world map viewer for Minecraft servers"
