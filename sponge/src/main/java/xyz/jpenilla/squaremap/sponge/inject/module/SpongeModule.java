@@ -1,9 +1,9 @@
 package xyz.jpenilla.squaremap.sponge.inject.module;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
 import java.nio.file.Path;
+import javax.inject.Inject;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -27,6 +27,7 @@ public final class SpongeModule extends AbstractModule {
     private final Game game;
     private final ChannelManager channelManager;
 
+    // See comment in SquaremapSpongeBootstrap for why we use javax.inject here
     @Inject
     private SpongeModule(
         @ConfigDir(sharedRoot = false) final Path dataDirectory,

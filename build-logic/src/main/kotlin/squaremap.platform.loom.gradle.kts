@@ -14,14 +14,13 @@ val shadeFiltered: Configuration by configurations.creating {
   extendsFrom(shade)
 
   exclude("org.checkerframework")
-  exclude("com.google.errorprone")
 }
 
 tasks {
   shadowJar {
     configurations = listOf(shadeFiltered)
     listOf(
-      "javax.inject",
+      "jakarta.inject",
       "com.google.inject",
       "org.aopalliance",
     ).forEach(::reloc)

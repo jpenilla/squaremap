@@ -36,7 +36,7 @@ tasks {
       "cloud.commandframework",
       "io.leangen.geantyref",
       "org.bstats",
-      "javax.inject",
+      "jakarta.inject",
       "com.google.inject",
       "org.aopalliance",
     ).forEach(::reloc)
