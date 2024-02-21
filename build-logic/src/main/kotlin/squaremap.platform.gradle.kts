@@ -28,6 +28,9 @@ tasks {
       exclude { it.moduleName.contains("squaremap") }
       exclude(dependency("io.undertow:.*:.*")) // does not like being minimized _or_ relocated (xnio errors)
     }
+    dependencies {
+      exclude(dependency("com.google.errorprone:.*:.*"))
+    }
     listOf(
       "org.owasp.html",
       "org.spongepowered.configurate",
