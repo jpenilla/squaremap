@@ -18,11 +18,11 @@ minecraft {
 dependencies {
   implementation(projects.squaremapCommon) {
     exclude("io.leangen.geantyref")
-    exclude("com.google.inject")
   }
   implementation(libs.cloudSponge) {
     exclude("io.leangen.geantyref")
   }
+  compileOnly("javax.inject:javax.inject:1")
 
   compileOnly(libs.mixin)
 }
@@ -59,7 +59,8 @@ tasks {
     archiveFileName.set(productionJarName(minecraftVersion))
     listOf(
       "cloud.commandframework",
-      "com.google.inject.assistedinject",
+      "com.google.inject",
+      "jakarta.inject",
     ).forEach(::reloc)
     manifest {
       attributes(

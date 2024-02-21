@@ -1,8 +1,8 @@
 package xyz.jpenilla.squaremap.sponge;
 
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
+import javax.inject.Inject;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.ResourceKey;
@@ -18,6 +18,9 @@ import xyz.jpenilla.squaremap.common.network.NetworkingHandler;
 import xyz.jpenilla.squaremap.sponge.data.SpongeMapWorld;
 import xyz.jpenilla.squaremap.sponge.inject.module.SpongeModule;
 
+// Sponge uses Guice 5.x which supports javax.inject.Inject;
+// We use Guice 7.x and as such relocate it's @Inject and can't use it here without complicating the build.
+@SuppressWarnings("SpongePluginClass")
 @DefaultQualifier(NonNull.class)
 @Plugin("squaremap")
 public final class SquaremapSpongeBootstrap {
