@@ -53,9 +53,9 @@ final class ExceptionHandler {
 
     public void registerExceptionHandlers(final CommandManager<Commander> manager) {
         manager.exceptionController()
+            .registerHandler(CommandExecutionException.class, this::commandExecution)
             .registerHandler(CommandExecutionException.class, unwrappingHandler(CommandCompleted.class))
             .registerHandler(CommandCompleted.class, this::commandCompleted)
-            .registerHandler(CommandExecutionException.class, this::commandExecution)
             .registerHandler(NoPermissionException.class, this::noPermission)
             .registerHandler(ArgumentParseException.class, this::argumentParsing)
             .registerHandler(InvalidCommandSenderException.class, this::invalidSender)
