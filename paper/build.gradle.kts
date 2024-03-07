@@ -58,6 +58,8 @@ squaremapPlatform.productionJar = tasks.reobfJar.flatMap { it.outputJar }
 
 runPaper.folia.registerTask()
 
+paperweight.injectPaperRepository = false
+
 hangarPublish.publications.register("plugin") {
   version = project.version as String
   id = "squaremap"
