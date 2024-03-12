@@ -1,0 +1,134 @@
+render-in-progress: <red>Vykresľovanie už prebieha pre svet <world>
+render-not-in-progress: <red>Pre svet <world> nebeží žiadne vykresľovanie
+cancelled-render: <green>Vykresľovanie zrušené pre svet <world>
+successfully-reset-map: <green>Mapa pre svet <world> bola úspešne obnovená
+paused-renders: <green>Vykresľovanie pre svet <world> je pozastavené
+unpaused-renders: <green>Vykresľovanie pre svet <world> je znova spustené
+command:
+    message:
+        console-must-specify-player: <red>Pri spustení tohto príkazu z konzoly musíš
+            zadať cieľového hráča
+        console-must-specify-world: <red>Pri spustení tohto príkazu z konzoly musíš
+            zadať svet
+        no-such-world: Svet '<world>' neexistuje 
+        map-not-enabled-for-world: Mapa pre svet '<world>' nie je povolená
+        confirmation-required: <red>Je potrebné potvrdenie.
+            Potvrď zadaní príkazu /<command> confirm.
+        no-pending-commands: <red>Nemáš žiadne čakajúce príkazy.
+        progresslogging:
+            enabled: <green>Bolo povolené protokolovanie priebehu vykresľovania.
+            disabled: <green>Protokolovanie priebehu vykresľovania bolo vypnuté.
+            set-rate: <green>Interval protokolovania priebehu vykresľovania bol nastavený na
+                </green><seconds> sekúnd.
+            statusmessage: 'Protokolovanie priebehu vykresľovania povolené: <enabled>, interval:
+                <green><seconds></green> sekúnd'
+        help:
+            help: squaremap nápoveda pre príkazy
+            command: Príkaz
+            description: Popis
+            no_description: Žiaden popis
+            arguments: Parametre
+            optional: Voliteľné
+            showing_results_for_query: Zobrazujú sa výsledky vyhľadávania pre zadanú požiadavku
+            no_results_for_query: Žiadne výsledky pre zadanú požiadavku
+            available_commands: Dostupné príkazy
+            click_to_show_help: Kliknutím zobrazíš nápovedu pre tento príkaz
+            page_out_of_range: 'Chyba: Stránka <page> nie je v rozsahu.
+                Musí byť v rozsahu [1, <max_pages>]'
+            click_for_next_page: Klikni pre zobrazenie ďalšej stránky
+            click_for_previous_page: Klikni pre zobrazenie predchádzajúcej stránky
+        exception:
+            command-execution: <red>Pri pokuse o vykonanie tohto príkazu
+                došlo k internej chybe.
+            no-permission: |-
+                <red>Je mi ľúto, ale na vykonanie tohto príkazu nemáš oprávnenie.
+                Ak sa domnievaš, že ide o chybu, obráť sa na správcov servera.
+            invalid-argument: <red>Neplatný parameter príkazu <white>:</white> <gray><message>
+            invalid-sender-type: <red>Neplatný typ odosielateľa príkazu.
+                Musíš mať typ <gray><required_sender_type></gray>.
+            invalid-syntax: <red>Nesprávny syntax príkazu. Správny syntax príkazu je <white>:</white>
+                <gray><correct_syntax>
+        parser-exception:
+            string: '''<input>'' nie je platný reťazec pre typ <string_mode>'
+            number: '''<input>'' nie je číslo z rozsahu od <min> po <max>'
+            location:
+                invalid_format: '''<input>'' nie je platné miesto.
+                    Požadovaný formát je ''<x> <z>'''
+                mixed_local_absolute: Nie je možné miešat lokálne a absolútne súradnice.
+                    (buď používajú všetky súradnice '^', alebo žiadna)
+            selector:
+                malformed: Výber '<input>' je chybne vytvorený
+                too_many_players: Viac ako 1 hráč je vybraný vo výbere pre jedného hráča
+                non_player_in_player_selector: Vo výbere hráčov nie sú vybraní žiadni hráči
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
+    description:
+        help: Získanie nápovedy pre príkazy squaremap
+        resetmap: Obnoví mapu zadaného sveta
+        confirm: Potvrdiť čakajúci príkaz
+        reload: Znovu načíta plugin
+        full-render: Spustí úplné vykresľovanie zadaného sveta
+        cancel-render: Zruší vykresľovanie pre zadaný svet
+        pause-render: Pozastaví všetky vykresľovania pre zadaný svet
+        radius-render: Spustí vykresľovanie v polomere
+        progresslogging:
+            status: Vypíše aktuálne nastavenia pre protokolovanie priebehu vykresľovania
+            toggle: Prepína zapnutie, alebo vypnutie protokolovania priebehu vykresľovania
+            rate: Nastavenie intervalu v sekundách pre protokolovanie priebehu vykresľovania
+        hide: Skrytie hráča v zobrazení mapy
+        show: Zobrazenie hráča v zobrazení mapy
+    argument:
+        optional-world: Predvolené nastavenie je aktuálny svet hráča, ak nie je zadaný iný
+        optional-center: Predvolené nastavenie je (<white>0<gray>,</gray> 0</white>), ak nie je zadaný iný
+        optional-player: Ak nie je zadané, predvolené nastavenie je vykonávajúci hráč
+            ( v konzole musí byť uvedený hráč)
+        help-query: Požiadavka na pomoc
+    hide:
+        already-hidden: <red><player> je už na mape skrytý
+        hidden: <green><player> hráč je teraz na mape skrytý
+    show:
+        not-hidden: <red><player> nie je na mape skrytý
+        shown: <green><player> už nie je na mape skrytý
+click-to-copy: Kliknutím skopíruješ do schránky
+click-for-help: Klikni pre nápovedu
+click-to-confirm: Klikni pre potvrdenie
+click-to-toggle: Kliknutím prepneš
+plugin-reloaded: <green><name> v<version> načítaná
+ui:
+    page-title: squaremap - {world}
+    coordinates: Súradnice<br/>{x}, {z}
+    sidebar:
+        player-list: Hráči ({cur}/{max})
+        world-list: Svety
+    layers:
+        player-tracker: Hráči
+        world-spawn: Spawn
+        world-border: Hranica sveta
+log:
+    started-full-render: Spustené vykresľovanie celej mapy pre <world>
+    started-radius-render: Spustené vykresľovanie mapy v polomeru pre <world>
+    scanning-region-files: Skenovanie súborov oblastí... (môže to chvíľu trvať)
+    found-total-region-files: Celkovo nájdených <total> súborov oblastí
+    finished-rendering: Dokončené vykresľovanie mapy pre <world>
+    cancelled-rendering: Vykresľovanie mapy pre <world> bolo prerušené
+    resumed-rendering: Obnovilo sa vykresľovanie mapy pre <world>
+    scanning-region-progress: '(<percent>) Svet: <world> Chunky: <current_chunks>/<total_chunks>
+        Uplynulý čas: <elapsed> Predpokladný čas: <eta> Rýchlosť: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) Svet: <world> Regióny: <current_regions>/<total_regions>
+        Chunky: <current_chunks>/<total_chunks> Uplynulý čas: <elapsed> Predpokladný čas: <eta> Rýchlosť:
+        <rate> cps'
+    internal-web-disabled: Interný webserver je zakázaný v súbore config.yml
+    internal-web-started: Interný webserver beží na <bind>:<port>
+    internal-web-stopped: Interný webserver je zastavený
+    internal-web-start-error: Interný webserver sa nepodarilo spustiť
+    could-not-create-directory: Adresár <path> sa nepodarilo vytvoriť!
+    could-not-read-region: Nepodarilo sa načítať obrázok mapy pre oblasť <x>,<z> (obrázok je poškodený?).
+        Bude prepísaný.
+    could-not-save-region: Nepodarilo sa uložiť mapu pre oblasť <x>,<z>
+    internal-web-not-running: Došlo k chybe interného webservera
+    update-checker:
+        fetching-version-information: Získavanie informácií o verzii...
+        behind-branch: squaremap je <behind> verzie pozadu za verziou '<branch>'!
+        download-dev-builds: Stiahnuť vývojové zostavy z <link>
+        unknown-commit: Neznáma revízia '<commit>', nemožno skontrolovať aktualizácie.
+        behind-releases: squaremap je zastaraná <behind> verzie.
+        download-release: Stiahnite si najnovšiu verziu (<latest>) z <link>
