@@ -8,7 +8,6 @@ command:
     message:
         console-must-specify-player: <red>Pri spustení tohto príkazu z konzoly musíš
             zadať cieľového hráča
-        player-not-found-for-input: <red>Pre vstup '<input>' nebol nájdený žiadny hráč
         console-must-specify-world: <red>Pri spustení tohto príkazu z konzoly musíš
             zadať svet
         no-such-world: Svet '<world>' neexistuje 
