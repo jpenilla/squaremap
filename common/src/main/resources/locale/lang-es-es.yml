@@ -10,8 +10,6 @@ command:
     message:
         console-must-specify-player: <red>Debes especificar un jugador como objetivo
             al usar este comando desde consola
-        player-not-found-for-input: <red>No se ha encontrado a ningún jugador como
-            '<input>'
         console-must-specify-world: <red>Debes especificar un mundo al usar este comando
             desde consola
         no-such-world: No existe el mundo '<world>'

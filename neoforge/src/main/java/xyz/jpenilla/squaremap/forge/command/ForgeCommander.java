@@ -3,7 +3,6 @@ package xyz.jpenilla.squaremap.forge.command;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -13,15 +12,12 @@ import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.forge.ForgeAdventure;
 
-// Commanders are used as Map keys by the CommandConfirmationManager to track who has confirmations pending
-// So our equals and hashcode only account for the source, not the entire stack
 @DefaultQualifier(NonNull.class)
 public class ForgeCommander implements Commander, ForwardingAudience.Single {
     private final CommandSourceStack stack;
@@ -45,20 +41,8 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
     }
 
     @Override
-    public boolean equals(final @Nullable Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || this.getClass() != o.getClass()) {
-            return false;
-        }
-        final ForgeCommander that = (ForgeCommander) o;
-        return this.stack.source.equals(that.stack.source);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.stack.source);
+    public Object commanderId() {
+        return this.stack.source;
     }
 
     public static ForgeCommander from(final CommandSourceStack stack) {
@@ -85,15 +69,8 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
         }
 
         @Override
-        public boolean equals(final @Nullable Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || this.getClass() != o.getClass()) {
-                return false;
-            }
-            final Player that = (Player) o;
-            return this.player().equals(that.player());
+        public Object commanderId() {
+            return this.player().getGameProfile().getId();
         }
 
         @SuppressWarnings("unchecked")
@@ -109,11 +86,6 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
                 throw new RuntimeException(e);
             }
             return PermissionAPI.getPermission(this.player(), node);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.player());
         }
     }
 }

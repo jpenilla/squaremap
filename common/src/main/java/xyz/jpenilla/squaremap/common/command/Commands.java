@@ -1,20 +1,18 @@
 package xyz.jpenilla.squaremap.common.command;
 
-import cloud.commandframework.Command;
-import cloud.commandframework.CommandManager;
-import cloud.commandframework.context.CommandContext;
-import cloud.commandframework.execution.FilteringCommandSuggestionProcessor;
-import cloud.commandframework.keys.CloudKey;
-import cloud.commandframework.keys.SimpleCloudKey;
-import cloud.commandframework.meta.CommandMeta;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.List;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.Command;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.context.CommandContext;
+import org.incendo.cloud.description.Description;
+import org.incendo.cloud.key.CloudKey;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.WorldManager;
@@ -58,12 +56,8 @@ public final class Commands {
         this.injector = injector;
         this.commandManager = platformCommands.createCommandManager();
 
-        this.commandManager.commandSuggestionProcessor(new FilteringCommandSuggestionProcessor<>(
-            FilteringCommandSuggestionProcessor.Filter.<Commander>contains(true).andTrimBeforeLastSpace()
-        ));
-
         this.commandManager.registerCommandPreProcessor(preprocessContext -> {
-            final CommandContext<Commander> commandContext = preprocessContext.getCommandContext();
+            final CommandContext<Commander> commandContext = preprocessContext.commandContext();
             commandContext.store(PLAYER_MANAGER, playerManager);
             commandContext.store(SERVER_ACCESS, serverAccess);
             commandContext.store(RENDER_FACTORY, renderFactory);
@@ -93,19 +87,20 @@ public final class Commands {
         }
     }
 
-    public void register(final Command.Builder<Commander> builder) {
+    public void register(final Command.Builder<? extends Commander> builder) {
         this.commandManager.command(builder);
     }
 
-    public void registerSubcommand(UnaryOperator<Command.Builder<Commander>> builderModifier) {
-        this.commandManager.command(builderModifier.apply(this.rootBuilder()));
+    public void registerSubcommand(final Function<Command.Builder<Commander>, Command.Builder<? extends Commander>> builderModifier) {
+        this.register(builderModifier.apply(this.rootBuilder()));
     }
 
     public Command.Builder<Commander> rootBuilder() {
-        return this.commandManager.commandBuilder(Config.MAIN_COMMAND_LABEL, Config.MAIN_COMMAND_ALIASES.toArray(String[]::new))
-            /* MinecraftHelp uses the MinecraftExtrasMetaKeys.DESCRIPTION meta, this is just so we give Bukkit a description
-             * for our commands in the Bukkit and EssentialsX '/help' command */
-            .meta(CommandMeta.DESCRIPTION, String.format("squaremap command. '/%s help'", Config.MAIN_COMMAND_LABEL));
+        return this.commandManager.commandBuilder(
+            Config.MAIN_COMMAND_LABEL,
+            Description.of(String.format("squaremap command. '/%s help'", Config.MAIN_COMMAND_LABEL)),
+            Config.MAIN_COMMAND_ALIASES.toArray(String[]::new)
+        );
     }
 
     public CommandManager<Commander> commandManager() {
@@ -113,6 +108,6 @@ public final class Commands {
     }
 
     private static <T> CloudKey<T> createTypeKey(final Class<T> type) {
-        return SimpleCloudKey.of("squaremap-" + type.getName(), TypeToken.get(type));
+        return CloudKey.of("squaremap-" + type.getName(), TypeToken.get(type));
     }
 }

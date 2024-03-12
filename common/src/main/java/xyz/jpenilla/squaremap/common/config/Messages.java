@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.config;
 
-import cloud.commandframework.minecraft.extras.MinecraftHelp;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.StreamSupport;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -19,6 +19,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.minecraft.extras.MinecraftHelp;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -57,8 +58,6 @@ public final class Messages {
 
     @MessageKey("command.message.console-must-specify-player")
     public static ComponentMessage CONSOLE_MUST_SPECIFY_PLAYER = new ComponentMessage("<red>You must specify a target player when running this command from console");
-    @MessageKey("command.message.player-not-found-for-input")
-    public static ComponentMessage PLAYER_NOT_FOUND_FOR_INPUT = new ComponentMessage("<red>No player found for input '<input>'");
     @MessageKey("command.message.console-must-specify-world")
     public static ComponentMessage CONSOLE_MUST_SPECIFY_WORLD = new ComponentMessage("<red>You must specify the world when running this command from console");
     @MessageKey("command.message.no-such-world")
@@ -395,6 +394,10 @@ public final class Messages {
                 return this.asComponent();
             }
             return Components.miniMessage(this.miniMessage, placeholders);
+        }
+
+        public Component withPlaceholders(final Iterable<TagResolver> placeholders) {
+            return Components.miniMessage(this.miniMessage, StreamSupport.stream(placeholders.spliterator(), false).toArray(TagResolver[]::new));
         }
 
         @Override

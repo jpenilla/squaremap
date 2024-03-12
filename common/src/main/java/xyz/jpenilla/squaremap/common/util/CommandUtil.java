@@ -1,12 +1,12 @@
 package xyz.jpenilla.squaremap.common.util;
 
-import cloud.commandframework.context.CommandContext;
 import java.util.Optional;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.context.CommandContext;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
@@ -20,7 +20,7 @@ public final class CommandUtil {
     }
 
     public static MapWorldInternal resolveWorld(final CommandContext<Commander> context) {
-        final Commander sender = context.getSender();
+        final Commander sender = context.sender();
         final @Nullable MapWorldInternal world = context.getOrDefault("world", null);
         if (world != null) {
             return world;

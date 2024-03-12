@@ -10,7 +10,6 @@ command:
     message:
         console-must-specify-player: <red>Du må spesifisere en spiller når du kjører
             denne kommandoen fra konsollen
-        player-not-found-for-input: <red>Ingen spiller funnet for input '<input>'
         console-must-specify-world: <red>Du må spesifisere verden når du kjører denne
             kommandoen fra konsollen
         no-such-world: Ingen slik verden '<world>'

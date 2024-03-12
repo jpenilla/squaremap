@@ -33,7 +33,7 @@ tasks {
   }
   shadowJar {
     listOf(
-      "cloud.commandframework",
+      "org.incendo.cloud",
       "io.leangen.geantyref",
       "org.bstats",
       "jakarta.inject",
@@ -57,6 +57,8 @@ tasks {
 squaremapPlatform.productionJar = tasks.reobfJar.flatMap { it.outputJar }
 
 runPaper.folia.registerTask()
+
+paperweight.injectPaperRepository = false
 
 hangarPublish.publications.register("plugin") {
   version = project.version as String

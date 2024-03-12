@@ -19,7 +19,7 @@ repositories {
   mavenCentral()
   maven("https://repo.jpenilla.xyz/snapshots/") {
     mavenContent {
-      includeGroup("cloud.commandframework")
+      includeModule("org.incendo", "cloud-sponge")
       includeGroup("xyz.jpenilla")
       snapshotsOnly()
     }
@@ -30,6 +30,7 @@ repositories {
 }
 
 tasks.withType(JavaCompile::class).configureEach {
-  // We don't care about annotations being unclaimed by processors
-  options.compilerArgs.add("-Xlint:-processing")
+  // We don't care about annotations being unclaimed by processors,
+  // missing annotation (values), or Java serialization
+  options.compilerArgs.add("-Xlint:-processing,-classfile,-serial")
 }
