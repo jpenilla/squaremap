@@ -76,7 +76,7 @@ paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "pape
 undertow = { group = "io.undertow", name = "undertow-core", version = "2.3.12.Final" }
 jBossLoggingAnnotations = { group = "org.jboss.logging", name = "jboss-logging-annotations", version = "2.2.1.Final" }
 
-htmlSanitizer = { group = "com.googlecode.owasp-java-html-sanitizer", name = "owasp-java-html-sanitizer", version = "20220608.1" }
+htmlSanitizer = { group = "com.googlecode.owasp-java-html-sanitizer", name = "owasp-java-html-sanitizer", version = "20240325.1" }
 
 mixin = { group = "org.spongepowered", name = "mixin", version = "0.8.5" }
 
