@@ -33,6 +33,7 @@ tasks {
     }
     listOf(
       "org.owasp.html",
+      "org.owasp.shim",
       "org.spongepowered.configurate",
       "org.yaml.snakeyaml"
     ).forEach(::reloc)

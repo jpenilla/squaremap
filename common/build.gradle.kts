@@ -40,4 +40,10 @@ dependencies {
   api(libs.htmlSanitizer) {
     isTransitive = false // depends on guava, provided by mc at runtime
   }
+  api(libs.htmlSanitizerJ8) {
+    isTransitive = false // depends on guava, provided by mc at runtime
+  }
+  api(libs.htmlSanitizerJ10) {
+    isTransitive = false // depends on guava, provided by mc at runtime
+  }
 }
