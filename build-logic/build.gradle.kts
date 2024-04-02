@@ -21,4 +21,5 @@ dependencies {
   implementation(libs.mod.publish.plugin)
   implementation(libs.loom)
   implementation(libs.paperweightUserdev)
+  implementation(libs.resource.factory)
 }

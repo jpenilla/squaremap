@@ -29,10 +29,12 @@ tasks {
 
 afterEvaluate {
   tasks.processResources {
-    expandIn(platformExt.loom.modInfoFilePath.get(), mapOf(
-      "version" to project.version,
-      "github_url" to rootProject.providers.gradleProperty("githubUrl").get(),
-      "description" to project.description,
-    ))
+    if (platformExt.loom.modInfoFilePath.isPresent) {
+      expandIn(platformExt.loom.modInfoFilePath.get(), mapOf(
+        "version" to project.version,
+        "github_url" to githubUrl,
+        "description" to project.description,
+      ))
+    }
   }
 }

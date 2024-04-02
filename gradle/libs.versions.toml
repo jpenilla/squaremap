@@ -101,5 +101,6 @@ vanillaGradle = { group = "org.spongepowered", name = "vanillagradle", version.r
 mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
 loom = { group = "xyz.jpenilla", name = "quiet-architectury-loom", version.ref = "loom" }
 paperweightUserdev = { group = "io.papermc.paperweight", name = "paperweight-userdev", version.ref = "paperweight" }
+resource-factory = { group = "xyz.jpenilla", name = "resource-factory", version = "1.1.1" }
 
 [bundles]

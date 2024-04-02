@@ -8,6 +8,9 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.language.jvm.tasks.ProcessResources
 
+val Project.githubUrl: String get() =
+  rootProject.providers.gradleProperty("githubUrl").get()
+
 val Project.releaseNotes: Provider<String>
   get() = providers.environmentVariable("RELEASE_NOTES")
 
