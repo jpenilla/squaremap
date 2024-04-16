@@ -73,7 +73,8 @@ class LayerControl {
         return new SquaremapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
             tileSize: 512,
             minNativeZoom: 0,
-            maxNativeZoom: world.zoom.max
+            maxNativeZoom: world.zoom.max,
+            errorTileUrl: 'images/clear.png'
         }).addTo(P.map)
         .addEventListener("load", () => {
             // when all tiles are loaded, switch to this layer

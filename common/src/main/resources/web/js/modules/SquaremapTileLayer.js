@@ -28,14 +28,15 @@ export var SquaremapTileLayer = L.TileLayer.extend({
             .then(res => {
                 //Call leaflet's error handler if request fails for some reason
                 if (!res.ok) {
-                    this._tileOnError(this, done, tile);
+                    this._tileOnError(done, tile, null);
                     return;
                 }
 
                 //Get image data and convert into object URL so it can be used as a src
                 //Leaflet's onload listener will take it from here
                 res.blob().then(blob => tile.src = URL.createObjectURL(blob));
-            }).catch(() => this._tileOnError(this, done, tile));
+            })
+            .catch(() => this._tileOnError(done, tile, null));
 
         return tile;
     }
