@@ -4,12 +4,9 @@ import com.google.inject.Inject;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.network.NetworkingHandler;
-import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
 public final class ForgeNetworking {
@@ -21,6 +18,7 @@ public final class ForgeNetworking {
     }
 
     public void register() {
+        /* TODO 1.20.5
         NeoForge.EVENT_BUS.addListener((RegisterPayloadHandlerEvent event) -> {
             final IPayloadRegistrar registrar = event.registrar("squaremap");
             registrar.play(
@@ -38,6 +36,7 @@ public final class ForgeNetworking {
                 }
             ).optional();
         });
+         */
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> this.networking.onDisconnect(event.getEntity().getUUID()));
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerChangedDimensionEvent event) -> {
             if (!(event.getEntity() instanceof ServerPlayer player)) {

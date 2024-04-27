@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import java.util.Optional;
 import java.util.function.Supplier;
 import net.kyori.adventure.text.Component;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
@@ -39,8 +40,8 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
     @Override
     public Component displayName(final ServerPlayer player) {
         return Optional.ofNullable(player.getDisplayName())
-            .map(ForgeAdventure::fromNative)
-            .orElseGet(() -> ForgeAdventure.fromNative(player.getName()));
+            .map(c -> ForgeAdventure.fromNative(player.level().registryAccess(), c))
+            .orElseGet(() -> ForgeAdventure.fromNative(player.level().registryAccess(), player.getName()));
     }
 
     @Override
@@ -68,14 +69,14 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
         private boolean hidden;
 
         @Override
-        public CompoundTag serializeNBT() {
+        public CompoundTag serializeNBT(final HolderLookup.Provider provider) {
             final CompoundTag tag = new CompoundTag();
             tag.putBoolean("hidden", this.hidden());
             return tag;
         }
 
         @Override
-        public void deserializeNBT(final CompoundTag arg) {
+        public void deserializeNBT(final HolderLookup.Provider provider, final CompoundTag arg) {
             this.hidden(arg.getBoolean("hidden"));
         }
 

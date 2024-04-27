@@ -1,7 +1,9 @@
 package xyz.jpenilla.squaremap.common.command;
 
+import com.google.gson.JsonParseException;
 import com.google.inject.Inject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.JsonOps;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -14,6 +16,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.util.ComponentMessageThrowable;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.ComponentUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -163,6 +166,8 @@ final class ExceptionHandler {
 
         // Fallback for when CommandSyntaxException isn't a ComponentMessageThrowable
         final net.minecraft.network.chat.Component component = ComponentUtils.fromMessage(commandSyntaxException.getRawMessage());
-        return GsonComponentSerializer.gson().deserializeFromTree(net.minecraft.network.chat.Component.Serializer.toJsonTree(component));
+        return GsonComponentSerializer.gson().deserializeFromTree(
+            ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, component).getOrThrow(JsonParseException::new)
+        );
     }
 }
