@@ -9,9 +9,9 @@ javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = 
 minecraft = "1.20.5"
 checkerQual = "3.42.0"
 cloud = "2.0.0-beta.5"
-cloudMinecraft = "2.0.0-beta.6"
+cloudMinecraft = "2.0.0-SNAPSHOT"
 cloudProcessors = "1.0.0-beta.2"
-cloudModded = "2.0.0-beta.5"
+cloudModded = "2.0.0-SNAPSHOT"
 cloudSponge = "2.0.0-SNAPSHOT"
 configurate = "4.1.2"
 adventure = "4.17.0-SNAPSHOT"
@@ -22,7 +22,7 @@ paperApi = "1.20.2-R0.1-SNAPSHOT"
 bStats = "3.0.2"
 fabricApi = "0.97.7+1.20.5"
 fabricLoader = "0.15.10"
-cardinalComponents = "5.4.0"
+cardinalComponents = "6.0.0-beta.3"
 guice = "7.0.0"
 neoforge = "20.5.0-beta"
 htmlSanitizer = "20240325.1"
@@ -88,8 +88,8 @@ fabricLoader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "
 
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 
-cardinalComponentsBase = { group = "dev.onyxstudios.cardinal-components-api", name = "cardinal-components-base", version.ref = "cardinalComponents" }
-cardinalComponentsEntity = { group = "dev.onyxstudios.cardinal-components-api", name = "cardinal-components-entity", version.ref = "cardinalComponents" }
+cardinalComponentsBase = { group = "org.ladysnake.cardinal-components-api", name = "cardinal-components-base", version.ref = "cardinalComponents" }
+cardinalComponentsEntity = { group = "org.ladysnake.cardinal-components-api", name = "cardinal-components-entity", version.ref = "cardinalComponents" }
 
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 

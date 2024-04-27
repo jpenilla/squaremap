@@ -1,15 +1,16 @@
 package xyz.jpenilla.squaremap.fabric;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
-import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
+import org.ladysnake.cca.api.v3.component.ComponentV3;
+import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
+import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 
 @DefaultQualifier(NonNull.class)
 public class SquaremapComponentInitializer implements EntityComponentInitializer {
@@ -33,12 +34,12 @@ public class SquaremapComponentInitializer implements EntityComponentInitializer
         private boolean hidden;
 
         @Override
-        public void readFromNbt(final CompoundTag tag) {
+        public void readFromNbt(final CompoundTag tag, final HolderLookup.Provider registryLookup) {
             this.hidden = tag.getBoolean(HIDDEN_KEY);
         }
 
         @Override
-        public void writeToNbt(final CompoundTag tag) {
+        public void writeToNbt(final CompoundTag tag, final HolderLookup.Provider registryLookup) {
             tag.putBoolean(HIDDEN_KEY, this.hidden);
         }
 
