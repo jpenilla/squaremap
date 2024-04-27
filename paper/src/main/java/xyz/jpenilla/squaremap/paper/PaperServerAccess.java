@@ -17,7 +17,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.BukkitAdapter;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitHelper;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -33,7 +33,7 @@ public final class PaperServerAccess implements ServerAccess {
     public @NonNull Collection<ServerLevel> levels() {
         final List<ServerLevel> levels = new ArrayList<>();
         for (final World world : this.server.getWorlds()) {
-            levels.add(CraftBukkitReflection.serverLevel(world));
+            levels.add(CraftBukkitHelper.serverLevel(world));
         }
         return levels;
     }
@@ -44,7 +44,7 @@ public final class PaperServerAccess implements ServerAccess {
         if (world == null) {
             return null;
         }
-        return CraftBukkitReflection.serverLevel(world);
+        return CraftBukkitHelper.serverLevel(world);
     }
 
     @Override
@@ -53,7 +53,7 @@ public final class PaperServerAccess implements ServerAccess {
         if (player == null) {
             return null;
         }
-        return CraftBukkitReflection.serverPlayer(player);
+        return CraftBukkitHelper.serverPlayer(player);
     }
 
     @Override

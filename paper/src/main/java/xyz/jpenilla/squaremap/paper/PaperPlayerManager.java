@@ -12,7 +12,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -40,15 +39,15 @@ public final class PaperPlayerManager extends AbstractPlayerManager {
 
     @Override
     public boolean otherwiseHidden(final ServerPlayer player) {
-        return CraftBukkitReflection.player(player).hasMetadata("NPC");
+        return player.getBukkitEntity().hasMetadata("NPC");
     }
 
     @Override
     public Component displayName(final ServerPlayer player) {
-        return CraftBukkitReflection.player(player).displayName();
+        return player.getBukkitEntity().displayName();
     }
 
     private static PersistentDataContainer pdc(final ServerPlayer player) {
-        return CraftBukkitReflection.player(player).getPersistentDataContainer();
+        return player.getBukkitEntity().getPersistentDataContainer();
     }
 }
