@@ -48,21 +48,18 @@ public record UpdateChecker(Logger logger, String githubRepo) {
         final String branch = manifest.getMainAttributes().getValue("squaremap-branch");
         final Distance result = this.fetchDistance(branch, gitHash);
 
-        if (result instanceof Distance.UpToDate) {
-            return;
-        } else if (result instanceof Distance.Behind behind) {
-            this.logger.info(
-                Messages.UPDATE_CHECKER_BEHIND_BRANCH
-                    .replace("<branch>", branch)
-                    .replace("<behind>", String.valueOf(behind.result()))
-            );
-            this.logger.info(Messages.UPDATE_CHECKER_DOWNLOAD_DEV_BUILDS.replace("<link>", "https://jenkins.jpenilla.xyz/job/squaremap/"));
-        } else if (result instanceof Distance.Failure failure) {
-            this.logger.warn("Error obtaining version information", failure.reason());
-        } else if (result instanceof Distance.UnknownCommit) {
-            this.logger.info(Messages.UPDATE_CHECKER_UNKNOWN_COMMIT.replace("<commit>", gitHash));
-        } else {
-            throw new RuntimeException("Unknown result type?");
+        switch (result) {
+            case Distance.UpToDate $ -> {}
+            case Distance.Behind behind -> {
+                this.logger.info(
+                    Messages.UPDATE_CHECKER_BEHIND_BRANCH
+                        .replace("<branch>", branch)
+                        .replace("<behind>", String.valueOf(behind.result()))
+                );
+                this.logger.info(Messages.UPDATE_CHECKER_DOWNLOAD_DEV_BUILDS.replace("<link>", "https://jenkins.jpenilla.xyz/job/squaremap/"));
+            }
+            case Distance.Failure failure -> this.logger.warn("Error obtaining version information", failure.reason());
+            case Distance.UnknownCommit $ -> this.logger.info(Messages.UPDATE_CHECKER_UNKNOWN_COMMIT.replace("<commit>", gitHash));
         }
     }
 
