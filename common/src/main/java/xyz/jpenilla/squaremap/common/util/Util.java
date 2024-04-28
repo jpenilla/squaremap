@@ -31,9 +31,7 @@ import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public final class Util {
-    private static final Gson GSON = new GsonBuilder()
-        .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
-        .create();
+    private static final Gson GSON = new GsonBuilder().create();
 
     private Util() {
     }
