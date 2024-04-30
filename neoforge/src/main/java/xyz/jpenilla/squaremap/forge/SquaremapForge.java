@@ -11,12 +11,12 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -106,14 +106,11 @@ public final class SquaremapForge implements SquaremapPlatform {
         return this.container.getModInfo().getVersion().toString();
     }
 
-    private final class TickEndListener implements Consumer<TickEvent.ServerTickEvent> {
+    private final class TickEndListener implements Consumer<ServerTickEvent.Post> {
         private long tick = 0;
 
         @Override
-        public void accept(final TickEvent.ServerTickEvent event) {
-            if (event.phase != TickEvent.Phase.END) {
-                return;
-            }
+        public void accept(final ServerTickEvent.Post event) {
             if (this.tick % 20 == 0) {
                 if (this.tick % 100 == 0) {
                     if (SquaremapForge.this.updateWorldData != null) {
