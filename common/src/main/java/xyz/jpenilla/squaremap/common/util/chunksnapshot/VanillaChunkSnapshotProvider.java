@@ -9,8 +9,8 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -57,7 +57,6 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
                 final @Nullable ChunkAccess chunk = level.getChunkSource()
                     .getChunkFuture(x, z, ChunkStatus.EMPTY, true)
                     .join()
-                    .left()
                     .orElse(null);
                 return unwrap(chunk);
             }

@@ -12,7 +12,7 @@ import xyz.jpenilla.squaremap.common.WorldManagerImpl;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitHelper;
 import xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration;
 
 @DefaultQualifier(NonNull.class)
@@ -38,6 +38,6 @@ public final class PaperWorldManager extends WorldManagerImpl {
     }
 
     public Optional<MapWorldInternal> getWorldIfEnabled(final World world) {
-        return this.getWorldIfEnabled(CraftBukkitReflection.serverLevel(world));
+        return this.getWorldIfEnabled(CraftBukkitHelper.serverLevel(world));
     }
 }

@@ -10,8 +10,8 @@ description = rootProject.description
 
 indra {
   javaVersions {
-    minimumToolchain(17)
-    target(17)
+    minimumToolchain(21)
+    target(21)
   }
 }
 
@@ -21,6 +21,7 @@ repositories {
     mavenContent {
       includeModule("org.incendo", "cloud-sponge")
       includeGroup("xyz.jpenilla")
+      includeModule("net.kyori", "adventure-platform-fabric") // TODO
       snapshotsOnly()
     }
   }

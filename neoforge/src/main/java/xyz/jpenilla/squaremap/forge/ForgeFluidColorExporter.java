@@ -30,7 +30,7 @@ public final class ForgeFluidColorExporter extends AbstractFluidColorExporter {
         if (block instanceof IFluidBlock fluidBlock) {
             return fluidBlock.getFluid();
         } else if (block instanceof LiquidBlock liquidBlock) {
-            return liquidBlock.getFluid();
+            return liquidBlock.fluid;
         }
         return null;
     }

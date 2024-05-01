@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -47,21 +48,18 @@ public record UpdateChecker(Logger logger, String githubRepo) {
         final String branch = manifest.getMainAttributes().getValue("squaremap-branch");
         final Distance result = this.fetchDistance(branch, gitHash);
 
-        if (result instanceof Distance.UpToDate) {
-            return;
-        } else if (result instanceof Distance.Behind behind) {
-            this.logger.info(
-                Messages.UPDATE_CHECKER_BEHIND_BRANCH
-                    .replace("<branch>", branch)
-                    .replace("<behind>", String.valueOf(behind.result()))
-            );
-            this.logger.info(Messages.UPDATE_CHECKER_DOWNLOAD_DEV_BUILDS.replace("<link>", "https://jenkins.jpenilla.xyz/job/squaremap/"));
-        } else if (result instanceof Distance.Failure failure) {
-            this.logger.warn("Error obtaining version information", failure.reason());
-        } else if (result instanceof Distance.UnknownCommit) {
-            this.logger.info(Messages.UPDATE_CHECKER_UNKNOWN_COMMIT.replace("<commit>", gitHash));
-        } else {
-            throw new RuntimeException("Unknown result type?");
+        switch (result) {
+            case Distance.UpToDate $ -> {}
+            case Distance.Behind behind -> {
+                this.logger.info(
+                    Messages.UPDATE_CHECKER_BEHIND_BRANCH
+                        .replace("<branch>", branch)
+                        .replace("<behind>", String.valueOf(behind.result()))
+                );
+                this.logger.info(Messages.UPDATE_CHECKER_DOWNLOAD_DEV_BUILDS.replace("<link>", "https://jenkins.jpenilla.xyz/job/squaremap/"));
+            }
+            case Distance.Failure failure -> this.logger.warn("Error obtaining version information", failure.reason());
+            case Distance.UnknownCommit $ -> this.logger.info(Messages.UPDATE_CHECKER_UNKNOWN_COMMIT.replace("<commit>", gitHash));
         }
     }
 
@@ -75,21 +73,21 @@ public record UpdateChecker(Logger logger, String githubRepo) {
         }
 
         final String ver = "v" + currentVersion;
-        if (releases.releaseList().get(0).equals(ver)) {
+        if (releases.releaseList().getFirst().equals(ver)) {
             return;
         }
         final int versionsBehind = releases.releaseList().indexOf(ver);
         this.logger.info(Messages.UPDATE_CHECKER_BEHIND_RELEASES.replace("<behind>", String.valueOf(versionsBehind == -1 ? "?" : versionsBehind)));
         this.logger.info(
             Messages.UPDATE_CHECKER_DOWNLOAD_RELEASE
-                .replace("<latest>", releases.releaseList().get(0))
-                .replace("<link>", releases.releaseUrls().get(releases.releaseList().get(0)))
+                .replace("<latest>", releases.releaseList().getFirst())
+                .replace("<link>", releases.releaseUrls().get(releases.releaseList().getFirst()))
         );
     }
 
     private Releases fetchReleases() throws IOException {
         final JsonArray result;
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://api.github.com/repos/%s/releases".formatted(this.githubRepo)).openStream(), StandardCharsets.UTF_8))) {
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(URI.create("https://api.github.com/repos/%s/releases".formatted(this.githubRepo)).toURL().openStream(), StandardCharsets.UTF_8))) {
             result = Util.gson().fromJson(reader, JsonArray.class);
         }
 
@@ -105,7 +103,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
 
     private Distance fetchDistance(final String branch, final String hash) {
         try {
-            final URL url = new URL("https://api.github.com/repos/%s/compare/%s...%s".formatted(this.githubRepo, branch, hash));
+            final URL url = URI.create("https://api.github.com/repos/%s/compare/%s...%s".formatted(this.githubRepo, branch, hash)).toURL();
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
             if (connection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {

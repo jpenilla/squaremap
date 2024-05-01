@@ -3,7 +3,6 @@ package xyz.jpenilla.squaremap.fabric.network;
 import com.google.inject.Inject;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +23,7 @@ public final class FabricNetworking {
     }
 
     public void register() {
-        ServerPlayNetworking.registerGlobalReceiver(NetworkingHandler.CHANNEL, this::handleInconming);
+        // ServerPlayNetworking.registerGlobalReceiver(NetworkingHandler.CHANNEL, this::handleInconming); // TODO 1.20.5
         ServerPlayConnectionEvents.DISCONNECT.register(this::handleDisconnect);
         ServerPlayerEvents.WORLD_CHANGED.register(this.networking::worldChanged);
     }

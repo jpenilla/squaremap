@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -30,9 +31,7 @@ import static java.util.Objects.requireNonNull;
 
 @DefaultQualifier(NonNull.class)
 public final class Util {
-    private static final Gson GSON = new GsonBuilder()
-        .registerTypeAdapterFactory(new RecordTypeAdapterFactory())
-        .create();
+    private static final Gson GSON = new GsonBuilder().create();
 
     private Util() {
     }
@@ -136,7 +135,7 @@ public final class Util {
         }
         final String classFilePath = resource.toString().replace("\\", "/");
         final String archivePath = classFilePath.substring(0, classFilePath.length() - classLocation.length());
-        try (final InputStream stream = new URL(archivePath + "/META-INF/MANIFEST.MF").openStream()) {
+        try (final InputStream stream = URI.create(archivePath + "/META-INF/MANIFEST.MF").toURL().openStream()) {
             return new Manifest(stream);
         } catch (final IOException ex) {
             return null;

@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.common.util;
 
 import com.google.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -39,7 +40,7 @@ public interface SquaremapJarAccess {
             if (sourceUrl.getProtocol().equals("jar")) {
                 final int exclamationIdx = sourceUrl.getPath().lastIndexOf('!');
                 if (exclamationIdx != -1) {
-                    sourceUrl = new URL(sourceUrl.getPath().substring(0, exclamationIdx));
+                    sourceUrl = URI.create(sourceUrl.getPath().substring(0, exclamationIdx)).toURL();
                 }
             }
             return Paths.get(sourceUrl.toURI());

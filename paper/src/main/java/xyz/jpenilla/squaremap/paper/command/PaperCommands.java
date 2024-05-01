@@ -23,7 +23,7 @@ import xyz.jpenilla.squaremap.common.command.BrigadierSetup;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitHelper;
 import xyz.jpenilla.squaremap.paper.util.Folia;
 
 @DefaultQualifier(NonNull.class)
@@ -84,6 +84,6 @@ public final class PaperCommands implements PlatformCommands {
             return Optional.empty();
         }
 
-        return Optional.of(CraftBukkitReflection.serverPlayer(selector.single()));
+        return Optional.of(CraftBukkitHelper.serverPlayer(selector.single()));
     }
 }

@@ -8,7 +8,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitHelper;
 
 @DefaultQualifier(NonNull.class)
 public class PaperCommander implements Commander, ForwardingAudience.Single {
@@ -55,7 +55,7 @@ public class PaperCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public ServerPlayer player() {
-            return CraftBukkitReflection.serverPlayer(this.bukkit());
+            return CraftBukkitHelper.serverPlayer(this.bukkit());
         }
 
         @Override

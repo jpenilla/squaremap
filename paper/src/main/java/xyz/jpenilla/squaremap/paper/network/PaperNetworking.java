@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.network.NetworkingHandler;
-import xyz.jpenilla.squaremap.paper.util.CraftBukkitReflection;
+import xyz.jpenilla.squaremap.paper.util.CraftBukkitHelper;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperNetworking implements Listener {
@@ -48,7 +48,7 @@ public final class PaperNetworking implements Listener {
     }
 
     private void handlePluginMessage(final String channel, final Player player, final byte[] data) {
-        this.networking.handleIncoming(CraftBukkitReflection.serverPlayer(player), data, PaperNetworking::isVanillaMap);
+        this.networking.handleIncoming(CraftBukkitHelper.serverPlayer(player), data, PaperNetworking::isVanillaMap);
     }
 
     @EventHandler
@@ -58,7 +58,7 @@ public final class PaperNetworking implements Listener {
 
     @EventHandler
     public void handlePlayerChangedWorld(final PlayerChangedWorldEvent event) {
-        this.networking.worldChanged(CraftBukkitReflection.serverPlayer(event.getPlayer()));
+        this.networking.worldChanged(CraftBukkitHelper.serverPlayer(event.getPlayer()));
     }
 
     private static boolean isVanillaMap(final MapItemSavedData mapData) {

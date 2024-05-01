@@ -2,6 +2,8 @@ package xyz.jpenilla.squaremap.forge;
 
 import com.google.common.base.Suppliers;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -20,7 +22,9 @@ import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import net.kyori.adventure.translation.Translator;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.locale.Language;
+import net.minecraft.network.chat.ComponentSerialization;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
@@ -28,14 +32,14 @@ import org.jetbrains.annotations.Nullable;
 
 @DefaultQualifier(NonNull.class)
 public final class ForgeAdventure {
-    public static net.minecraft.network.chat.Component toNative(final Component component) {
+    public static net.minecraft.network.chat.Component toNative(final RegistryAccess registryAccess, final Component component) {
         final JsonElement tree = GsonComponentSerializer.gson().serializeToTree(component);
-        return Objects.requireNonNull(net.minecraft.network.chat.Component.Serializer.fromJson(tree));
+        return Objects.requireNonNull(net.minecraft.network.chat.Component.Serializer.fromJson(tree, registryAccess));
     }
 
-    public static Component fromNative(final net.minecraft.network.chat.Component component) {
+    public static Component fromNative(final RegistryAccess registryAccess, final net.minecraft.network.chat.Component component) {
         return GsonComponentSerializer.gson().deserializeFromTree(
-            net.minecraft.network.chat.Component.Serializer.toJsonTree(component)
+            ComponentSerialization.CODEC.encodeStart(registryAccess.createSerializationContext(JsonOps.INSTANCE), component).getOrThrow(JsonParseException::new)
         );
     }
 
@@ -43,7 +47,7 @@ public final class ForgeAdventure {
         return new Audience() {
             @Override
             public void sendMessage(final Identity identity, final Component message, final MessageType type) {
-                stack.sendSystemMessage(toNative(message));
+                stack.sendSystemMessage(toNative(stack.registryAccess(), message));
             }
         };
     }

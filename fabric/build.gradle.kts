@@ -7,7 +7,7 @@ loom.accessWidenerPath = layout.projectDirectory.file("src/main/resources/square
 repositories {
   maven("https://maven.ladysnake.org/releases/") {
     mavenContent {
-      includeGroup("dev.onyxstudios.cardinal-components-api")
+      includeGroup("org.ladysnake.cardinal-components-api")
     }
   }
 }

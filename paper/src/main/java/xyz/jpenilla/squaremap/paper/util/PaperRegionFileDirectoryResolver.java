@@ -19,7 +19,7 @@ public final class PaperRegionFileDirectoryResolver implements RegionFileDirecto
     @Override
     public Path resolveRegionFileDirectory(final ServerLevel level) {
         return LevelStorageSource.getStorageFolder(
-            CraftBukkitReflection.world(level).getWorldFolder().toPath(),
+            level.getWorld().getWorldFolder().toPath(),
             level.getTypeKey()
         ).resolve("region");
     }

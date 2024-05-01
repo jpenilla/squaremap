@@ -9,13 +9,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.MapItem;
+import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -113,7 +110,7 @@ public final class NetworkingHandler {
         out.writeInt(Constants.MAP_DATA);
         out.writeInt(Constants.PROTOCOL);
 
-        final @Nullable MapItemSavedData mapData = player.level().getMapData(MapItem.makeKey(id));
+        final @Nullable MapItemSavedData mapData = player.level().getMapData(new MapId(id));
         if (mapData == null) {
             out.writeInt(Constants.ERROR_NO_SUCH_MAP);
             out.writeInt(id);
@@ -159,10 +156,11 @@ public final class NetworkingHandler {
     }
 
     private static void send(final ServerPlayer player, final ByteArrayDataOutput out) {
-        final ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(new SquaremapClientPayload(out.toByteArray()));
-        player.connection.send(packet);
+        //final ClientboundCustomPayloadPacket packet = new ClientboundCustomPayloadPacket(new SquaremapClientPayload(out.toByteArray()));
+        //player.connection.send(packet);
     }
 
+    /* TODO 1.20.5
     public record SquaremapClientPayload(byte[] bytes) implements CustomPacketPayload {
         @Override
         public void write(final FriendlyByteBuf friendlyByteBuf) {
@@ -174,6 +172,7 @@ public final class NetworkingHandler {
             return CHANNEL;
         }
     }
+     */
 
     private static ByteArrayDataOutput out() {
         return ByteStreams.newDataOutput();

@@ -1,3 +1,5 @@
+import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
+
 plugins {
   id("squaremap.platform")
   id("io.papermc.paperweight.userdev")
@@ -13,7 +15,7 @@ configurations.compileOnly {
 
 dependencies {
   paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
-  compileOnly("dev.folia", "folia-api", "1.20.2-R0.1-SNAPSHOT")
+  compileOnly("dev.folia", "folia-api", "1.20.4-R0.1-SNAPSHOT")
 
   implementation(projects.squaremapCommon)
 
@@ -32,6 +34,7 @@ tasks {
     }
   }
   shadowJar {
+    archiveFileName = productionJarName(minecraftVersion)
     listOf(
       "org.incendo.cloud",
       "io.leangen.geantyref",
@@ -40,9 +43,6 @@ tasks {
       "com.google.inject",
       "org.aopalliance",
     ).forEach(::reloc)
-  }
-  reobfJar {
-    outputJar = productionJarLocation(minecraftVersion)
   }
   processResources {
     expandIn("plugin.yml", mapOf(
@@ -54,11 +54,14 @@ tasks {
   }
 }
 
-squaremapPlatform.productionJar = tasks.reobfJar.flatMap { it.outputJar }
+squaremapPlatform.productionJar = tasks.shadowJar.flatMap { it.archiveFile }
 
 runPaper.folia.registerTask()
 
-paperweight.injectPaperRepository = false
+paperweight {
+  injectPaperRepository = false
+  reobfArtifactConfiguration = ReobfArtifactConfiguration.MOJANG_PRODUCTION
+}
 
 hangarPublish.publications.register("plugin") {
   version = project.version as String

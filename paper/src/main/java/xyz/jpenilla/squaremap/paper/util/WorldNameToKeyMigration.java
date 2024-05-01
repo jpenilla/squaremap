@@ -18,7 +18,7 @@ public final class WorldNameToKeyMigration {
 
     @SuppressWarnings("unused") // called using Reflection in AbstractWorldConfig constructor
     public static void migrate(final AbstractConfig config, final ServerLevel level) {
-        final String oldName = CraftBukkitReflection.world(level).getName();
+        final String oldName = level.getWorld().getName();
         config.migrateLevelSection(level, oldName);
     }
 
@@ -31,7 +31,7 @@ public final class WorldNameToKeyMigration {
     }
 
     private static void moveDirectories(final DirectoryProvider directoryProvider, final ServerLevel level) throws IOException {
-        final String oldName = CraftBukkitReflection.world(level).getName();
+        final String oldName = level.getWorld().getName();
         final String webName = Util.levelWebName(level);
         final Path tilesFrom = directoryProvider.tilesDirectory().resolve(oldName);
         if (Files.exists(tilesFrom)) {
