@@ -1,7 +1,7 @@
 [plugins]
 sponge-gradle-plugin = { id = "org.spongepowered.gradle.plugin", version.ref = "sponge-gradle" }
 sponge-gradle-ore = { id = "org.spongepowered.gradle.ore", version.ref = "sponge-gradle" }
-run-paper = { id = "xyz.jpenilla.run-paper", version = "2.2.4" }
+run-paper = { id = "xyz.jpenilla.run-paper", version = "2.3.0" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.2" }
 javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.14" }
 
@@ -34,7 +34,7 @@ shadow = "8.1.7"
 vanillaGradle = "0.2.1-SNAPSHOT"
 mod-publish-plugin = "0.5.1"
 loom = "1.6-SNAPSHOT"
-paperweight = "1.6.3"
+paperweight = "1.7.0"
 
 [libraries]
 guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
