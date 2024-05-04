@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -116,8 +117,12 @@ final class ExceptionHandler {
     }
 
     private void invalidSender(final ExceptionContext<Commander, InvalidCommandSenderException> ctx) {
+        final Component requiredSender = Component.join(
+            JoinConfiguration.separator(text(" or ")),
+            ctx.exception().requiredSenderTypes().stream().map(TypeUtils::simpleName).map(Component::text).toList()
+        );
         final Component message = Messages.COMMAND_EXCEPTION_INVALID_SENDER_TYPE.withPlaceholders(
-            placeholder("required_sender_type", text(TypeUtils.simpleName(ctx.exception().requiredSender())))
+            placeholder("required_sender_type", requiredSender)
         );
         decorateAndSend(ctx.context().sender(), message);
     }
