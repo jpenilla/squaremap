@@ -1,56 +1,59 @@
 package xyz.jpenilla.squaremap.paper.command;
 
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.minecraft.server.level.ServerPlayer;
-import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.jetbrains.annotations.Nullable;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitHelper;
 
 @DefaultQualifier(NonNull.class)
 public class PaperCommander implements Commander, ForwardingAudience.Single {
-    private final CommandSender sender;
+    private final CommandSourceStack stack;
 
-    private PaperCommander(final CommandSender sender) {
-        this.sender = sender;
+    private PaperCommander(final io.papermc.paper.command.brigadier.CommandSourceStack stack) {
+        this.stack = stack;
     }
 
     @Override
     public Audience audience() {
-        return this.sender;
+        final @Nullable Entity executor = this.stack.getExecutor();
+        return executor == null ? this.stack.getSender() : executor;
     }
 
     @Override
     public boolean hasPermission(final String permission) {
-        return this.sender.hasPermission(permission);
+        return this.stack.getSender().hasPermission(permission);
     }
 
-    public CommandSender sender() {
-        return this.sender;
+    public CommandSourceStack stack() {
+        return this.stack;
     }
 
     @Override
     public Object commanderId() {
-        return this.sender;
+        return this.stack.getSender();
     }
 
-    public static PaperCommander from(final CommandSender sender) {
-        if (sender instanceof org.bukkit.entity.Player player) {
-            return new Player(player);
+    public static PaperCommander from(final CommandSourceStack stack) {
+        if (stack.getSender() instanceof org.bukkit.entity.Player) {
+            return new Player(stack);
         }
-        return new PaperCommander(sender);
+        return new PaperCommander(stack);
     }
 
     public static final class Player extends PaperCommander implements PlayerCommander {
-        private Player(final org.bukkit.entity.Player sender) {
-            super(sender);
+        private Player(final CommandSourceStack commandSourceStack) {
+            super(commandSourceStack);
         }
 
         public org.bukkit.entity.Player bukkit() {
-            return (org.bukkit.entity.Player) this.sender();
+            return (org.bukkit.entity.Player) this.stack().getSender();
         }
 
         @Override

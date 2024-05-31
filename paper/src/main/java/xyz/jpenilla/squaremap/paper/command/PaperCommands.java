@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.paper.command;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,6 +29,7 @@ import xyz.jpenilla.squaremap.paper.util.Folia;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
+@SuppressWarnings("UnstableApiUsage")
 public final class PaperCommands implements PlatformCommands {
     private final JavaPlugin plugin;
 
@@ -38,19 +40,17 @@ public final class PaperCommands implements PlatformCommands {
 
     @Override
     public CommandManager<Commander> createCommandManager() {
-        final PaperCommandManager<Commander> mgr = new PaperCommandManager<>(
-            this.plugin,
-            ExecutionCoordinator.<Commander>builder()
-                .synchronizeExecution(Folia.FOLIA)
-                .build(),
-            SenderMapper.create(
-                PaperCommander::from,
-                commander -> ((PaperCommander) commander).sender()
-            )
+        final SenderMapper<CommandSourceStack, Commander> senderMapper = SenderMapper.create(
+            PaperCommander::from,
+            commander -> ((PaperCommander) commander).stack()
         );
 
-        // Don't check capabilities, the versions of Paper we support always have these.
-        mgr.registerBrigadier();
+        final PaperCommandManager<Commander> mgr = PaperCommandManager.builder(senderMapper)
+            .executionCoordinator(ExecutionCoordinator.<Commander>builder()
+                .synchronizeExecution(Folia.FOLIA)
+                .build())
+            .buildOnEnable(this.plugin);
+
         BrigadierSetup.setup(mgr);
 
         return mgr;

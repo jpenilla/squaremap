@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.fabric.command;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -10,7 +9,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.fabric.mixin.CommandSourceStackAccess;
 
 @DefaultQualifier(NonNull.class)
@@ -54,11 +52,7 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public ServerPlayer player() {
-            try {
-                return this.stack().getPlayerOrException();
-            } catch (final CommandSyntaxException e) {
-                throw Util.rethrow(e);
-            }
+            return (ServerPlayer) ((CommandSourceStackAccess) this.stack()).source();
         }
 
         @Override

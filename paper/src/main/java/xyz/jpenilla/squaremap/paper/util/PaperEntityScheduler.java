@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.paper.util;
 
 import com.google.inject.Inject;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.Server;
 import org.bukkit.command.BlockCommandSender;
@@ -32,13 +33,15 @@ public final class PaperEntityScheduler implements EntityScheduler {
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void scheduleFor(final Commander commander, final Runnable task) {
         if (!Folia.FOLIA) {
             task.run();
             return;
         }
-        final CommandSender sender = ((PaperCommander) commander).sender();
+        final CommandSourceStack source = ((PaperCommander) commander).stack();
+        final CommandSender sender = source.getExecutor() != null ? source.getExecutor() : source.getSender();
         if (sender instanceof org.bukkit.entity.Entity entity) {
             entity.getScheduler().execute(this.plugin, task, null, 0L);
         } else if (sender instanceof BlockCommandSender block) {

@@ -2,7 +2,6 @@ package xyz.jpenilla.squaremap.forge.command;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.concurrent.ExecutionException;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
@@ -15,7 +14,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.forge.ForgeAdventure;
 
 @DefaultQualifier(NonNull.class)
@@ -61,11 +59,7 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public ServerPlayer player() {
-            try {
-                return this.stack().getPlayerOrException();
-            } catch (final CommandSyntaxException e) {
-                throw Util.rethrow(e);
-            }
+            return (ServerPlayer) this.stack().source;
         }
 
         @Override
