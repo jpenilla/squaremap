@@ -24,7 +24,7 @@ fabricApi = "0.99.0+1.20.6"
 fabricLoader = "0.15.11"
 cardinalComponents = "6.0.0-pre2"
 guice = "7.0.0"
-neoforge = "20.6.72-beta"
+neoforge = "20.6.98-beta"
 htmlSanitizer = "20240325.1"
 
 # buildSrc

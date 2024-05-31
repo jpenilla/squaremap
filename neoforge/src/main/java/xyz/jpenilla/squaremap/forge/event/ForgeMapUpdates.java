@@ -13,10 +13,12 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
-import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
+import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
+import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.WorldManagerImpl;
@@ -35,7 +37,7 @@ public final class ForgeMapUpdates {
         List.of(
             BlockEvent.BreakEvent.class,
             BlockEvent.EntityPlaceEvent.class,
-            BlockEvent.CropGrowEvent.Post.class,
+            CropGrowEvent.Post.class,
             BlockEvent.BlockToolModificationEvent.class,
             BlockEvent.EntityMultiPlaceEvent.class,
             BlockEvent.FarmlandTrampleEvent.class,
@@ -51,7 +53,7 @@ public final class ForgeMapUpdates {
             }
             this.markBlock(level, event.getPos());
         }));
-        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (BlockEvent.CreateFluidSourceEvent event) -> {
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (CreateFluidSourceEvent event) -> {
             if (!(event.getLevel() instanceof ServerLevel level)) {
                 return;
             }
@@ -65,7 +67,7 @@ public final class ForgeMapUpdates {
                 this.markBlock(level, affectedBlock);
             }
         });
-        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (SaplingGrowTreeEvent event) -> {
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (BlockGrowFeatureEvent event) -> {
             if (!(event.getLevel() instanceof ServerLevel level)) {
                 return;
             }

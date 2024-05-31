@@ -48,7 +48,7 @@ tasks.remapJar {
   archiveFileName = productionJarName(libs.versions.minecraft)
 }
 
-squaremapPlatform.loom.modInfoFilePath = "META-INF/mods.toml"
+squaremapPlatform.loom.modInfoFilePath = "META-INF/neoforge.mods.toml"
 
 publishMods.modrinth {
   minecraftVersions.add(libs.versions.minecraft)
