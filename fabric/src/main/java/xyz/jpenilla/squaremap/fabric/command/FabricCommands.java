@@ -3,6 +3,7 @@ package xyz.jpenilla.squaremap.fabric.command;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -13,7 +14,6 @@ import org.incendo.cloud.SenderMapper;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.execution.ExecutionCoordinator;
 import org.incendo.cloud.fabric.FabricServerCommandManager;
-import org.incendo.cloud.minecraft.modded.data.Coordinates;
 import org.incendo.cloud.minecraft.modded.data.SinglePlayerSelector;
 import org.incendo.cloud.minecraft.modded.parser.VanillaArgumentParsers;
 import org.incendo.cloud.parser.ParserDescriptor;
@@ -45,14 +45,9 @@ public final class FabricCommands implements PlatformCommands {
     }
 
     @Override
-    public ParserDescriptor<Commander, ?> columnPosParser() {
-        return VanillaArgumentParsers.columnPosParser();
-    }
-
-    @Override
-    public Optional<BlockPos> extractColumnPos(final String argName, final CommandContext<Commander> context) {
-        return context.<Coordinates.ColumnCoordinates>optional(argName)
-            .map(Coordinates::blockPos);
+    public ParserDescriptor<Commander, BlockPos> columnPosParser() {
+        return VanillaArgumentParsers.<Commander>columnPosParser()
+            .mapSuccess(BlockPos.class, (ctx, coords) -> CompletableFuture.completedFuture(coords.blockPos()));
     }
 
     @Override

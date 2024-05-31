@@ -24,16 +24,7 @@ public interface PlatformCommands {
      *
      * @return built argument
      */
-    ParserDescriptor<Commander, ?> columnPosParser();
-
-    /**
-     * Extract the result from an argument created with {@link #columnPosParser()}.
-     *
-     * @param name argument name
-     * @param ctx  command context
-     * @return result or null
-     */
-    Optional<BlockPos> extractColumnPos(String name, CommandContext<Commander> ctx);
+    ParserDescriptor<Commander, BlockPos> columnPosParser();
 
     /**
      * Create a single player selector parser.
@@ -50,5 +41,5 @@ public interface PlatformCommands {
      * @return result
      * @throws CommandCompleted when no result is found
      */
-    Optional<ServerPlayer> extractPlayer(String name, CommandContext<Commander> ctx) throws CommandCompleted;
+    Optional<ServerPlayer> extractPlayer(String name, CommandContext<Commander> ctx);
 }

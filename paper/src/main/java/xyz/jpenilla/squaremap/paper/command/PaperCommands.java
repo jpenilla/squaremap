@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,7 +14,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.SenderMapper;
 import org.incendo.cloud.bukkit.data.SinglePlayerSelector;
-import org.incendo.cloud.bukkit.parser.location.Location2D;
 import org.incendo.cloud.bukkit.parser.location.Location2DParser;
 import org.incendo.cloud.bukkit.parser.selector.SinglePlayerSelectorParser;
 import org.incendo.cloud.context.CommandContext;
@@ -57,14 +57,11 @@ public final class PaperCommands implements PlatformCommands {
     }
 
     @Override
-    public ParserDescriptor<Commander, ?> columnPosParser() {
-        return Location2DParser.location2DParser();
-    }
-
-    @Override
-    public Optional<BlockPos> extractColumnPos(final String argName, final CommandContext<Commander> context) {
-        return context.<Location2D>optional(argName)
-            .map(loc -> new BlockPos(loc.getBlockX(), 0, loc.getBlockZ()));
+    public ParserDescriptor<Commander, BlockPos> columnPosParser() {
+        return Location2DParser.<Commander>location2DParser().mapSuccess(
+            BlockPos.class,
+            (ctx, loc) -> CompletableFuture.completedFuture(new BlockPos(loc.getBlockX(), 0, loc.getBlockZ()))
+        );
     }
 
     @Override

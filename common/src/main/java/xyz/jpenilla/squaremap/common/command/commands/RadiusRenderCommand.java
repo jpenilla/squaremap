@@ -48,7 +48,7 @@ public final class RadiusRenderCommand extends SquaremapCommand {
         final MapWorldInternal world = context.get("world");
         final int radius = context.get("radius");
 
-        @Nullable BlockPos center = this.platformCommands.extractColumnPos("center", context).orElse(null);
+        @Nullable BlockPos center = context.<BlockPos>optional("center").orElse(null);
         if (center == null) {
             center = new BlockPos(0, 0, 0);
         }

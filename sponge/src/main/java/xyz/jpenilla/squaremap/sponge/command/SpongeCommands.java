@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.leangen.geantyref.TypeToken;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -19,14 +20,12 @@ import org.incendo.cloud.sponge.data.SinglePlayerSelector;
 import org.incendo.cloud.sponge.parser.SinglePlayerSelectorParser;
 import org.incendo.cloud.sponge.parser.Vector2iParser;
 import org.spongepowered.api.command.registrar.tree.CommandTreeNodeTypes;
-import org.spongepowered.math.vector.Vector2i;
 import org.spongepowered.plugin.PluginContainer;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.command.argument.parser.LevelParser;
 import xyz.jpenilla.squaremap.common.command.argument.parser.MapWorldParser;
-import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -63,14 +62,11 @@ public final class SpongeCommands implements PlatformCommands {
     }
 
     @Override
-    public ParserDescriptor<Commander, ?> columnPosParser() {
-        return Vector2iParser.vector2iParser();
-    }
-
-    @Override
-    public Optional<BlockPos> extractColumnPos(final String name, final CommandContext<Commander> ctx) {
-        return ctx.<Vector2i>optional(name)
-            .map(loc -> new BlockPos(loc.x(), 0, loc.y()));
+    public ParserDescriptor<Commander, BlockPos> columnPosParser() {
+        return Vector2iParser.<Commander>vector2iParser().mapSuccess(
+            BlockPos.class,
+            (ctx, vec) -> CompletableFuture.completedFuture(new BlockPos(vec.x(), 0, vec.y()))
+        );
     }
 
     @Override
@@ -79,7 +75,7 @@ public final class SpongeCommands implements PlatformCommands {
     }
 
     @Override
-    public Optional<ServerPlayer> extractPlayer(final String name, final CommandContext<Commander> ctx) throws CommandCompleted {
+    public Optional<ServerPlayer> extractPlayer(final String name, final CommandContext<Commander> ctx) {
         final Commander sender = ctx.sender();
         final @Nullable SinglePlayerSelector selector = ctx.getOrDefault(name, null);
 
