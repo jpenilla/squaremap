@@ -16,14 +16,14 @@ displayTest = "IGNORE_ALL_VERSION"
 [[dependencies.squaremap]]
 modId = "neoforge"
 type = "required"
-versionRange = "[20.6,)"
+versionRange = "[21.0,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.squaremap]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.20.6,1.21)"
+versionRange = "[1.21,1.22)"
 ordering = "NONE"
 side = "BOTH"
 

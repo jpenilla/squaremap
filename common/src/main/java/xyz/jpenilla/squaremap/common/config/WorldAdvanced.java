@@ -36,7 +36,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 "minecraft:short_grass",
                 "minecraft:large_fern"
             )
-        ).forEach(block -> this.invisibleBlocks.add(Util.requireEntry(BuiltInRegistries.BLOCK, new ResourceLocation(block))));
+        ).forEach(block -> this.invisibleBlocks.add(Util.requireEntry(BuiltInRegistries.BLOCK, ResourceLocation.parse(block))));
     }
 
     public final Set<Block> iterateUpBaseBlocks = new HashSet<>();
@@ -59,7 +59,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 "minecraft:magma_block",
                 "minecraft:basalt"
             )
-        ).forEach(block -> this.iterateUpBaseBlocks.add(Util.requireEntry(BuiltInRegistries.BLOCK, new ResourceLocation(block))));
+        ).forEach(block -> this.iterateUpBaseBlocks.add(Util.requireEntry(BuiltInRegistries.BLOCK, ResourceLocation.parse(block))));
     }
 
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_FOLIAGE = new Reference2IntOpenHashMap<>();
@@ -79,7 +79,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 Map.entry("minecraft:mangrove_swamp", "#6f9623")
             )
         ).forEach((key, color) -> {
-            final Biome biome = Util.requireEntry(registry, new ResourceLocation(key));
+            final Biome biome = Util.requireEntry(registry, ResourceLocation.parse(key));
             this.COLOR_OVERRIDES_BIOME_FOLIAGE.put(biome, Colors.parseHex(color));
         });
     }
@@ -95,7 +95,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
             "color-overrides.biomes.grass",
             Map.of()
         ).forEach((key, color) -> {
-            final Biome biome = Util.requireEntry(registry, new ResourceLocation(key));
+            final Biome biome = Util.requireEntry(registry, ResourceLocation.parse(key));
             this.COLOR_OVERRIDES_BIOME_GRASS.put(biome, Colors.parseHex(color));
         });
     }
@@ -111,7 +111,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
             "color-overrides.biomes.water",
             Map.of()
         ).forEach((key, color) -> {
-            final Biome biome = Util.requireEntry(registry, new ResourceLocation(key));
+            final Biome biome = Util.requireEntry(registry, ResourceLocation.parse(key));
             this.COLOR_OVERRIDES_BIOME_WATER.put(biome, Colors.parseHex(color));
         });
     }
@@ -154,7 +154,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 Map.entry("minecraft:glass", "#FFFFFF")
             )
         ).forEach((key, color) -> {
-            final Block block = Util.requireEntry(BuiltInRegistries.BLOCK, new ResourceLocation(key));
+            final Block block = Util.requireEntry(BuiltInRegistries.BLOCK, ResourceLocation.parse(key));
             if (block != Blocks.AIR) {
                 this.COLOR_OVERRIDES_BLOCKS.put(block, Colors.parseHex(color));
             }

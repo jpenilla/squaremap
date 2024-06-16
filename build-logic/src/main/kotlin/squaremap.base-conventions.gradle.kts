@@ -21,6 +21,7 @@ repositories {
     mavenContent {
       includeModule("org.incendo", "cloud-sponge")
       includeGroup("xyz.jpenilla")
+      includeModule("net.kyori", "adventure-platform-fabric") // TODO
       snapshotsOnly()
     }
   }

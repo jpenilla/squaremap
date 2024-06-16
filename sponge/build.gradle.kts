@@ -10,6 +10,10 @@ plugins {
 
 val minecraftVersion = libs.versions.minecraft
 
+configurations.all {
+  exclude("org.lwjgl", "lwjgl-freetype") // TODO: Don't care about running client :D (work around VG bug/Mojang repo weirdness?)
+}
+
 minecraft {
   version().set(minecraftVersion)
   accessWideners(project(":squaremap-common").layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))
@@ -28,6 +32,7 @@ dependencies {
 }
 
 // https://github.com/SpongePowered/SpongeGradle/issues/70
+/*
 configurations.spongeRuntime {
     resolutionStrategy {
         eachDependency {
@@ -37,9 +42,10 @@ configurations.spongeRuntime {
         }
     }
 }
+ */
 
 sponge {
-  apiVersion("11.0.0-SNAPSHOT")
+  apiVersion("12.0.0-SNAPSHOT")
   plugin("squaremap") {
     loader {
       name(PluginLoaders.JAVA_PLAIN)

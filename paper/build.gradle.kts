@@ -9,8 +9,13 @@ plugins {
 
 val minecraftVersion = libs.versions.minecraft
 
+configurations.mojangMappedServer {
+  exclude("io.papermc.paper", "paper-api")
+}
+
 dependencies {
-  paperweight.foliaDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
+  paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
+  compileOnly("dev.folia:folia-api:1.20.6-R0.1-SNAPSHOT")
 
   implementation(projects.squaremapCommon)
 
@@ -44,7 +49,7 @@ tasks {
       "version" to project.version,
       "website" to providers.gradleProperty("githubUrl").get(),
       "description" to project.description,
-      "apiVersion" to minecraftVersion.get().take(4),
+      "apiVersion" to minecraftVersion.get(),
     ))
   }
 }
