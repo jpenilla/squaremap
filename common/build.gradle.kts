@@ -8,10 +8,6 @@ minecraft {
   accessWideners(layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))
 }
 
-configurations.all {
-  exclude("org.lwjgl", "lwjgl-freetype") // TODO: Don't care about running client :D (work around VG bug/Mojang repo weirdness?)
-}
-
 dependencies {
   api(projects.squaremapApi)
   api(libs.guice) {

@@ -3,13 +3,10 @@ package xyz.jpenilla.squaremap.paper;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
-import io.papermc.paper.threadedregions.RegionizedServerInitEvent;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -21,6 +18,7 @@ import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
+import xyz.jpenilla.squaremap.paper.folia.FoliaInitListener;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.network.PaperNetworking;
@@ -62,16 +60,9 @@ public final class SquaremapPaper implements SquaremapPlatform {
         this.networking.register();
         new Metrics(this.plugin, 13571); // https://bstats.org/plugin/bukkit/squaremap/13571
         if (Folia.FOLIA) {
-            this.server.getPluginManager().registerEvents(new FoliaInitListener(), this.plugin);
+            this.server.getPluginManager().registerEvents(new FoliaInitListener(this.plugin, this.common::updateCheck), this.plugin);
         } else {
             this.server.getScheduler().runTask(this.plugin, this.common::updateCheck);
-        }
-    }
-
-    public final class FoliaInitListener implements Listener {
-        @EventHandler
-        public void handle(final RegionizedServerInitEvent event) {
-            SquaremapPaper.this.server.getAsyncScheduler().runNow(SquaremapPaper.this.plugin, $ -> SquaremapPaper.this.common.updateCheck());
         }
     }
 

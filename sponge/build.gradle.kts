@@ -10,10 +10,6 @@ plugins {
 
 val minecraftVersion = libs.versions.minecraft
 
-configurations.all {
-  exclude("org.lwjgl", "lwjgl-freetype") // TODO: Don't care about running client :D (work around VG bug/Mojang repo weirdness?)
-}
-
 minecraft {
   version().set(minecraftVersion)
   accessWideners(project(":squaremap-common").layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))

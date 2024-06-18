@@ -9,15 +9,11 @@ plugins {
 
 val minecraftVersion = libs.versions.minecraft
 
-configurations.mojangMappedServer {
-  exclude("io.papermc.paper", "paper-api")
-}
-
 dependencies {
   paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
-  compileOnly("dev.folia:folia-api:1.20.6-R0.1-SNAPSHOT")
 
   implementation(projects.squaremapCommon)
+  implementation(projects.squaremapPaper.folia)
 
   implementation(libs.cloudPaper)
   implementation(libs.bStatsBukkit)
