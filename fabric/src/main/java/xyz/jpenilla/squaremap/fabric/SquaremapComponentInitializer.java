@@ -15,7 +15,7 @@ import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 @DefaultQualifier(NonNull.class)
 public class SquaremapComponentInitializer implements EntityComponentInitializer {
     public static final ComponentKey<PlayerComponent> SQUAREMAP_PLAYER_COMPONENT =
-        ComponentRegistryV3.INSTANCE.getOrCreate(new ResourceLocation("squaremap:player_component"), PlayerComponent.class);
+        ComponentRegistryV3.INSTANCE.getOrCreate(ResourceLocation.parse("squaremap:player_component"), PlayerComponent.class);
 
     @Override
     public void registerEntityComponentFactories(final EntityComponentFactoryRegistry registry) {

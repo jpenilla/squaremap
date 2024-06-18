@@ -10,9 +10,10 @@ plugins {
 val minecraftVersion = libs.versions.minecraft
 
 dependencies {
-  paperweight.foliaDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
+  paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
 
   implementation(projects.squaremapCommon)
+  implementation(projects.squaremapPaper.folia)
 
   implementation(libs.cloudPaper)
   implementation(libs.bStatsBukkit)
@@ -44,7 +45,7 @@ tasks {
       "version" to project.version,
       "website" to providers.gradleProperty("githubUrl").get(),
       "description" to project.description,
-      "apiVersion" to minecraftVersion.get().take(4),
+      "apiVersion" to minecraftVersion.get(),
     ))
   }
 }

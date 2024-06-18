@@ -9,7 +9,6 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.IFluidBlock;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -27,9 +26,7 @@ public final class ForgeFluidColorExporter extends AbstractFluidColorExporter {
 
     @Override
     protected @Nullable Fluid fluid(final Block block) {
-        if (block instanceof IFluidBlock fluidBlock) {
-            return fluidBlock.getFluid();
-        } else if (block instanceof LiquidBlock liquidBlock) {
+        if (block instanceof LiquidBlock liquidBlock) {
             return liquidBlock.fluid;
         }
         return null;

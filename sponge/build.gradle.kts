@@ -28,6 +28,7 @@ dependencies {
 }
 
 // https://github.com/SpongePowered/SpongeGradle/issues/70
+/*
 configurations.spongeRuntime {
     resolutionStrategy {
         eachDependency {
@@ -37,9 +38,10 @@ configurations.spongeRuntime {
         }
     }
 }
+ */
 
 sponge {
-  apiVersion("11.0.0-SNAPSHOT")
+  apiVersion("12.0.0-SNAPSHOT")
   plugin("squaremap") {
     loader {
       name(PluginLoaders.JAVA_PLAIN)

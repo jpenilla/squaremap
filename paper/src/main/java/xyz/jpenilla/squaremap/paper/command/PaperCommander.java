@@ -13,6 +13,7 @@ import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitHelper;
 
 @DefaultQualifier(NonNull.class)
+@SuppressWarnings("UnstableApiUsage")
 public class PaperCommander implements Commander, ForwardingAudience.Single {
     private final CommandSourceStack stack;
 

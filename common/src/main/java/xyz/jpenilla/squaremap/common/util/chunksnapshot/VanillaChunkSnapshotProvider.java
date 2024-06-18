@@ -70,7 +70,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
     }
 
     private static @Nullable ChunkAccess fullIfPresent(final ChunkHolder chunkHolder) {
-        return unwrap(chunkHolder.getLastAvailable());
+        return unwrap(chunkHolder.getLatestChunk());
     }
 
     private static @Nullable ChunkAccess unwrap(@Nullable ChunkAccess chunk) {
@@ -80,7 +80,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
         if (chunk instanceof ImposterProtoChunk imposter) {
             chunk = imposter.getWrapped();
         }
-        if (!chunk.getStatus().isOrAfter(ChunkStatus.FULL) && !preHeightChangeFullChunk(chunk)) {
+        if (!chunk.getPersistedStatus().isOrAfter(ChunkStatus.FULL) && !preHeightChangeFullChunk(chunk)) {
             return null;
         }
         return chunk;

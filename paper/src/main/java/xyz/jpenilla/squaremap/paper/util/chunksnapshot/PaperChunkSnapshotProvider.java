@@ -1,7 +1,7 @@
 package xyz.jpenilla.squaremap.paper.util.chunksnapshot;
 
 import ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor;
-import io.papermc.paper.chunk.system.ChunkSystem;
+import ca.spottedleaf.moonrise.patches.chunk_system.ChunkSystem;
 import io.papermc.paper.util.TickThread;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -28,7 +28,7 @@ record PaperChunkSnapshotProvider(
     public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(final int x, final int z) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable ChunkAccess existing = this.level.getChunkIfLoadedImmediately(x, z);
-            if (existing != null && existing.getStatus().isOrAfter(ChunkStatus.FULL)) {
+            if (existing != null && existing.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
                 return CompletableFuture.completedFuture(existing);
             } else if (existing != null) {
                 return CompletableFuture.<@Nullable ChunkAccess>completedFuture(null);
@@ -51,7 +51,7 @@ record PaperChunkSnapshotProvider(
             if (chunk instanceof ImposterProtoChunk imposter) {
                 chunk = imposter.getWrapped();
             }
-            if (!chunk.getStatus().isOrAfter(ChunkStatus.FULL)) {
+            if (!chunk.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
                 if (chunk.getBelowZeroRetrogen() == null || !chunk.getBelowZeroRetrogen().targetStatus().isOrAfter(ChunkStatus.SPAWN)) {
                     return null;
                 }

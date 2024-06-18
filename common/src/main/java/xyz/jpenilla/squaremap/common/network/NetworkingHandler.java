@@ -28,7 +28,7 @@ import xyz.jpenilla.squaremap.common.util.Util;
  */
 @DefaultQualifier(NonNull.class)
 public final class NetworkingHandler {
-    public static final ResourceLocation CHANNEL = new ResourceLocation("squaremap:client");
+    public static final ResourceLocation CHANNEL = ResourceLocation.parse("squaremap:client");
 
     private final WorldManager worldManager;
     private final ServerAccess serverAccess;

@@ -76,7 +76,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
             ServerLifecycleEvents.SERVER_STARTED.register($ -> this.common.updateCheck());
         }
 
-        final ResourceLocation early = new ResourceLocation("squaremap:early");
+        final ResourceLocation early = ResourceLocation.parse("squaremap:early");
         ServerWorldEvents.LOAD.register(early, (server, level) -> this.worldManager.initWorld(level));
         ServerWorldEvents.LOAD.addPhaseOrdering(early, Event.DEFAULT_PHASE);
 
