@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -21,38 +22,51 @@ import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
-import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
+import xyz.jpenilla.squaremap.common.httpd.JsonCache;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
-public class UpdatePlayers implements Runnable {
+public final class UpdatePlayers implements Runnable {
+    private static final String JSON_PATH = "/tiles/players.json";
+
     private final Provider<ComponentFlattener> flattener;
     private final AbstractPlayerManager playerManager;
-    private final DirectoryProvider directoryProvider;
     private final ServerAccess serverAccess;
     private final ConfigManager configManager;
-    private boolean prevEmpty = false;
-    private int prevMaxPlayers = Integer.MIN_VALUE;
+    private final JsonCache jsonCache;
+    private @Nullable Map<String, Object> lastData = null;
 
     @Inject
     private UpdatePlayers(
         final Provider<ComponentFlattener> flattener,
         final AbstractPlayerManager playerManager,
-        final DirectoryProvider directoryProvider,
         final ServerAccess serverAccess,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final JsonCache jsonCache
     ) {
         this.flattener = flattener;
         this.playerManager = playerManager;
-        this.directoryProvider = directoryProvider;
         this.serverAccess = serverAccess;
         this.configManager = configManager;
+        this.jsonCache = jsonCache;
     }
 
     @Override
     public void run() {
-        List<Object> players = new ArrayList<>();
+        final @Nullable Map<String, Object> prev = this.lastData;
+        final Map<String, Object> data = this.collectData();
+        this.lastData = data;
+
+        ForkJoinPool.commonPool().execute(() -> {
+            if (prev == null || !prev.equals(data)) {
+                final String json = Util.gson().toJson(data);
+                this.jsonCache.put(JSON_PATH, json);
+            }
+        });
+    }
+
+    private Map<String, Object> collectData() {
+        final List<Object> players = new ArrayList<>();
 
         final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.flattener.get());
 
@@ -92,18 +106,12 @@ public class UpdatePlayers implements Runnable {
             });
         });
 
-        final int maxPlayers = this.serverAccess.maxPlayers();
-        if (players.isEmpty() && this.prevEmpty && maxPlayers == this.prevMaxPlayers) {
-            return;
-        }
-        this.prevEmpty = players.isEmpty();
-        this.prevMaxPlayers = maxPlayers;
-
         final Map<String, Object> map = new HashMap<>();
-        map.put("players", players);
-        map.put("max", maxPlayers);
 
-        FileUtil.atomicWriteJsonAsync(this.directoryProvider.tilesDirectory().resolve("players.json"), map);
+        map.put("players", players);
+        map.put("max", this.serverAccess.maxPlayers());
+
+        return map;
     }
 
     private static int armorPoints(final ServerPlayer player) {

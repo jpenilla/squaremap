@@ -69,11 +69,13 @@ public final class Config extends AbstractConfig {
     public static boolean HTTPD_ENABLED = true;
     public static String HTTPD_BIND = "0.0.0.0";
     public static int HTTPD_PORT = 8080;
+    public static boolean FLUSH_JSON_IMMEDIATELY = false;
 
     private static void internalWebServerSettings() {
         HTTPD_ENABLED = config.getBoolean("settings.internal-webserver.enabled", HTTPD_ENABLED);
         HTTPD_BIND = config.getString("settings.internal-webserver.bind", HTTPD_BIND);
         HTTPD_PORT = config.getInt("settings.internal-webserver.port", HTTPD_PORT);
+        FLUSH_JSON_IMMEDIATELY = config.getBoolean("settings.internal-webserver.flush-json-immediately", FLUSH_JSON_IMMEDIATELY);
     }
 
     public static boolean UI_COORDINATES_ENABLED = true;

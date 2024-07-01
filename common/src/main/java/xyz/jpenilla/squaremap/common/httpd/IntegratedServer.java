@@ -19,11 +19,13 @@ import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
 public final class IntegratedServer {
     private static Undertow SERVER;
+    private static JsonCache CACHE;
 
     private IntegratedServer() {
     }
 
-    public static void startServer(final DirectoryProvider directoryProvider) {
+    public static void startServer(final DirectoryProvider directoryProvider, final JsonCache jsonCache) {
+        CACHE = jsonCache;
         try {
             SERVER = buildUndertow(createResourceHandler(directoryProvider));
             SERVER.start();
@@ -46,6 +48,11 @@ public final class IntegratedServer {
                         "max-age=0, must-revalidate, no-cache"
                     );
                 }
+
+                if (CACHE.handle(exchange)) {
+                    return;
+                }
+
                 resourceHandler.handleRequest(exchange);
             })
             .build();
