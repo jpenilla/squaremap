@@ -21,6 +21,7 @@ import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.LevelBiomeColorData;
 import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
+import xyz.jpenilla.squaremap.common.httpd.JsonCache;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconLayer;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
@@ -38,6 +39,7 @@ public final class SquaremapCommon {
     private final WorldManagerImpl worldManager;
     private final Commands commands;
     private final SquaremapJarAccess squaremapJar;
+    private final JsonCache jsonCache;
 
     @Inject
     private SquaremapCommon(
@@ -48,7 +50,8 @@ public final class SquaremapCommon {
         final AbstractPlayerManager playerManager,
         final WorldManagerImpl worldManager,
         final Commands commands,
-        final SquaremapJarAccess squaremapJar
+        final SquaremapJarAccess squaremapJar,
+        final JsonCache jsonCache
     ) {
         this.injector = injector;
         this.platform = platform;
@@ -58,6 +61,7 @@ public final class SquaremapCommon {
         this.worldManager = worldManager;
         this.commands = commands;
         this.squaremapJar = squaremapJar;
+        this.jsonCache = jsonCache;
     }
 
     public void init() {
@@ -74,7 +78,7 @@ public final class SquaremapCommon {
         this.worldManager.start();
         this.platform.startCallback();
         if (Config.HTTPD_ENABLED) {
-            IntegratedServer.startServer(this.directoryProvider);
+            IntegratedServer.startServer(this.directoryProvider, this.jsonCache);
         } else {
             Logging.logger().info(Messages.LOG_INTERNAL_WEB_DISABLED);
         }
@@ -83,6 +87,9 @@ public final class SquaremapCommon {
     private void stop() {
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.stopServer();
+            if (!Config.FLUSH_JSON_IMMEDIATELY) {
+                this.jsonCache.flush();
+            }
         }
         this.platform.stopCallback();
         this.worldManager.shutdown();
