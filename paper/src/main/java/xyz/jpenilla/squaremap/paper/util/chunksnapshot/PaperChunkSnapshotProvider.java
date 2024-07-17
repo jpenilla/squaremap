@@ -1,8 +1,8 @@
 package xyz.jpenilla.squaremap.paper.util.chunksnapshot;
 
 import ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor;
-import ca.spottedleaf.moonrise.patches.chunk_system.ChunkSystem;
-import io.papermc.paper.util.TickThread;
+import ca.spottedleaf.moonrise.common.util.ChunkSystem;
+import ca.spottedleaf.moonrise.common.util.TickThread;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.server.level.ServerLevel;
