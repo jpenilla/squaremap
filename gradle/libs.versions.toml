@@ -76,7 +76,6 @@ paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "pape
 foliaApi = "dev.folia:folia-api:1.20.6-R0.1-SNAPSHOT"
 
 undertow = { group = "io.undertow", name = "undertow-core", version = "2.3.15.Final" }
-jBossLoggingAnnotations = { group = "org.jboss.logging", name = "jboss-logging-annotations", version = "2.2.1.Final" }
 
 htmlSanitizer = { group = "com.googlecode.owasp-java-html-sanitizer", name = "owasp-java-html-sanitizer", version.ref = "htmlSanitizer" }
 htmlSanitizerJ8 = { group = "com.googlecode.owasp-java-html-sanitizer", name = "java8-shim", version.ref = "htmlSanitizer" }

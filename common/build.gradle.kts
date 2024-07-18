@@ -35,7 +35,6 @@ dependencies {
   api(libs.configurateYaml)
 
   api(libs.undertow)
-  compileOnlyApi(libs.jBossLoggingAnnotations)
 
   api(libs.htmlSanitizer) {
     isTransitive = false // depends on guava, provided by mc at runtime
