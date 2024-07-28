@@ -5,7 +5,7 @@ import com.google.inject.Provides;
 import java.nio.file.Path;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.kyori.adventure.platform.fabric.FabricServerAudiences;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -50,6 +50,6 @@ public final class FabricModule extends AbstractModule {
 
     @Provides
     public ComponentFlattener componentFlattener(final FabricServerAccess serverAccess) {
-        return FabricServerAudiences.of(serverAccess.requireServer()).flattener();
+        return MinecraftServerAudiences.of(serverAccess.requireServer()).flattener();
     }
 }
