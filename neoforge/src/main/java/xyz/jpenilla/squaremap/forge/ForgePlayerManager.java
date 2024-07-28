@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Optional;
 import java.util.function.Supplier;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -39,9 +40,10 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
 
     @Override
     public Component displayName(final ServerPlayer player) {
+        final MinecraftServerAudiences audiences = MinecraftServerAudiences.of(player.getServer());
         return Optional.ofNullable(player.getDisplayName())
-            .map(c -> ForgeAdventure.fromNative(player.level().registryAccess(), c))
-            .orElseGet(() -> ForgeAdventure.fromNative(player.level().registryAccess(), player.getName()));
+            .map(audiences::asAdventure)
+            .orElseGet(() -> audiences.asAdventure(player.getName()));
     }
 
     @Override

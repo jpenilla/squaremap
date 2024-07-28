@@ -17,7 +17,7 @@ configurate = "4.1.2"
 adventure = "4.17.0"
 examination = "1.3.0"
 option = "1.0.0"
-adventurePlatformFabric = "5.14.1"
+adventurePlatformMod = "6.0.0"
 paperApi = "1.20.2-R0.1-SNAPSHOT"
 bStats = "3.1.0"
 fabricApi = "0.105.0+1.21.1"
@@ -46,7 +46,8 @@ adventureTextSerializerPlain = { group = "net.kyori", name = "adventure-text-ser
 adventureTextSerializerGson = { group = "net.kyori", name = "adventure-text-serializer-gson" }
 adventureTextSerializerJson = { group = "net.kyori", name = "adventure-text-serializer-json" }
 miniMessage = { group = "net.kyori", name = "adventure-text-minimessage" }
-adventurePlatformFabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventurePlatformFabric" }
+adventurePlatformFabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventurePlatformMod" }
+adventurePlatformNeoforge = { group = "net.kyori", name = "adventure-platform-neoforge", version.ref = "adventurePlatformMod" }
 adventureKey = { group = "net.kyori", name = "adventure-key" }
 examinationApi = { group = "net.kyori", name = "examination-api", version.ref = "examination" }
 examinationString = { group = "net.kyori", name = "examination-string", version.ref = "examination" }

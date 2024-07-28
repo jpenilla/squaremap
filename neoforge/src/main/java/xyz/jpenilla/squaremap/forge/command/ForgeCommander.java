@@ -14,7 +14,6 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.command.Commander;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
-import xyz.jpenilla.squaremap.forge.ForgeAdventure;
 
 @DefaultQualifier(NonNull.class)
 public class ForgeCommander implements Commander, ForwardingAudience.Single {
@@ -26,7 +25,7 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
 
     @Override
     public Audience audience() {
-        return ForgeAdventure.commandSourceAudience(this.stack);
+        return (Audience) this.stack;
     }
 
     @Override
