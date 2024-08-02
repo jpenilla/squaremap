@@ -2,7 +2,6 @@ package xyz.jpenilla.squaremap.paper.util.chunksnapshot;
 
 import ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor;
 import ca.spottedleaf.moonrise.common.util.ChunkSystem;
-import ca.spottedleaf.moonrise.common.util.TickThread;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.server.level.ServerLevel;
@@ -65,7 +64,7 @@ record PaperChunkSnapshotProvider(
             return this.level.getServer();
         }
         return task -> {
-            if (TickThread.isTickThreadFor(this.level, x, z)) {
+            if (this.server.isOwnedByCurrentRegion(this.level.getWorld(), x, z)) {
                 task.run();
                 return;
             }
