@@ -34,7 +34,7 @@ shadow = "8.1.8"
 vanillaGradle = "0.2.1-SNAPSHOT"
 mod-publish-plugin = "0.6.2"
 loom = "1.7-SNAPSHOT"
-paperweight = "1.7.1"
+paperweight = "1.7.2"
 
 [libraries]
 guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
