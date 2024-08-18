@@ -1,7 +1,7 @@
 [plugins]
 sponge-gradle-plugin = { id = "org.spongepowered.gradle.plugin", version.ref = "sponge-gradle" }
 sponge-gradle-ore = { id = "org.spongepowered.gradle.ore", version.ref = "sponge-gradle" }
-run-paper = { id = "xyz.jpenilla.run-paper", version = "2.3.0" }
+run-paper = { id = "xyz.jpenilla.run-paper", version = "2.3.1" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.2" }
 javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.15" }
 
