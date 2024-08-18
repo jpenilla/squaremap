@@ -6,7 +6,7 @@ hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.2" }
 javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.15" }
 
 [versions]
-minecraft = "1.21"
+minecraft = "1.21.1"
 checkerQual = "3.45.0"
 cloud = "2.0.0-rc.2"
 cloudMinecraft = "2.0.0-beta.9"
@@ -17,14 +17,14 @@ configurate = "4.1.2"
 adventure = "4.17.0"
 examination = "1.3.0"
 option = "1.0.0"
-adventurePlatformFabric = "5.14.0"
+adventurePlatformFabric = "5.14.1"
 paperApi = "1.20.2-R0.1-SNAPSHOT"
 bStats = "3.0.2"
-fabricApi = "0.100.7+1.21"
-fabricLoader = "0.15.11"
-cardinalComponents = "6.1.0"
+fabricApi = "0.102.1+1.21.1"
+fabricLoader = "0.16.2"
+cardinalComponents = "6.1.1"
 guice = "7.0.0"
-neoforge = "21.0.11-beta"
+neoforge = "21.1.18"
 htmlSanitizer = "20240325.1"
 
 # buildSrc
@@ -34,7 +34,7 @@ shadow = "8.1.8"
 vanillaGradle = "0.2.1-SNAPSHOT"
 mod-publish-plugin = "0.6.2"
 loom = "1.7-SNAPSHOT"
-paperweight = "1.7.1"
+paperweight = "1.7.2"
 
 [libraries]
 guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
