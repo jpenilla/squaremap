@@ -102,6 +102,11 @@ public final class SquaremapFabric implements SquaremapPlatform {
         return this.modContainer.getMetadata().getVersion().getFriendlyString();
     }
 
+    @Override
+    public boolean hasMod(final String id) {
+        return FabricLoader.getInstance().isModLoaded(id);
+    }
+
     private final class TickEndListener implements ServerTickEvents.EndTick {
         private long tick = 0;
 

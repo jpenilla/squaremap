@@ -10,4 +10,8 @@ public interface SquaremapPlatform {
     void stopCallback();
 
     String version();
+
+    default boolean hasMod(final String id) {
+        return false;
+    }
 }
