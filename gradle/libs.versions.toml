@@ -32,7 +32,7 @@ indra = "3.1.3"
 sponge-gradle = "2.2.0"
 shadow = "8.1.8"
 vanillaGradle = "0.2.1-SNAPSHOT"
-mod-publish-plugin = "0.7.0"
+mod-publish-plugin = "0.7.2"
 loom = "1.7-SNAPSHOT"
 paperweight = "1.7.2"
 
