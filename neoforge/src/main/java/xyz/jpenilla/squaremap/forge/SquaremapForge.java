@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
@@ -104,6 +105,11 @@ public final class SquaremapForge implements SquaremapPlatform {
     @Override
     public String version() {
         return this.container.getModInfo().getVersion().toString();
+    }
+
+    @Override
+    public boolean hasMod(final String id) {
+        return ModList.get().isLoaded(id);
     }
 
     private final class TickEndListener implements Consumer<ServerTickEvent.Post> {

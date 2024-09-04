@@ -17,11 +17,14 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.util.ChunkMapAccess;
 
 @DefaultQualifier(NonNull.class)
-record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotProvider {
+record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) implements ChunkSnapshotProvider {
     private static final ResourceLocation FULL = BuiltInRegistries.CHUNK_STATUS.getKey(ChunkStatus.FULL);
 
     @Override
     public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(final int x, final int z) {
+        if (this.moonrise) {
+            return this.moonriseAsyncSnapshot(x, z);
+        }
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable ChunkAccess chunk = chunkIfGenerated(this.level, x, z);
             if (chunk == null) {
@@ -29,6 +32,28 @@ record VanillaChunkSnapshotProvider(ServerLevel level) implements ChunkSnapshotP
             }
             return ChunkSnapshot.snapshot(this.level, chunk, false);
         }, this.level.getServer());
+    }
+
+    private CompletableFuture<@Nullable ChunkSnapshot> moonriseAsyncSnapshot(final int x, final int z) {
+        return CompletableFuture.supplyAsync(() -> {
+            final ChunkPos chunkPos = new ChunkPos(x, z);
+            final ChunkMapAccess chunkMap = (ChunkMapAccess) level.getChunkSource().chunkMap;
+
+            final ChunkHolder visibleChunk = chunkMap.squaremap$getVisibleChunkIfPresent(chunkPos.toLong());
+            if (visibleChunk != null) {
+                final @Nullable ChunkAccess chunk = fullIfPresent(visibleChunk);
+                if (chunk != null) {
+                    return CompletableFuture.completedFuture(chunk);
+                }
+            }
+
+            return this.level.getChunkSource().getChunkFuture(x, z, ChunkStatus.EMPTY, false).thenApply(result -> unwrap(result.orElse(null)));
+        }, this.level.getServer()).thenCompose(future -> future.thenApplyAsync(chunk -> {
+            if (chunk == null) {
+                return null;
+            }
+            return ChunkSnapshot.snapshot(this.level, chunk, false);
+        }, this.level.getServer()));
     }
 
     private static @Nullable ChunkAccess chunkIfGenerated(final ServerLevel level, final int x, final int z) {
