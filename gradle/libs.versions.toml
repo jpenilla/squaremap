@@ -30,7 +30,7 @@ htmlSanitizer = "20240325.1"
 # buildSrc
 indra = "3.1.3"
 sponge-gradle = "2.2.0"
-shadow = "8.1.8"
+shadow = "8.3.0"
 vanillaGradle = "0.2.1-SNAPSHOT"
 mod-publish-plugin = "0.7.2"
 loom = "1.7-SNAPSHOT"
@@ -96,7 +96,7 @@ neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge
 # buildSrc
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
 indraPublishingSonatype = { group = "net.kyori", name = "indra-publishing-sonatype", version.ref = "indra" }
-shadow = { group = "io.github.goooler.shadow", name = "shadow-gradle-plugin", version.ref = "shadow" }
+shadow = { group = "com.gradleup.shadow", name = "shadow-gradle-plugin", version.ref = "shadow" }
 vanillaGradle = { group = "org.spongepowered", name = "vanillagradle", version.ref = "vanillaGradle" }
 mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
 loom = { group = "xyz.jpenilla", name = "quiet-architectury-loom", version.ref = "loom" }
