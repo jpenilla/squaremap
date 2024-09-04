@@ -23,7 +23,7 @@
         {
             "description": "Correct version handling for NeoForge",
             "matchPackageNames": ["net.neoforged:neoforge"],
-            "versioning": "regex:^(?<compatibility>(\\d+\\.){2})(?<minor>\\d+)$"
+            "versioning": "regex:^(?<compatibility>(\\d+\\.){2})(?<minor>\\d+)(-beta)?$"
         },
         {
             "matchManagers": ["github-actions", "gradle-wrapper"],
