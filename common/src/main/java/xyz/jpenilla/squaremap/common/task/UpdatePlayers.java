@@ -79,6 +79,7 @@ public class UpdatePlayers implements Runnable {
                 playerEntry.put("world", Util.levelWebName(world));
                 if (worldConfig.PLAYER_TRACKER_ENABLED) {
                     playerEntry.put("x", Mth.floor(playerLoc.x()));
+                    playerEntry.put("y", Mth.floor(playerLoc.y()));
                     playerEntry.put("z", Mth.floor(playerLoc.z()));
                     playerEntry.put("yaw", player.getYHeadRot());
                     if (worldConfig.PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR) {
