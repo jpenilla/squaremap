@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -78,6 +79,9 @@ public final class UpdatePlayers implements Runnable {
                     return;
                 }
                 if (worldConfig.PLAYER_TRACKER_HIDE_INVISIBLE && player.isInvisible()) {
+                    return;
+                }
+                if  (worldConfig.PLAYER_TRACKER_HIDE_MAP_INVISIBILITY_EQUIPMENT && player.getInventory().armor.get(3).is(ItemTags.MAP_INVISIBILITY_EQUIPMENT)) {
                     return;
                 }
                 if (this.playerManager.hidden(player) || this.playerManager.otherwiseHidden(player)) {
