@@ -35,10 +35,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.BiomeColors;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.data.image.MapImage;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.ChunkHashMapKey;
@@ -202,7 +203,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     protected final void mapRegion(final RegionCoordinate region) {
-        final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+        final MapImage image = new MapImage(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX, Config.MAP_IMAGE_IO);
         final int startX = region.getChunkX();
         final int startZ = region.getChunkZ();
         final List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -223,7 +224,7 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    protected final CompletableFuture<Void> mapSingleChunk(final Image image, final int chunkX, final int chunkZ) {
+    protected final CompletableFuture<Void> mapSingleChunk(final MapImage image, final int chunkX, final int chunkZ) {
         final CompletableFuture<@Nullable ChunkSnapshot> chunkFuture = this.chunks.snapshot(new ChunkPos(chunkX, chunkZ));
         final CompletableFuture<@Nullable ChunkSnapshot> northChunk = this.chunks.snapshotDirect(new ChunkPos(chunkX, chunkZ - 1));
 
@@ -272,7 +273,7 @@ public abstract class AbstractRender implements Runnable {
         });
     }
 
-    protected final CompletableFuture<Void> mapChunkColumn(final Image image, final int chunkX, final int startChunkZ) {
+    protected final CompletableFuture<Void> mapChunkColumn(final MapImage image, final int chunkX, final int startChunkZ) {
         final List<CompletableFuture<ChunkSnapshot>> futures = new ArrayList<>(33);
 
         final CompletableFuture<@Nullable ChunkSnapshot> aboveChunkFuture = this.chunks.snapshotDirect(new ChunkPos(chunkX, startChunkZ - 1));
@@ -309,7 +310,7 @@ public abstract class AbstractRender implements Runnable {
         });
     }
 
-    private void scanChunk(final Image image, final int[] lastY, final ChunkSnapshot chunk) {
+    private void scanChunk(final MapImage image, final int[] lastY, final ChunkSnapshot chunk) {
         while (this.mapWorld.renderManager().rendersPaused() && this.running()) {
             sleep(500);
         }
@@ -327,7 +328,7 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    private void scanTopRow(final Image image, final int[] lastY, final ChunkSnapshot chunk) {
+    private void scanTopRow(final MapImage image, final int[] lastY, final ChunkSnapshot chunk) {
         final int blockX = chunk.pos().getMinBlockX();
         final int blockZ = chunk.pos().getMinBlockZ();
         for (int x = 0; x < 16; x++) {

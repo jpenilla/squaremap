@@ -5,10 +5,13 @@ import java.util.List;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
+import xyz.jpenilla.squaremap.common.data.image.BufferedImageMapImageIO;
+import xyz.jpenilla.squaremap.common.data.image.MapImageIO;
+import xyz.jpenilla.squaremap.common.data.image.PNJMapImageIO;
 
 @SuppressWarnings("unused")
 public final class Config extends AbstractConfig {
-    private static final int LATEST_VERSION = 2;
+    private static final int LATEST_VERSION = 3;
 
     Config(final DirectoryProvider directoryProvider) {
         super(directoryProvider.dataDirectory(), Config.class, "config.yml", LATEST_VERSION);
@@ -26,7 +29,26 @@ public final class Config extends AbstractConfig {
             })
             .build();
 
-        versionedBuilder.addVersion(LATEST_VERSION, oneToTwo);
+        final ConfigurationTransformation twoToThree = ConfigurationTransformation.chain(
+            ConfigurationTransformation.builder()
+                .addAction(NodePath.path("settings", "image-quality"), (path, node) -> new Object[]{"settings", "image-io"})
+                .build(),
+            ConfigurationTransformation.builder()
+                .addAction(NodePath.path("settings", "image-io", "compress-images"), (path, node) -> new Object[]{"settings", "image-io", "bufferedimage", "compress-images"})
+                .build(),
+            ConfigurationTransformation.builder()
+                .addAction(NodePath.path("settings", "image-io"), (path, node) -> {
+                    final boolean compress = node.node("bufferedimage", "compress-images", "enabled").getBoolean();
+                    if (compress) {
+                        node.node("backend").set("bufferedimage");
+                    }
+                    return null;
+                })
+                .build()
+        );
+
+        versionedBuilder.addVersion(2, oneToTwo);
+        versionedBuilder.addVersion(LATEST_VERSION, twoToThree);
     }
 
     static Config config;
@@ -59,11 +81,18 @@ public final class Config extends AbstractConfig {
     public static boolean COMPRESS_IMAGES = false;
     private static double COMPRESSION_RATIO_CONFIG = 0.0F;
     public static float COMPRESSION_RATIO;
+    public static MapImageIO<?> MAP_IMAGE_IO;
 
-    private static void imageQualitySettings() {
-        COMPRESS_IMAGES = config.getBoolean("settings.image-quality.compress-images.enabled", COMPRESS_IMAGES);
-        COMPRESSION_RATIO_CONFIG = config.getDouble("settings.image-quality.compress-images.value", COMPRESSION_RATIO_CONFIG);
+    private static void imageIOSettings() {
+        COMPRESS_IMAGES = config.getBoolean("settings.image-io.bufferedimage.compress-images.enabled", COMPRESS_IMAGES);
+        COMPRESSION_RATIO_CONFIG = config.getDouble("settings.image-io.bufferedimage.compress-images.value", COMPRESSION_RATIO_CONFIG);
         COMPRESSION_RATIO = (float) (1.0D - COMPRESSION_RATIO_CONFIG);
+        final String imageIoBackend = config.getString("settings.image-io.backend", "pnj");
+        MAP_IMAGE_IO = switch (imageIoBackend) {
+            case "bufferedimage" -> new BufferedImageMapImageIO();
+            case "pnj" -> new PNJMapImageIO();
+            default -> throw new IllegalArgumentException("Invaild image io backend: " + imageIoBackend + "; Supported options: [pnj, bufferedimage]");
+        };
     }
 
     public static boolean HTTPD_ENABLED = true;
