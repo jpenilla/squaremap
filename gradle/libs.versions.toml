@@ -93,6 +93,8 @@ cardinalComponentsEntity = { group = "org.ladysnake.cardinal-components-api", na
 
 neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 
+pnj = "io.github.xfacthd:pnj:1.2"
+
 # buildSrc
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
 indraPublishingSonatype = { group = "net.kyori", name = "indra-publishing-sonatype", version.ref = "indra" }
