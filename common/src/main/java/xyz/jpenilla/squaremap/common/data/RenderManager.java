@@ -24,6 +24,7 @@ import xyz.jpenilla.squaremap.common.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.common.task.render.BackgroundRender;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
+import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.Util;
 
 @DefaultQualifier(NonNull.class)
@@ -170,7 +171,7 @@ public final class RenderManager {
     public void saveRenderProgress(final Map<RegionCoordinate, Boolean> regions) {
         final Path file = this.mapWorld.dataPath().resolve(RENDER_PROGRESS_FILE_NAME);
         try {
-            Files.writeString(file, GSON.toJson(regions));
+            FileUtil.atomicWrite(file, tmp -> Files.writeString(tmp, GSON.toJson(regions)));
         } catch (final IOException ex) {
             Logging.logger().warn("Failed to serialize render progress for world '{}' to file '{}'", this.mapWorld.identifier().asString(), file, ex);
         }

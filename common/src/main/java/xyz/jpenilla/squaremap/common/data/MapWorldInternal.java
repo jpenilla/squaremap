@@ -30,6 +30,7 @@ import xyz.jpenilla.squaremap.common.layer.SpawnIconLayer;
 import xyz.jpenilla.squaremap.common.layer.WorldBorderLayer;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.ImageIOExecutor;
 import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
@@ -189,7 +190,7 @@ public abstract class MapWorldInternal implements MapWorld {
             Logging.logger().warn("Map for world '{}' has a large amount ({}) of chunks queued for background render! If this notice appears frequently, consider adjusting the background render and or update trigger settings.", this.identifier().asString(), this.modifiedChunks.size());
         }
         try {
-            Files.writeString(file, Util.gson().toJson(this.modifiedChunks));
+            FileUtil.atomicWrite(file, tmp -> Files.writeString(tmp, Util.gson().toJson(this.modifiedChunks)));
         } catch (final IOException ex) {
             Logging.logger().warn("Failed to serialize dirty chunks for world '{}' to file '{}'", this.identifier().asString(), file, ex);
         }
