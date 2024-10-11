@@ -26,6 +26,7 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.WorldAdvanced;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.data.image.MapImage;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconLayer;
 import xyz.jpenilla.squaremap.common.layer.WorldBorderLayer;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
@@ -147,7 +148,7 @@ public abstract class MapWorldInternal implements MapWorld {
         return Colors.rgb(state.getMapColor(null, null));
     }
 
-    public void saveImage(final Image image) {
+    public void saveImage(final MapImage image) {
         this.imageIOExecutor.saveImage(image);
     }
 

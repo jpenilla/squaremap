@@ -45,4 +45,6 @@ dependencies {
   api(libs.htmlSanitizerJ10) {
     isTransitive = false // depends on guava, provided by mc at runtime
   }
+
+  implementation(libs.pnj)
 }
