@@ -87,12 +87,13 @@ public final class SquaremapCommon {
     private void stop() {
         if (Config.HTTPD_ENABLED) {
             IntegratedServer.stopServer();
-            if (!Config.FLUSH_JSON_IMMEDIATELY) {
-                this.jsonCache.flush();
-            }
         }
         this.platform.stopCallback();
         this.worldManager.shutdown();
+        if (Config.HTTPD_ENABLED && !Config.FLUSH_JSON_IMMEDIATELY) {
+            this.jsonCache.flush();
+        }
+        this.jsonCache.clear();
     }
 
     public void reload(final Audience audience) {
