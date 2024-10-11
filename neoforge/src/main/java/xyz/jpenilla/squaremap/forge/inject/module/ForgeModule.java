@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import java.io.File;
 import java.nio.file.Path;
+import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -13,7 +14,6 @@ import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
-import xyz.jpenilla.squaremap.forge.ForgeAdventure;
 import xyz.jpenilla.squaremap.forge.ForgePlayerManager;
 import xyz.jpenilla.squaremap.forge.ForgeServerAccess;
 import xyz.jpenilla.squaremap.forge.SquaremapForge;
@@ -61,7 +61,7 @@ public final class ForgeModule extends AbstractModule {
     }
 
     @Provides
-    public ComponentFlattener componentFlattener() {
-        return ForgeAdventure.FLATTENER.get();
+    public ComponentFlattener componentFlattener(final ForgeServerAccess serverAccess) {
+        return MinecraftServerAudiences.of(serverAccess.requireServer()).flattener();
     }
 }
