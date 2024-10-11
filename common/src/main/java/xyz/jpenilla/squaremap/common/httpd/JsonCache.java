@@ -64,6 +64,10 @@ public final class JsonCache {
         this.cache.forEach(this::write);
     }
 
+    public void clear() {
+        this.cache.clear();
+    }
+
     private void write(final String path, final String data) {
         try {
             FileUtil.atomicWrite(this.directoryProvider.webDirectory().resolve("." + path), tmp -> Files.writeString(tmp, data));
