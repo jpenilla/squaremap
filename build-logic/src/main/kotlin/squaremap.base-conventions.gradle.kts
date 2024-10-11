@@ -26,12 +26,6 @@ repositories {
   }
   sonatype.s01Snapshots()
   sonatype.ossSnapshots()
-  mavenLocal {
-    mavenContent {
-      includeGroup("net.kyori")
-      snapshotsOnly()
-    }
-  }
   maven("https://repo.papermc.io/repository/maven-public/")
 }
 
