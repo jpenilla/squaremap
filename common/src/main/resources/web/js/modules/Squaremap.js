@@ -51,11 +51,14 @@ class SquaremapMap {
             this.layerControl.init();
 
             this.title = json.ui.title;
-            this.sidebar = new Sidebar(json.ui.sidebar);
+            this.sidebar = new Sidebar(json.ui.sidebar, this.getUrlParam("sidebar", "true") === "true");
             this.playerList = new PlayerList(json.ui.sidebar);
             this.worldList = new WorldList(json.worlds);
-            this.coordinates = new UICoordinates(json.ui.coordinates);
-            this.uiLink = new UILink(json.ui.link);
+            this.coordinates = new UICoordinates(json.ui.coordinates, this.getUrlParam("coordinates", "true") === "true");
+            this.uiLink = new UILink(json.ui.link, this.getUrlParam("link", "true") === "true");
+
+            let controlLayers = document.getElementsByClassName('leaflet-control-container');
+            controlLayers[0].style.display = this.getUrlParam("controls", "true") === "true" ? "unset" : "none"
 
             this.worldList.loadInitialWorld(json, (world) => {
                 this.loop();
@@ -64,6 +67,7 @@ class SquaremapMap {
                     this.getUrlParam("z", world.spawn.z),
                     this.getUrlParam("zoom", world.zoom.def));
             });
+
         });
     }
     centerOn(x, z, zoom) {

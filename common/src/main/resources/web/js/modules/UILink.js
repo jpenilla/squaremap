@@ -1,7 +1,7 @@
 import { P } from './Squaremap.js';
 
 class UILink {
-    constructor(json) {
+    constructor(json, show) {
         const Link = L.Control.extend({
             _container: null,
             options: {
@@ -10,6 +10,7 @@ class UILink {
             onAdd: function () {
                 const link = L.DomUtil.create('div', 'leaflet-control-layers link');
                 this._link = link;
+                this._link.style.display = show ? "unset" : "none";
                 this.update();
                 return link;
             },
