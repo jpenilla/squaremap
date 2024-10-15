@@ -51,14 +51,14 @@ class SquaremapMap {
             this.layerControl.init();
 
             this.title = json.ui.title;
-            this.sidebar = new Sidebar(json.ui.sidebar, this.getUrlParam("sidebar", "true") === "true");
+            this.sidebar = new Sidebar(json.ui.sidebar, this.getUrlParam("show_sidebar", "true") === "true");
             this.playerList = new PlayerList(json.ui.sidebar);
             this.worldList = new WorldList(json.worlds);
-            this.coordinates = new UICoordinates(json.ui.coordinates, this.getUrlParam("coordinates", "true") === "true");
-            this.uiLink = new UILink(json.ui.link, this.getUrlParam("link", "true") === "true");
+            this.coordinates = new UICoordinates(json.ui.coordinates, this.getUrlParam("show_coordinates", "true") === "true");
+            this.uiLink = new UILink(json.ui.link, this.getUrlParam("show_link_button", "true") === "true");
 
             let controlLayers = document.getElementsByClassName('leaflet-control-container');
-            controlLayers[0].style.display = this.getUrlParam("controls", "true") === "true" ? "unset" : "none"
+            controlLayers[0].style.display = this.getUrlParam("show_controls", "true") === "true" ? "unset" : "none"
 
             this.worldList.loadInitialWorld(json, (world) => {
                 this.loop();
