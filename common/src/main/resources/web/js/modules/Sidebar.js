@@ -6,7 +6,7 @@ class Sidebar {
     constructor(json, show) {
         this.sidebar = P.createElement("div", "sidebar", this);
         this.showSidebar = show;
-        if (!show){
+        if (!show) {
             this.sidebar.style.display = "none";
         }
         this.sidebar.addEventListener("click", (e) => {
