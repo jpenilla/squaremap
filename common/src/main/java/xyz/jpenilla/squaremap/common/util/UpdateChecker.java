@@ -60,6 +60,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
             }
             case Distance.Failure failure -> this.logger.warn("Error obtaining version information", failure.reason());
             case Distance.Ahead $ -> this.logger.info("Commit '{}' is ahead of branch '{}', local build?", gitHash, branch);
+            case Distance.Diverged $ -> this.logger.info("Commit '{}' is diverged from branch '{}', local build?", gitHash, branch);
             case Distance.UnknownCommit $ -> this.logger.info(Messages.UPDATE_CHECKER_UNKNOWN_COMMIT.replace("<commit>", gitHash));
         }
     }
@@ -117,6 +118,7 @@ public record UpdateChecker(Logger logger, String githubRepo) {
                     case "identical" -> new Distance.UpToDate();
                     case "behind" -> new Distance.Behind(response.get("behind_by").getAsInt());
                     case "ahead" -> new Distance.Ahead();
+                    case "diverged" -> new Distance.Diverged();
                     default -> new Distance.Failure(new IllegalArgumentException("Unknown status: '" + status + "'"));
                 };
             }
@@ -139,6 +141,9 @@ public record UpdateChecker(Logger logger, String githubRepo) {
         }
 
         final class Ahead implements Distance {
+        }
+
+        final class Diverged implements Distance {
         }
     }
 
