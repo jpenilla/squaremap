@@ -10,7 +10,9 @@ class UICoordinates {
             onAdd: function () {
                 const coords = L.DomUtil.create('div', 'leaflet-control-layers coordinates');
                 this._coords = coords;
-                this._coords.style.display = show ? "unset" : "none";
+                if (!show) {
+                    this._coords.style.display = "none";
+                }
                 return coords;
             },
             update: function (html, point) {

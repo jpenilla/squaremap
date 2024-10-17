@@ -10,7 +10,9 @@ class UILink {
             onAdd: function () {
                 const link = L.DomUtil.create('div', 'leaflet-control-layers link');
                 this._link = link;
-                this._link.style.display = show ? "unset" : "none";
+                if (!show) {
+                    this._link.style.display = "none";
+                }
                 this.update();
                 return link;
             },

@@ -5,7 +5,9 @@ import { P } from './Squaremap.js';
 class Sidebar {
     constructor(json, show) {
         this.sidebar = P.createElement("div", "sidebar", this);
-        this.sidebar.style.display = show ? "unset" : "none";
+        if(!show){
+            this.sidebar.style.display = "none";
+        }
         this.sidebar.addEventListener("click", (e) => {
             P.playerList.followPlayerMarker(null);
         });

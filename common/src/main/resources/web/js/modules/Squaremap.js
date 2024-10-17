@@ -57,8 +57,10 @@ class SquaremapMap {
             this.coordinates = new UICoordinates(json.ui.coordinates, this.getUrlParam("show_coordinates", "true") === "true");
             this.uiLink = new UILink(json.ui.link, this.getUrlParam("show_link_button", "true") === "true");
 
-            let controlLayers = document.getElementsByClassName('leaflet-control-container');
-            controlLayers[0].style.display = this.getUrlParam("show_controls", "true") === "true" ? "unset" : "none"
+            if(this.getUrlParam("show_controls", "true") !== "true") {
+                let controlLayers = document.getElementsByClassName('leaflet-top leaflet-left');
+                controlLayers[0].style.display = "none";
+            }
 
             this.worldList.loadInitialWorld(json, (world) => {
                 this.loop();
