@@ -1,7 +1,7 @@
 import { P } from './Squaremap.js';
 
 class UICoordinates {
-    constructor(json) {
+    constructor(json, show) {
         const Coords = L.Control.extend({
             _container: null,
             options: {
@@ -10,6 +10,9 @@ class UICoordinates {
             onAdd: function () {
                 const coords = L.DomUtil.create('div', 'leaflet-control-layers coordinates');
                 this._coords = coords;
+                if (!show) {
+                    this._coords.style.display = "none";
+                }
                 return coords;
             },
             update: function (html, point) {
@@ -22,6 +25,7 @@ class UICoordinates {
                 }
             }
         });
+        this.showCoordinates = show;
         this.html = json.html == null ? "undefined" : json.html;
         this.coords = new Coords();
         P.map.addControl(this.coords)

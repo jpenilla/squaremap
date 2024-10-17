@@ -3,8 +3,12 @@ import { Fieldset } from "./util/Fieldset.js";
 import { P } from './Squaremap.js';
 
 class Sidebar {
-    constructor(json) {
+    constructor(json, show) {
         this.sidebar = P.createElement("div", "sidebar", this);
+        this.showSidebar = show;
+        if (!show) {
+            this.sidebar.style.display = "none";
+        }
         this.sidebar.addEventListener("click", (e) => {
             P.playerList.followPlayerMarker(null);
         });
