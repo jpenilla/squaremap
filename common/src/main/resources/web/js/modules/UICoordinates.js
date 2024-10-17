@@ -25,6 +25,7 @@ class UICoordinates {
                 }
             }
         });
+        this.showCoordinates = show;
         this.html = json.html == null ? "undefined" : json.html;
         this.coords = new Coords();
         P.map.addControl(this.coords)

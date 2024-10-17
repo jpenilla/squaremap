@@ -22,6 +22,7 @@ class UILink {
                 this._link.innerHTML = `<a href='${url}'><img src='images/clear.png'/></a>`;
             }
         });
+        this.showLinkButton = show;
         this.link = new Link();
         P.map.addControl(this.link)
             .addEventListener('move', () => this.update())

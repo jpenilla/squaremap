@@ -57,7 +57,8 @@ class SquaremapMap {
             this.coordinates = new UICoordinates(json.ui.coordinates, this.getUrlParam("show_coordinates", "true") === "true");
             this.uiLink = new UILink(json.ui.link, this.getUrlParam("show_link_button", "true") === "true");
 
-            if(this.getUrlParam("show_controls", "true") !== "true") {
+            this.showControls = this.getUrlParam("show_controls", "true") === "true"
+            if (!this.showControls) {
                 let controlLayers = document.getElementsByClassName('leaflet-top leaflet-left');
                 controlLayers[0].style.display = "none";
             }
@@ -133,7 +134,20 @@ class SquaremapMap {
         const x = Math.floor(center.x);
         const z = Math.floor(center.y);
         const following = this.playerList.following ? `&uuid=${this.playerList.following}` : '';
-        return `?world=${this.worldList.curWorld.name}&zoom=${zoom}&x=${x}&z=${z}${following}`;
+        let link = `?world=${this.worldList.curWorld.name}&zoom=${zoom}&x=${x}&z=${z}${following}`;
+        if (!this.showControls) {
+            link += "&show_controls=false"
+        }
+        if (!this.uiLink.showLinkButton) {
+            link += "&show_link_button=false"
+        }
+        if (!this.coordinates.showCoordinates) {
+            link += "&show_coordinates=false"
+        }
+        if (!this.sidebar.showSidebar) {
+            link += "&show_sidebar=false"
+        }
+        return link
     }
     updateBrowserUrl(url) {
         window.history.replaceState(null, "", url);
