@@ -16,8 +16,9 @@ import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.data.image.MapImage;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.Util;
@@ -58,7 +59,7 @@ public final class BackgroundRender extends AbstractRender {
 
         final Map<RegionCoordinate, List<ChunkCoordinate>> regionChunksMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
         regionChunksMap.forEach((region, chunksToRenderInRegion) -> {
-            final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+            final MapImage image = new MapImage(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX, Config.MAP_IMAGE_IO);
 
             final CompletableFuture<?>[] chunkFutures = chunksToRenderInRegion.stream()
                 .map(coord -> this.mapSingleChunk(image, coord.x(), coord.z()))

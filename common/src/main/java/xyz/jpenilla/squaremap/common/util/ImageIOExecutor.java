@@ -8,7 +8,7 @@ import java.util.concurrent.locks.LockSupport;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.data.image.MapImage;
 
 @DefaultQualifier(NonNull.class)
 public final class ImageIOExecutor {
@@ -25,14 +25,14 @@ public final class ImageIOExecutor {
     }
 
     /**
-     * Submits a save task for the given {@link Image} instance. If the save queue currently
+     * Submits a save task for the given {@link MapImage} instance. If the save queue currently
      * has {@link #IMAGE_IO_MAX_TASKS} or more tasks queued, this method will block until the queue
      * has less than {@link #IMAGE_IO_MAX_TASKS} tasks. This effectively throttles renders when the
      * save queue falls far behind a render, avoiding a potential memory leak.
      *
-     * @param image {@link Image} instance
+     * @param image {@link MapImage} instance
      */
-    public void saveImage(final Image image) {
+    public void saveImage(final MapImage image) {
         this.submittedTasks.getAndIncrement();
         this.executor.execute(() -> {
             try {

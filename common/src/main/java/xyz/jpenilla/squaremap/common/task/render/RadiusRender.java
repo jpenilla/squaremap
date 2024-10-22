@@ -14,9 +14,10 @@ import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.data.image.MapImage;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.Numbers;
@@ -99,7 +100,7 @@ public final class RadiusRender extends AbstractRender {
                 this.mapRegion(region);
                 continue;
             }
-            final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+            final MapImage image = new MapImage(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX, Config.MAP_IMAGE_IO);
             final List<CompletableFuture<Void>> chunkFutures = new ArrayList<>();
             for (final ChunkCoordinate chunkCoord : chunkCoords) {
                 chunkFutures.add(this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));
