@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8.4",
   "package": "xyz.jpenilla.squaremap.fabric.mixin",
+  "plugin": "xyz.jpenilla.squaremap.fabric.SquaremapFabricMixinPlugin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BlockItemMixin",
@@ -9,7 +10,8 @@
     "ChunkMapAccess",
     "CommandSourceStackAccess",
     "PlayerListMixin",
-    "ServerPlayerMixin"
+    "ServerPlayerMixin",
+    "compat.moonrise.FabricHooksMixin"
   ],
   "client": [
     "LiquidBlockAccess",

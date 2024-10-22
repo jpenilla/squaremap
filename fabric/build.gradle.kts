@@ -10,6 +10,11 @@ repositories {
       includeGroup("org.ladysnake.cardinal-components-api")
     }
   }
+  maven("https://cursemaven.com") {
+    content {
+      includeGroup("curse.maven")
+    }
+  }
 }
 
 dependencies {
@@ -43,6 +48,8 @@ dependencies {
   include(libs.cardinalComponentsBase)
   modImplementation(libs.cardinalComponentsEntity)
   include(libs.cardinalComponentsEntity)
+
+  modCompileOnly("curse.maven:moonrise-1096335:5815099")
 }
 
 squaremapPlatform.loom.modInfoFilePath = "fabric.mod.json"
