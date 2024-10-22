@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -78,6 +79,10 @@ public final class UpdatePlayers implements Runnable {
                     return;
                 }
                 if (worldConfig.PLAYER_TRACKER_HIDE_INVISIBLE && player.isInvisible()) {
+                    return;
+                }
+                // TODO 1.21.2 change to .is(ItemTags.MAP_INVISIBILITY_EQUIPMENT)
+                if  (worldConfig.PLAYER_TRACKER_HIDE_MAP_INVISIBILITY_EQUIPMENT && player.getInventory().armor.get(3).is(Items.CARVED_PUMPKIN)) {
                     return;
                 }
                 if (this.playerManager.hidden(player) || this.playerManager.otherwiseHidden(player)) {
