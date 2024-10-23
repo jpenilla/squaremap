@@ -19,6 +19,7 @@ import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
+// TODO(1.21.2): test fabric & neoforge
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractFluidColorExporter {
     private final DirectoryProvider directoryProvider;
@@ -29,8 +30,8 @@ public abstract class AbstractFluidColorExporter {
 
     public final void export(final RegistryAccess registryAccess) {
         final Map<String, String> map = new HashMap<>();
-        registryAccess.registryOrThrow(Registries.BLOCK).holders().forEach(holder -> {
-            final Block block = holder.value();
+        registryAccess.lookupOrThrow(Registries.BLOCK).entrySet().forEach(entry -> {
+            final Block block = entry.getValue();
             final @Nullable Fluid fluid = this.fluid(block);
             if (fluid == null
                 || fluid == Fluids.WATER || fluid == Fluids.LAVA
@@ -39,7 +40,7 @@ public abstract class AbstractFluidColorExporter {
             }
             final @Nullable String color = this.color(fluid);
             if (color != null) {
-                map.put(holder.key().location().toString(), color);
+                map.put(entry.getKey().location().toString(), color);
             }
         });
 
