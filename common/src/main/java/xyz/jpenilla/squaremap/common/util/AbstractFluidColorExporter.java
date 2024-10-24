@@ -19,7 +19,6 @@ import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 
-// TODO(1.21.2): test fabric & neoforge
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractFluidColorExporter {
     private final DirectoryProvider directoryProvider;

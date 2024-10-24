@@ -21,7 +21,6 @@ import xyz.jpenilla.squaremap.common.util.ColorBlender;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
 
-// TODO(1.21.2): pale forest colors, general foliage colors (dark forest?)
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
     private static final int BLOCKPOS_BIOME_CACHE_SIZE = 4096;
