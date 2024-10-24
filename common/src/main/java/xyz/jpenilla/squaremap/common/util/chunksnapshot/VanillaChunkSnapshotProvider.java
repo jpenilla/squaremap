@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 
+import ca.spottedleaf.moonrise.common.util.ChunkSystem;
+import ca.spottedleaf.moonrise.libs.ca.spottedleaf.concurrentutil.util.Priority;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -37,23 +39,35 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
     private CompletableFuture<@Nullable ChunkSnapshot> moonriseAsyncSnapshot(final int x, final int z) {
         return CompletableFuture.supplyAsync(() -> {
             final ChunkPos chunkPos = new ChunkPos(x, z);
-            final ChunkMapAccess chunkMap = (ChunkMapAccess) level.getChunkSource().chunkMap;
+            final ChunkMapAccess chunkMap = (ChunkMapAccess) this.level.getChunkSource().chunkMap;
 
             final ChunkHolder visibleChunk = chunkMap.squaremap$getVisibleChunkIfPresent(chunkPos.toLong());
             if (visibleChunk != null) {
                 final @Nullable ChunkAccess chunk = fullIfPresent(visibleChunk);
                 if (chunk != null) {
-                    return CompletableFuture.completedFuture(chunk);
+                    return CompletableFuture.completedFuture(ChunkSnapshot.snapshot(this.level, chunk, false));
                 }
             }
 
-            return this.level.getChunkSource().getChunkFuture(x, z, ChunkStatus.EMPTY, false).thenApply(result -> unwrap(result.orElse(null)));
-        }, this.level.getServer()).thenCompose(future -> future.thenApplyAsync(chunk -> {
-            if (chunk == null) {
-                return null;
-            }
-            return ChunkSnapshot.snapshot(this.level, chunk, false);
-        }, this.level.getServer()));
+            final CompletableFuture<@Nullable ChunkSnapshot> load = new CompletableFuture<>();
+            ChunkSystem.scheduleChunkLoad(
+                this.level,
+                x,
+                z,
+                ChunkStatus.EMPTY,
+                true,
+                Priority.NORMAL,
+                chunk -> {
+                    final @Nullable ChunkAccess unwrap = unwrap(chunk);
+                    if (unwrap != null) {
+                        load.complete(ChunkSnapshot.snapshot(this.level, unwrap, false));
+                    } else {
+                        load.complete(null);
+                    }
+                }
+            );
+            return load;
+        }, this.level.getServer()).thenCompose(future -> future);
     }
 
     private static @Nullable ChunkAccess chunkIfGenerated(final ServerLevel level, final int x, final int z) {

@@ -10,11 +10,6 @@ repositories {
       includeGroup("org.ladysnake.cardinal-components-api")
     }
   }
-  maven("https://cursemaven.com") {
-    content {
-      includeGroup("curse.maven")
-    }
-  }
 }
 
 dependencies {

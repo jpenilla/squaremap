@@ -45,4 +45,6 @@ dependencies {
   api(libs.htmlSanitizerJ10) {
     isTransitive = false // depends on guava, provided by mc at runtime
   }
+
+  compileOnly("curse.maven:moonrise-1096335:5815098")
 }

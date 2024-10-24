@@ -27,6 +27,11 @@ repositories {
   sonatype.s01Snapshots()
   sonatype.ossSnapshots()
   maven("https://repo.papermc.io/repository/maven-public/")
+  maven("https://cursemaven.com") {
+    content {
+      includeGroup("curse.maven")
+    }
+  }
 }
 
 tasks.withType(JavaCompile::class).configureEach {
