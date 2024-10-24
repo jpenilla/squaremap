@@ -27,12 +27,13 @@ record PaperChunkSnapshotProvider(
     public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(final int x, final int z) {
         return CompletableFuture.supplyAsync(() -> {
             final @Nullable ChunkAccess existing = this.level.getChunkIfLoadedImmediately(x, z);
-            if (existing != null && existing.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
-                return CompletableFuture.completedFuture(existing);
-            } else if (existing != null) {
-                return CompletableFuture.<@Nullable ChunkAccess>completedFuture(null);
+            if (existing != null) {
+                final @Nullable ChunkSnapshot snapshot = this.maybeSnapshot(existing);
+                if (snapshot != null) {
+                    return CompletableFuture.completedFuture(snapshot);
+                }
             }
-            final CompletableFuture<@Nullable ChunkAccess> load = new CompletableFuture<>();
+            final CompletableFuture<@Nullable ChunkSnapshot> load = new CompletableFuture<>();
             ChunkSystem.scheduleChunkLoad(
                 this.level,
                 x,
@@ -40,23 +41,25 @@ record PaperChunkSnapshotProvider(
                 ChunkStatus.EMPTY,
                 true,
                 PrioritisedExecutor.Priority.NORMAL,
-                load::complete
+                chunk -> load.complete(this.maybeSnapshot(chunk))
             );
             return load;
-        }, this.executor(x, z)).thenCompose(chunkFuture -> chunkFuture.thenApplyAsync(chunk -> {
-            if (chunk == null) {
+        }, this.executor(x, z)).thenCompose(future -> future);
+    }
+
+    private @Nullable ChunkSnapshot maybeSnapshot(@Nullable ChunkAccess chunk) {
+        if (chunk == null) {
+            return null;
+        }
+        if (chunk instanceof ImposterProtoChunk imposter) {
+            chunk = imposter.getWrapped();
+        }
+        if (!chunk.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
+            if (chunk.getBelowZeroRetrogen() == null || !chunk.getBelowZeroRetrogen().targetStatus().isOrAfter(ChunkStatus.SPAWN)) {
                 return null;
             }
-            if (chunk instanceof ImposterProtoChunk imposter) {
-                chunk = imposter.getWrapped();
-            }
-            if (!chunk.getPersistedStatus().isOrAfter(ChunkStatus.FULL)) {
-                if (chunk.getBelowZeroRetrogen() == null || !chunk.getBelowZeroRetrogen().targetStatus().isOrAfter(ChunkStatus.SPAWN)) {
-                    return null;
-                }
-            }
-            return ChunkSnapshot.snapshot(this.level, chunk, false);
-        }, this.executor(x, z)));
+        }
+        return ChunkSnapshot.snapshot(this.level, chunk, false);
     }
 
     private Executor executor(final int x, final int z) {
