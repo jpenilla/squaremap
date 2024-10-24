@@ -29,7 +29,7 @@ final class HeightmapSnapshot {
     }
 
     private int getFirstAvailable(final int index) {
-        return this.data.get(index) + this.heightAccessor.getMinBuildHeight();
+        return this.data.get(index) + this.heightAccessor.getMinY();
     }
 
     private static int getIndex(final int x, final int z) {

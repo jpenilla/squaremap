@@ -1,10 +1,7 @@
 package xyz.jpenilla.squaremap.common.config;
 
-import io.leangen.geantyref.TypeToken;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
@@ -12,7 +9,7 @@ import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
-    private static final int LATEST_VERSION = 3;
+    private static final int LATEST_VERSION = 4;
 
     Advanced(final DirectoryProvider directoryProvider) {
         super(directoryProvider.dataDirectory(), Advanced.class, "advanced.yml", LATEST_VERSION);
@@ -20,21 +17,21 @@ public final class Advanced extends AbstractConfig {
 
     @Override
     protected void addVersions(ConfigurationTransformation.VersionedBuilder versionedBuilder) {
+        final NodePath defaultColorOverridesPath = NodePath.path("world-settings", "default", "color-overrides");
+
         final ConfigurationTransformation oneToTwo = ConfigurationTransformation.builder()
-            .addAction(NodePath.path("world-settings", "default", "color-overrides"), (path, node) -> {
-                final TypeToken<Map<String, String>> type = new TypeToken<>() {};
-
-                final ConfigurationNode foliageNode = node.node("biomes", "foliage");
-                final Map<String, String> foliageMap = foliageNode.get(type, new HashMap<>());
-                foliageMap.put("minecraft:mangrove_swamp", "#6f9623");
-                foliageNode.set(type, foliageMap);
-
-                final ConfigurationNode blocksNode = node.node("blocks");
-                final Map<String, String> blocksMap = blocksNode.get(type, new HashMap<>());
-                blocksMap.put("minecraft:pink_petals", "#FFB4DB");
-                blocksNode.set(type, blocksMap);
-                return null;
-            })
+            .addAction(
+                defaultColorOverridesPath.withAppendedChild("biomes").withAppendedChild("foliage"),
+                Transformations.modifyStringMap(map -> {
+                    map.put("minecraft:mangrove_swamp", "#6f9623");
+                })
+            )
+            .addAction(
+                defaultColorOverridesPath.withAppendedChild("blocks"),
+                Transformations.modifyStringMap(map -> {
+                    map.put("minecraft:pink_petals", "#FFB4DB");
+                })
+            )
             .build();
         final ConfigurationTransformation twoToThree = ConfigurationTransformation.builder()
             .addAction(NodePath.path("world-settings"), Transformations.eachMapChild(worldSection -> {
@@ -50,9 +47,17 @@ public final class Advanced extends AbstractConfig {
                 );
             }))
             .build();
+        final ConfigurationTransformation threeToFour = ConfigurationTransformation.builder()
+            .addAction(
+                defaultColorOverridesPath.withAppendedChild("blocks"),
+                Transformations.modifyStringMap(map -> {
+                    map.put("minecraft:pale_oak_leaves", "#626760");
+                }))
+            .build();
 
         versionedBuilder.addVersion(2, oneToTwo);
-        versionedBuilder.addVersion(LATEST_VERSION, twoToThree);
+        versionedBuilder.addVersion(3, twoToThree);
+        versionedBuilder.addVersion(LATEST_VERSION, threeToFour);
     }
 
     static Advanced config;

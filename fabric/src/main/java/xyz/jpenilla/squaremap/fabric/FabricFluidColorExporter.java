@@ -45,17 +45,17 @@ public final class FabricFluidColorExporter extends AbstractFluidColorExporter {
         final ColorBlender blender = new ColorBlender();
         for (int i = 0; i < sprite.contents().width(); i++) {
             for (int h = 0; h < sprite.contents().height(); h++) {
-                final int rgba = ((SpriteContentsExtension) sprite.contents()).getPixelRGBA(i, h);
+                final int rgba = ((SpriteContentsExtension) sprite.contents()).getPixel(i, h);
                 blender.addColor(rgba);
             }
         }
         return color(
-            Colors.abgrToArgb(blender.result()),
+            blender.result(),
             renderHandler.getFluidColor(null, null, fluid.defaultFluidState())
         );
     }
 
     public interface SpriteContentsExtension {
-        int getPixelRGBA(int x, int y);
+        int getPixel(int x, int y);
     }
 }

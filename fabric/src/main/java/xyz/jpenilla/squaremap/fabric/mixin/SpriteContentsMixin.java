@@ -12,8 +12,8 @@ abstract class SpriteContentsMixin implements FabricFluidColorExporter.SpriteCon
     @Shadow @Final private NativeImage originalImage;
 
     @Override
-    public int getPixelRGBA(final int x, final int y) {
+    public int getPixel(final int x, final int y) {
         // always gets from frame 0 of animated texture
-        return this.originalImage.getPixelRGBA(x, y);
+        return this.originalImage.getPixel(x, y);
     }
 }

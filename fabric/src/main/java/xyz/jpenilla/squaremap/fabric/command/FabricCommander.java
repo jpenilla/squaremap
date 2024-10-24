@@ -39,7 +39,7 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
     }
 
     public static FabricCommander from(final CommandSourceStack stack) {
-        if (((CommandSourceStackAccess) stack).source() instanceof ServerPlayer) {
+        if (stack.getEntity() instanceof ServerPlayer) {
             return new Player(stack);
         }
         return new FabricCommander(stack);
@@ -52,7 +52,7 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public ServerPlayer player() {
-            return (ServerPlayer) ((CommandSourceStackAccess) this.stack()).source();
+            return (ServerPlayer) this.stack().getEntity();
         }
 
         @Override

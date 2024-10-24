@@ -150,6 +150,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 Map.entry("minecraft:attached_pumpkin_stem", "#E0C71C"),
                 Map.entry("minecraft:spruce_leaves", "#619961"),
                 Map.entry("minecraft:birch_leaves", "#80A755"),
+                Map.entry("minecraft:pale_oak_leaves", "#626760"),
                 Map.entry("minecraft:lava", "#EA5C0F"),
                 Map.entry("minecraft:glass", "#FFFFFF")
             )

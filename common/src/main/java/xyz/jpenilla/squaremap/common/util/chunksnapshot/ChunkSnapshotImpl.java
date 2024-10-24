@@ -78,8 +78,8 @@ record ChunkSnapshotImpl(
     }
 
     @Override
-    public int getMinBuildHeight() {
-        return this.heightAccessor.getMinBuildHeight();
+    public int getMinY() {
+        return this.heightAccessor.getMinY();
     }
 
     @Override
@@ -89,7 +89,7 @@ record ChunkSnapshotImpl(
 
     @Override
     public Holder<Biome> getNoiseBiome(final int quartX, final int quartY, final int quartZ) {
-        final int minQuartY = QuartPos.fromBlock(this.getMinBuildHeight());
+        final int minQuartY = QuartPos.fromBlock(this.getMinY());
         final int maxQuartY = minQuartY + QuartPos.fromBlock(this.getHeight()) - 1;
         final int clampedQuartY = Mth.clamp(quartY, minQuartY, maxQuartY);
         final int sectionIndex = this.getSectionIndex(QuartPos.toBlock(clampedQuartY));
