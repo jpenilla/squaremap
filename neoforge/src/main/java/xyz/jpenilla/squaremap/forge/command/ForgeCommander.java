@@ -43,7 +43,7 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
     }
 
     public static ForgeCommander from(final CommandSourceStack stack) {
-        if (stack.source instanceof ServerPlayer) {
+        if (stack.getEntity() instanceof ServerPlayer) {
             return new Player(stack);
         }
         return new ForgeCommander(stack);
@@ -58,7 +58,7 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public ServerPlayer player() {
-            return (ServerPlayer) this.stack().source;
+            return (ServerPlayer) this.stack().getEntity();
         }
 
         @Override
