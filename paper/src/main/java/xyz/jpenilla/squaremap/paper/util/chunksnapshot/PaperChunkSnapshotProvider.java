@@ -1,6 +1,6 @@
 package xyz.jpenilla.squaremap.paper.util.chunksnapshot;
 
-import ca.spottedleaf.concurrentutil.executor.standard.PrioritisedExecutor;
+import ca.spottedleaf.concurrentutil.util.Priority;
 import ca.spottedleaf.moonrise.common.util.ChunkSystem;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -40,7 +40,7 @@ record PaperChunkSnapshotProvider(
                 z,
                 ChunkStatus.EMPTY,
                 true,
-                PrioritisedExecutor.Priority.NORMAL,
+                Priority.NORMAL,
                 chunk -> load.complete(this.maybeSnapshot(chunk))
             );
             return load;
