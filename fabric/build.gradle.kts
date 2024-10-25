@@ -44,7 +44,7 @@ dependencies {
   modImplementation(libs.cardinalComponentsEntity)
   include(libs.cardinalComponentsEntity)
 
-  modCompileOnly("curse.maven:moonrise-1096335:5815099")
+  modCompileOnly("curse.maven:moonrise-1096335:5842524")
 }
 
 squaremapPlatform.loom.modInfoFilePath = "fabric.mod.json"
