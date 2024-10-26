@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.fabric.listener;
 
 import com.google.inject.Inject;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -29,6 +30,7 @@ public final class FabricMapUpdates {
     public void register() {
         // listen to fabric api events
         PlayerBlockBreakEvents.AFTER.register(this::afterBlockBreak);
+        ServerChunkEvents.CHUNK_GENERATE.register((world, chunk) -> this.markChunk(world, chunk.getPos()));
 
         // these are generic events fired by squaremap's mixins, covering cases
         // where there isn't a fabric api event
