@@ -60,4 +60,14 @@ public final class PaperServerAccess implements ServerAccess {
     public int maxPlayers() {
         return this.server.getMaxPlayers();
     }
+
+    @Override
+    public void blockSleep() {
+        // Not needed on Paper, chunks are unloaded during sleep
+    }
+
+    @Override
+    public void allowSleep() {
+        // Not needed on Paper, chunks are unloaded during sleep
+    }
 }

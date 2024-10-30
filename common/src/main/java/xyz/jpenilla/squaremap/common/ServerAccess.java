@@ -18,4 +18,14 @@ public interface ServerAccess {
     @Nullable ServerPlayer player(UUID uuid);
 
     int maxPlayers();
+
+    /**
+     * Blocks the server from tick sleeping to ensure chunks unload during renders.
+     */
+    void blockSleep();
+
+    /**
+     * Allows the server to tick sleep after a render is done.
+     */
+    void allowSleep();
 }

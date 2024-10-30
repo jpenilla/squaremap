@@ -14,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
@@ -26,6 +27,7 @@ import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)
 public final class RadiusRender extends AbstractRender {
+    private final ServerAccess serverAccess;
     private final int centerX;
     private final int centerZ;
     private final int radius;
@@ -36,13 +38,15 @@ public final class RadiusRender extends AbstractRender {
         @Assisted final MapWorldInternal world,
         @Assisted final BlockPos center,
         @Assisted final int radius,
-        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
+        final ServerAccess serverAccess
     ) {
         super(world, chunkSnapshotProviderFactory);
         this.radius = Numbers.blockToChunk(radius);
         this.centerX = Numbers.blockToChunk(center.getX());
         this.centerZ = Numbers.blockToChunk(center.getZ());
         this.totalChunks = this.countTotalChunks();
+        this.serverAccess = serverAccess;
     }
 
     private int countTotalChunks() {
@@ -70,6 +74,15 @@ public final class RadiusRender extends AbstractRender {
 
     @Override
     protected void render() {
+        try {
+            this.serverAccess.blockSleep();
+            this.render0();
+        } finally {
+            this.serverAccess.allowSleep();
+        }
+    }
+
+    private void render0() {
         Logging.info(Messages.LOG_STARTED_RADIUSRENDER, "world", this.mapWorld.identifier().asString());
 
         this.progress = RenderProgress.printProgress(this);
