@@ -380,7 +380,7 @@ public abstract class AbstractRender implements Runnable {
         final int topY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, imgX, imgZ) + 1;
         mutablePos.set(blockX, Math.min(topY, this.effectiveMaxHeight(chunk)), blockZ);
 
-        if (topY > chunk.getMinY() + 1) {
+        if (topY > chunk.getMinY()) {
             state = this.mapWorld.config().MAP_ITERATE_UP
                 ? this.iterateUp(chunk, mutablePos)
                 : this.iterateDown(chunk, mutablePos);
