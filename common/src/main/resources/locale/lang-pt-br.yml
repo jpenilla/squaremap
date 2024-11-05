@@ -1,0 +1,140 @@
+# Translators: [zicstardust]
+
+
+render-in-progress: <red>Uma renderização já está em andamento no mundo <world>
+render-not-in-progress: <red>Nenhuma renderização está sendo executada no mundo
+    <world>
+cancelled-render: <green>Renderização cancelada para o mundo <world>
+successfully-reset-map: <green>O mapa foi redefinido com sucesso para o mundo
+    <world>
+paused-renders: <green>Pausado para o mundo <world>
+unpaused-renders: <green>Retomada da renderização para o mundo <world>
+command:
+    message:
+        console-must-specify-player: <red>Você deve especificar um jogador para executar
+            controle do console
+        console-must-specify-world: <red>Você deve especificar um mundo para executar
+            controle do console
+        no-such-world: Não existe o mundo '<world>'
+        map-not-enabled-for-world: O mapa não está ativado para o mundo '<world>'
+        confirmation-required: <red>A confirmação é solicitada. Confirme isso
+            com /<command> confirm.
+        no-pending-commands: <red>Você não tem pedidos pendentes.
+        progresslogging:
+            enabled: <green>O registro do progresso da renderização foi habilitado.
+            disabled: <green>O registro do progresso da renderização foi desabilitado.
+            set-rate: <green>O intervalo de registro do progresso da renderização foi definido como </green><seconds>
+                segundos
+            statusmessage: 'Registro de progresso de renderização habilitado: <enabled>, intervalo:
+                <green><seconds></green> segundos'
+        help:
+            help: ajuda do comando squaremap
+            command: Comando
+            description: Descrição
+            no_description: Sem descrição
+            arguments: Argumentos
+            optional: Opcional
+            showing_results_for_query: Mostrando resultados da pesquisa para consulta
+            no_results_for_query: Nenhum resultado para a consulta
+            available_commands: Comandos disponíveis
+            click_to_show_help: Clique para mostrar ajuda para este comando
+            page_out_of_range: 'Erro: A página <page> não está no intervalo. Deve estar no intervalo
+                [1, <max_pages>]'
+            click_for_next_page: Clique para a próxima página
+            click_for_previous_page: Clique para a página anterior
+        exception:
+            command-execution: <red>Ocorreu um erro interno ao tentar
+                executar este comando.
+            no-permission: |-
+                <red>Desculpe, mas você não tem permissão para executar este comando.
+                Entre em contato com os administradores do servidor se você acredita que isso é um erro.
+            invalid-argument: <red>Argumento inválido do comando<white>:</white> <gray><message>
+            invalid-sender-type: <red>Tipo de remetente de comando inválido. Você deve ser de
+                tipo <gray><required_sender_type></gray>.
+            invalid-syntax: <red>Sintaxe de comando inválida. A sintaxe de comando correta é<white>:</white>
+                <gray><correct_syntax>
+        parser-exception:
+            string: '''<input>'' não é uma string válida do tipo <string_mode>'
+            number: '''<input>'' não é um número válido no intervalo <min> to <max>'
+            location:
+                invalid_format: '''<input>'' não é um local válido. Formato obrigatório
+                    é ''<x> <z>'''
+                mixed_local_absolute: Não é possível misturar coordenadas locais e absolutas. (ou
+                    todas as coordenadas usam '^' ou nada faz)
+            selector:
+                malformed: Seletor '<input>' está malformado
+                too_many_players: Mais de 1 jogador selecionado no seletor de jogador único
+                non_player_in_player_selector: Não jogador(es) selecionado(s) no seletor de jogadores
+    prefix: '<white>[<gradient:#C028FF:#5B00FF>squaremap</gradient>]</white> '
+    description:
+        help: Obtenha ajuda com comandos squaremap
+        resetmap: Redefinir o mapa de um mundo especificado
+        confirm: Confirmar um pedido pendente
+        reload: Recarregar plug-in
+        full-render: Inicie uma renderização completa para o mundo especificado
+        cancel-render: Cancelar uma renderização para o mundo especificado
+        pause-render: Suspender toda a renderização do mundo especificado
+        radius-render: Iniciar uma renderização de raio
+        progresslogging:
+            status: Imprime as configurações atuais para o registro do progresso da renderização
+            toggle: Ativa ou desativa o registro de progresso da renderização
+            rate: Define o intervalo em segundos para registrar o progresso da renderização
+        hide: Esconder um jogador no mapa
+        show: Mostrar um jogador no mapa
+    argument:
+        optional-world: O padrão é o mundo atual do jogador se não for fornecido
+        optional-center: O padrão é (<white>0<gray>,</gray> 0</white>) se não for especificado
+        optional-player: O padrão é o jogador em execução se não for especificado
+            (através do console você deve especificar um jogador)
+        help-query: Consulta de ajuda
+    hide:
+        already-hidden: <red><player> já está escondido no mapa
+        hidden: <green><player> agora está escondido no mapa
+    show:
+        not-hidden: <red><player> não está escondido no mapa
+        shown: <green><player> não está mais escondido no mapa
+click-to-copy: Clique para copiar para a área de transferência
+click-for-help: Clique para solicitar ajuda
+click-to-confirm: Clique para confirmar
+click-to-toggle: Clique para alternar
+plugin-reloaded: <green><name> v<version> recarregado
+ui:
+    page-title: squaremap - {world}
+    coordinates: Coordenadas<br/>{x}, {z}
+    sidebar:
+        player-list: Jogadores ({cur}/{max})
+        world-list: Mundos
+    layers:
+        player-tracker: Jogadores
+        world-spawn: Spawn
+        world-border: Borda do mundo
+log:
+    started-full-render: Iniciando a renderização completa do mapa para <world>
+    started-radius-render: A renderização do mapa de raio foi iniciada para <world>
+    scanning-region-files: Verificando arquivos de região... (isso pode levar
+        un um momento)
+    found-total-region-files: Região de arquivos <total> encontrada
+    finished-rendering: Mapa de renderização concluído para <world>
+    cancelled-rendering: A renderização do mapa <world> foi interrompida
+    resumed-rendering: A renderização do mapa <world> foi continuada
+    scanning-region-progress: '(<percent>) Mundo: <world> Chunks: <current_chunks>/<total_chunks>
+        Tempo decorrido: <elapsed> ETA: <eta> Velocidade: <rate> cps'
+    scanning-region-progress-with-regions: '(<percent>) Mundo: <world> Regiões: <current_regions>/<total_regions>
+        Chunks: <current_chunks>/<total_chunks> Tempo decorrido: <elapsed> ETA: <eta>
+        Velocidade: <rate> cps'
+    internal-web-disabled: O servidor web interno está desabilitado no arquivo config.yml
+    internal-web-started: O servidor web interno opera no endereço <bind>:<port>
+    internal-web-stopped: O servidor web interno parou
+    internal-web-start-error: O servidor web interno não foi iniciado
+    could-not-create-directory: Não foi possível criar a pasta! <path>
+    could-not-read-region: Não foi possível ler a imagem do mapa para a região <x>,<z> (imagem corrompida?).
+        Ela será sobrescrita.
+    could-not-save-region: Não foi possível salvar o mapa da região <x>,<z>
+    internal-web-not-running: Ocorreu um erro com o servidor web interno
+    update-checker:
+        fetching-version-information: Buscando informações da versão...
+        behind-branch: squaremap está <behind> versão(ões) atrás do branch '<branch>'!
+        download-dev-builds: Baixe compilações de desenvolvimento de <link>
+        unknown-commit: Commit desconhecido '<commit>', não é possível verificar atualizações.
+        behind-releases: squaremap está <behind> versão(ões) desatualizada(s).
+        download-release: Baixe a versão mais recente (<latest>) em <link>
