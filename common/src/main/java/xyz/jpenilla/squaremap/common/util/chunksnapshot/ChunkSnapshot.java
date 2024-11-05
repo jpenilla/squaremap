@@ -36,7 +36,7 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     static ChunkSnapshot snapshot(final Level level, final ChunkAccess chunk, final boolean biomesOnly) {
-        final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(chunk.getMinBuildHeight(), chunk.getHeight());
+        final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(chunk.getMinY(), chunk.getHeight());
         final int sectionCount = heightAccessor.getSectionsCount();
         final LevelChunkSection[] sections = chunk.getSections();
         final PalettedContainer<BlockState>[] states = new PalettedContainer[sectionCount];

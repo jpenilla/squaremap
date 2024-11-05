@@ -13,6 +13,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.ResourceKey;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.util.SleepBlockingMinecraftServer;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 
 @DefaultQualifier(NonNull.class)
@@ -50,5 +51,15 @@ public final class SpongeServerAccess implements ServerAccess {
     @Override
     public int maxPlayers() {
         return this.game.server().maxPlayers();
+    }
+
+    @Override
+    public void blockSleep() {
+        ((SleepBlockingMinecraftServer) this.game.server()).squaremap$blockSleep();
+    }
+
+    @Override
+    public void allowSleep() {
+        ((SleepBlockingMinecraftServer) this.game.server()).squaremap$allowSleep();
     }
 }

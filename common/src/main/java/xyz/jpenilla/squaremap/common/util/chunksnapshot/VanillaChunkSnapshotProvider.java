@@ -142,6 +142,6 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         if (targetStatus == null) {
             return false;
         }
-        return BuiltInRegistries.CHUNK_STATUS.get(targetStatus).isOrAfter(ChunkStatus.SPAWN);
+        return BuiltInRegistries.CHUNK_STATUS.getValue(targetStatus).isOrAfter(ChunkStatus.SPAWN);
     }
 }

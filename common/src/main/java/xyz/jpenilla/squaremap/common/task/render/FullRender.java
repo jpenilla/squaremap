@@ -16,6 +16,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
@@ -27,6 +28,7 @@ import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 @DefaultQualifier(NonNull.class)
 public final class FullRender extends AbstractRender {
     private final RegionFileDirectoryResolver regionFileDirectoryResolver;
+    private final ServerAccess serverAccess;
     private final int wait;
     private int maxRadius = 0;
     private int totalChunks;
@@ -37,24 +39,36 @@ public final class FullRender extends AbstractRender {
         @Assisted final MapWorldInternal world,
         @Assisted final int wait,
         final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
-        final RegionFileDirectoryResolver regionFileDirectoryResolver
+        final RegionFileDirectoryResolver regionFileDirectoryResolver,
+        final ServerAccess serverAccess
     ) {
         super(world, chunkSnapshotProviderFactory);
         this.regionFileDirectoryResolver = regionFileDirectoryResolver;
         this.wait = wait;
+        this.serverAccess = serverAccess;
     }
 
     @AssistedInject
     private FullRender(
         @Assisted final MapWorldInternal world,
         final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
-        final RegionFileDirectoryResolver regionFileDirectoryResolver
+        final RegionFileDirectoryResolver regionFileDirectoryResolver,
+        final ServerAccess serverAccess
     ) {
-        this(world, 0, chunkSnapshotProviderFactory, regionFileDirectoryResolver);
+        this(world, 0, chunkSnapshotProviderFactory, regionFileDirectoryResolver, serverAccess);
     }
 
     @Override
     protected void render() {
+        try {
+            this.serverAccess.blockSleep();
+            this.render0();
+        } finally {
+            this.serverAccess.allowSleep();
+        }
+    }
+
+    private void render0() {
         if (this.wait > 0) {
             sleep(this.wait * 1000);
         }

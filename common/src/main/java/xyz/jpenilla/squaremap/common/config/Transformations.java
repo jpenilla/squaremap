@@ -1,10 +1,14 @@
 package xyz.jpenilla.squaremap.common.config;
 
+import io.leangen.geantyref.TypeFactory;
 import io.leangen.geantyref.TypeToken;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -30,6 +34,27 @@ final class Transformations {
                 final ConfigurationNode childNode = node.node(childKey);
                 action.accept(childNode);
             }
+            return null;
+        };
+    }
+
+    static TransformAction modifyStringMap(
+        final Consumer<Map<String, String>> consumer
+    ) {
+        return modifyMap(String.class, String.class, consumer);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <K, V> TransformAction modifyMap(
+        final Class<K> keyType,
+        final Class<V> valueType,
+        final Consumer<Map<K, V>> consumer
+    ) {
+        return (path, node) -> {
+            final Type type = TypeFactory.parameterizedClass(Map.class, keyType, valueType);
+            final Map<K, V> map = (Map<K, V>) node.get(type, new HashMap<>());
+            consumer.accept(map);
+            node.set(type, map);
             return null;
         };
     }

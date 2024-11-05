@@ -14,6 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.util.SleepBlockingMinecraftServer;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 
 @DefaultQualifier(NonNull.class)
@@ -74,5 +75,15 @@ public final class FabricServerAccess implements ServerAccess {
     @Override
     public int maxPlayers() {
         return this.requireServer().getMaxPlayers();
+    }
+
+    @Override
+    public void blockSleep() {
+        ((SleepBlockingMinecraftServer) this.requireServer()).squaremap$blockSleep();
+    }
+
+    @Override
+    public void allowSleep() {
+        ((SleepBlockingMinecraftServer) this.requireServer()).squaremap$allowSleep();
     }
 }

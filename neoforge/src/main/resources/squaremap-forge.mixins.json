@@ -4,7 +4,8 @@
     "package": "xyz.jpenilla.squaremap.forge.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "ChunkMapAccess"
+        "ChunkMapAccess",
+        "SleepBlockingMinecraftServerMixin"
     ],
     "injectors": {
         "defaultRequire": 1

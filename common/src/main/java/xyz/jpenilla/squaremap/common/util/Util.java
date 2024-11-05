@@ -93,7 +93,7 @@ public final class Util {
         if (!registry.containsKey(location)) {
             throw new IllegalArgumentException("No such entry '" + location + "' in registry '" + registry.key() + "'");
         }
-        return requireNonNull(registry.get(location));
+        return requireNonNull(registry.getValue(location));
     }
 
     public static String levelConfigName(final ServerLevel level) {
@@ -124,7 +124,7 @@ public final class Util {
     }
 
     public static Registry<Biome> biomeRegistry(final RegistryAccess registryAccess) {
-        return registryAccess.registryOrThrow(Registries.BIOME);
+        return registryAccess.lookupOrThrow(Registries.BIOME);
     }
 
     public static @Nullable Manifest manifest(final Class<?> clazz) {

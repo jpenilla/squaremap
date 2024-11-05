@@ -5,7 +5,8 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "ChunkMapAccess",
-        "MainMixin"
+        "MainMixin",
+        "SleepBlockingMinecraftServerMixin"
     ],
     "injectors": {
         "defaultRequire": 1

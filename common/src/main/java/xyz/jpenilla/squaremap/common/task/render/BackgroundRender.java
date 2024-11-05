@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
 import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
@@ -25,12 +26,16 @@ import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFac
 
 @DefaultQualifier(NonNull.class)
 public final class BackgroundRender extends AbstractRender {
+    private final ServerAccess serverAccess;
+
     @AssistedInject
     private BackgroundRender(
         @Assisted final MapWorldInternal world,
-        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory
+        final ChunkSnapshotProviderFactory chunkSnapshotProviderFactory,
+        final ServerAccess serverAccess
     ) {
         super(world, chunkSnapshotProviderFactory, createBackgroundRenderWorkerPool(world));
+        this.serverAccess = serverAccess;
     }
 
     @Override
@@ -53,7 +58,15 @@ public final class BackgroundRender extends AbstractRender {
         if (chunks.isEmpty()) {
             return;
         }
+        try {
+            this.serverAccess.blockSleep();
+            this.render(time, chunks);
+        } finally {
+            this.serverAccess.allowSleep();
+        }
+    }
 
+    private void render(final long time, final Set<ChunkCoordinate> chunks) {
         final List<CompletableFuture<Void>> regionFutures = new ArrayList<>();
 
         final Map<RegionCoordinate, List<ChunkCoordinate>> regionChunksMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
