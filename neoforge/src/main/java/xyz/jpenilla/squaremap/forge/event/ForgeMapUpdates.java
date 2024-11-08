@@ -63,11 +63,9 @@ public final class ForgeMapUpdates {
             if (!(event.getLevel() instanceof ServerLevel level)) {
                 return;
             }
-            /* TODO: getAffectedBlocks not yet implemented in 1.21.2
             for (final BlockPos affectedBlock : event.getAffectedBlocks()) {
                 this.markBlock(level, affectedBlock);
             }
-             */
         });
         NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, (BlockGrowFeatureEvent event) -> {
             if (!(event.getLevel() instanceof ServerLevel level)) {
