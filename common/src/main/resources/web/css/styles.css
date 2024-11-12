@@ -35,6 +35,9 @@ div.leaflet-nameplate-pane div img.head {
   vertical-align: middle;
   margin-right: 6px;
 }
+img.head {
+    height: 16px;
+}
 div.leaflet-nameplate-pane div img.armor,
 div.leaflet-nameplate-pane div img.health {
   display: block;
