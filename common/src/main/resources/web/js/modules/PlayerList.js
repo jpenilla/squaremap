@@ -35,6 +35,7 @@ class PlayerList {
     }
     addToList(player) {
         const head = document.createElement("img");
+        head.classList.add("head");
         head.src = player.getHeadUrl();
 
         const span = document.createElement("span");
