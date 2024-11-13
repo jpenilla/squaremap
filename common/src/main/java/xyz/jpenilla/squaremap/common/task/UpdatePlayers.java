@@ -11,8 +11,10 @@ import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -81,7 +83,7 @@ public final class UpdatePlayers implements Runnable {
                 if (worldConfig.PLAYER_TRACKER_HIDE_INVISIBLE && player.isInvisible()) {
                     return;
                 }
-                if  (worldConfig.PLAYER_TRACKER_HIDE_MAP_INVISIBILITY_EQUIPMENT && player.getInventory().armor.get(3).is(ItemTags.MAP_INVISIBILITY_EQUIPMENT)) {
+                if (worldConfig.PLAYER_TRACKER_HIDE_MAP_INVISIBILITY_EQUIPMENT && hasMapInvisibilityItemEquipped(player)) {
                     return;
                 }
                 if (this.playerManager.hidden(player) || this.playerManager.otherwiseHidden(player)) {
@@ -122,5 +124,15 @@ public final class UpdatePlayers implements Runnable {
     private static int armorPoints(final ServerPlayer player) {
         final @Nullable AttributeInstance attribute = player.getAttribute(Attributes.ARMOR);
         return attribute == null ? 0 : (int) attribute.getValue();
+    }
+
+    // Copied from MapItemSavedData#hasMapInvisibilityItemEquipped(Player)
+    private static boolean hasMapInvisibilityItemEquipped(final Player player) {
+        for (final EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot != EquipmentSlot.MAINHAND && slot != EquipmentSlot.OFFHAND && player.getItemBySlot(slot).is(ItemTags.MAP_INVISIBILITY_EQUIPMENT)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
