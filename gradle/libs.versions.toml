@@ -83,7 +83,7 @@ htmlSanitizer = { group = "com.googlecode.owasp-java-html-sanitizer", name = "ow
 htmlSanitizerJ8 = { group = "com.googlecode.owasp-java-html-sanitizer", name = "java8-shim", version.ref = "htmlSanitizer" }
 htmlSanitizerJ10 = { group = "com.googlecode.owasp-java-html-sanitizer", name = "java10-shim", version.ref = "htmlSanitizer" }
 
-mixin = { group = "org.spongepowered", name = "mixin", version = "0.8.5" }
+mixin = { group = "org.spongepowered", name = "mixin", version = "0.8.7" }
 
 fabricApi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabricApi" }
 fabricLoader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabricLoader" }
