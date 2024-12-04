@@ -27,6 +27,7 @@ jobs:
         with:
           path: |
             .gradle/loom-cache
+            fabric/.gradle/loom-cache
             paper/.gradle/caches/paperweight
             common/build/moddev
             neoforge/build/moddev
