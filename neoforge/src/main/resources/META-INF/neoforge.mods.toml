@@ -23,7 +23,7 @@ side = "BOTH"
 [[dependencies.squaremap]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.3,1.22)"
+versionRange = "[1.21.4,1.22)"
 ordering = "NONE"
 side = "BOTH"
 
