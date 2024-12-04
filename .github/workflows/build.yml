@@ -26,9 +26,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            .gradle/caches/VanillaGradle
             .gradle/loom-cache
+            fabric/.gradle/loom-cache
             paper/.gradle/caches/paperweight
+            common/build/moddev
+            neoforge/build/moddev
+            sponge/build/moddev
           key: ${{ runner.os }}-project-local-gradle-caches-${{ hashFiles('**/libs.versions.toml', '**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-project-local-gradle-caches-

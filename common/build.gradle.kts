@@ -1,11 +1,11 @@
 plugins {
   id("squaremap.base-conventions")
-  id("org.spongepowered.gradle.vanilla")
+  id("net.neoforged.moddev")
 }
 
-minecraft {
-  version().set(libs.versions.minecraft)
-  accessWideners(layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))
+neoForge {
+  neoFormVersion = libs.versions.neoform
+  accessTransformers.from(layout.projectDirectory.file("src/main/resources/squaremap-common-at.cfg"))
 }
 
 dependencies {

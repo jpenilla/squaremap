@@ -56,3 +56,15 @@ publishMods.modrinth {
   changelog = releaseNotes
   accessToken = providers.environmentVariable("MODRINTH_TOKEN")
 }
+
+afterEvaluate {
+  if (platformExt.modInfoFilePath.isPresent) {
+    tasks.processResources {
+      expandIn(platformExt.modInfoFilePath.get(), mapOf(
+        "version" to project.version,
+        "github_url" to rootProject.providers.gradleProperty("githubUrl").get(),
+        "description" to project.description,
+      ))
+    }
+  }
+}
