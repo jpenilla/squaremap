@@ -39,8 +39,3 @@ tasks.withType(JavaCompile::class).configureEach {
   // missing annotation (values), or Java serialization
   options.compilerArgs.add("-Xlint:-processing,-classfile,-serial")
 }
-
-tasks.withType(AbstractArchiveTask::class).configureEach {
-  isReproducibleFileOrder = true
-  isPreserveFileTimestamps = false
-}
