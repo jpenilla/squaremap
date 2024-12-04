@@ -1,16 +1,41 @@
+import net.neoforged.moddevgradle.internal.RunGameTask
+
 plugins {
-  id("squaremap.platform.loom")
+  id("squaremap.platform.mdg")
 }
 
 repositories {
   maven("https://maven.neoforged.net/releases/")
 }
 
-dependencies {
-  minecraft(libs.minecraft)
-  mappings(loom.officialMojangMappings())
-  neoForge(libs.neoforge)
+neoForge {
+  version = libs.versions.neoforge
+  runs {
+    register("client") {
+      client()
+    }
+    register("server") {
+      server()
+    }
+    configureEach {
+      loadedMods.set(emptySet())
+    }
+  }
+}
 
+tasks.withType<RunGameTask>().configureEach {
+  dependsOn(tasks.productionJar)
+  doFirst {
+    val mods = gameDirectory.get().asFile.resolve("mods")
+    mods.mkdirs()
+    tasks.productionJar.get().archiveFile.get().asFile.copyTo(
+      mods.resolve("squaremap.jar"),
+      overwrite = true
+    )
+  }
+}
+
+dependencies {
   shade(projects.squaremapCommon) {
     exclude("org.incendo", "cloud-core")
     exclude("org.incendo", "cloud-minecraft-extras")
@@ -18,26 +43,26 @@ dependencies {
     exclude("io.leangen.geantyref")
   }
 
-  modImplementation(libs.adventurePlatformNeoforge)
-  include(libs.adventurePlatformNeoforge)
+  implementation(libs.adventurePlatformNeoforge)
+  jarJar(libs.adventurePlatformNeoforge)
 
-  modImplementation(libs.cloudNeoForge)
-  include(libs.cloudNeoForge)
+  implementation(libs.cloudNeoForge)
+  jarJar(libs.cloudNeoForge)
 
   implementation(libs.cloudMinecraftExtras) {
     isTransitive = false // we depend on adventure separately
   }
-  include(libs.cloudMinecraftExtras)
+  jarJar(libs.cloudMinecraftExtras)
   implementation(libs.cloudConfirmation)
-  include(libs.cloudConfirmation)
-  include(libs.cloudProcessorsCommon)
+  jarJar(libs.cloudConfirmation)
+  jarJar(libs.cloudProcessorsCommon)
 }
 
-tasks.remapJar {
+tasks.productionJar {
   archiveFileName = productionJarName(libs.versions.minecraft)
 }
 
-squaremapPlatform.loom.modInfoFilePath = "META-INF/neoforge.mods.toml"
+squaremapPlatform.modInfoFilePath = "META-INF/neoforge.mods.toml"
 
 publishMods.modrinth {
   minecraftVersions.add(libs.versions.minecraft)

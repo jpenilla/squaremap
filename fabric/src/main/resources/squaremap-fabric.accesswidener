@@ -1,4 +1,4 @@
 accessWidener	v1	named
 
-# below are manually copied from squaremap-common.accesswidener, be sure to keep up to date with changes
+# below are manually copied from squaremap-common-at.cfg, be sure to keep up to date with changes
 accessible method net/minecraft/world/level/chunk/PalettedContainer get (I)Ljava/lang/Object;

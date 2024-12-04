@@ -2,24 +2,22 @@ import org.spongepowered.gradle.plugin.config.PluginLoaders
 import org.spongepowered.plugin.metadata.model.PluginDependency
 
 plugins {
-  id("squaremap.platform")
+  id("squaremap.platform.mdg")
   alias(libs.plugins.sponge.gradle.plugin)
-  id("org.spongepowered.gradle.vanilla")
   alias(libs.plugins.sponge.gradle.ore)
 }
 
 val minecraftVersion = libs.versions.minecraft
 
-minecraft {
-  version().set(minecraftVersion)
-  accessWideners(project(":squaremap-common").layout.projectDirectory.file("src/main/resources/squaremap-common.accesswidener"))
+neoForge {
+  neoFormVersion = libs.versions.neoform
 }
 
 dependencies {
-  implementation(projects.squaremapCommon) {
+  shade(projects.squaremapCommon) {
     exclude("io.leangen.geantyref")
   }
-  implementation(libs.cloudSponge) {
+  shade(libs.cloudSponge) {
     exclude("io.leangen.geantyref")
   }
   compileOnly("javax.inject:javax.inject:1")
@@ -28,20 +26,18 @@ dependencies {
 }
 
 // https://github.com/SpongePowered/SpongeGradle/issues/70
-/*
 configurations.spongeRuntime {
     resolutionStrategy {
         eachDependency {
             if (target.name == "spongevanilla") {
-                useVersion("1.20.+")
+                useVersion("1.21.3-13.+")
             }
         }
     }
 }
- */
 
 sponge {
-  apiVersion("12.0.0-SNAPSHOT")
+  apiVersion("13.0.0-SNAPSHOT")
   plugin("squaremap") {
     loader {
       name(PluginLoaders.JAVA_PLAIN)
@@ -57,24 +53,20 @@ sponge {
 }
 
 tasks {
-  shadowJar {
+  productionJar {
     archiveFileName.set(productionJarName(minecraftVersion))
+  }
+  shadowJar {
     listOf(
       "org.incendo.cloud",
-      "com.google.inject",
-      "jakarta.inject",
     ).forEach(::reloc)
     manifest {
       attributes(
-        "Access-Widener" to "squaremap-common.accesswidener",
+        "Access-Widener" to "squaremap-sponge.accesswidener",
         "MixinConfigs" to "squaremap-sponge.mixins.json",
       )
     }
   }
-}
-
-squaremapPlatform {
-  productionJar.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
 
 oreDeployment {
