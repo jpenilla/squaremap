@@ -6,7 +6,7 @@ hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.2" }
 javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.16" }
 
 [versions]
-minecraft = "1.21.3"
+minecraft = "1.21.4"
 checkerQual = "3.48.0"
 cloud = "2.0.0"
 cloudMinecraft = "2.0.0-beta.10"
@@ -20,12 +20,12 @@ option = "1.0.0"
 adventurePlatformMod = "6.1.0"
 paperApi = "1.20.2-R0.1-SNAPSHOT"
 bStats = "3.1.0"
-fabricApi = "0.110.0+1.21.3"
+fabricApi = "0.110.5+1.21.4"
 fabricLoader = "0.16.9"
 cardinalComponents = "6.2.0"
 guice = "7.0.0"
-neoforge = "21.3.57"
-neoform = "1.21.3-20241023.131943"
+neoforge = "21.4.0-beta"
+neoform = "1.21.4-20241203.161809"
 htmlSanitizer = "20240325.1"
 
 # buildSrc
