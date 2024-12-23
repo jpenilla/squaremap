@@ -1,6 +1,6 @@
 package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 
-import ca.spottedleaf.moonrise.common.util.ChunkSystem;
+import ca.spottedleaf.moonrise.common.PlatformHooks;
 import ca.spottedleaf.moonrise.libs.ca.spottedleaf.concurrentutil.util.Priority;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -50,7 +50,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
             }
 
             final CompletableFuture<@Nullable ChunkSnapshot> load = new CompletableFuture<>();
-            ChunkSystem.scheduleChunkLoad(
+            PlatformHooks.get().scheduleChunkLoad(
                 this.level,
                 x,
                 z,

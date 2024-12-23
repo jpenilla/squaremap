@@ -19,10 +19,6 @@ dependencies {
   implementation(libs.bStatsBukkit)
 }
 
-configurations.mojangMappedServer {
-  exclude("org.yaml", "snakeyaml")
-}
-
 tasks {
   jar {
     manifest {
