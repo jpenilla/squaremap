@@ -14,7 +14,7 @@ abstract class CopyFile : DefaultTask() {
   abstract val destination: RegularFileProperty
 
   @TaskAction
-  private fun copyFile() {
+  fun copyFile() {
     destination.get().asFile.parentFile.mkdirs()
     fileToCopy.get().asFile.copyTo(destination.get().asFile, overwrite = true)
   }
