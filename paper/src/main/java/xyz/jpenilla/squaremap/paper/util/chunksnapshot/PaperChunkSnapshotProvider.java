@@ -1,7 +1,7 @@
 package xyz.jpenilla.squaremap.paper.util.chunksnapshot;
 
 import ca.spottedleaf.concurrentutil.util.Priority;
-import ca.spottedleaf.moonrise.common.util.ChunkSystem;
+import ca.spottedleaf.moonrise.common.PlatformHooks;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.server.level.ServerLevel;
@@ -34,7 +34,7 @@ record PaperChunkSnapshotProvider(
                 }
             }
             final CompletableFuture<@Nullable ChunkSnapshot> load = new CompletableFuture<>();
-            ChunkSystem.scheduleChunkLoad(
+            PlatformHooks.get().scheduleChunkLoad(
                 this.level,
                 x,
                 z,
