@@ -47,6 +47,9 @@ tasks {
   assemble {
     dependsOn(copyJar)
   }
+  javadoc {
+    enabled = false
+  }
 }
 
 publishMods.modrinth {
