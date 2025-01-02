@@ -9,7 +9,9 @@ repositories {
 }
 
 neoForge {
-  version = libs.versions.neoforge
+  enable {
+    version = libs.versions.neoforge.get()
+  }
   runs {
     register("client") {
       client()

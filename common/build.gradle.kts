@@ -4,7 +4,9 @@ plugins {
 }
 
 neoForge {
-  neoFormVersion = libs.versions.neoform
+  enable {
+    neoFormVersion = libs.versions.neoform.get()
+  }
   accessTransformers.from(layout.projectDirectory.file("src/main/resources/squaremap-common-at.cfg"))
 }
 

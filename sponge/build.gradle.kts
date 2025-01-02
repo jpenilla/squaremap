@@ -10,7 +10,9 @@ plugins {
 val minecraftVersion = libs.versions.minecraft
 
 neoForge {
-  neoFormVersion = libs.versions.neoform
+  enable {
+    neoFormVersion = libs.versions.neoform.get()
+  }
 }
 
 dependencies {
@@ -30,14 +32,14 @@ configurations.spongeRuntime {
     resolutionStrategy {
         eachDependency {
             if (target.name == "spongevanilla") {
-                useVersion("1.21.4-13.+")
+                useVersion("1.21.4-14.+")
             }
         }
     }
 }
 
 sponge {
-  apiVersion("13.0.0-SNAPSHOT")
+  apiVersion("14.0.0-SNAPSHOT")
   plugin("squaremap") {
     loader {
       name(PluginLoaders.JAVA_PLAIN)
