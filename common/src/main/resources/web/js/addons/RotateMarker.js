@@ -68,7 +68,9 @@
         },
 
         setRotationAngle: function(angle) {
-            this.options.rotationAngle = angle;
+            // Find the closest equivalent angle to avoid an unnecessarily large rotation
+            const delta = ((((angle - this.options.rotationAngle) % 360) + 540) % 360) - 180;
+            this.options.rotationAngle += delta;
             this.update();
             return this;
         },
