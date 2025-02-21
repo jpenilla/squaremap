@@ -33,9 +33,9 @@ indra = "3.1.3"
 sponge-gradle = "2.3.0"
 shadow = "8.3.6"
 mod-publish-plugin = "0.8.4"
-loom = "1.9-SNAPSHOT"
+loom = "1.10-SNAPSHOT"
 mdg = "2.0.78"
-paperweight = "2.0.0-beta.11"
+paperweight = "2.0.0-beta.14"
 
 [libraries]
 guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
