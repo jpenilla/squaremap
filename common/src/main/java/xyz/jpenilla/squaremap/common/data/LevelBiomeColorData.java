@@ -13,6 +13,7 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
+import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.Util;
 
@@ -45,25 +46,35 @@ public record LevelBiomeColorData(
         final Reference2IntMap<Biome> foliageColors = new Reference2IntOpenHashMap<>();
         final Reference2IntMap<Biome> waterColors = new Reference2IntOpenHashMap<>();
 
+        Logging.debug(() -> "Loading default Biome colors for level " + world.serverLevel().dimension().location() + " (shown as #RRGGBBAA, alpha is currently ignored):");
+        Logging.debug(() -> "%-40s | Temperature | Humidity | Grass Color | Foliage Color | Water Color".formatted("Biome"));
         for (final Biome biome : Util.biomeRegistry(world.serverLevel())) {
             float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
             float humidity = Mth.clamp(downfall(biome), 0.0F, 1.0F);
-            grassColors.put(
-                biome,
-                biome.getSpecialEffects().getGrassColorOverride()
-                    .orElse(defaultGrassColor(temperature, humidity))
-                    .intValue()
-            );
-            foliageColors.put(
-                biome,
-                biome.getSpecialEffects().getFoliageColorOverride()
-                    .orElse(Colors.mix(Colors.plantMapColor(), defaultFoliageColor(temperature, humidity), 0.85f))
-                    .intValue()
-            );
-            waterColors.put(
-                biome,
-                biome.getSpecialEffects().getWaterColor()
-            );
+
+            final int grassColor = biome.getSpecialEffects().getGrassColorOverride()
+                .orElse(defaultGrassColor(temperature, humidity))
+                .intValue();
+
+            final int foliageColor = biome.getSpecialEffects().getFoliageColorOverride()
+                .orElse(Colors.mix(Colors.plantMapColor(), defaultFoliageColor(temperature, humidity), 0.85f))
+                .intValue();
+
+            final int waterColor = biome.getSpecialEffects().getWaterColor();
+
+            grassColors.put(biome, grassColor);
+            foliageColors.put(biome, foliageColor);
+            waterColors.put(biome, waterColor);
+
+            Logging.debug(() -> String.format(
+                "%-40s | %-11s | %-8s | %-11s | %-13s | %s",
+                Util.biomeRegistry(world.serverLevel()).getResourceKey(biome).orElseThrow().location(),
+                temperature,
+                humidity,
+                Colors.toHexString(Colors.argbToRgba(grassColor)),
+                Colors.toHexString(Colors.argbToRgba(foliageColor)),
+                Colors.toHexString(Colors.argbToRgba(waterColor))
+            ));
         }
 
         grassColors.putAll(world.advanced().COLOR_OVERRIDES_BIOME_GRASS);
