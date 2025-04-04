@@ -91,7 +91,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         }
 
         final @Nullable CompoundTag chunkTag = chunkMap.squaremap$readChunk(chunkPos).join().orElse(null);
-        if (chunkTag != null && chunkTag.contains("Status", Tag.TAG_STRING)) {
+        if (chunkTag != null && chunkTag.contains("Status")) {
             if (isFullStatus(chunkTag) || preHeightChangeFullChunk(chunkTag)) {
                 final @Nullable ChunkAccess chunk = level.getChunkSource()
                     .getChunkFuture(x, z, ChunkStatus.EMPTY, true)
@@ -105,7 +105,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
     }
 
     private static boolean isFullStatus(final CompoundTag chunkTag) {
-        return FULL.equals(ResourceLocation.tryParse(chunkTag.getString("Status")));
+        return FULL.equals(ResourceLocation.tryParse(chunkTag.getString("Status").orElseThrow()));
     }
 
     private static @Nullable ChunkAccess fullIfPresent(final ChunkHolder chunkHolder) {
@@ -130,11 +130,11 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
     }
 
     private static boolean preHeightChangeFullChunk(final CompoundTag chunkTag) {
-        final CompoundTag belowZeroRetrogen = chunkTag.getCompound("below_zero_retrogen");
+        final CompoundTag belowZeroRetrogen = chunkTag.getCompoundOrEmpty("below_zero_retrogen");
         if (belowZeroRetrogen.isEmpty()) {
             return false;
         }
-        final String targetStatusStr = belowZeroRetrogen.getString("target_status");
+        final String targetStatusStr = belowZeroRetrogen.getStringOr("target_status", "");
         if (targetStatusStr.isEmpty()) {
             return false;
         }
