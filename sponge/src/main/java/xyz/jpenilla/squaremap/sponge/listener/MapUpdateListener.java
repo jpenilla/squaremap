@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.sponge.listener;
 
 import com.google.inject.Inject;
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -81,7 +82,7 @@ public final class MapUpdateListener {
 
     private void registerListeners(final Object instance) {
         this.game.eventManager()
-            .registerListeners(this.pluginContainer, instance);
+            .registerListeners(this.pluginContainer, instance, MethodHandles.lookup());
         this.registrations.add(instance);
     }
 
