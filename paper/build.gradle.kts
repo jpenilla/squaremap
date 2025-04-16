@@ -10,7 +10,7 @@ plugins {
 val minecraftVersion = libs.versions.minecraft
 
 dependencies {
-  paperweight.paperDevBundle(minecraftVersion.map { "$it-no-moonrise-SNAPSHOT" })
+  paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
 
   implementation(projects.squaremapCommon)
   implementation(projects.squaremapPaper.folia)
