@@ -35,7 +35,7 @@ public class SquaremapComponentInitializer implements EntityComponentInitializer
 
         @Override
         public void readFromNbt(final CompoundTag tag, final HolderLookup.Provider registryLookup) {
-            this.hidden = tag.getBoolean(HIDDEN_KEY);
+            this.hidden = tag.getBooleanOr(HIDDEN_KEY, false);
         }
 
         @Override

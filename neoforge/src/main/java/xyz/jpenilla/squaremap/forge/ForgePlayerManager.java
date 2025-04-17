@@ -79,7 +79,7 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
 
         @Override
         public void deserializeNBT(final HolderLookup.Provider provider, final CompoundTag arg) {
-            this.hidden(arg.getBoolean("hidden"));
+            this.hidden(arg.getBooleanOr("hidden", false));
         }
 
         @Override
