@@ -34,7 +34,10 @@ dependencies {
   api(libs.cloudMinecraftExtras)
 
   api(platform(libs.configurateBom))
-  api(libs.configurateYaml)
+  api(libs.configurateYaml) {
+    // Provided by the adventure platform
+    exclude("net.kyori", "option")
+  }
 
   api(libs.undertow)
 
