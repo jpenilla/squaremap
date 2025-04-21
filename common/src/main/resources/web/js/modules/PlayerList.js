@@ -5,22 +5,37 @@ class PlayerList {
     constructor(json) {
         this.players = new Map();
         this.markers = new Map();
+        this.jsonCache = null;
         this.following = null;
         this.firstTick = true;
         this.label = json.player_list_label;
         P.map.createPane("nameplate").style.zIndex = 1000;
     }
     tick() {
-        if ((!P.staticMode || this.firstTick) && P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
+        const update = () => {
+            this.updatePlayerList(this.jsonCache.players);
+            const title = `${this.label}`
+                .replace(/{cur}/g, this.jsonCache.players.length)
+                .replace(/{max}/g, this.jsonCache.max == null ? "???" : this.jsonCache.max)
+            if (P.sidebar.players.legend.innerHTML !== title) {
+                P.sidebar.players.legend.innerHTML = title;
+            }
+        }
+        const fetchPlayers = () => {
             P.getJSON("tiles/players.json", (json) => {
-                this.updatePlayerList(json.players);
-                const title = `${this.label}`
-                    .replace(/{cur}/g, json.players.length)
-                    .replace(/{max}/g, json.max == null ? "???" : json.max)
-                if (P.sidebar.players.legend.innerHTML !== title) {
-                    P.sidebar.players.legend.innerHTML = title;
-                }
+                this.jsonCache = json;
+                update();
             });
+        }
+
+        if (P.staticMode) {
+            if (this.jsonCache === null) {
+                fetchPlayers();
+            }
+            update();
+        } else if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
+            fetchPlayers();
+            update();
         }
     }
     showPlayer(uuid) {
