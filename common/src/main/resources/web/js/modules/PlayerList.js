@@ -28,14 +28,16 @@ class PlayerList {
             });
         }
 
-        if (P.staticMode) {
-            if (this.jsonCache === null) {
-                fetchPlayers(() => update());
+        if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
+            if (P.staticMode) {
+                if (this.jsonCache === null) {
+                    fetchPlayers(() => update());
+                } else {
+                    update();
+                }
             } else {
-                update();
+                fetchPlayers(() => update());
             }
-        } else if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
-            fetchPlayers(() => update());
         }
     }
     showPlayer(uuid) {
