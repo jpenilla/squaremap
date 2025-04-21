@@ -164,11 +164,10 @@ class PlayerList {
         if (this.following !== null && this.following !== uuid) {
             document.getElementById(this.following).classList.remove("following");
         }
-        if (uuid != null) {
+        this.following = uuid;
+        if (this.following != null) {
             document.getElementById(this.following).classList.add("following");
         }
-        this.following = uuid;
-        P.uiLink.update();
     }
 }
 

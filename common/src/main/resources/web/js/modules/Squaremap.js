@@ -76,7 +76,6 @@ class SquaremapMap {
     }
     centerOn(x, z, zoom) {
         this.map.setView(this.toLatLng(x, z), zoom);
-        this.uiLink.update();
         return this.map;
     }
     toLatLng(x, z) {
