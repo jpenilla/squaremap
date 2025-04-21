@@ -13,7 +13,7 @@ class UILink {
                 this._link.innerHTML = `<img src='images/clear.png'/>`;
                 this._link.onclick = async () => {
                     const url = P.worldList.curWorld == null ? "" : P.getUrlFromView();
-                    window.history.replaceState(null, "", url);
+                    window.history.pushState(null, "", url);
                     await navigator.clipboard.writeText(window.location.href);
                 };
                 if (!show) {
