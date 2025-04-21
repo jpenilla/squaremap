@@ -19,7 +19,7 @@ class UILink {
             update: function() {
                 const url = P.worldList.curWorld == null ? "" : P.getUrlFromView();
                 window.history.replaceState(null, "", url);
-                //this._link.innerHTML = `<a href='${url}'><img src='images/clear.png'/></a>`;
+                this._link.innerHTML = `<img src='images/clear.png'/>`;
             }
         });
         this.showLinkButton = show;
