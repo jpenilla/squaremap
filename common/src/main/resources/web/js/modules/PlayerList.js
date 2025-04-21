@@ -21,21 +21,21 @@ class PlayerList {
                 P.sidebar.players.legend.innerHTML = title;
             }
         }
-        const fetchPlayers = () => {
+        const fetchPlayers = (callback) => {
             P.getJSON("tiles/players.json", (json) => {
                 this.jsonCache = json;
-                update();
+                callback();
             });
         }
 
         if (P.staticMode) {
             if (this.jsonCache === null) {
-                fetchPlayers();
+                fetchPlayers(() => update());
+            } else {
+                update();
             }
-            update();
         } else if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
-            fetchPlayers();
-            update();
+            fetchPlayers(() => update());
         }
     }
     showPlayer(uuid) {
