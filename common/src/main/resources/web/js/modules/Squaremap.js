@@ -50,6 +50,7 @@ class SquaremapMap {
         this.getJSON("tiles/settings.json", (json) => {
             this.layerControl.init();
 
+            this.staticMode = json.static || false;
             this.title = json.ui.title;
             this.sidebar = new Sidebar(json.ui.sidebar, this.getUrlParam("show_sidebar", "true") === "true");
             this.playerList = new PlayerList(json.ui.sidebar);
