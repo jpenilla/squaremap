@@ -14,7 +14,8 @@ class Player {
             permanent: true,
             direction: "right",
             offset: [10, 0],
-            pane: "nameplate"
+            pane: "nameplate",
+            content: this.makeNameplateContent(json),
         });
         this.marker = L.marker(P.toLatLng(json.x, json.z), {
             icon: L.icon({
@@ -35,7 +36,8 @@ class Player {
             .replace(/{uuid}/g, this.uuid)
             .replace(/{name}/g, this.name);
     }
-    updateNameplate(player) {
+    makeNameplateContent(player) {
+        const ul = document.createElement("ul");
         let headImg = "";
         let armorImg = "";
         let healthImg = "";
@@ -48,7 +50,50 @@ class Player {
         if (P.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
             healthImg = `<img src="images/health/${Math.min(Math.max(player.health, 0), 20)}.png" class="health" />`;
         }
-        this.tooltip.setContent(`<ul><li>${headImg}</li><li>${this.displayName}${healthImg}${armorImg}</li>`);
+        ul.innerHTML = `<li>${headImg}</li><li><span class="display-name">${this.displayName}</span>${healthImg}${armorImg}</li>`;
+        return ul;
+    }
+    setNameplateContent(player) {
+        this.tooltip.setContent(this.makeNameplateContent(player));
+    }
+    updateNameplate(player) {
+        const head = this.tooltip.getContent().querySelectorAll(".head")[0];
+        if (!head && P.worldList.curWorld.player_tracker.nameplates.show_heads) {
+            this.setNameplateContent(player);
+            return;
+        }
+        const armor = this.tooltip.getContent().querySelectorAll(".armor")[0];
+        if (!armor && P.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
+            this.setNameplateContent(player);
+            return;
+        }
+        const health = this.tooltip.getContent().querySelectorAll(".health")[0];
+        if (!health && P.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
+            this.setNameplateContent(player);
+            return;
+        }
+        const displayName = this.tooltip.getContent().querySelectorAll(".display-name")[0];
+
+        if (displayName.innerText !== this.displayName) {
+            displayName.innerText = this.displayName;
+        }
+
+        // Only update the src if it's different
+        const headSrc = this.getHeadUrl();
+        const currentHeadSrc = head.src.split('/').pop();
+        if (currentHeadSrc !== headSrc.split('/').pop()) {
+            head.src = headSrc;
+        }
+        const healthSrc = `images/health/${Math.min(Math.max(player.health, 0), 20)}.png`;
+        const currentHealthSrc = health.src.split('/').pop();
+        if (currentHealthSrc !== healthSrc.split('/').pop()) {
+            health.src = healthSrc;
+        }
+        const armorSrc = `images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png`;
+        const currentArmorSrc = armor.src.split('/').pop();
+        if (currentArmorSrc !== armorSrc.split('/').pop()) {
+            armor.src = armorSrc;
+        }
     }
     update(player) {
         this.x = player.x;
