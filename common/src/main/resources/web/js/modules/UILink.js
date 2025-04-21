@@ -19,7 +19,6 @@ class UILink {
                 if (!show) {
                     this._link.style.display = "none";
                 }
-                this.update();
                 return link;
             },
         });
@@ -28,6 +27,7 @@ class UILink {
         if (!json.enabled) {
             this.link._link.style.display = "none";
         }
+        P.map.addControl(this.link);
     }
 }
 
