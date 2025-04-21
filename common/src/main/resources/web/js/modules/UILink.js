@@ -18,8 +18,8 @@ class UILink {
             },
             update: function() {
                 const url = P.worldList.curWorld == null ? "" : P.getUrlFromView();
-                //P.updateBrowserUrl(url); // this spams browser history
-                this._link.innerHTML = `<a href='${url}'><img src='images/clear.png'/></a>`;
+                window.history.replaceState(null, "", url);
+                //this._link.innerHTML = `<a href='${url}'><img src='images/clear.png'/></a>`;
             }
         });
         this.showLinkButton = show;

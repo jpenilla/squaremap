@@ -168,6 +168,7 @@ class PlayerList {
             document.getElementById(this.following).classList.add("following");
         }
         this.following = uuid;
+        P.uiLink.update();
     }
 }
 
