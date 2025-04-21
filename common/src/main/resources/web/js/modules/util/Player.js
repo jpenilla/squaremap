@@ -77,15 +77,21 @@ class Player {
         if (displayName.innerText !== this.displayName) {
             displayName.innerText = this.displayName;
         }
-        if (head.src !== this.getHeadUrl()) {
-            head.src = this.getHeadUrl();
+
+        // Only update the src if it's different
+        const headSrc = this.getHeadUrl();
+        const currentHeadSrc = head.src.split('/').pop();
+        if (currentHeadSrc !== headSrc.split('/').pop()) {
+            head.src = headSrc;
         }
         const healthSrc = `images/health/${Math.min(Math.max(player.health, 0), 20)}.png`;
-        if (health.src !== healthSrc) {
+        const currentHealthSrc = health.src.split('/').pop();
+        if (currentHealthSrc !== healthSrc.split('/').pop()) {
             health.src = healthSrc;
         }
         const armorSrc = `images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png`;
-        if (armor.src !== armorSrc) {
+        const currentArmorSrc = armor.src.split('/').pop();
+        if (currentArmorSrc !== armorSrc.split('/').pop()) {
             armor.src = armorSrc;
         }
     }
