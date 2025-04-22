@@ -21,6 +21,7 @@ repositories {
     mavenContent {
       includeModule("org.incendo", "cloud-sponge")
       includeGroup("xyz.jpenilla")
+      includeGroup("net.kyori") // TODO: adventure-platform-mod 6.4
       snapshotsOnly()
     }
   }
