@@ -1,5 +1,5 @@
 import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon } from "./Markers.js";
-import { P } from '../Squaremap.js';
+import { S } from '../Squaremap.js';
 
 class World {
     /** @type {string} */
@@ -38,31 +38,31 @@ class World {
     }
     tick() {
         // refresh map tile layer
-        if (!P.staticMode && P.tick_count % this.tiles_update_interval === 0) {
-            P.layerControl.updateTileLayer();
+        if (!S.staticMode && S.tick_count % this.tiles_update_interval === 0) {
+            S.layerControl.updateTileLayer();
         }
         // load and draw markers
-        if (!P.staticMode && P.tick_count % this.marker_update_interval === 0) {
+        if (!S.staticMode && S.tick_count % this.marker_update_interval === 0) {
             this.tickMarkers();
         }
-        if (P.staticMode && this.staticNeedsMarkerTick) {
+        if (S.staticMode && this.staticNeedsMarkerTick) {
             this.tickMarkers();
             this.staticNeedsMarkerTick = false;
         }
     }
     tickMarkers() {
-        P.getJSON(`tiles/${this.name}/markers.json`, (json) => {
-            if (this === P.worldList.curWorld) {
+        S.getJSON(`tiles/${this.name}/markers.json`, (json) => {
+            if (this === S.worldList.curWorld) {
                 this.markers(json);
             }
         });
     }
     unload() {
-        P.playerList.clearPlayerMarkers();
+        S.playerList.clearPlayerMarkers();
         const keys = Array.from(this.markerLayers.keys());
         for (let i = 0; i < keys.length; i++) {
             const layer = this.markerLayers.get(keys[i]);
-            P.layerControl.controls.removeLayer(layer);
+            S.layerControl.controls.removeLayer(layer);
             layer.remove();
             this.markerLayers.delete(keys[i]);
         }
@@ -71,7 +71,7 @@ class World {
      * @param callback {(world: World) => void}
      */
     load(callback) {
-        P.getJSON(
+        S.getJSON(
             `tiles/${this.name}/settings.json`,
             /** @param {WorldSettings} json */
             (json) => {
@@ -83,32 +83,32 @@ class World {
                 this.staticNeedsMarkerTick = true;
 
                 // set the scale for our projection calculations
-                P.setScale(this.zoom.max);
+                S.setScale(this.zoom.max);
 
                 // set center and zoom
-                P.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)
+                S.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)
                     .setMinZoom(0) // extra zoom out doesn't work :(
                     .setMaxZoom(this.zoom.max + this.zoom.extra);
 
                 // update page title
-                document.title = P.title
+                document.title = S.title
                     .replace(/{world}/g, this.display_name);
 
                 // setup background
                 document.getElementById("map").style.background = this.getBackground();
 
                 // setup tile layers
-                P.layerControl.setupTileLayers(this);
+                S.layerControl.setupTileLayers(this);
 
                 // force clear player markers
-                P.playerList.clearPlayerMarkers();
+                S.playerList.clearPlayerMarkers();
 
                 // tick now, reset counter
-                P.tick_count = 0;
-                P.tick();
+                S.tick_count = 0;
+                S.tick();
 
                 // force clear player markers
-                P.playerList.clearPlayerMarkers();
+                S.playerList.clearPlayerMarkers();
 
                 if (callback != null) {
                     callback(this);
@@ -141,7 +141,7 @@ class World {
                     continue; // skip
                 }
                 // clear existing layer to rebuild
-                P.layerControl.removeOverlay(layer);
+                S.layerControl.removeOverlay(layer);
                 // TODO
                 // implement marker tracker instead of clearing
                 // to reduce possible client side lag
@@ -157,7 +157,7 @@ class World {
 
             // setup the layer control
             if (entry.control === true) {
-                P.layerControl.addOverlay(entry.name, layer, entry.hide);
+                S.layerControl.addOverlay(entry.name, layer, entry.hide);
             }
 
             // setup the markers

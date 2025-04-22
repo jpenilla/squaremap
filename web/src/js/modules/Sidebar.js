@@ -1,6 +1,6 @@
 import { Pin } from "./util/Pin.js";
 import { Fieldset } from "./util/Fieldset.js";
-import { P } from './Squaremap.js';
+import { S } from './Squaremap.js';
 
 class Sidebar {
     /** @type {HTMLDivElement} */
@@ -19,13 +19,13 @@ class Sidebar {
      * @param {boolean} show
      */
     constructor(json, show) {
-        this.sidebar = P.createElement("div", "sidebar", this);
+        this.sidebar = S.createElement("div", "sidebar", this);
         this.showSidebar = show;
         if (!show) {
             this.sidebar.style.display = "none";
         }
         this.sidebar.addEventListener("click", (e) => {
-            P.playerList.followPlayerMarker(null);
+            S.playerList.followPlayerMarker(null);
             e.stopPropagation();
         });
         document.body.appendChild(this.sidebar);

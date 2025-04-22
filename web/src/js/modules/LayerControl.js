@@ -1,4 +1,4 @@
-import { P } from './Squaremap.js';
+import { S } from './Squaremap.js';
 import { SquaremapTileLayer } from './SquaremapTileLayer.js';
 
 class LayerControl {
@@ -31,7 +31,7 @@ class LayerControl {
                 return a.order - b.order;
             }
         })
-        .addTo(P.map);
+        .addTo(S.map);
     }
     /**
      * @param name {string}
@@ -41,7 +41,7 @@ class LayerControl {
     addOverlay(name, layer, hide) {
         this.controls.addOverlay(layer, name);
         if (this.shouldHide(layer, hide) !== true) {
-            layer.addTo(P.map);
+            layer.addTo(S.map);
         }
     }
     /**
@@ -85,10 +85,10 @@ class LayerControl {
         // setup the map tile layers
         // we need 2 layers to swap between for seamless refreshing
         if (this.tileLayer1 != null) {
-            P.map.removeLayer(this.tileLayer1);
+            S.map.removeLayer(this.tileLayer1);
         }
         if (this.tileLayer2 != null) {
-            P.map.removeLayer(this.tileLayer2);
+            S.map.removeLayer(this.tileLayer2);
         }
         this.tileLayer1 = this.createTileLayer(world);
         this.tileLayer2 = this.createTileLayer(world);
@@ -113,7 +113,7 @@ class LayerControl {
             minNativeZoom: 0,
             maxNativeZoom: world.zoom.max,
             errorTileUrl: 'images/clear.png'
-        }).addTo(P.map)
+        }).addTo(S.map)
         .addEventListener("load", () => {
             // when all tiles are loaded, switch to this layer
             this.switchTileLayer();

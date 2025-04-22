@@ -1,4 +1,4 @@
-import { P } from './Squaremap.js';
+import { S } from './Squaremap.js';
 
 class UILink {
     /**
@@ -16,7 +16,7 @@ class UILink {
                 this._link = link;
                 this._link.innerHTML = `<img src='images/clear.png'/>`;
                 this._link.onclick = async () => {
-                    const url = P.worldList.curWorld == null ? "" : P.getUrlFromView();
+                    const url = S.worldList.curWorld == null ? "" : S.getUrlFromView();
                     window.history.replaceState(null, "", url);
                     await navigator.clipboard.writeText(window.location.href);
                 };
@@ -31,7 +31,7 @@ class UILink {
         if (!json.enabled) {
             this.link._link.style.display = "none";
         }
-        P.map.addControl(this.link);
+        S.map.addControl(this.link);
     }
 }
 

@@ -1,5 +1,5 @@
 import { World } from "./util/World.js";
-import { P } from './Squaremap.js';
+import { S } from './Squaremap.js';
 
 class WorldList {
     /** @type {Map<string, World>} */
@@ -24,16 +24,16 @@ class WorldList {
 
         // set up world list link elements
         for (const [name, world] of this.worlds) {
-            const link = P.createElement("a", name, this);
+            const link = S.createElement("a", name, this);
             link.onclick = function () {
                 const curWorld = this.parent.curWorld;
                 if (curWorld.name === name) {
-                    P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
+                    S.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
                     return;
                 }
-                P.playerList.clearPlayerMarkers();
+                S.playerList.clearPlayerMarkers();
                 this.parent.loadWorld(name, (world) => {
-                    P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
+                    S.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
                 });
             };
 
@@ -41,9 +41,9 @@ class WorldList {
             img.src = this.getIcon(world);
 
             link.appendChild(img);
-            link.appendChild(P.createTextElement("span", world.display_name));
+            link.appendChild(S.createTextElement("span", world.display_name));
 
-            P.sidebar.worlds.element.appendChild(link);
+            S.sidebar.worlds.element.appendChild(link);
         }
     }
     /**
@@ -70,7 +70,7 @@ class WorldList {
      */
     loadInitialWorld(json, callback) {
         let updateUrl = false
-        let name = P.getUrlParam("world", null)
+        let name = S.getUrlParam("world", null)
         if (name != null) {
             const world = this.worlds.get(name);
             if (world == null) {
@@ -84,7 +84,7 @@ class WorldList {
         this.loadWorld(name, (a) => {
             callback(a)
             if (updateUrl) {
-                P.updateBrowserUrl(`?world=${this.curWorld.name}`);
+                S.updateBrowserUrl(`?world=${this.curWorld.name}`);
             }
         })
     }
@@ -116,7 +116,7 @@ class WorldList {
         }
         this.loadWorld(name, () => {
             callback();
-            P.updateBrowserUrl(`?world=${this.curWorld.name}`);
+            S.updateBrowserUrl(`?world=${this.curWorld.name}`);
         });
     }
 }

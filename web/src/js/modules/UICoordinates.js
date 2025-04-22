@@ -1,4 +1,4 @@
-import { P } from './Squaremap.js';
+import { S } from './Squaremap.js';
 
 class UICoordinates {
     /**
@@ -32,10 +32,10 @@ class UICoordinates {
         this.showCoordinates = show;
         this.html = json.html == null ? "undefined" : json.html;
         this.coords = new Coords();
-        P.map.addControl(this.coords)
+        S.map.addControl(this.coords)
             .addEventListener('mousemove', (event) => {
-                if (P.worldList.curWorld != null) {
-                    this.coords.update(this.html, P.toPoint(event.latlng));
+                if (S.worldList.curWorld != null) {
+                    this.coords.update(this.html, S.toPoint(event.latlng));
                 }
             });
         if (!json.enabled) {

@@ -1,4 +1,4 @@
-import { P } from '../Squaremap.js';
+import { S } from '../Squaremap.js';
 
 class Player {
     /** @type {string} */
@@ -41,7 +41,7 @@ class Player {
             pane: "nameplate",
             content: this.makeNameplateContent(json),
         });
-        this.marker = L.marker(P.toLatLng(json.x, json.z), {
+        this.marker = L.marker(S.toLatLng(json.x, json.z), {
             icon: L.icon({
                 iconUrl: 'images/icon/player.png',
                 iconSize: [17, 16],
@@ -50,13 +50,13 @@ class Player {
             }),
             rotationAngle: (180 + json.yaw)
         });
-        if (P.worldList.curWorld.player_tracker.nameplates.enabled) {
+        if (S.worldList.curWorld.player_tracker.nameplates.enabled) {
             this.updateNameplate(json);
             this.marker.bindTooltip(this.tooltip);
         }
     }
     getHeadUrl() {
-        return P.worldList.curWorld.player_tracker.nameplates.heads_url
+        return S.worldList.curWorld.player_tracker.nameplates.heads_url
             .replace(/{uuid}/g, this.uuid)
             .replace(/{name}/g, this.name);
     }
@@ -65,13 +65,13 @@ class Player {
         let headImg = "";
         let armorImg = "";
         let healthImg = "";
-        if (P.worldList.curWorld.player_tracker.nameplates.show_heads) {
+        if (S.worldList.curWorld.player_tracker.nameplates.show_heads) {
             headImg = `<img src='${this.getHeadUrl()}' class="head" />`;
         }
-        if (P.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
+        if (S.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
             armorImg = `<img src="images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png" class="armor" />`;
         }
-        if (P.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
+        if (S.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
             healthImg = `<img src="images/health/${Math.min(Math.max(player.health, 0), 20)}.png" class="health" />`;
         }
         ul.innerHTML = `<li>${headImg}</li><li><span class="display-name">${this.displayName}</span>${healthImg}${armorImg}</li>`;
@@ -82,17 +82,17 @@ class Player {
     }
     updateNameplate(player) {
         const head = this.tooltip.getContent().querySelectorAll(".head")[0];
-        if (!head && P.worldList.curWorld.player_tracker.nameplates.show_heads) {
+        if (!head && S.worldList.curWorld.player_tracker.nameplates.show_heads) {
             this.setNameplateContent(player);
             return;
         }
         const armor = this.tooltip.getContent().querySelectorAll(".armor")[0];
-        if (!armor && P.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
+        if (!armor && S.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
             this.setNameplateContent(player);
             return;
         }
         const health = this.tooltip.getContent().querySelectorAll(".health")[0];
-        if (!health && P.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
+        if (!health && S.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
             this.setNameplateContent(player);
             return;
         }
@@ -132,11 +132,11 @@ class Player {
         const link = document.getElementById(player.uuid);
         const img = link.getElementsByTagName("img")[0];
         const span = link.getElementsByTagName("span")[0];
-        if (P.worldList.curWorld.name == player.world) {
-            if (P.worldList.curWorld.player_tracker.enabled) {
+        if (S.worldList.curWorld.name == player.world) {
+            if (S.worldList.curWorld.player_tracker.enabled) {
                 this.addMarker();
             }
-            const latlng = P.toLatLng(player.x, player.z);
+            const latlng = S.toLatLng(player.x, player.z);
             if (!this.marker.getLatLng().equals(latlng)) {
                 this.marker.setLatLng(latlng);
             }
@@ -155,14 +155,14 @@ class Player {
     }
     removeMarker() {
         this.marker.remove();
-        P.playerList.markers.delete(this.uuid);
-        P.map.removeLayer(this.marker);
-        P.layerControl.playersLayer.removeLayer(this.marker);
+        S.playerList.markers.delete(this.uuid);
+        S.map.removeLayer(this.marker);
+        S.layerControl.playersLayer.removeLayer(this.marker);
     }
     addMarker() {
-        if (!P.playerList.markers.has(this.uuid)) {
-            this.marker.addTo(P.layerControl.playersLayer);
-            P.playerList.markers.set(this.uuid, this.marker);
+        if (!S.playerList.markers.has(this.uuid)) {
+            this.marker.addTo(S.layerControl.playersLayer);
+            S.playerList.markers.set(this.uuid, this.marker);
         }
     }
 }

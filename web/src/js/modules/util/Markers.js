@@ -1,4 +1,4 @@
-import { P } from '../Squaremap.js';
+import { S } from '../Squaremap.js';
 
 class Marker {
     /** @type {L.Marker} */
@@ -27,9 +27,9 @@ class Marker {
                     L.popup({
                         direction: this.opts.pop("tooltip_direction", "top")
                     })
-                    .setLatLng(P.toLatLng(P.coordinates.coords.x, P.coordinates.coords.z))
+                    .setLatLng(S.toLatLng(S.coordinates.coords.x, S.coordinates.coords.z))
                     .setContent(this.popup)
-                    .openOn(P.map);
+                    .openOn(S.map);
                 });
             } else {
                 this.marker.bindPopup(() => this.popup, {
@@ -70,7 +70,7 @@ class Rectangle extends Marker {
     constructor(opts) {
         super(opts);
         const points = this.opts.pop("points");
-        this.marker = L.rectangle([P.toLatLng(points[0].x, points[0].z), P.toLatLng(points[1].x, points[1].z)]);
+        this.marker = L.rectangle([S.toLatLng(points[0].x, points[0].z), S.toLatLng(points[1].x, points[1].z)]);
         super.init();
     }
 }
@@ -84,11 +84,11 @@ class PolyLine extends Marker {
             if (Symbol.iterator in Object(points[i])) {
                 const inner = [];
                 for (let j = 0; j < points[i].length; j++) {
-                    inner.push(P.toLatLng(points[i][j].x, points[i][j].z));
+                    inner.push(S.toLatLng(points[i][j].x, points[i][j].z));
                 }
                 outer.push(inner);
             } else {
-                outer.push(P.toLatLng(points[i].x, points[i].z));
+                outer.push(S.toLatLng(points[i].x, points[i].z));
             }
         }
         this.marker = L.polyline(outer);
@@ -108,16 +108,16 @@ class Polygon extends Marker {
                     if (Symbol.iterator in Object(points[i][j])) {
                         const inner2 = [];
                         for (let k = 0; k < points[i][j].length; k++) {
-                            inner2.push(P.toLatLng(points[i][j][k].x, points[i][j][k].z));
+                            inner2.push(S.toLatLng(points[i][j][k].x, points[i][j][k].z));
                         }
                         inner.push(inner2);
                     } else {
-                        inner.push(P.toLatLng(points[i][j].x, points[i][j].z));
+                        inner.push(S.toLatLng(points[i][j].x, points[i][j].z));
                     }
                 }
                 outer.push(inner);
             } else {
-                outer.push(P.toLatLng(points[i].x, points[i].z));
+                outer.push(S.toLatLng(points[i].x, points[i].z));
             }
         }
         this.marker = L.polygon(outer);
@@ -130,8 +130,8 @@ class Circle extends Marker {
         super(opts);
         const center = this.opts.pop("center");
         const radius = this.opts.pop("radius");
-        this.marker = L.circle(P.toLatLng(center.x, center.z), {
-            radius: P.pixelsToMeters(radius)
+        this.marker = L.circle(S.toLatLng(center.x, center.z), {
+            radius: S.pixelsToMeters(radius)
         });
         super.init();
     }
@@ -144,7 +144,7 @@ class Ellipse extends Marker {
         const radiusX = this.opts.pop("radiusX");
         const radiusZ = this.opts.pop("radiusZ");
         const tilt = 0;
-        this.marker = L.ellipse(P.toLatLng(center.x, center.z), [radiusX, radiusZ], tilt);
+        this.marker = L.ellipse(S.toLatLng(center.x, center.z), [radiusX, radiusZ], tilt);
         super.init();
     }
 }
@@ -156,7 +156,7 @@ class Icon extends Marker {
         const size = this.opts.pop("size");
         const anchor = this.opts.pop("anchor");
         const tooltipAnchor = this.opts.pop("tooltip_anchor", L.point(0, -size.z / 2));
-        this.marker = L.marker(P.toLatLng(point.x, point.z), {
+        this.marker = L.marker(S.toLatLng(point.x, point.z), {
             icon: L.icon({
                 iconUrl: `images/icon/registered/${opts.pop("icon")}.png`,
                 iconSize: [size.x, size.z],

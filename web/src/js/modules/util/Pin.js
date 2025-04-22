@@ -1,4 +1,4 @@
-import { P } from '../Squaremap.js';
+import { S } from '../Squaremap.js';
 
 class Pin {
     /** @type {boolean} */
@@ -12,7 +12,7 @@ class Pin {
     constructor(def) {
         this.pinned = def;
 
-        this.element = P.createElement("img", "pin", this);
+        this.element = S.createElement("img", "pin", this);
 
         this.element.onclick = () => this.toggle();
 

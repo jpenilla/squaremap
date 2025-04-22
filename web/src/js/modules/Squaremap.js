@@ -188,9 +188,7 @@ class SquaremapMap {
     }
 }
 
-
-export const P = new SquaremapMap();
-
+export const S = new SquaremapMap();
 
 // https://stackoverflow.com/a/3955096
 Array.prototype.remove = function() {

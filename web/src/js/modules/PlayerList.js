@@ -1,5 +1,5 @@
 import { Player } from "./util/Player.js";
-import { P } from './Squaremap.js';
+import { S } from './Squaremap.js';
 
 class PlayerList {
     /** @type {Map<string, Player>} */
@@ -25,7 +25,7 @@ class PlayerList {
         this.following = null;
         this.firstTick = true;
         this.label = json.player_list_label;
-        P.map.createPane("nameplate").style.zIndex = 1000;
+        S.map.createPane("nameplate").style.zIndex = 1000;
     }
     tick() {
         const update = () => {
@@ -33,12 +33,12 @@ class PlayerList {
             const title = `${this.label}`
                 .replace(/{cur}/g, this.jsonCache.players.length)
                 .replace(/{max}/g, this.jsonCache.max == null ? "???" : this.jsonCache.max)
-            if (P.sidebar.players.legend.innerHTML !== title) {
-                P.sidebar.players.legend.innerHTML = title;
+            if (S.sidebar.players.legend.innerHTML !== title) {
+                S.sidebar.players.legend.innerHTML = title;
             }
         }
         const fetchPlayers = (callback) => {
-            P.getJSON("tiles/players.json",
+            S.getJSON("tiles/players.json",
                 /** @param {PlayersData} json */
                 (json) => {
                     this.jsonCache = json;
@@ -47,8 +47,8 @@ class PlayerList {
             );
         }
 
-        if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval === 0) {
-            if (P.staticMode) {
+        if (S.tick_count % S.worldList.curWorld.player_tracker.update_interval === 0) {
+            if (S.staticMode) {
                 if (this.jsonCache === null) {
                     fetchPlayers(() => update());
                 } else {
@@ -64,11 +64,11 @@ class PlayerList {
      */
     showPlayer(uuid) {
         const player = this.players.get(uuid);
-        if (!P.worldList.worlds.has(player.world)) {
+        if (!S.worldList.worlds.has(player.world)) {
             return false;
         }
-        P.worldList.showWorld(player.world, () => {
-            P.map.panTo(P.toLatLng(player.x, player.z));
+        S.worldList.showWorld(player.world, () => {
+            S.map.panTo(S.toLatLng(player.x, player.z));
         });
         return true;
     }
@@ -83,7 +83,7 @@ class PlayerList {
         const span = document.createElement("span");
         span.innerHTML = player.displayName
 
-        const link = P.createElement("a", player.uuid, this);
+        const link = S.createElement("a", player.uuid, this);
         link.onclick = function (e) {
             if (this.parent.showPlayer(this.id)) {
                 this.parent.followPlayerMarker(this.id);
@@ -92,7 +92,7 @@ class PlayerList {
         };
         link.appendChild(head);
         link.appendChild(span);
-        const fieldset = P.sidebar.players.element;
+        const fieldset = S.sidebar.players.element;
         fieldset.appendChild(link);
         Array.from(fieldset.getElementsByTagName("a"))
             .sort((a, b) => {
@@ -148,7 +148,7 @@ class PlayerList {
         }
 
         if (needsSort) {
-            const fieldset = P.sidebar.players.element;
+            const fieldset = S.sidebar.players.element;
             Array.from(fieldset.getElementsByTagName("a"))
                 .sort((a, b) => {
                     return plain(a.getElementsByTagName("span")[0])
@@ -162,7 +162,7 @@ class PlayerList {
             this.firstTick = false;
 
             // follow uuid from url
-            const follow = P.getUrlParam("uuid", null);
+            const follow = S.getUrlParam("uuid", null);
             if (follow != null && this.players.get(follow) != null) {
                 this.followPlayerMarker(follow);
             }
@@ -171,13 +171,13 @@ class PlayerList {
         // follow highlighted player
         if (this.following != null) {
             const player = this.players.get(this.following);
-            if (player != null && P.worldList.curWorld != null) {
-                if (player.world !== P.worldList.curWorld.name) {
-                    P.worldList.showWorld(player.world, () => {
-                        P.map.panTo(P.toLatLng(player.x, player.z));
+            if (player != null && S.worldList.curWorld != null) {
+                if (player.world !== S.worldList.curWorld.name) {
+                    S.worldList.showWorld(player.world, () => {
+                        S.map.panTo(S.toLatLng(player.x, player.z));
                     });
                 } else {
-                    P.map.panTo(P.toLatLng(player.x, player.z));
+                    S.map.panTo(S.toLatLng(player.x, player.z));
                 }
             }
         }
@@ -189,7 +189,7 @@ class PlayerList {
             player.removeMarker();
         }
         this.markers.clear();
-        //P.layerControl.playersLayer.clearLayers();
+        // S.layerControl.playersLayer.clearLayers();
     }
     /**
      * @param {string} uuid
