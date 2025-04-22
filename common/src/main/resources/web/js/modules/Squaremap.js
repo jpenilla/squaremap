@@ -133,8 +133,12 @@ class SquaremapMap {
         const zoom = this.map.getZoom();
         const x = Math.floor(center.x);
         const z = Math.floor(center.y);
-        const following = this.playerList.following ? `&uuid=${this.playerList.following}` : '';
-        let link = `?world=${this.worldList.curWorld.name}&zoom=${zoom}&x=${x}&z=${z}${following}`;
+        let link;
+        if (this.playerList.following) {
+            link = `?uuid=${this.playerList.following}&zoom=${zoom}`;
+        } else {
+            link = `?world=${this.worldList.curWorld.name}&zoom=${zoom}&x=${x}&z=${z}`;
+        }
         if (!this.showControls) {
             link += "&show_controls=false"
         }
