@@ -6,6 +6,29 @@ import { UILink } from "./UILink.js";
 import { LayerControl } from "./LayerControl.js";
 
 class SquaremapMap {
+    /** @type {L.Map} */
+    map;
+    /** @type {LayerControl} */
+    layerControl;
+    /** @type {boolean} */
+    staticMode;
+    /** @type {string} */
+    title;
+    /** @type {Sidebar} */
+    sidebar;
+    /** @type {PlayerList} */
+    playerList;
+    /** @type {WorldList} */
+    worldList;
+    /** @type {UICoordinates} */
+    coordinates;
+    /** @type {UILink} */
+    uiLink;
+    /** @type {number} */
+    tick_count;
+    /** @type {boolean} */
+    showControls;
+
     constructor() {
         this.map = L.map("map", {
             crs: L.CRS.Simple,
@@ -47,32 +70,35 @@ class SquaremapMap {
         this.worldList.curWorld.tick();
     }
     init() {
-        this.getJSON("tiles/settings.json", (json) => {
-            this.layerControl.init();
+        this.getJSON(
+            "tiles/settings.json",
+            /** @param {Settings} json */
+            (json) => {
+                this.layerControl.init();
 
-            this.staticMode = json.static || false;
-            this.title = json.ui.title;
-            this.sidebar = new Sidebar(json.ui.sidebar, this.getUrlParam("show_sidebar", "true") === "true");
-            this.playerList = new PlayerList(json.ui.sidebar);
-            this.worldList = new WorldList(json.worlds);
-            this.coordinates = new UICoordinates(json.ui.coordinates, this.getUrlParam("show_coordinates", "true") === "true");
-            this.uiLink = new UILink(json.ui.link, this.getUrlParam("show_link_button", "true") === "true");
+                this.staticMode = json.static || false;
+                this.title = json.ui.title;
+                this.sidebar = new Sidebar(json.ui.sidebar, this.getUrlParam("show_sidebar", "true") === "true");
+                this.playerList = new PlayerList(json.ui.sidebar);
+                this.worldList = new WorldList(json.worlds);
+                this.coordinates = new UICoordinates(json.ui.coordinates, this.getUrlParam("show_coordinates", "true") === "true");
+                this.uiLink = new UILink(json.ui.link, this.getUrlParam("show_link_button", "true") === "true");
 
-            this.showControls = this.getUrlParam("show_controls", "true") === "true"
-            if (!this.showControls) {
-                let controlLayers = document.getElementsByClassName('leaflet-top leaflet-left');
-                controlLayers[0].style.display = "none";
+                this.showControls = this.getUrlParam("show_controls", "true") === "true"
+                if (!this.showControls) {
+                    let controlLayers = document.getElementsByClassName('leaflet-top leaflet-left');
+                    controlLayers[0].style.display = "none";
+                }
+
+                this.worldList.loadInitialWorld(json, (world) => {
+                    this.loop();
+                    this.centerOn(
+                        this.getUrlParam("x", world.spawn.x),
+                        this.getUrlParam("z", world.spawn.z),
+                        this.getUrlParam("zoom", world.zoom.def));
+                });
             }
-
-            this.worldList.loadInitialWorld(json, (world) => {
-                this.loop();
-                this.centerOn(
-                    this.getUrlParam("x", world.spawn.x),
-                    this.getUrlParam("z", world.spawn.z),
-                    this.getUrlParam("zoom", world.zoom.def));
-            });
-
-        });
+        );
     }
     centerOn(x, z, zoom) {
         this.map.setView(this.toLatLng(x, z), zoom);
@@ -108,6 +134,10 @@ class SquaremapMap {
         element.appendChild(document.createTextNode(text));
         return element;
     }
+    /**
+     * @param {string} url
+     * @param {(json: any) => void} fn
+     */
     getJSON(url, fn) {
         fetch(url, {cache: "no-store"})
             .then(async res => {

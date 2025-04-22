@@ -6,6 +6,7 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "allowJs": true,
+    "types": ["leaflet"],
 
     // Bundler mode
     "moduleResolution": "bundler",

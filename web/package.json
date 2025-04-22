@@ -1,6 +1,7 @@
 {
   "name": "web",
   "devDependencies": {
+    "@types/leaflet": "^1.9.17",
     "leaflet": "^1.9.4"
   },
   "private": true,
