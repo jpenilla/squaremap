@@ -8,7 +8,7 @@ class World {
     display_name;
     /** @type {Map<string, L.LayerGroup>} */
     markerLayers;
-    /** @type {WorldSettings.PlayerTracker} */
+    /** @type {WorldSettings_PlayerTracker} */
     player_tracker;
     /** @type {number} */
     marker_update_interval;
@@ -16,9 +16,13 @@ class World {
     tiles_update_interval;
     /** @type {boolean} */
     staticNeedsMarkerTick;
+    /** @type {WorldSettings_Zoom} */
+    zoom;
+    /** @type {WorldSettings_Spawn} */
+    spawn;
 
     /**
-     * @param json {Settings.World}
+     * @param json {Settings_World}
      */
     constructor(json) {
         this.name = json.name;

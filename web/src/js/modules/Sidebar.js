@@ -14,6 +14,10 @@ class Sidebar {
     /** @type {Fieldset} */
     players;
 
+    /**
+     * @param {Settings_UI_Sidebar} json
+     * @param {boolean} show
+     */
     constructor(json, show) {
         this.sidebar = P.createElement("div", "sidebar", this);
         this.showSidebar = show;

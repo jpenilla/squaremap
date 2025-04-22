@@ -2,7 +2,7 @@ import { P } from './Squaremap.js';
 
 class UICoordinates {
     /**
-     * @param {Settings.UI.Coordinates} json
+     * @param {Settings_UI_Coordinates} json
      * @param {boolean} show
      */
     constructor(json, show) {

@@ -8,7 +8,7 @@ class WorldList {
     curWorld;
 
     /**
-     * @param json {Settings.World[]}
+     * @param json {Settings_World[]}
      */
     constructor(json) {
         // get worlds from json
@@ -27,7 +27,7 @@ class WorldList {
             const link = P.createElement("a", name, this);
             link.onclick = function () {
                 const curWorld = this.parent.curWorld;
-                if (curWorld.name == name) {
+                if (curWorld.name === name) {
                     P.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
                     return;
                 }

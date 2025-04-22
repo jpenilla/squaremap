@@ -2,7 +2,7 @@ import { P } from './Squaremap.js';
 
 class UILink {
     /**
-     * @param {Settings.UI.Link} json
+     * @param {Settings_UI_Link} json
      * @param {boolean} show
      */
     constructor(json, show) {

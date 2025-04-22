@@ -14,6 +14,9 @@ class PlayerList {
     label;
     jsonCache;
 
+    /**
+     * @param {Settings_UI_Sidebar} json
+     */
     constructor(json) {
         this.players = new Map();
         this.markers = new Map();

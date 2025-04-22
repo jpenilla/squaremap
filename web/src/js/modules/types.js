@@ -1,12 +1,12 @@
 /**
  * @typedef {Object} Settings
  * @property {boolean} static
- * @property {Settings.World[]} worlds
- * @property {Settings.UI} ui
+ * @property {Settings_World[]} worlds
+ * @property {Settings_UI} ui
  */
 
 /**
- * @typedef {Object} Settings.World
+ * @typedef {Object} Settings_World
  * @property {string} name
  * @property {string} display_name
  * @property {string} icon
@@ -15,39 +15,39 @@
  */
 
 /**
- * @typedef {Object} Settings.UI.Coordinates
+ * @typedef {Object} Settings_UI_Coordinates
  * @property {boolean} enabled
  * @property {string} html
  */
 
 /**
- * @typedef {Object} Settings.UI.Link
+ * @typedef {Object} Settings_UI_Link
  * @property {boolean} enabled
  */
 
 /**
- * @typedef {Object} Settings.UI.Sidebar
+ * @typedef {Object} Settings_UI_Sidebar
  * @property {string} pinned
  * @property {string} player_list_label
  * @property {string} world_list_label
  */
 
 /**
- * @typedef {Object} Settings.UI
+ * @typedef {Object} Settings_UI
  * @property {string} title
- * @property {Settings.UI.Coordinates} coordinates
- * @property {Settings.UI.Link} link
- * @property {Settings.UI.Sidebar} sidebar
+ * @property {Settings_UI_Coordinates} coordinates
+ * @property {Settings_UI_Link} link
+ * @property {Settings_UI_Sidebar} sidebar
  */
 
 /**
- * @typedef {Object} WorldSettings.Spawn
+ * @typedef {Object} WorldSettings_Spawn
  * @property {number} x
  * @property {number} z
  */
 
 /**
- * @typedef {Object} WorldSettings.PlayerTracker.Nameplates
+ * @typedef {Object} WorldSettings_PlayerTracker_Nameplates
  * @property {boolean} enabled
  * @property {boolean} show_heads
  * @property {string} heads_url
@@ -56,7 +56,7 @@
  */
 
 /**
- * @typedef {Object} WorldSettings.PlayerTracker
+ * @typedef {Object} WorldSettings_PlayerTracker
  * @property {boolean} enabled
  * @property {number} update_interval
  * @property {string} label
@@ -64,11 +64,11 @@
  * @property {boolean} default_hidden
  * @property {number} priority
  * @property {number} z_index
- * @property {WorldSettings.PlayerTracker.Nameplates} nameplates
+ * @property {WorldSettings_PlayerTracker_Nameplates} nameplates
  */
 
 /**
- * @typedef {Object} WorldSettings.Zoom
+ * @typedef {Object} WorldSettings_Zoom
  * @property {number} max
  * @property {number} def
  * @property {number} extra
@@ -76,9 +76,9 @@
 
 /**
  * @typedef {Object} WorldSettings
- * @property {WorldSettings.Spawn} spawn
- * @property {WorldSettings.PlayerTracker} player_tracker
- * @property {WorldSettings.Zoom} zoom
+ * @property {WorldSettings_Spawn} spawn
+ * @property {WorldSettings_PlayerTracker} player_tracker
+ * @property {WorldSettings_Zoom} zoom
  * @property {number} marker_update_interval
  * @property {number} tiles_update_interval
  */
