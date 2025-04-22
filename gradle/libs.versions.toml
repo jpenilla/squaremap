@@ -7,7 +7,7 @@ javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = 
 
 [versions]
 minecraft = "1.21.5"
-checkerQual = "3.48.0"
+checkerQual = "3.49.2"
 cloud = "2.0.0"
 cloudMinecraft = "2.0.0-beta.10"
 cloudProcessors = "1.0.0-beta.3"
