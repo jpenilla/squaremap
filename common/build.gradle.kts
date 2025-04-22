@@ -10,6 +10,12 @@ neoForge {
   accessTransformers.from(layout.projectDirectory.file("src/main/resources/squaremap-common-at.cfg"))
 }
 
+tasks.processResources {
+  from(file("../web/src")) {
+    into("web")
+  }
+}
+
 dependencies {
   api(projects.squaremapApi)
   api(libs.guice) {

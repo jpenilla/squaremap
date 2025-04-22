@@ -1,0 +1,8 @@
+{
+  "name": "web",
+  "devDependencies": {
+    "leaflet": "^1.9.4"
+  },
+  "private": true,
+  "type": "module"
+}
