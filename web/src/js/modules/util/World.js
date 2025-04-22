@@ -1,5 +1,5 @@
 import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon } from "./Markers.js";
-import { S } from '../Squaremap.js';
+import { S } from "../Squaremap.js";
 
 class World {
     /** @type {string} */
@@ -91,8 +91,7 @@ class World {
                     .setMaxZoom(this.zoom.max + this.zoom.extra);
 
                 // update page title
-                document.title = S.title
-                    .replace(/{world}/g, this.display_name);
+                document.title = S.title.replace(/{world}/g, this.display_name);
 
                 // setup background
                 document.getElementById("map").style.background = this.getBackground();
@@ -113,7 +112,7 @@ class World {
                 if (callback != null) {
                     callback(this);
                 }
-            }
+            },
         );
     }
     getBackground() {
@@ -164,13 +163,25 @@ class World {
             for (const shape in entry.markers) {
                 let marker;
                 const opts = new Options(entry.markers[shape]);
-                switch(opts.pop("type")) {
-                    case "rectangle": marker = new Rectangle(opts); break;
-                    case "polyline": marker = new PolyLine(opts); break;
-                    case "polygon": marker = new Polygon(opts); break;
-                    case "circle": marker = new Circle(opts); break;
-                    case "ellipse": marker = new Ellipse(opts); break;
-                    case "icon": marker = new Icon(opts); break;
+                switch (opts.pop("type")) {
+                    case "rectangle":
+                        marker = new Rectangle(opts);
+                        break;
+                    case "polyline":
+                        marker = new PolyLine(opts);
+                        break;
+                    case "polygon":
+                        marker = new Polygon(opts);
+                        break;
+                    case "circle":
+                        marker = new Circle(opts);
+                        break;
+                    case "ellipse":
+                        marker = new Ellipse(opts);
+                        break;
+                    case "icon":
+                        marker = new Icon(opts);
+                        break;
                 }
                 if (marker != null) {
                     marker.addTo(layer);

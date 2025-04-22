@@ -1,51 +1,56 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title></title>
-    <meta charset="UTF-8" />
-    <meta name="description" content="Blazing fast live mapping solution for Minecraft servers">
-    <meta property="og:url" content="https://github.com/jpenilla/squaremap">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="squaremap">
-    <meta property="og:description" content="Blazing fast live mapping solution for Minecraft servers">
-    <!--<meta property="og:image" content="https://github.com/pl3xgaming/Pl3xMap/raw/master/plugin/src/main/resources/web/images/og.png">-->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="github.com/jpenilla/squaremap">
-    <meta property="twitter:url" content="https://github.com/jpenilla/squaremap">
-    <meta name="twitter:title" content="squaremap">
-    <meta name="twitter:description" content="Blazing fast live mapping solution for Minecraft servers">
-    <!--<meta name="twitter:image" content="https://github.com/pl3xgaming/Pl3xMap/raw/master/plugin/src/main/resources/web/images/og.png">-->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#222222">
-    <meta name="keywords" content="minecraft, map, dynamic, squaremap" />
-    <meta name="description" content="Minecraft Dynamic Map" />
-    <link rel="shortcut icon" href="favicon.ico" sizes="256x256" crossOrigin="anonymous" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
-      crossOrigin="anonymous" />
-    <link rel="stylesheet" href="css/styles.css" crossOrigin="anonymous" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg=="
-      crossOrigin="anonymous"></script>
-    <script src="js/addons/RotateMarker.js" crossOrigin="anonymous"></script>
-    <script src="js/addons/Ellipse.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/SquaremapTileLayer.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/PlayerList.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/Sidebar.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/UICoordinates.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/UILink.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/WorldList.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/util/Fieldset.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/util/Markers.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/util/Pin.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/util/Player.js" crossOrigin="anonymous"></script>
-    <script type="module" src="js/modules/util/World.js" crossOrigin="anonymous"></script>
-  </head>
-  <body>
-    <div id="map"></div>
-    <script type="module" src="js/modules/Squaremap.js" crossOrigin="anonymous"></script>
-  </body>
+    <head>
+        <title></title>
+        <meta charset="UTF-8" />
+        <meta name="description" content="Blazing fast live mapping solution for Minecraft servers" />
+        <meta property="og:url" content="https://github.com/jpenilla/squaremap" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="squaremap" />
+        <meta property="og:description" content="Blazing fast live mapping solution for Minecraft servers" />
+        <!--<meta property="og:image" content="https://github.com/pl3xgaming/Pl3xMap/raw/master/plugin/src/main/resources/web/images/og.png">-->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="twitter:domain" content="github.com/jpenilla/squaremap" />
+        <meta property="twitter:url" content="https://github.com/jpenilla/squaremap" />
+        <meta name="twitter:title" content="squaremap" />
+        <meta name="twitter:description" content="Blazing fast live mapping solution for Minecraft servers" />
+        <!--<meta name="twitter:image" content="https://github.com/pl3xgaming/Pl3xMap/raw/master/plugin/src/main/resources/web/images/og.png">-->
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="theme-color" content="#222222" />
+        <meta name="keywords" content="minecraft, map, dynamic, squaremap" />
+        <meta name="description" content="Minecraft Dynamic Map" />
+        <link rel="shortcut icon" href="favicon.ico" sizes="256x256" crossorigin="anonymous" />
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="css/styles.css" crossorigin="anonymous" />
+        <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg=="
+            crossorigin="anonymous"
+        ></script>
+        <script src="js/addons/RotateMarker.js" crossorigin="anonymous"></script>
+        <script src="js/addons/Ellipse.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/SquaremapTileLayer.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/PlayerList.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/Sidebar.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/UICoordinates.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/UILink.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/WorldList.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/util/Fieldset.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/util/Markers.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/util/Pin.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/util/Player.js" crossorigin="anonymous"></script>
+        <script type="module" src="js/modules/util/World.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script type="module" src="js/modules/Squaremap.js" crossorigin="anonymous"></script>
+    </body>
 </html>

@@ -14,6 +14,12 @@ jobs:
     steps:
       - name: "checkout git repository"
         uses: actions/checkout@v4
+      - name: "setup bun"
+        uses: oven-sh/setup-bun@v2
+      - name: "install bun dependencies"
+        run: cd web && bun install
+      - name: "lint frontend"
+        run: cd web && bun run lint
       - name: "setup jdk"
         uses: actions/setup-java@v4
         with:
