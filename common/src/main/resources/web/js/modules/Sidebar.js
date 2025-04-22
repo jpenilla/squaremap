@@ -11,6 +11,7 @@ class Sidebar {
         }
         this.sidebar.addEventListener("click", (e) => {
             P.playerList.followPlayerMarker(null);
+            e.stopPropagation();
         });
         document.body.appendChild(this.sidebar);
 
@@ -38,6 +39,12 @@ class Sidebar {
                 this.show(true);
             }
         };
+
+        document.addEventListener("click", (e) => {
+            if (!this.sidebar.contains(e.target) && !this.pin.pinned && this.sidebar.className === "show") {
+                this.show(false);
+            }
+        });
     }
     show(show) {
         this.sidebar.className = show ? "show" : "";

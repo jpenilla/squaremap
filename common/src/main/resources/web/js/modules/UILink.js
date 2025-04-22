@@ -10,29 +10,24 @@ class UILink {
             onAdd: function () {
                 const link = L.DomUtil.create('div', 'leaflet-control-layers link');
                 this._link = link;
+                this._link.innerHTML = `<img src='images/clear.png'/>`;
+                this._link.onclick = async () => {
+                    const url = P.worldList.curWorld == null ? "" : P.getUrlFromView();
+                    window.history.replaceState(null, "", url);
+                    await navigator.clipboard.writeText(window.location.href);
+                };
                 if (!show) {
                     this._link.style.display = "none";
                 }
-                this.update();
                 return link;
             },
-            update: function() {
-                const url = P.worldList.curWorld == null ? "" : P.getUrlFromView();
-                //P.updateBrowserUrl(url); // this spams browser history
-                this._link.innerHTML = `<a href='${url}'><img src='images/clear.png'/></a>`;
-            }
         });
         this.showLinkButton = show;
         this.link = new Link();
-        P.map.addControl(this.link)
-            .addEventListener('move', () => this.update())
-            .addEventListener('zoom', () => this.update());
         if (!json.enabled) {
             this.link._link.style.display = "none";
         }
-    }
-    update() {
-        this.link.update();
+        P.map.addControl(this.link);
     }
 }
 

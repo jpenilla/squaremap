@@ -161,12 +161,11 @@ class PlayerList {
         //P.layerControl.playersLayer.clearLayers();
     }
     followPlayerMarker(uuid) {
-        if (this.following != null) {
+        if (this.following !== null && this.following !== uuid) {
             document.getElementById(this.following).classList.remove("following");
-            this.following = null;
         }
-        if (uuid != null) {
-            this.following = uuid;
+        this.following = uuid;
+        if (this.following != null) {
             document.getElementById(this.following).classList.add("following");
         }
     }
