@@ -82,3 +82,23 @@
  * @property {number} marker_update_interval
  * @property {number} tiles_update_interval
  */
+
+/**
+ * @typedef {Object} PlayerData
+ * @property {string} name
+ * @property {string} display_name
+ * @property {string} uuid
+ * @property {string} world
+ * @property {number} x
+ * @property {number} y
+ * @property {number} z
+ * @property {number} yaw
+ * @property {number} armor
+ * @property {number} health
+ */
+
+/**
+ * @typedef {Object} PlayersData
+ * @property {PlayerData[]} players
+ * @property {number} max
+ */

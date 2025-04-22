@@ -12,6 +12,7 @@ class PlayerList {
     firstTick;
     /** @type {string} */
     label;
+    /** @type {PlayersData | null} */
     jsonCache;
 
     /**
@@ -37,10 +38,13 @@ class PlayerList {
             }
         }
         const fetchPlayers = (callback) => {
-            P.getJSON("tiles/players.json", (json) => {
-                this.jsonCache = json;
-                callback();
-            });
+            P.getJSON("tiles/players.json",
+                /** @param {PlayersData} json */
+                (json) => {
+                    this.jsonCache = json;
+                    callback();
+                }
+            );
         }
 
         if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval === 0) {
@@ -108,6 +112,9 @@ class PlayerList {
         this.players.delete(player.uuid);
         player.removeMarker();
     }
+    /**
+     * @param {PlayerData[]} players
+     */
     updatePlayerList(players) {
         const playersToRemove = Array.from(this.players.keys());
 

@@ -22,6 +22,9 @@ class Player {
     /** @type {L.Marker} */
     marker;
 
+    /**
+     * @param {PlayerData} json
+     */
     constructor(json) {
         this.name = json.name;
         this.uuid = json.uuid;
@@ -116,6 +119,9 @@ class Player {
             armor.src = armorSrc;
         }
     }
+    /**
+     * @param {PlayerData} player
+     */
     update(player) {
         this.x = player.x;
         this.z = player.z;
