@@ -2,6 +2,8 @@ package xyz.jpenilla.squaremap.sponge;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+
+import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +46,12 @@ public final class SquaremapSponge implements SquaremapPlatform {
         final Game game,
         final Injector injector
     ) {
-        game.eventManager().registerListeners(pluginContainer, this);
+        game.eventManager().registerListeners(pluginContainer, this, MethodHandles.lookup());
         this.pluginContainer = pluginContainer;
         this.game = game;
         this.injector = injector;
         this.common = injector.getInstance(SquaremapCommon.class);
-        this.game.eventManager().registerListeners(this.pluginContainer, injector.getInstance(SpongeNetworking.class));
+        this.game.eventManager().registerListeners(this.pluginContainer, injector.getInstance(SpongeNetworking.class), MethodHandles.lookup());
     }
 
     void init() {
@@ -75,7 +77,7 @@ public final class SquaremapSponge implements SquaremapPlatform {
     @Override
     public void startCallback() {
         this.worldLoadListener = this.injector.getInstance(WorldLoadListener.class);
-        this.game.eventManager().registerListeners(this.pluginContainer, this.worldLoadListener);
+        this.game.eventManager().registerListeners(this.pluginContainer, this.worldLoadListener, MethodHandles.lookup());
 
         this.mapUpdateListener = this.injector.getInstance(MapUpdateListener.class);
         this.mapUpdateListener.register();
