@@ -1,4 +1,4 @@
-import { S } from '../Squaremap.js';
+import { S } from "../Squaremap.js";
 
 class Player {
     /** @type {string} */
@@ -43,12 +43,12 @@ class Player {
         });
         this.marker = L.marker(S.toLatLng(json.x, json.z), {
             icon: L.icon({
-                iconUrl: 'images/icon/player.png',
+                iconUrl: "images/icon/player.png",
                 iconSize: [17, 16],
                 iconAnchor: [8, 9],
-                tooltipAnchor: [0, 0]
+                tooltipAnchor: [0, 0],
             }),
-            rotationAngle: (180 + json.yaw)
+            rotationAngle: 180 + json.yaw,
         });
         if (S.worldList.curWorld.player_tracker.nameplates.enabled) {
             this.updateNameplate(json);
@@ -104,18 +104,18 @@ class Player {
 
         // Only update the src if it's different
         const headSrc = this.getHeadUrl();
-        const currentHeadSrc = head.src.split('/').pop();
-        if (currentHeadSrc !== headSrc.split('/').pop()) {
+        const currentHeadSrc = head.src.split("/").pop();
+        if (currentHeadSrc !== headSrc.split("/").pop()) {
             head.src = headSrc;
         }
         const healthSrc = `images/health/${Math.min(Math.max(player.health, 0), 20)}.png`;
-        const currentHealthSrc = health.src.split('/').pop();
-        if (currentHealthSrc !== healthSrc.split('/').pop()) {
+        const currentHealthSrc = health.src.split("/").pop();
+        if (currentHealthSrc !== healthSrc.split("/").pop()) {
             health.src = healthSrc;
         }
         const armorSrc = `images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png`;
-        const currentArmorSrc = armor.src.split('/').pop();
-        if (currentArmorSrc !== armorSrc.split('/').pop()) {
+        const currentArmorSrc = armor.src.split("/").pop();
+        if (currentArmorSrc !== armorSrc.split("/").pop()) {
             armor.src = armorSrc;
         }
     }

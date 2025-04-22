@@ -1,5 +1,5 @@
 import { Player } from "./util/Player.js";
-import { S } from './Squaremap.js';
+import { S } from "./Squaremap.js";
 
 class PlayerList {
     /** @type {Map<string, Player>} */
@@ -32,20 +32,21 @@ class PlayerList {
             this.updatePlayerList(this.jsonCache.players);
             const title = `${this.label}`
                 .replace(/{cur}/g, this.jsonCache.players.length)
-                .replace(/{max}/g, this.jsonCache.max == null ? "???" : this.jsonCache.max)
+                .replace(/{max}/g, this.jsonCache.max == null ? "???" : this.jsonCache.max);
             if (S.sidebar.players.legend.innerHTML !== title) {
                 S.sidebar.players.legend.innerHTML = title;
             }
-        }
+        };
         const fetchPlayers = (callback) => {
-            S.getJSON("tiles/players.json",
+            S.getJSON(
+                "tiles/players.json",
                 /** @param {PlayersData} json */
                 (json) => {
                     this.jsonCache = json;
                     callback();
-                }
+                },
             );
-        }
+        };
 
         if (S.tick_count % S.worldList.curWorld.player_tracker.update_interval === 0) {
             if (S.staticMode) {
@@ -81,7 +82,7 @@ class PlayerList {
         head.src = player.getHeadUrl();
 
         const span = document.createElement("span");
-        span.innerHTML = player.displayName
+        span.innerHTML = player.displayName;
 
         const link = S.createElement("a", player.uuid, this);
         link.onclick = function (e) {
@@ -96,10 +97,9 @@ class PlayerList {
         fieldset.appendChild(link);
         Array.from(fieldset.getElementsByTagName("a"))
             .sort((a, b) => {
-                return plain(a.getElementsByTagName("span")[0])
-                    .localeCompare(plain(b.getElementsByTagName("span")[0]));
+                return plain(a.getElementsByTagName("span")[0]).localeCompare(plain(b.getElementsByTagName("span")[0]));
             })
-            .forEach(link => fieldset.appendChild(link));
+            .forEach((link) => fieldset.appendChild(link));
     }
     /**
      * @param {Player} player
@@ -133,9 +133,7 @@ class PlayerList {
                 player.update(players[i]);
                 if (oldDisplayName !== player.displayName) {
                     needsSort = true;
-                    document.getElementById(player.uuid)
-                        .getElementsByTagName("span")[0]
-                        .innerHTML = player.displayName;
+                    document.getElementById(player.uuid).getElementsByTagName("span")[0].innerHTML = player.displayName;
                 }
             }
             playersToRemove.remove(players[i].uuid);
@@ -151,10 +149,11 @@ class PlayerList {
             const fieldset = S.sidebar.players.element;
             Array.from(fieldset.getElementsByTagName("a"))
                 .sort((a, b) => {
-                    return plain(a.getElementsByTagName("span")[0])
-                        .localeCompare(plain(b.getElementsByTagName("span")[0]));
+                    return plain(a.getElementsByTagName("span")[0]).localeCompare(
+                        plain(b.getElementsByTagName("span")[0]),
+                    );
                 })
-                .forEach(link => fieldset.appendChild(link));
+                .forEach((link) => fieldset.appendChild(link));
         }
 
         // first tick only

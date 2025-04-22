@@ -1,4 +1,4 @@
-import { S } from './Squaremap.js';
+import { S } from "./Squaremap.js";
 
 class UILink {
     /**
@@ -9,10 +9,10 @@ class UILink {
         const Link = L.Control.extend({
             _container: null,
             options: {
-                position: 'bottomleft'
+                position: "bottomleft",
             },
             onAdd: function () {
-                const link = L.DomUtil.create('div', 'leaflet-control-layers link');
+                const link = L.DomUtil.create("div", "leaflet-control-layers link");
                 this._link = link;
                 this._link.innerHTML = `<img src='images/clear.png'/>`;
                 this._link.onclick = async () => {

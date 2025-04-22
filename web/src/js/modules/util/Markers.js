@@ -1,8 +1,8 @@
-import { S } from '../Squaremap.js';
+import { S } from "../Squaremap.js";
 
 class Marker {
     /** @type {L.Marker} */
-    marker
+    marker;
     opts;
     id;
     popup;
@@ -23,24 +23,24 @@ class Marker {
     init() {
         if (this.popup != null) {
             if (this.popup_sticky) {
-                this.marker.on('click', (e) => {
+                this.marker.on("click", () => {
                     L.popup({
-                        direction: this.opts.pop("tooltip_direction", "top")
+                        direction: this.opts.pop("tooltip_direction", "top"),
                     })
-                    .setLatLng(S.toLatLng(S.coordinates.coords.x, S.coordinates.coords.z))
-                    .setContent(this.popup)
-                    .openOn(S.map);
+                        .setLatLng(S.toLatLng(S.coordinates.coords.x, S.coordinates.coords.z))
+                        .setContent(this.popup)
+                        .openOn(S.map);
                 });
             } else {
                 this.marker.bindPopup(() => this.popup, {
-                    direction: this.opts.pop("tooltip_direction", "top")
+                    direction: this.opts.pop("tooltip_direction", "top"),
                 });
             }
         }
         if (this.tooltip != null) {
             this.marker.bindTooltip(() => this.tooltip, {
                 direction: this.opts.pop("tooltip_direction", "top"),
-                sticky: this.tooltip_sticky
+                sticky: this.tooltip_sticky,
             });
         }
         for (const key in this.opts) {
@@ -131,7 +131,7 @@ class Circle extends Marker {
         const center = this.opts.pop("center");
         const radius = this.opts.pop("radius");
         this.marker = L.circle(S.toLatLng(center.x, center.z), {
-            radius: S.pixelsToMeters(radius)
+            radius: S.pixelsToMeters(radius),
         });
         super.init();
     }
@@ -162,8 +162,8 @@ class Icon extends Marker {
                 iconSize: [size.x, size.z],
                 iconAnchor: [anchor.x, anchor.z],
                 popupAnchor: [tooltipAnchor.x, tooltipAnchor.z],
-                tooltipAnchor: [tooltipAnchor.x, tooltipAnchor.z]
-            })
+                tooltipAnchor: [tooltipAnchor.x, tooltipAnchor.z],
+            }),
         });
         this.popup_sticky = false;
         this.tooltip_sticky = false;

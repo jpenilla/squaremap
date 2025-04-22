@@ -1,6 +1,6 @@
 import { Pin } from "./util/Pin.js";
 import { Fieldset } from "./util/Fieldset.js";
-import { S } from './Squaremap.js';
+import { S } from "./Squaremap.js";
 
 class Sidebar {
     /** @type {HTMLDivElement} */
@@ -39,9 +39,7 @@ class Sidebar {
         this.worlds = new Fieldset("worlds", json.world_list_label);
         this.sidebar.appendChild(this.worlds.element);
 
-        this.players = new Fieldset("players", json.player_list_label
-            .replace(/{cur}/g, 0)
-            .replace(/{max}/g, 0));
+        this.players = new Fieldset("players", json.player_list_label.replace(/{cur}/g, 0).replace(/{max}/g, 0));
         this.sidebar.appendChild(this.players.element);
 
         this.sidebar.onmouseleave = () => {

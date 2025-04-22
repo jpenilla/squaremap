@@ -35,20 +35,20 @@ class SquaremapMap {
             center: [0, 0],
             attributionControl: false,
             preferCanvas: true,
-            noWrap: true
+            noWrap: true,
         })
-        .on('overlayadd', (e) => {
-            this.layerControl.showLayer(e.layer);
-        })
-        .on('overlayremove', (e) => {
-            this.layerControl.hideLayer(e.layer);
-        })
-        .on('click', (e) => {
-            this.playerList.followPlayerMarker(null);
-        })
-        .on('dblclick', (e) => {
-            this.playerList.followPlayerMarker(null);
-        });
+            .on("overlayadd", (e) => {
+                this.layerControl.showLayer(e.layer);
+            })
+            .on("overlayremove", (e) => {
+                this.layerControl.hideLayer(e.layer);
+            })
+            .on("click", () => {
+                this.playerList.followPlayerMarker(null);
+            })
+            .on("dblclick", () => {
+                this.playerList.followPlayerMarker(null);
+            });
 
         this.tick_count = 1;
 
@@ -57,7 +57,7 @@ class SquaremapMap {
         this.init();
     }
     loop() {
-        if (document.visibilityState === 'visible') {
+        if (document.visibilityState === "visible") {
             this.tick();
             this.tick_count++;
         }
@@ -81,12 +81,15 @@ class SquaremapMap {
                 this.sidebar = new Sidebar(json.ui.sidebar, this.getUrlParam("show_sidebar", "true") === "true");
                 this.playerList = new PlayerList(json.ui.sidebar);
                 this.worldList = new WorldList(json.worlds);
-                this.coordinates = new UICoordinates(json.ui.coordinates, this.getUrlParam("show_coordinates", "true") === "true");
+                this.coordinates = new UICoordinates(
+                    json.ui.coordinates,
+                    this.getUrlParam("show_coordinates", "true") === "true",
+                );
                 this.uiLink = new UILink(json.ui.link, this.getUrlParam("show_link_button", "true") === "true");
 
-                this.showControls = this.getUrlParam("show_controls", "true") === "true"
+                this.showControls = this.getUrlParam("show_controls", "true") === "true";
                 if (!this.showControls) {
-                    let controlLayers = document.getElementsByClassName('leaflet-top leaflet-left');
+                    let controlLayers = document.getElementsByClassName("leaflet-top leaflet-left");
                     controlLayers[0].style.display = "none";
                 }
 
@@ -95,9 +98,10 @@ class SquaremapMap {
                     this.centerOn(
                         this.getUrlParam("x", world.spawn.x),
                         this.getUrlParam("z", world.spawn.z),
-                        this.getUrlParam("zoom", world.zoom.def));
+                        this.getUrlParam("zoom", world.zoom.def),
+                    );
                 });
-            }
+            },
         );
     }
     centerOn(x, z, zoom) {
@@ -119,7 +123,7 @@ class SquaremapMap {
         return num / this.scale;
     }
     setScale(zoom) {
-        this.scale = (1 / Math.pow(2, zoom));
+        this.scale = 1 / Math.pow(2, zoom);
         // store this on map for ellipse
         this.map.options.scale = this.scale;
     }
@@ -139,21 +143,20 @@ class SquaremapMap {
      * @param {(json: any) => void} fn
      */
     getJSON(url, fn) {
-        fetch(url, {cache: "no-store"})
-            .then(async res => {
-                if (res.ok) {
-                    fn(await res.json());
-                }
-            });
+        fetch(url, { cache: "no-store" }).then(async (res) => {
+            if (res.ok) {
+                fn(await res.json());
+            }
+        });
     }
     getUrlParam(query, def) {
         const url = window.location.search.substring(1);
-        const vars = url.split('&');
+        const vars = url.split("&");
         for (let i = 0; i < vars.length; i++) {
-            const param = vars[i].split('=');
+            const param = vars[i].split("=");
             if (param[0] === query) {
-                const value = param[1] === undefined ? '' : decodeURIComponent(param[1]);
-                return value === '' ? def : value;
+                const value = param[1] === undefined ? "" : decodeURIComponent(param[1]);
+                return value === "" ? def : value;
             }
         }
         return def;
@@ -170,18 +173,18 @@ class SquaremapMap {
             link = `?world=${this.worldList.curWorld.name}&zoom=${zoom}&x=${x}&z=${z}`;
         }
         if (!this.showControls) {
-            link += "&show_controls=false"
+            link += "&show_controls=false";
         }
         if (!this.uiLink.showLinkButton) {
-            link += "&show_link_button=false"
+            link += "&show_link_button=false";
         }
         if (!this.coordinates.showCoordinates) {
-            link += "&show_coordinates=false"
+            link += "&show_coordinates=false";
         }
         if (!this.sidebar.showSidebar) {
-            link += "&show_sidebar=false"
+            link += "&show_sidebar=false";
         }
-        return link
+        return link;
     }
     updateBrowserUrl(url) {
         window.history.replaceState(null, "", url);
@@ -191,8 +194,11 @@ class SquaremapMap {
 export const S = new SquaremapMap();
 
 // https://stackoverflow.com/a/3955096
-Array.prototype.remove = function() {
-    var what, a = arguments, L = a.length, ax;
+Array.prototype.remove = function () {
+    var what,
+        a = arguments,
+        L = a.length,
+        ax;
     while (L && this.length) {
         what = a[--L];
         while ((ax = this.indexOf(what)) !== -1) {

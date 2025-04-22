@@ -1,5 +1,5 @@
 import { World } from "./util/World.js";
-import { S } from './Squaremap.js';
+import { S } from "./Squaremap.js";
 
 class WorldList {
     /** @type {Map<string, World>} */
@@ -28,12 +28,12 @@ class WorldList {
             link.onclick = function () {
                 const curWorld = this.parent.curWorld;
                 if (curWorld.name === name) {
-                    S.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
+                    S.centerOn(world.spawn.x, world.spawn.z, world.zoom.def);
                     return;
                 }
                 S.playerList.clearPlayerMarkers();
                 this.parent.loadWorld(name, (world) => {
-                    S.centerOn(world.spawn.x, world.spawn.z, world.zoom.def)
+                    S.centerOn(world.spawn.x, world.spawn.z, world.zoom.def);
                 });
             };
 
@@ -69,24 +69,24 @@ class WorldList {
      * @param callback {(world: World) => void}
      */
     loadInitialWorld(json, callback) {
-        let updateUrl = false
-        let name = S.getUrlParam("world", null)
+        let updateUrl = false;
+        let name = S.getUrlParam("world", null);
         if (name != null) {
             const world = this.worlds.get(name);
             if (world == null) {
-                updateUrl = true
+                updateUrl = true;
                 name = null;
             }
         }
         if (name == null) {
-            name = json.worlds.sort((a, b) => a.order - b.order)[0].name
+            name = json.worlds.sort((a, b) => a.order - b.order)[0].name;
         }
         this.loadWorld(name, (a) => {
-            callback(a)
+            callback(a);
             if (updateUrl) {
                 S.updateBrowserUrl(`?world=${this.curWorld.name}`);
             }
-        })
+        });
     }
     /**
      * @param {string} name

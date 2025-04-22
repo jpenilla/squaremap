@@ -1,4 +1,4 @@
-import { S } from '../Squaremap.js';
+import { S } from "../Squaremap.js";
 
 class Pin {
     /** @type {boolean} */

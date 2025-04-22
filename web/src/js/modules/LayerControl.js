@@ -1,5 +1,5 @@
-import { S } from './Squaremap.js';
-import { SquaremapTileLayer } from './SquaremapTileLayer.js';
+import { S } from "./Squaremap.js";
+import { SquaremapTileLayer } from "./SquaremapTileLayer.js";
 
 class LayerControl {
     /** @type {number} */
@@ -24,14 +24,19 @@ class LayerControl {
         this.playersLayer = new L.LayerGroup();
         this.playersLayer.id = "players_layer";
 
-        this.controls = L.control.layers({}, {}, {
-            position: 'topleft',
-            sortLayers: true,
-            sortFunction: (a, b) => {
-                return a.order - b.order;
-            }
-        })
-        .addTo(S.map);
+        this.controls = L.control
+            .layers(
+                {},
+                {},
+                {
+                    position: "topleft",
+                    sortLayers: true,
+                    sortFunction: (a, b) => {
+                        return a.order - b.order;
+                    },
+                },
+            )
+            .addTo(S.map);
     }
     /**
      * @param name {string}
@@ -60,14 +65,14 @@ class LayerControl {
      */
     shouldHide(layer, def) {
         const value = window.localStorage.getItem(`hide_${layer.id}`);
-        return value == null ? def : value === 'true';
+        return value == null ? def : value === "true";
     }
     /**
      * @param layer {L.Layer}
      */
     hideLayer(layer) {
         if (layer !== this.ignoreLayer) {
-            window.localStorage.setItem(`hide_${layer.id}`, 'true');
+            window.localStorage.setItem(`hide_${layer.id}`, "true");
         }
     }
     /**
@@ -75,7 +80,7 @@ class LayerControl {
      */
     showLayer(layer) {
         if (layer !== this.ignoreLayer) {
-            window.localStorage.setItem(`hide_${layer.id}`, 'false');
+            window.localStorage.setItem(`hide_${layer.id}`, "false");
         }
     }
     /**
@@ -96,9 +101,7 @@ class LayerControl {
         // refresh player's control
         this.removeOverlay(this.playersLayer);
         if (world.player_tracker.show_controls) {
-            this.addOverlay(world.player_tracker.label,
-                this.playersLayer,
-                world.player_tracker.default_hidden);
+            this.addOverlay(world.player_tracker.label, this.playersLayer, world.player_tracker.default_hidden);
         }
         this.playersLayer.order = world.player_tracker.priority;
         this.playersLayer.setZIndex(world.player_tracker.z_index);
@@ -112,12 +115,13 @@ class LayerControl {
             tileSize: 512,
             minNativeZoom: 0,
             maxNativeZoom: world.zoom.max,
-            errorTileUrl: 'images/clear.png'
-        }).addTo(S.map)
-        .addEventListener("load", () => {
-            // when all tiles are loaded, switch to this layer
-            this.switchTileLayer();
-        });
+            errorTileUrl: "images/clear.png",
+        })
+            .addTo(S.map)
+            .addEventListener("load", () => {
+                // when all tiles are loaded, switch to this layer
+                this.switchTileLayer();
+            });
     }
     updateTileLayer() {
         // redraw background tile layer
