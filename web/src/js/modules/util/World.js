@@ -2,6 +2,24 @@ import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon } from "./
 import { P } from '../Squaremap.js';
 
 class World {
+    /** @type {string} */
+    name;
+    /** @type {string} */
+    display_name;
+    /** @type {Map<string, L.LayerGroup>} */
+    markerLayers;
+    /** @type {WorldSettings.PlayerTracker} */
+    player_tracker;
+    /** @type {number} */
+    marker_update_interval;
+    /** @type {number} */
+    tiles_update_interval;
+    /** @type {boolean} */
+    staticNeedsMarkerTick;
+
+    /**
+     * @param json {Settings.World}
+     */
     constructor(json) {
         this.name = json.name;
         this.order = json.order;
@@ -16,11 +34,11 @@ class World {
     }
     tick() {
         // refresh map tile layer
-        if (!P.staticMode && P.tick_count % this.tiles_update_interval == 0) {
+        if (!P.staticMode && P.tick_count % this.tiles_update_interval === 0) {
             P.layerControl.updateTileLayer();
         }
         // load and draw markers
-        if (!P.staticMode && P.tick_count % this.marker_update_interval == 0) {
+        if (!P.staticMode && P.tick_count % this.marker_update_interval === 0) {
             this.tickMarkers();
         }
         if (P.staticMode && this.staticNeedsMarkerTick) {
@@ -45,47 +63,54 @@ class World {
             this.markerLayers.delete(keys[i]);
         }
     }
+    /**
+     * @param callback {(world: World) => void}
+     */
     load(callback) {
-        P.getJSON(`tiles/${this.name}/settings.json`, (json) => {
-            this.player_tracker = json.player_tracker;
-            this.zoom = json.zoom;
-            this.spawn = json.spawn;
-            this.marker_update_interval = json.marker_update_interval;
-            this.tiles_update_interval = json.tiles_update_interval;
-            this.staticNeedsMarkerTick = true;
+        P.getJSON(
+            `tiles/${this.name}/settings.json`,
+            /** @param {WorldSettings} json */
+            (json) => {
+                this.player_tracker = json.player_tracker;
+                this.zoom = json.zoom;
+                this.spawn = json.spawn;
+                this.marker_update_interval = json.marker_update_interval;
+                this.tiles_update_interval = json.tiles_update_interval;
+                this.staticNeedsMarkerTick = true;
 
-            // set the scale for our projection calculations
-            P.setScale(this.zoom.max);
+                // set the scale for our projection calculations
+                P.setScale(this.zoom.max);
 
-            // set center and zoom
-            P.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)
-                .setMinZoom(0) // extra zoom out doesn't work :(
-                .setMaxZoom(this.zoom.max + this.zoom.extra);
+                // set center and zoom
+                P.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)
+                    .setMinZoom(0) // extra zoom out doesn't work :(
+                    .setMaxZoom(this.zoom.max + this.zoom.extra);
 
-            // update page title
-            document.title = P.title
-                .replace(/{world}/g, this.display_name);
+                // update page title
+                document.title = P.title
+                    .replace(/{world}/g, this.display_name);
 
-            // setup background
-            document.getElementById("map").style.background = this.getBackground();
+                // setup background
+                document.getElementById("map").style.background = this.getBackground();
 
-            // setup tile layers
-            P.layerControl.setupTileLayers(this);
+                // setup tile layers
+                P.layerControl.setupTileLayers(this);
 
-            // force clear player markers
-            P.playerList.clearPlayerMarkers();
+                // force clear player markers
+                P.playerList.clearPlayerMarkers();
 
-            // tick now, reset counter
-            P.tick_count = 0;
-            P.tick();
+                // tick now, reset counter
+                P.tick_count = 0;
+                P.tick();
 
-            // force clear player markers
-            P.playerList.clearPlayerMarkers();
+                // force clear player markers
+                P.playerList.clearPlayerMarkers();
 
-            if (callback != null) {
-                callback(this);
+                if (callback != null) {
+                    callback(this);
+                }
             }
-        });
+        );
     }
     getBackground() {
         switch (this.type) {

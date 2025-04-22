@@ -1,6 +1,17 @@
 import { P } from '../Squaremap.js';
 
 class Marker {
+    /** @type {L.Marker} */
+    marker
+    opts;
+    id;
+    popup;
+    /** @type {boolean} */
+    popup_sticky;
+    tooltip;
+    /** @type {boolean} */
+    tooltip_sticky;
+
     constructor(opts) {
         this.opts = opts;
         this.id = this.opts.pop("id");

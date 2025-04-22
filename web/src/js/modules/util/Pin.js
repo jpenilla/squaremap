@@ -1,6 +1,14 @@
 import { P } from '../Squaremap.js';
 
 class Pin {
+    /** @type {boolean} */
+    pinned;
+    /** @type {HTMLImageElement} */
+    element;
+
+    /**
+     * @param {boolean} def
+     */
     constructor(def) {
         this.pinned = def;
 

@@ -2,8 +2,17 @@ import { World } from "./util/World.js";
 import { P } from './Squaremap.js';
 
 class WorldList {
+    /** @type {Map<string, World>} */
+    worlds;
+    /** @type {World} */
+    curWorld;
+
+    /**
+     * @param json {Settings.World[]}
+     */
     constructor(json) {
         // get worlds from json
+        /** @type {Map<string, World>} */
         const unorderedMap = new Map();
         for (let i = 0; i < json.length; i++) {
             const world = new World(json[i]);
@@ -37,8 +46,12 @@ class WorldList {
             P.sidebar.worlds.element.appendChild(link);
         }
     }
+    /**
+     * @param {World} world
+     * @returns {string}
+     */
     getIcon(world) {
-        if (world.icon != null && world.icon != "") {
+        if (world.icon != null && world.icon !== "") {
             return `images/icon/${world.icon}.png`;
         }
         switch (world.type) {
@@ -51,6 +64,10 @@ class WorldList {
                 return "images/icon/green-cube-smol.png";
         }
     }
+    /**
+     * @param json {Settings}
+     * @param callback {(world: World) => void}
+     */
     loadInitialWorld(json, callback) {
         let updateUrl = false
         let name = P.getUrlParam("world", null)
@@ -71,6 +88,10 @@ class WorldList {
             }
         })
     }
+    /**
+     * @param {string} name
+     * @param {(world: World) => void} callback
+     */
     loadWorld(name, callback) {
         // unload current world
         if (this.curWorld != null) {
@@ -82,15 +103,21 @@ class WorldList {
         this.curWorld = world;
         world.load(callback);
     }
-    showWorld(world, callback) {
-        if (this.curWorld.name == world) {
+    /**
+     * @param {string} name
+     * @param {(world: World) => void} callback
+     */
+    showWorld(name, callback) {
+        if (this.curWorld.name === name) {
             if (callback != null) {
                 callback();
             }
             return;
         }
-        this.loadWorld(world, callback);
-        P.updateBrowserUrl(P.getUrlFromView());
+        this.loadWorld(name, () => {
+            callback();
+            P.updateBrowserUrl(`?world=${this.curWorld.name}`);
+        });
     }
 }
 

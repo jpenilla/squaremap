@@ -3,6 +3,17 @@ import { Fieldset } from "./util/Fieldset.js";
 import { P } from './Squaremap.js';
 
 class Sidebar {
+    /** @type {HTMLDivElement} */
+    sidebar;
+    /** @type {boolean} */
+    showSidebar;
+    /** @type {Pin} */
+    pin;
+    /** @type {Fieldset} */
+    worlds;
+    /** @type {Fieldset} */
+    players;
+
     constructor(json, show) {
         this.sidebar = P.createElement("div", "sidebar", this);
         this.showSidebar = show;
@@ -15,9 +26,9 @@ class Sidebar {
         });
         document.body.appendChild(this.sidebar);
 
-        this.pin = new Pin(json.pinned == "pinned");
+        this.pin = new Pin(json.pinned === "pinned");
         this.show(this.pin.pinned);
-        if (json.pinned != "hide") {
+        if (json.pinned !== "hide") {
             this.sidebar.appendChild(this.pin.element);
         }
 

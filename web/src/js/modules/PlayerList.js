@@ -2,6 +2,18 @@ import { Player } from "./util/Player.js";
 import { P } from './Squaremap.js';
 
 class PlayerList {
+    /** @type {Map<string, Player>} */
+    players;
+    /** @type {Map} */
+    markers;
+    /** @type {string | null} */
+    following;
+    /** @type {boolean} */
+    firstTick;
+    /** @type {string} */
+    label;
+    jsonCache;
+
     constructor(json) {
         this.players = new Map();
         this.markers = new Map();
@@ -28,7 +40,7 @@ class PlayerList {
             });
         }
 
-        if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval == 0) {
+        if (P.tick_count % P.worldList.curWorld.player_tracker.update_interval === 0) {
             if (P.staticMode) {
                 if (this.jsonCache === null) {
                     fetchPlayers(() => update());
@@ -40,6 +52,9 @@ class PlayerList {
             }
         }
     }
+    /**
+     * @param {string} uuid
+     */
     showPlayer(uuid) {
         const player = this.players.get(uuid);
         if (!P.worldList.worlds.has(player.world)) {
@@ -50,6 +65,9 @@ class PlayerList {
         });
         return true;
     }
+    /**
+     * @param {Player} player
+     */
     addToList(player) {
         const head = document.createElement("img");
         head.classList.add("head");
@@ -76,6 +94,9 @@ class PlayerList {
             })
             .forEach(link => fieldset.appendChild(link));
     }
+    /**
+     * @param {Player} player
+     */
     removeFromList(player) {
         const link = document.getElementById(player.uuid);
         if (link != null) {
@@ -160,6 +181,9 @@ class PlayerList {
         this.markers.clear();
         //P.layerControl.playersLayer.clearLayers();
     }
+    /**
+     * @param {string} uuid
+     */
     followPlayerMarker(uuid) {
         if (this.following !== null && this.following !== uuid) {
             document.getElementById(this.following).classList.remove("following");
@@ -171,6 +195,9 @@ class PlayerList {
     }
 }
 
+/**
+ * @param {HTMLElement} element
+ */
 function plain(element) {
     return element.textContent || element.innerText || "";
 }

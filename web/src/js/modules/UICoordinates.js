@@ -1,6 +1,10 @@
 import { P } from './Squaremap.js';
 
 class UICoordinates {
+    /**
+     * @param {Settings.UI.Coordinates} json
+     * @param {boolean} show
+     */
     constructor(json, show) {
         const Coords = L.Control.extend({
             _container: null,

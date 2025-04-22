@@ -2,9 +2,21 @@ import { P } from './Squaremap.js';
 import { SquaremapTileLayer } from './SquaremapTileLayer.js';
 
 class LayerControl {
-    constructor() {
-        this.layers = new Map();
-    }
+    /** @type {number} */
+    currentLayer;
+    /** @type {number} */
+    updateInterval;
+    /** @type {L.LayerGroup} */
+    playersLayer;
+    /** @type {L.Control.Layers} */
+    controls;
+    /** @type {L.TileLayer} */
+    tileLayer1;
+    /** @type {L.TileLayer} */
+    tileLayer2;
+    /** @type {L.Layer} */
+    ignoreLayer;
+
     init() {
         this.currentLayer = 0;
         this.updateInterval = 60;
@@ -21,32 +33,54 @@ class LayerControl {
         })
         .addTo(P.map);
     }
+    /**
+     * @param name {string}
+     * @param layer {L.Layer}
+     * @param hide {boolean}
+     */
     addOverlay(name, layer, hide) {
         this.controls.addOverlay(layer, name);
         if (this.shouldHide(layer, hide) !== true) {
             layer.addTo(P.map);
         }
     }
+    /**
+     * @param layer {L.Layer}
+     */
     removeOverlay(layer) {
         this.ignoreLayer = layer;
         this.controls.removeLayer(layer);
         layer.remove();
         this.ignoreLayer = null;
     }
+    /**
+     * @param layer {L.Layer}
+     * @param def {boolean}
+     * @returns {boolean}
+     */
     shouldHide(layer, def) {
         const value = window.localStorage.getItem(`hide_${layer.id}`);
         return value == null ? def : value === 'true';
     }
+    /**
+     * @param layer {L.Layer}
+     */
     hideLayer(layer) {
-        if (layer != this.ignoreLayer) {
+        if (layer !== this.ignoreLayer) {
             window.localStorage.setItem(`hide_${layer.id}`, 'true');
         }
     }
+    /**
+     * @param layer {L.Layer}
+     */
     showLayer(layer) {
-        if (layer != this.ignoreLayer) {
+        if (layer !== this.ignoreLayer) {
             window.localStorage.setItem(`hide_${layer.id}`, 'false');
         }
     }
+    /**
+     * @param world {World}
+     */
     setupTileLayers(world) {
         // setup the map tile layers
         // we need 2 layers to swap between for seamless refreshing
@@ -69,6 +103,10 @@ class LayerControl {
         this.playersLayer.order = world.player_tracker.priority;
         this.playersLayer.setZIndex(world.player_tracker.z_index);
     }
+    /**
+     * @param world {World}
+     * @returns {L.TileLayer}
+     */
     createTileLayer(world) {
         return new SquaremapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
             tileSize: 512,
@@ -83,7 +121,7 @@ class LayerControl {
     }
     updateTileLayer() {
         // redraw background tile layer
-        if (this.currentLayer == 1) {
+        if (this.currentLayer === 1) {
             this.tileLayer2.redraw();
         } else {
             this.tileLayer1.redraw();
@@ -91,7 +129,7 @@ class LayerControl {
     }
     switchTileLayer() {
         // swap current tile layer
-        if (this.currentLayer == 1) {
+        if (this.currentLayer === 1) {
             this.tileLayer1.setZIndex(0);
             this.tileLayer2.setZIndex(1);
             this.currentLayer = 2;

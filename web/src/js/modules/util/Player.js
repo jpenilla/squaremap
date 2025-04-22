@@ -1,6 +1,27 @@
 import { P } from '../Squaremap.js';
 
 class Player {
+    /** @type {string} */
+    name;
+    /** @type {string} */
+    uuid;
+    /** @type {string} */
+    world;
+    /** @type {string} */
+    displayName;
+    /** @type {number} */
+    x;
+    /** @type {number} */
+    z;
+    /** @type {number} */
+    armor;
+    /** @type {number} */
+    health;
+    /** @type {L.Tooltip} */
+    tooltip;
+    /** @type {L.Marker} */
+    marker;
+
     constructor(json) {
         this.name = json.name;
         this.uuid = json.uuid;

@@ -1,4 +1,4 @@
-export var SquaremapTileLayer = L.TileLayer.extend({
+export const SquaremapTileLayer = L.TileLayer.extend({
 
     // @method createTile(coords: Object, done?: Function): HTMLElement
     // Called only internally, overrides GridLayer's [`createTile()`](#gridlayer-createtile)

@@ -1,6 +1,10 @@
 import { P } from './Squaremap.js';
 
 class UILink {
+    /**
+     * @param {Settings.UI.Link} json
+     * @param {boolean} show
+     */
     constructor(json, show) {
         const Link = L.Control.extend({
             _container: null,
