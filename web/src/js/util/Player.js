@@ -62,62 +62,112 @@ class Player {
             .replace(/{name}/g, this.name);
     }
     makeNameplateContent(player) {
-        const ul = document.createElement("ul");
-        let headImg = "";
-        let armorImg = "";
-        let healthImg = "";
+        const container = document.createElement("div");
+        container.classList.add("nameplate-container");
+
         if (S.worldList.curWorld.player_tracker.nameplates.show_heads) {
-            headImg = `<img src='${this.getHeadUrl()}' class="head" />`;
+            const head = document.createElement("img");
+            head.src = this.getHeadUrl();
+            head.classList.add("head");
+            container.appendChild(head);
         }
-        if (S.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
-            armorImg = `<img src="images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png" class="armor" />`;
-        }
+
+        const col2 = document.createElement("div");
+        col2.classList.add("nameplate-col2");
+
+        const displayName = document.createElement("span");
+        displayName.classList.add("display-name");
+        displayName.innerHTML = this.displayName;
+        col2.appendChild(displayName);
+
         if (S.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
-            healthImg = `<img src="images/health/${Math.min(Math.max(player.health, 0), 20)}.png" class="health" />`;
+            const health = document.createElement("img");
+            health.src = `images/health/${Math.min(Math.max(player.health, 0), 20)}.png`;
+            health.classList.add("health");
+            col2.appendChild(health);
         }
-        ul.innerHTML = `<li>${headImg}</li><li><span class="display-name">${this.displayName}</span>${healthImg}${armorImg}</li>`;
-        return ul;
+
+        if (S.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
+            const armor = document.createElement("img");
+            armor.src = `images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png`;
+            armor.classList.add("armor");
+            col2.appendChild(armor);
+        }
+
+        container.appendChild(col2);
+        return container;
     }
     setNameplateContent(player) {
         this.tooltip.setContent(this.makeNameplateContent(player));
     }
+    /**
+     * @param {PlayerData} player
+     */
     updateNameplate(player) {
+        /**
+         * @param {PlayerData} player
+         * @param {boolean} a
+         * @param {boolean} b
+         */
+        const resetOnMismatch = (player, a, b) => {
+            if (a !== b) {
+                this.setNameplateContent(player);
+                return true;
+            }
+            return false;
+        };
+
         const head = this.tooltip.getContent().querySelectorAll(".head")[0];
-        if (!head && S.worldList.curWorld.player_tracker.nameplates.show_heads) {
-            this.setNameplateContent(player);
+        if (resetOnMismatch(player, head !== undefined, S.worldList.curWorld.player_tracker.nameplates.show_heads)) {
             return;
         }
         const armor = this.tooltip.getContent().querySelectorAll(".armor")[0];
-        if (!armor && S.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null) {
-            this.setNameplateContent(player);
+        if (
+            resetOnMismatch(
+                player,
+                armor !== undefined,
+                S.worldList.curWorld.player_tracker.nameplates.show_armor && player.armor != null,
+            )
+        ) {
             return;
         }
         const health = this.tooltip.getContent().querySelectorAll(".health")[0];
-        if (!health && S.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null) {
-            this.setNameplateContent(player);
+        if (
+            resetOnMismatch(
+                player,
+                health !== undefined,
+                S.worldList.curWorld.player_tracker.nameplates.show_health && player.health != null,
+            )
+        ) {
             return;
         }
+        /** @type {HTMLSpanElement} */
         const displayName = this.tooltip.getContent().querySelectorAll(".display-name")[0];
 
-        if (displayName.innerText !== this.displayName) {
-            displayName.innerText = this.displayName;
+        // Only update if it's different
+        if (displayName.innerHTML !== this.displayName) {
+            displayName.innerHTML = this.displayName;
         }
-
-        // Only update the src if it's different
-        const headSrc = this.getHeadUrl();
-        const currentHeadSrc = head.src.split("/").pop();
-        if (currentHeadSrc !== headSrc.split("/").pop()) {
-            head.src = headSrc;
+        if (head) {
+            const headSrc = this.getHeadUrl();
+            const currentHeadSrc = head.src.split("/").pop();
+            if (currentHeadSrc !== headSrc.split("/").pop()) {
+                head.src = headSrc;
+            }
         }
-        const healthSrc = `images/health/${Math.min(Math.max(player.health, 0), 20)}.png`;
-        const currentHealthSrc = health.src.split("/").pop();
-        if (currentHealthSrc !== healthSrc.split("/").pop()) {
-            health.src = healthSrc;
+        if (health && player.health != null) {
+            const healthSrc = `images/health/${Math.min(Math.max(player.health, 0), 20)}.png`;
+            const currentHealthSrc = health.src.split("/").pop();
+            if (currentHealthSrc !== healthSrc.split("/").pop()) {
+                health.src = healthSrc;
+            }
         }
-        const armorSrc = `images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png`;
-        const currentArmorSrc = armor.src.split("/").pop();
-        if (currentArmorSrc !== armorSrc.split("/").pop()) {
-            armor.src = armorSrc;
+        if (armor && player.armor != null) {
+            const armorSrc = `images/armor/${Math.min(Math.max(player.armor, 0), 20)}.png`;
+            const currentArmorSrc = armor.src.split("/").pop();
+            if (currentArmorSrc !== armorSrc.split("/").pop()) {
+                armor.src = armorSrc;
+            }
         }
     }
     /**

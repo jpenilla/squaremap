@@ -21,27 +21,40 @@ img.leaflet-tile {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
 }
-div.leaflet-nameplate-pane div {
+.nameplate-container {
+    display: flex;
+    gap: 0.375rem;
+    align-items: center;
+    margin: 0;
+}
+.nameplate-col2 {
+    display: flex;
+    gap: 0.125rem;
+    flex-direction: column;
+}
+div.leaflet-nameplate-pane > div {
     background: rgba(0, 0, 0, 0.5);
     color: #ffffff;
     font-weight: 700;
-    padding: 2px 5px 1px;
     margin: 0;
     border-color: rgba(0, 0, 0, 0.75);
+    line-height: 1;
 }
 div.leaflet-nameplate-pane div:before {
     border-color: transparent;
 }
-div.leaflet-nameplate-pane div img.head {
-    vertical-align: middle;
-    margin-right: 6px;
-}
 img.head {
     height: 16px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
 }
 div.leaflet-nameplate-pane div img.armor,
 div.leaflet-nameplate-pane div img.health {
     display: block;
+    height: 9px;
+    width: max-content;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
 }
 div.leaflet-nameplate-pane div,
 div.leaflet-marker-pane img {
