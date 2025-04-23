@@ -4,6 +4,11 @@ import { WorldList } from "./WorldList.js";
 import { UICoordinates } from "./UICoordinates.js";
 import { UILink } from "./UILink.js";
 import { LayerControl } from "./LayerControl.js";
+import L from "leaflet";
+import "./addons/Ellipse.js";
+import "./addons/RotateMarker.js";
+import "leaflet/dist/leaflet.css";
+import "../css/styles.css";
 
 class SquaremapMap {
     /** @type {L.Map} */
@@ -207,3 +212,10 @@ Array.prototype.remove = function () {
     }
     return this;
 };
+
+if (import.meta.hot) {
+    import.meta.hot.accept(() => {
+        // Just reload the page on JS changes for now
+        window.location.reload();
+    });
+}

@@ -44,6 +44,11 @@ tasks {
       "apiVersion" to minecraftVersion.get(),
     ))
   }
+  runServer {
+    runProps(layout).forEach { (key, value) ->
+      systemProperty(key, value)
+    }
+  }
 }
 
 squaremapPlatform.productionJar = tasks.shadowJar.flatMap { it.archiveFile }

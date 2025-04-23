@@ -1,6 +1,7 @@
 import { Pin } from "./util/Pin.js";
 import { Fieldset } from "./util/Fieldset.js";
 import { S } from "./Squaremap.js";
+import L from "leaflet";
 
 class Sidebar {
     /** @type {HTMLDivElement} */

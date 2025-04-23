@@ -69,6 +69,11 @@ tasks {
       )
     }
   }
+  runServer {
+    runProps(layout).forEach { (key, value) ->
+      systemProperty(key, value)
+    }
+  }
 }
 
 oreDeployment {

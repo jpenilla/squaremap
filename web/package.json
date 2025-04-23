@@ -1,6 +1,9 @@
 {
     "name": "web",
     "scripts": {
+        "dev": "vite dev --host",
+        "build": "vite build --emptyOutDir",
+        "preview": "vite preview",
         "format": "prettier --write .",
         "lint": "prettier --check . && eslint ."
     },
@@ -10,7 +13,8 @@
         "eslint": "^9.25.1",
         "globals": "^16.0.0",
         "leaflet": "^1.9.4",
-        "prettier": "^3.5.3"
+        "prettier": "^3.5.3",
+        "vite": "^6.3.2"
     },
     "private": true,
     "type": "module"

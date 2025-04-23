@@ -1,4 +1,5 @@
 import { S } from "./Squaremap.js";
+import L from "leaflet";
 import { SquaremapTileLayer } from "./SquaremapTileLayer.js";
 
 class LayerControl {

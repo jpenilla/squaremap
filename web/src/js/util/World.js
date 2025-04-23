@@ -1,5 +1,6 @@
 import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon } from "./Markers.js";
 import { S } from "../Squaremap.js";
+import L from "leaflet";
 
 class World {
     /** @type {string} */
