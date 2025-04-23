@@ -16,6 +16,8 @@
 
 // https://github.com/jdfergason/Leaflet.Ellipse
 
+import L from "leaflet";
+
 L.SVG.include({
     _updateEllipse: function (layer) {
         var rx = layer._radiusX,

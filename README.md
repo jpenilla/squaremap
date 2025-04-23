@@ -87,13 +87,29 @@ dependencies {
 }
 ```
 
-## Building from source
+## Develop
+
+### Prerequisites and setup
+- An up-to date JDK (i.e. Java 21 or later)
+- [Bun](https://bun.sh/) installed for building the web UI
+- Run `bun install` in the `web` directory to install the web UI dependencies
+
+### Plugin
 
 Build squaremap by invoking the `build` task with Gradle.
 
 ```
 ./gradlew build
 ```
+
+### Web UI
+
+The web UI will be automatically built and included in the plugin jar by Gradle when building the plugin.
+
+When using the various run tasks (i.e. `:squaremap-paper:runServer`), Gradle will pass the
+`squaremap.devFrontend=true` and `squaremap.frontendPath=<absolute path to ./web>` system properties to
+the server. When these properties are present, the plugin will attempt to run the Vite dev server and
+proxy requests to it. This allows hot module reloading to work when developing the web UI.
 
 ## bStats
 

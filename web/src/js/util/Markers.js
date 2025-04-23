@@ -1,4 +1,5 @@
 import { S } from "../Squaremap.js";
+import L from "leaflet";
 
 class Marker {
     /** @type {L.Marker} */

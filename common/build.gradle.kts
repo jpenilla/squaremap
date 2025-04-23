@@ -10,12 +10,6 @@ neoForge {
   accessTransformers.from(layout.projectDirectory.file("src/main/resources/squaremap-common-at.cfg"))
 }
 
-tasks.processResources {
-  from(file("../web/src")) {
-    into("web")
-  }
-}
-
 dependencies {
   api(projects.squaremapApi)
   api(libs.guice) {
@@ -58,4 +52,39 @@ dependencies {
   }
 
   compileOnly("curse.maven:moonrise-1096335:6008360")
+}
+
+@UntrackedTask(because = "Up-to-date checking for this needs further thought")
+abstract class BuildFrontend : DefaultTask() {
+  @get:OutputDirectory
+  abstract val outputDir: DirectoryProperty
+
+  @get:Internal
+  abstract val workingDir: DirectoryProperty
+
+  @get:Input
+  abstract val command: ListProperty<String>
+
+  @get:Inject
+  abstract val exec: ExecOperations
+
+  @TaskAction
+  fun run() {
+    exec.exec {
+      commandLine(command.get())
+      workingDir(this@BuildFrontend.workingDir.asFile)
+    }
+  }
+}
+
+val buildFrontend = tasks.register<BuildFrontend>("buildFrontend") {
+  outputDir = layout.buildDirectory.dir("web")
+  workingDir = layout.settingsDirectory.dir("web")
+  command = listOf("bun", "run", "build")
+}
+
+tasks.processResources {
+  from(buildFrontend.flatMap { it.outputDir }) {
+    into("web")
+  }
 }

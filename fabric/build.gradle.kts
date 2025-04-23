@@ -54,6 +54,12 @@ tasks.remapJar {
   archiveFileName = productionJarName(libs.versions.minecraft)
 }
 
+tasks.withType<net.fabricmc.loom.task.AbstractRunTask>().configureEach {
+  runProps(layout).forEach { (key, value) ->
+    systemProperty(key, value)
+  }
+}
+
 publishMods.modrinth {
   minecraftVersions.add(libs.versions.minecraft)
   modLoaders.add("fabric")

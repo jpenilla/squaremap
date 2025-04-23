@@ -2,11 +2,17 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.kyori.indra.git.IndraGitExtension
 import org.eclipse.jgit.lib.Repository
 import org.gradle.api.Project
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.language.jvm.tasks.ProcessResources
+
+fun runProps(layout: ProjectLayout): Map<String, String> = mapOf(
+  "squaremap.devFrontend" to "true",
+  "squaremap.frontendPath" to layout.settingsDirectory.dir("web").asFile.absolutePath,
+)
 
 val Project.releaseNotes: Provider<String>
   get() = providers.environmentVariable("RELEASE_NOTES")
