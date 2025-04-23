@@ -214,8 +214,9 @@ Array.prototype.remove = function () {
 };
 
 if (import.meta.hot) {
-    import.meta.hot.accept(() => {
-        // Just reload the page on JS changes for now
-        window.location.reload();
+    import.meta.hot.dispose(() => {
+        S.sidebar.remove();
+        S.map.remove();
     });
+    import.meta.hot.accept();
 }

@@ -62,6 +62,9 @@ class Sidebar {
     show(show) {
         this.sidebar.className = show ? "show" : "";
     }
+    remove() {
+        this.sidebar.remove();
+    }
 }
 
 export { Sidebar };
