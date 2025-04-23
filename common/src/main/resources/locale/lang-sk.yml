@@ -22,6 +22,7 @@ command:
                 </green><seconds> sekúnd.
             statusmessage: 'Protokolovanie priebehu vykresľovania povolené: <enabled>, interval:
                 <green><seconds></green> sekúnd'
+        link: "Click to open map: <green><click:open_url:'<link>'><link>"
         help:
             help: squaremap nápoveda pre príkazy
             command: Príkaz
@@ -76,6 +77,7 @@ command:
             rate: Nastavenie intervalu v sekundách pre protokolovanie priebehu vykresľovania
         hide: Skrytie hráča v zobrazení mapy
         show: Zobrazenie hráča v zobrazení mapy
+        link: Get a link to the map at your current location
     argument:
         optional-world: Predvolené nastavenie je aktuálny svet hráča, ak nie je zadaný iný
         optional-center: Predvolené nastavenie je (<white>0<gray>,</gray> 0</white>), ak nie je zadaný iný

@@ -24,6 +24,7 @@ command:
                 seconds
             statusmessage: 'Логирование хода рендеринга включено: <enabled>, интервал:
                 <green><seconds></green> seconds'
+        link: "Click to open map: <green><click:open_url:'<link>'><link>"
         help:
             help: помощь по команде squaremap
             command: Команда
@@ -77,6 +78,7 @@ command:
             rate: Устанавливает интервал логирования хода рендеринга (в секундах)
         hide: Скрыть игрока на карте
         show: Показать игрока на карте
+        link: Get a link to the map at your current location
     argument:
         optional-world: По умолчанию используется текущий мир игрока
         optional-center: По умолчанию используется (<white>0<gray>,</gray> 0</white>)

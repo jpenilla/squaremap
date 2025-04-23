@@ -21,6 +21,7 @@ import xyz.jpenilla.squaremap.common.command.commands.ConfirmCommand;
 import xyz.jpenilla.squaremap.common.command.commands.FullRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.HelpCommand;
 import xyz.jpenilla.squaremap.common.command.commands.HideShowCommands;
+import xyz.jpenilla.squaremap.common.command.commands.LinkCommand;
 import xyz.jpenilla.squaremap.common.command.commands.PauseRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ProgressLoggingCommand;
 import xyz.jpenilla.squaremap.common.command.commands.RadiusRenderCommand;
@@ -79,7 +80,8 @@ public final class Commands {
             ResetMapCommand.class,
             ProgressLoggingCommand.class,
             RadiusRenderCommand.class,
-            HideShowCommands.class
+            HideShowCommands.class,
+            LinkCommand.class
         );
 
         for (final Class<? extends SquaremapCommand> command : commands) {

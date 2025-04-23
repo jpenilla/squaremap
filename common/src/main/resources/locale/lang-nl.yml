@@ -23,6 +23,7 @@ command:
                 seconds
             statusmessage: 'Render progress logging enabled: <enabled>, interval:
                 <green><seconds></green> seconds'
+        link: "Click to open map: <green><click:open_url:'<link>'><link>"
         help:
             help: squaremap command help
             command: Command
@@ -77,6 +78,7 @@ command:
             rate: Sets the interval in seconds for logging render progress
         hide: Verberg een speler in de kaartweergave
         show: Toon een speler op de kaartweergave
+        link: Get a link to the map at your current location
     argument:
         optional-world: Wordt standaard ingesteld op de huidige wereld van de speler
             als deze niet is opgegeven

@@ -194,6 +194,11 @@ public final class Messages {
     @MessageKey("command.show.shown")
     public static ComponentMessage PLAYER_SHOWN = new ComponentMessage("<green><player> is no longer hidden from map");
 
+    @MessageKey("command.description.link")
+    public static ComponentMessage LINK_COMMAND_DESCRIPTION = new ComponentMessage("Get a link to the map at your current location");
+    @MessageKey("command.message.link")
+    public static ComponentMessage LINK_COMMAND_LINK_FORMAT = new ComponentMessage("Click to open map: <green><click:open_url:'<link>'><link>");
+
     @MessageKey("plugin-reloaded")
     public static ComponentMessage PLUGIN_RELOADED = new ComponentMessage("<green><name> v<version> reloaded");
 

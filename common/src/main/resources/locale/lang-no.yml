@@ -24,6 +24,7 @@ command:
                 sekunder
             statusmessage: 'Logg for rendringsfremdrift: <enabled>, intervall: <green><seconds></green>
                 sekunder'
+        link: "Click to open map: <green><click:open_url:'<link>'><link>"
         help:
             help: squaremap command help
             command: Command
@@ -78,6 +79,7 @@ command:
             rate: Angir intervallet i sekunder for logging av rendringsfremdrift
         hide: Skjul en spiller fra kartvisningen
         show: Vis en spiller på kartvisningen
+        link: Get a link to the map at your current location
     argument:
         optional-world: Sett standard til spillernes nåværende verden hvis ikke angitt
         optional-center: Sett standard til (<white>0<gray>,</gray> 0</white>) hvis

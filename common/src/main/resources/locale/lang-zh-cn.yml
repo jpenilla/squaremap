@@ -19,6 +19,7 @@ command:
             disabled: <green>渲染进度日志已禁用
             set-rate: <green>渲染进度日志的间隔已设置为 </green><seconds> 秒
             statusmessage: '渲染进度日志状态: <enabled>, 间隔: <green><seconds></green> 秒'
+        link: "Click to open map: <green><click:open_url:'<link>'><link>"
         help:
             help: squaremap 命令帮助
             command: 命令
@@ -65,6 +66,7 @@ command:
             rate: 设置渲染进度日志的间隔 (秒)
         hide: 在地图中隐藏玩家
         show: 在地图中显示玩家
+        link: Get a link to the map at your current location
     argument:
         optional-world: 如未指定世界, 则默认为玩家当前世界
         optional-center: 如未指定圆心, 则默认为 (<white>0<gray>,</gray> 0</white>)
