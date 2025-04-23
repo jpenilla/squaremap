@@ -4,5 +4,6 @@ export default defineConfig({
     build: {
         target: "esnext",
         outDir: "../common/build/web",
+        sourcemap: true,
     },
 });
