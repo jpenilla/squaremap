@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common.task;
 
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import java.awt.Color;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Key;
@@ -28,18 +31,30 @@ import xyz.jpenilla.squaremap.api.marker.MultiPolygon;
 import xyz.jpenilla.squaremap.api.marker.Polygon;
 import xyz.jpenilla.squaremap.api.marker.Polyline;
 import xyz.jpenilla.squaremap.api.marker.Rectangle;
+import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.util.FileUtil;
+import xyz.jpenilla.squaremap.common.httpd.JsonCache;
+import xyz.jpenilla.squaremap.common.util.Util;
 
 public final class UpdateMarkers implements Runnable {
     private final MapWorldInternal mapWorld;
+    private final String jsonPathString;
+    private final JsonCache jsonCache;
     private final Object2LongMap<Key> lastUpdatedTime = new Object2LongOpenHashMap<>();
     private final Map<Key, Map<String, Object>> layerCache = new HashMap<>();
     private final Map<Key, Map<String, Object>> serializedLayerCache = new HashMap<>();
     private long lastResetTime = Long.MIN_VALUE; // min value to ensure initial write even with no layers
 
-    public UpdateMarkers(final @NonNull MapWorldInternal mapWorld) {
+    @AssistedInject
+    private UpdateMarkers(
+        @Assisted final @NonNull MapWorldInternal mapWorld,
+        final @NonNull DirectoryProvider directoryProvider,
+        final @NonNull JsonCache jsonCache
+    ) {
         this.mapWorld = mapWorld;
+        final Path jsonPath = this.mapWorld.tilesPath().resolve("markers.json");
+        this.jsonPathString = "/" + directoryProvider.webDirectory().relativize(jsonPath).toString().replace("\\", "/");
+        this.jsonCache = jsonCache;
     }
 
     @Override
@@ -90,8 +105,7 @@ public final class UpdateMarkers implements Runnable {
 
         if (changed[0] || this.mapWorld.lastReset() != this.lastResetTime) {
             this.lastResetTime = this.mapWorld.lastReset();
-            final Path file = this.mapWorld.tilesPath().resolve("markers.json");
-            FileUtil.atomicWriteJsonAsync(file, layers);
+            ForkJoinPool.commonPool().execute(() -> this.jsonCache.put(this.jsonPathString, Util.gson().toJson(layers)));
         }
     }
 

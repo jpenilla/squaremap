@@ -8,6 +8,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.task.TaskFactory;
 import xyz.jpenilla.squaremap.common.task.UpdateMarkers;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 
@@ -20,11 +21,12 @@ public final class ForgeMapWorld extends MapWorldInternal {
         @Assisted final ServerLevel level,
         final RenderFactory renderFactory,
         final DirectoryProvider directoryProvider,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final TaskFactory taskFactory
     ) {
         super(level, renderFactory, directoryProvider, configManager);
 
-        this.updateMarkers = new UpdateMarkers(this);
+        this.updateMarkers = taskFactory.createUpdateMarkers(this);
     }
 
     public void tickEachSecond(final long tick) {

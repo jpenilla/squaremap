@@ -14,7 +14,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.task.UpdateMarkers;
+import xyz.jpenilla.squaremap.common.task.TaskFactory;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
 import xyz.jpenilla.squaremap.common.util.Util;
@@ -31,14 +31,15 @@ public final class PaperMapWorld extends MapWorldInternal {
         final RenderFactory renderFactory,
         final DirectoryProvider directoryProvider,
         final Server server,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final TaskFactory taskFactory
     ) {
         super(level, renderFactory, directoryProvider, configManager);
 
         if (Folia.FOLIA) {
-            this.markerTaskHandler = new FoliaMarkerTaskHandler(level);
+            this.markerTaskHandler = new FoliaMarkerTaskHandler(level, taskFactory);
         } else {
-            this.markerTaskHandler = new PaperMarkerTaskHandler(plugin, server);
+            this.markerTaskHandler = new PaperMarkerTaskHandler(plugin, server, taskFactory);
         }
     }
 
@@ -57,10 +58,11 @@ public final class PaperMapWorld extends MapWorldInternal {
 
         private PaperMarkerTaskHandler(
             final JavaPlugin plugin,
-            final Server server
+            final Server server,
+            final TaskFactory taskFactory
         ) {
             this.updateMarkersTask = server.getScheduler()
-                .runTaskTimer(plugin, new UpdateMarkers(PaperMapWorld.this), 20 * 5, 20L * PaperMapWorld.this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
+                .runTaskTimer(plugin, taskFactory.createUpdateMarkers(PaperMapWorld.this), 20 * 5, 20L * PaperMapWorld.this.config().MARKER_API_UPDATE_INTERVAL_SECONDS);
         }
 
         @Override
@@ -73,10 +75,10 @@ public final class PaperMapWorld extends MapWorldInternal {
         private final ScheduledExecutorService markerThread;
         private final ScheduledFuture<?> updateMarkersTask;
 
-        private FoliaMarkerTaskHandler(final ServerLevel level) {
+        private FoliaMarkerTaskHandler(final ServerLevel level, final TaskFactory taskFactory) {
             this.markerThread = new ExceptionLoggingScheduledThreadPoolExecutor(1, Util.squaremapThreadFactory("markers", level));
             this.updateMarkersTask = this.markerThread.scheduleAtFixedRate(
-                new UpdateMarkers(PaperMapWorld.this),
+                taskFactory.createUpdateMarkers(PaperMapWorld.this),
                 5,
                 PaperMapWorld.this.config().MARKER_API_UPDATE_INTERVAL_SECONDS,
                 TimeUnit.SECONDS

@@ -52,11 +52,15 @@ class World {
         }
     }
     tickMarkers() {
-        S.getJSON(`tiles/${this.name}/markers.json`, (json) => {
-            if (this === S.worldList.curWorld) {
-                this.markers(json);
-            }
-        });
+        S.getJSON(
+            `tiles/${this.name}/markers.json`,
+            (json) => {
+                if (this === S.worldList.curWorld) {
+                    this.markers(json);
+                }
+            },
+            true,
+        );
     }
     unload() {
         S.playerList.clearPlayerMarkers();

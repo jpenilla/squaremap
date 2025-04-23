@@ -15,6 +15,7 @@ import xyz.jpenilla.squaremap.common.inject.module.ApiModule;
 import xyz.jpenilla.squaremap.common.inject.module.PlatformModule;
 import xyz.jpenilla.squaremap.common.inject.module.VanillaChunkSnapshotProviderFactoryModule;
 import xyz.jpenilla.squaremap.common.inject.module.VanillaRegionFileDirectoryResolverModule;
+import xyz.jpenilla.squaremap.common.task.TaskFactory;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.EntityScheduler;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
@@ -90,7 +91,8 @@ public final class SquaremapModulesBuilder {
             new ApiModule(),
             new PlatformModule(this.platform, this.platformClass, this.squaremapJarAccess, this.entitySchedulerClass, this.worldManagerClass),
             new FactoryModuleBuilder().build(RenderFactory.class),
-            new FactoryModuleBuilder().implement(MapWorldInternal.class, this.mapWorldClass).build(MapWorldInternal.Factory.class)
+            new FactoryModuleBuilder().implement(MapWorldInternal.class, this.mapWorldClass).build(MapWorldInternal.Factory.class),
+            new FactoryModuleBuilder().build(TaskFactory.class)
         );
 
         final List<Module> modules = new ArrayList<>(baseModules);

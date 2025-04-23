@@ -65,19 +65,19 @@ public final class JsonCache {
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
-        if (json == null) {
-            this.cache.remove(path);
-            return;
-        }
-        final CacheEntry existing = this.cache.get(path);
-        if (existing != null && existing.data.equals(json)) {
-            return;
-        }
-        final CacheEntry entry = CacheEntry.create(json);
-        this.cache.put(path, entry);
-        if (Config.FLUSH_JSON_IMMEDIATELY || !Config.HTTPD_ENABLED) {
-            this.write(path, json);
-        }
+        this.cache.compute(path, (pathKey, existing) -> {
+            if (json == null) {
+                return null;
+            }
+            if (existing != null && existing.data.equals(json)) {
+                return existing;
+            }
+            final CacheEntry entry = CacheEntry.create(json);
+            if (Config.FLUSH_JSON_IMMEDIATELY || !Config.HTTPD_ENABLED) {
+                this.write(path, json);
+            }
+            return entry;
+        });
     }
 
     public void flush() {
