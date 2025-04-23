@@ -146,9 +146,15 @@ class SquaremapMap {
     /**
      * @param {string} url
      * @param {(json: any) => void} fn
+     * @param {boolean} cache
      */
-    getJSON(url, fn) {
-        fetch(url, { cache: "no-store" }).then(async (res) => {
+    getJSON(url, fn, cache = false) {
+        /** @type {RequestInit} */
+        let options = {};
+        if (!cache) {
+            options.cache = "no-store";
+        }
+        fetch(url, options).then(async (res) => {
             if (res.ok) {
                 fn(await res.json());
             }

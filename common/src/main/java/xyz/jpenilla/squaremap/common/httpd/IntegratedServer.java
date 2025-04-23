@@ -94,15 +94,15 @@ public final class IntegratedServer {
         final ProxyHandler finalProxyHandler = devProxyHandler;
 
         return exchange -> {
+            if (CACHE.handle(exchange)) {
+                return;
+            }
+
             if (exchange.getRelativePath().startsWith("/tiles")) {
                 exchange.getResponseHeaders().put(
                     Headers.CACHE_CONTROL,
                     "max-age=0, must-revalidate, no-cache"
                 );
-            }
-
-            if (CACHE.handle(exchange)) {
-                return;
             }
 
             if (finalProxyHandler != null

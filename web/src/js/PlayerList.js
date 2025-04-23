@@ -45,6 +45,7 @@ class PlayerList {
                     this.jsonCache = json;
                     callback();
                 },
+                true,
             );
         };
 

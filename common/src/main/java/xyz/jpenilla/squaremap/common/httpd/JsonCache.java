@@ -19,8 +19,14 @@ import xyz.jpenilla.squaremap.common.util.FileUtil;
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class JsonCache {
+    private record CacheEntry(String data, long timestamp) {
+        static CacheEntry create(final String data) {
+            return new CacheEntry(data, System.currentTimeMillis());
+        }
+    }
+
     private final DirectoryProvider directoryProvider;
-    private final Map<String, String> cache = new ConcurrentHashMap<>();
+    private final Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
 
     @Inject
     private JsonCache(final DirectoryProvider directoryProvider) {
@@ -28,17 +34,29 @@ public final class JsonCache {
     }
 
     boolean handle(final HttpServerExchange exchange) {
-        final @Nullable String cached = this.cache.get(exchange.getRelativePath());
+        final @Nullable CacheEntry cached = this.cache.get(exchange.getRelativePath());
         if (cached == null) {
             return false;
         }
 
+        final String timestamp = String.valueOf(cached.timestamp);
         exchange.getRequestHeaders().put(
             Headers.CONTENT_TYPE,
             "application/json"
         );
+        exchange.getResponseHeaders().put(
+            Headers.ETAG,
+            timestamp
+        );
 
-        exchange.getResponseSender().send(cached);
+        final String requestedEtag = exchange.getRequestHeaders().getFirst(Headers.IF_NONE_MATCH);
+        if (requestedEtag != null && requestedEtag.equals(timestamp)) {
+            exchange.setStatusCode(304);
+            exchange.endExchange();
+            return true;
+        }
+
+        exchange.getResponseSender().send(cached.data);
 
         return true;
     }
@@ -47,21 +65,23 @@ public final class JsonCache {
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException(path);
         }
-
         if (json == null) {
             this.cache.remove(path);
             return;
         }
-
-        this.cache.put(path, json);
-
+        final CacheEntry existing = this.cache.get(path);
+        if (existing != null && existing.data.equals(json)) {
+            return;
+        }
+        final CacheEntry entry = CacheEntry.create(json);
+        this.cache.put(path, entry);
         if (Config.FLUSH_JSON_IMMEDIATELY || !Config.HTTPD_ENABLED) {
             this.write(path, json);
         }
     }
 
     public void flush() {
-        this.cache.forEach(this::write);
+        this.cache.forEach((path, entry) -> this.write(path, entry.data));
     }
 
     public void clear() {
