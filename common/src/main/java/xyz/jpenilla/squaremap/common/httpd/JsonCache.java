@@ -40,7 +40,7 @@ public final class JsonCache {
         }
 
         final String timestamp = String.valueOf(cached.timestamp);
-        exchange.getRequestHeaders().put(
+        exchange.getResponseHeaders().put(
             Headers.CONTENT_TYPE,
             "application/json"
         );
