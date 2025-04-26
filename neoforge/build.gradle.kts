@@ -18,6 +18,7 @@ neoForge {
     }
     register("server") {
       server()
+      programArgument("nogui")
     }
     configureEach {
       loadedMods.set(emptySet())
@@ -38,6 +39,7 @@ tasks.withType<RunGameTask>().configureEach {
       overwrite = true
     )
   }
+  standardInput = System.`in`
 }
 
 dependencies {
