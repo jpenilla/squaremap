@@ -83,7 +83,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("xyz.jpenilla", "squaremap-api", "1.3.4")
+    compileOnly("xyz.jpenilla", "squaremap-api", "1.3.5")
 }
 ```
 
