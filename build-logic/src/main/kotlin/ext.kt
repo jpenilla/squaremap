@@ -6,11 +6,12 @@ import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFile
 import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.language.jvm.tasks.ProcessResources
 
-fun runProps(layout: ProjectLayout): Map<String, String> = mapOf(
-  "squaremap.devFrontend" to "true",
+fun runProps(layout: ProjectLayout, providers: ProviderFactory): Map<String, String> = mapOf(
+  "squaremap.devFrontend" to providers.gradleProperty("devFrontend").getOrElse("true"),
   "squaremap.frontendPath" to layout.settingsDirectory.dir("web").asFile.absolutePath,
 )
 

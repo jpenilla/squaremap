@@ -45,7 +45,7 @@ tasks {
     ))
   }
   runServer {
-    runProps(layout).forEach { (key, value) ->
+    runProps(layout, providers).forEach { (key, value) ->
       systemProperty(key, value)
     }
   }

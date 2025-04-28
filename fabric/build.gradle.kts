@@ -55,7 +55,7 @@ tasks.remapJar {
 }
 
 tasks.withType<net.fabricmc.loom.task.AbstractRunTask>().configureEach {
-  runProps(layout).forEach { (key, value) ->
+  runProps(layout, providers).forEach { (key, value) ->
     systemProperty(key, value)
   }
 }
