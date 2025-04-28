@@ -71,7 +71,7 @@ Maven
 <dependency>
     <groupId>xyz.jpenilla</groupId>
     <artifactId>squaremap-api</artifactId>
-    <version>1.3.4</version>
+    <version>1.3.5</version>
     <scope>provided</scope>
 </dependency>
 ```
