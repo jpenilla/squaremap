@@ -75,7 +75,7 @@ bStatsBukkit = { group = "org.bstats", name = "bstats-bukkit", version.ref = "bS
 
 checkerQual = { group = "org.checkerframework", name = "checker-qual", version.ref = "checkerQual" }
 paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi" }
-foliaApi = "dev.folia:folia-api:1.20.6-R0.1-SNAPSHOT"
+foliaApi = "dev.folia:folia-api:1.21.4-R0.1-SNAPSHOT"
 
 undertow = { group = "io.undertow", name = "undertow-core", version = "2.3.18.Final" }
 
