@@ -56,7 +56,7 @@ sponge {
 
 tasks {
   productionJar {
-    archiveFileName.set(productionJarName(minecraftVersion))
+    archiveFileName = productionJarName(minecraftVersion)
   }
   shadowJar {
     listOf(

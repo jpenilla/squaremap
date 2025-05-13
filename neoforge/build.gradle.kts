@@ -2,6 +2,7 @@ import net.neoforged.moddevgradle.internal.RunGameTask
 
 plugins {
   id("squaremap.platform.mdg")
+  alias(libs.plugins.resource.factory.neoforge)
 }
 
 repositories {
@@ -69,7 +70,29 @@ tasks.productionJar {
   archiveFileName = productionJarName(libs.versions.minecraft)
 }
 
-squaremapPlatform.modInfoFilePath = "META-INF/neoforge.mods.toml"
+neoForgeModsToml {
+  mitLicense()
+  issueTrackerUrl = githubUrl.map { "${it}issues/" }
+  showAsResourcePack = false
+  mixins("squaremap-forge.mixins.json")
+
+  conventionMod("squaremap") {
+    displayName = "squaremap"
+    displayUrl = githubUrl
+    authors = "jmp"
+
+    dependencies {
+      required("neoforge", "[21.0,)")
+      required("minecraft", libs.versions.minecraft.get())
+      required("cloud", "*") {
+        after()
+      }
+      required("adventure_platform_neoforge", "*") {
+        after()
+      }
+    }
+  }
+}
 
 publishMods.modrinth {
   minecraftVersions.add(libs.versions.minecraft)

@@ -1,5 +1,8 @@
+import xyz.jpenilla.resourcefactory.fabric.Environment
+
 plugins {
   id("squaremap.platform.loom")
+  alias(libs.plugins.resource.factory.fabric)
 }
 
 loom.accessWidenerPath = layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener")
@@ -48,8 +51,6 @@ dependencies {
   include(libs.cardinalComponentsEntity)
 }
 
-squaremapPlatform.modInfoFilePath = "fabric.mod.json"
-
 tasks.remapJar {
   archiveFileName = productionJarName(libs.versions.minecraft)
 }
@@ -58,6 +59,29 @@ tasks.withType<net.fabricmc.loom.task.AbstractRunTask>().configureEach {
   runProps(layout, providers).forEach { (key, value) ->
     systemProperty(key, value)
   }
+}
+
+fabricModJson {
+  id = "squaremap"
+  name = "squaremap"
+  author("jmp")
+  contact {
+    homepage = githubUrl
+    sources = githubUrl
+    issues = githubUrl.map { "${it}issues/" }
+  }
+  environment = Environment.ANY
+  mainEntrypoint("xyz.jpenilla.squaremap.fabric.SquaremapFabricInitializer")
+  entrypoint("cardinal-components", "xyz.jpenilla.squaremap.fabric.SquaremapComponentInitializer")
+  custom.put("cardinal-components", simpleCustomValueList(listOf("squaremap:player_component")))
+  mitLicense()
+  mixin("squaremap-fabric.mixins.json")
+  accessWidener = "squaremap-fabric.accesswidener"
+  depends("fabric-api", "*")
+  depends("fabricloader", ">=0.16.7")
+  depends("minecraft", libs.versions.minecraft.get())
+  depends("cloud", "*")
+  depends("adventure-platform-fabric", "*")
 }
 
 publishMods.modrinth {

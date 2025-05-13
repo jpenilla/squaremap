@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -42,7 +41,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
     private @Nullable UpdatePlayers updatePlayers;
     private @Nullable UpdateWorldData updateWorldData;
 
-    private SquaremapFabric() {
+    SquaremapFabric() {
         this.injector = Guice.createInjector(
             SquaremapModulesBuilder.forPlatform(this)
                 .mapWorld(FabricMapWorld.class)
@@ -158,13 +157,6 @@ public final class SquaremapFabric implements SquaremapPlatform {
                 }
             });
             ClientPlayConnectionEvents.DISCONNECT.register(($, $$) -> exportedFluids.set(false));
-        }
-    }
-
-    public static final class Initializer implements ModInitializer {
-        @Override
-        public void onInitialize() {
-            new SquaremapFabric();
         }
     }
 }

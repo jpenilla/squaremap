@@ -1,10 +1,12 @@
 import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
+import xyz.jpenilla.resourcefactory.bukkit.BukkitPluginYaml
 
 plugins {
   id("squaremap.platform")
   id("io.papermc.paperweight.userdev")
   alias(libs.plugins.run.paper)
   alias(libs.plugins.hangar.publish)
+  alias(libs.plugins.resource.factory.bukkit)
 }
 
 val minecraftVersion = libs.versions.minecraft
@@ -36,14 +38,6 @@ tasks {
       "org.aopalliance",
     ).forEach(::reloc)
   }
-  processResources {
-    expandIn("plugin.yml", mapOf(
-      "version" to project.version,
-      "website" to providers.gradleProperty("githubUrl").get(),
-      "description" to project.description,
-      "apiVersion" to minecraftVersion.get(),
-    ))
-  }
   runServer {
     runProps(layout, providers).forEach { (key, value) ->
       systemProperty(key, value)
@@ -58,6 +52,16 @@ runPaper.folia.registerTask()
 paperweight {
   injectPaperRepository = false
   reobfArtifactConfiguration = ReobfArtifactConfiguration.MOJANG_PRODUCTION
+}
+
+bukkitPluginYaml {
+  name = "squaremap"
+  main = "xyz.jpenilla.squaremap.paper.SquaremapPaperBootstrap"
+  load = BukkitPluginYaml.PluginLoadOrder.STARTUP
+  authors = listOf("jmp")
+  website = githubUrl
+  apiVersion = minecraftVersion
+  foliaSupported = true
 }
 
 hangarPublish.publications.register("plugin") {
