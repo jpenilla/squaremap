@@ -27,7 +27,7 @@ command:
                 segundos
             statusmessage: 'Registro de progresso de renderização habilitado: <enabled>, intervalo:
                 <green><seconds></green> segundos'
-        link: "Click to open map: <green><click:open_url:'<link>'><link>"
+        link: "Clique para abrir o mapa: <green><click:open_url:'<link>'><link>"
         help:
             help: ajuda do comando squaremap
             command: Comando
@@ -82,7 +82,7 @@ command:
             rate: Define o intervalo em segundos para registrar o progresso da renderização
         hide: Esconder um jogador no mapa
         show: Mostrar um jogador no mapa
-        link: Get a link to the map at your current location
+        link: Obtenha um link para o mapa em sua localização atual
     argument:
         optional-world: O padrão é o mundo atual do jogador se não for fornecido
         optional-center: O padrão é (<white>0<gray>,</gray> 0</white>) se não for especificado
