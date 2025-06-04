@@ -9,7 +9,7 @@ resource-factory-fabric = { id = "xyz.jpenilla.resource-factory-fabric-conventio
 resource-factory-neoforge = { id = "xyz.jpenilla.resource-factory-neoforge-convention", version.ref = "resource-factory" }
 
 [versions]
-minecraft = "1.21.5"
+minecraft = "1.21.6-pre3"
 checkerQual = "3.49.2"
 cloud = "2.0.0"
 cloudMinecraft = "2.0.0-beta.10"
@@ -27,8 +27,8 @@ fabricApi = "0.127.0+1.21.5"
 fabricLoader = "0.16.14"
 cardinalComponents = "6.3.1"
 guice = "7.0.0"
-neoforge = "21.5.75"
-neoform = "1.21.5-20250325.162830"
+neoforge = "21.6.3-beta"
+neoform = "1.21.6-pre3-20250604.141722"
 htmlSanitizer = "20240325.1"
 resource-factory = "1.3.0"
 
