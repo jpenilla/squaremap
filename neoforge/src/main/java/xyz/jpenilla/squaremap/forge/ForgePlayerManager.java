@@ -6,12 +6,12 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.Component;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -25,7 +25,7 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, "squaremap");
     private static final Supplier<AttachmentType<SquaremapPlayerData>> PLAYER_DATA = ATTACHMENT_TYPES.register(
         "player_data",
-        () -> AttachmentType.<CompoundTag, SquaremapPlayerData>serializable(SquaremapPlayerDataImpl::new)
+        () -> AttachmentType.<SquaremapPlayerData>serializable(SquaremapPlayerDataImpl::new)
             .copyOnDeath()
             .build()
     );
@@ -60,7 +60,7 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
         ATTACHMENT_TYPES.register(this.modEventBus);
     }
 
-    public interface SquaremapPlayerData extends INBTSerializable<CompoundTag> {
+    public interface SquaremapPlayerData extends ValueIOSerializable {
         void hidden(boolean value);
 
         boolean hidden();
@@ -71,15 +71,13 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
         private boolean hidden;
 
         @Override
-        public CompoundTag serializeNBT(final HolderLookup.Provider provider) {
-            final CompoundTag tag = new CompoundTag();
-            tag.putBoolean("hidden", this.hidden());
-            return tag;
+        public void serialize(final ValueOutput valueOutput) {
+            valueOutput.putBoolean("hidden", this.hidden());
         }
 
         @Override
-        public void deserializeNBT(final HolderLookup.Provider provider, final CompoundTag arg) {
-            this.hidden(arg.getBooleanOr("hidden", false));
+        public void deserialize(final ValueInput valueInput) {
+            this.hidden(valueInput.getBooleanOr("hidden", false));
         }
 
         @Override
