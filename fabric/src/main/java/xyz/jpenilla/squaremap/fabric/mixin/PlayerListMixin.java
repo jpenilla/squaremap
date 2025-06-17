@@ -19,7 +19,7 @@ abstract class PlayerListMixin {
         at = @At("HEAD")
     )
     void injectRespawnHead(ServerPlayer serverPlayer, boolean bl, Entity.RemovalReason removalReason, CallbackInfoReturnable<ServerPlayer> cir) {
-        this.preRespawnLevel.set((ServerLevel) serverPlayer.level());
+        this.preRespawnLevel.set(serverPlayer.level());
     }
 
     @Inject(

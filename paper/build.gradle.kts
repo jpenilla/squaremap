@@ -10,9 +10,13 @@ plugins {
 }
 
 val minecraftVersion = libs.versions.minecraft
+val plainMinecraftVersion = minecraftVersion.get()
+  .split("[.-]".toRegex())
+  .mapNotNull { s -> s.toIntOrNull() }
+  .joinToString(".")
 
 dependencies {
-  paperweight.paperDevBundle(minecraftVersion.map { "$it-R0.1-SNAPSHOT" })
+  paperweight.paperDevBundle("$plainMinecraftVersion-R0.1-SNAPSHOT")
 
   implementation(projects.squaremapCommon)
   implementation(projects.squaremapPaper.folia)
@@ -60,7 +64,7 @@ bukkitPluginYaml {
   load = BukkitPluginYaml.PluginLoadOrder.STARTUP
   authors = listOf("jmp")
   website = githubUrl
-  apiVersion = minecraftVersion
+  apiVersion = plainMinecraftVersion
   foliaSupported = true
 }
 
