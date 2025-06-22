@@ -70,6 +70,8 @@ abstract class BuildFrontend : DefaultTask() {
 
   @TaskAction
   fun run() {
+    outputDir.get().asFile.deleteRecursively()
+    outputDir.get().asFile.mkdirs()
     exec.exec {
       commandLine(command.get())
       workingDir(this@BuildFrontend.workingDir.asFile)
@@ -80,7 +82,13 @@ abstract class BuildFrontend : DefaultTask() {
 val buildFrontend = tasks.register<BuildFrontend>("buildFrontend") {
   outputDir = layout.buildDirectory.dir("web")
   workingDir = layout.settingsDirectory.dir("web")
-  command = listOf("bun", "run", "build")
+  val isWindows = System.getProperty("os.name").lowercase().contains("win")
+  command = if (isWindows) {
+    // Not sure if this will always work, Windows users can complain if it doesn't
+    listOf("bun", "run", "build")
+  } else {
+    listOf("bash", "-c", "bun run build")
+  }
 }
 
 tasks.processResources {
