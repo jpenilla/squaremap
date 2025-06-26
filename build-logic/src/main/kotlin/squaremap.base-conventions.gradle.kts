@@ -24,6 +24,11 @@ repositories {
       snapshotsOnly()
     }
   }
+  maven("https://central.sonatype.com/repository/maven-snapshots/") {
+    mavenContent {
+      snapshotsOnly()
+    }
+  }
   sonatype.s01Snapshots()
   sonatype.ossSnapshots()
   maven("https://repo.papermc.io/repository/maven-public/")
