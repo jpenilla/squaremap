@@ -1,8 +1,8 @@
 package xyz.jpenilla.squaremap.fabric;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
@@ -34,13 +34,13 @@ public class SquaremapComponentInitializer implements EntityComponentInitializer
         private boolean hidden;
 
         @Override
-        public void readFromNbt(final CompoundTag tag, final HolderLookup.Provider registryLookup) {
-            this.hidden = tag.getBooleanOr(HIDDEN_KEY, false);
+        public void readData(final ValueInput output) {
+            this.hidden = output.getBooleanOr(HIDDEN_KEY, false);
         }
 
         @Override
-        public void writeToNbt(final CompoundTag tag, final HolderLookup.Provider registryLookup) {
-            tag.putBoolean(HIDDEN_KEY, this.hidden);
+        public void writeData(final ValueOutput input) {
+            input.putBoolean(HIDDEN_KEY, this.hidden);
         }
 
         @Override
