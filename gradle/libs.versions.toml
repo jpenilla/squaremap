@@ -91,7 +91,7 @@ mixin = { group = "org.spongepowered", name = "mixin", version = "0.8.7" }
 
 fabricApi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabricApi" }
 fabricLoader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabricLoader" }
-fabricPermissionsApi = "me.lucko:fabric-permissions-api:0.4.0"
+fabricPermissionsApi = "me.lucko:fabric-permissions-api:0.4.1"
 
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 
