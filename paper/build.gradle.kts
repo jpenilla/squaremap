@@ -9,6 +9,19 @@ plugins {
   alias(libs.plugins.resource.factory.bukkit)
 }
 
+repositories {
+  val repo = maven("https://maven-prs.papermc.io/Paper/pr12741") {
+    name = "Maven for PR #12741" // https://github.com/PaperMC/Paper/pull/12741
+    mavenContent {
+      includeModule("io.papermc.paper", "dev-bundle")
+      includeModule("io.papermc.paper", "paper-api")
+    }
+  }
+  // Move it to the front :D
+  remove(repo)
+  add(0, repo)
+}
+
 val minecraftVersion = libs.versions.minecraft
 val plainMinecraftVersion = minecraftVersion.get()
   .split("[.-]".toRegex())
