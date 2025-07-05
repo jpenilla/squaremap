@@ -1,6 +1,5 @@
 plugins {
   id("squaremap.publishing")
-  alias(libs.plugins.javadoc.links)
 }
 
 description = "API for extending squaremap, a minimalistic and lightweight world map viewer for Minecraft servers"

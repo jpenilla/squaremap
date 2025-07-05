@@ -15,7 +15,7 @@ repositories {
 dependencies {
   implementation(libs.mdg)
   implementation(libs.indraCommon)
-  implementation(libs.indraPublishingSonatype)
+  implementation(libs.cloud.build.logic)
   implementation(libs.shadow)
   implementation(libs.mod.publish.plugin)
   implementation(libs.loom)

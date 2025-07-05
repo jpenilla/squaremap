@@ -52,13 +52,13 @@ jobs:
           fi
       - name: "publish snapshot to sonatype snapshots"
         if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
-        run: ./gradlew publish
+        run: ./gradlew publishAllPublicationsToSonatypeSnapshots
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
       - name: "publish release to maven central"
         if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
-        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+        run: ./gradlew publishReleaseCentralPortalBundle
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"

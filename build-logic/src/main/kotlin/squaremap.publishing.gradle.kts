@@ -1,6 +1,8 @@
 plugins {
   id("squaremap.base-conventions")
   id("net.kyori.indra.publishing")
+  id("org.incendo.cloud-build-logic.publishing")
+  id("org.incendo.cloud-build-logic.javadoc-links")
 }
 
 signing {

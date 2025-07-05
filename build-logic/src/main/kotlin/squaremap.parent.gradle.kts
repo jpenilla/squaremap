@@ -1,8 +1,4 @@
 plugins {
   base
-  id("net.kyori.indra.publishing.sonatype")
-}
-
-indraSonatype {
-  useAlternateSonatypeOSSHost("s01")
+  id("org.incendo.cloud-build-logic.publishing.root-project")
 }

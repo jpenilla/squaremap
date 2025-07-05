@@ -3,7 +3,6 @@ sponge-gradle-plugin = { id = "org.spongepowered.gradle.plugin", version.ref = "
 sponge-gradle-ore = { id = "org.spongepowered.gradle.ore", version.ref = "sponge-gradle" }
 run-paper = { id = "xyz.jpenilla.run-paper", version = "2.3.1" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.3" }
-javadoc-links = { id = "org.incendo.cloud-build-logic.javadoc-links", version = "0.0.17" }
 resource-factory-bukkit = { id = "xyz.jpenilla.resource-factory-bukkit-convention", version.ref = "resource-factory" }
 resource-factory-fabric = { id = "xyz.jpenilla.resource-factory-fabric-convention", version.ref = "resource-factory" }
 resource-factory-neoforge = { id = "xyz.jpenilla.resource-factory-neoforge-convention", version.ref = "resource-factory" }
@@ -40,6 +39,7 @@ mod-publish-plugin = "0.8.4"
 loom = "1.11-SNAPSHOT"
 mdg = "2.0.99"
 paperweight = "2.0.0-beta.18"
+cloud-build-logic = "0.0.17"
 
 [libraries]
 guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
@@ -102,11 +102,11 @@ zNeoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforg
 
 # buildSrc
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
-indraPublishingSonatype = { group = "net.kyori", name = "indra-publishing-sonatype", version.ref = "indra" }
 shadow = { group = "com.gradleup.shadow", name = "shadow-gradle-plugin", version.ref = "shadow" }
 mod-publish-plugin = { module = "me.modmuss50:mod-publish-plugin", version.ref = "mod-publish-plugin" }
 loom = { module = "net.fabricmc:quiet-fabric-loom", version.ref = "loom" }
 mdg = { module = "net.neoforged:moddev-gradle", version.ref = "mdg" }
 paperweightUserdev = { group = "io.papermc.paperweight", name = "paperweight-userdev", version.ref = "paperweight" }
+cloud-build-logic = { module = "org.incendo:cloud-build-logic", version.ref = "cloud-build-logic" }
 
 [bundles]
