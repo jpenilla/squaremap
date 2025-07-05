@@ -122,7 +122,7 @@ public final class SquaremapPaper implements SquaremapPlatform {
     }
 
     @Override
-    public @NonNull String version() {
-        return this.plugin.getDescription().getVersion();
+    public String version() {
+        return this.plugin.getPluginMeta().getVersion();
     }
 }
