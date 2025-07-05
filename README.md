@@ -71,7 +71,7 @@ Maven
 <dependency>
     <groupId>xyz.jpenilla</groupId>
     <artifactId>squaremap-api</artifactId>
-    <version>1.3.6</version>
+    <version>1.3.7</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -83,7 +83,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("xyz.jpenilla", "squaremap-api", "1.3.6")
+    compileOnly("xyz.jpenilla", "squaremap-api", "1.3.7")
 }
 ```
 
