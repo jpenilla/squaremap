@@ -29,10 +29,10 @@ class UILink {
         });
         this.showLinkButton = show;
         this.link = new Link();
+        S.map.addControl(this.link);
         if (!json.enabled) {
             this.link._link.style.display = "none";
         }
-        S.map.addControl(this.link);
     }
 }
 
