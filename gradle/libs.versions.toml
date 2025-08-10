@@ -34,7 +34,7 @@ resource-factory = "1.3.0"
 # buildSrc
 indra = "3.2.0"
 sponge-gradle = "2.3.0"
-shadow = "8.3.8"
+shadow = "8.3.9"
 mod-publish-plugin = "0.8.4"
 loom = "1.11-SNAPSHOT"
 mdg = "2.0.103"
