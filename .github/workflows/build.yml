@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "checkout git repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: "setup bun"
         uses: oven-sh/setup-bun@v2
       - name: "install bun dependencies"
