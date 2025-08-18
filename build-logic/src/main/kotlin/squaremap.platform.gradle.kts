@@ -21,6 +21,7 @@ tasks {
     }
   }
   shadowJar {
+    mergeServiceFiles()
     from(rootProject.projectDir.resolve("LICENSE")) {
       rename("LICENSE", "META-INF/LICENSE_${rootProject.name}")
     }
@@ -35,7 +36,6 @@ tasks {
       "org.owasp.html",
       "org.owasp.shim",
       "org.spongepowered.configurate",
-      "org.yaml.snakeyaml"
     ).forEach(::reloc)
   }
   val copyJar = register("copyJar", CopyFile::class) {
