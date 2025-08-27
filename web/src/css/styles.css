@@ -118,12 +118,12 @@ div.leaflet-control-layers.coordinates {
 #sidebar fieldset#worlds {
     margin: -15px 0 0;
     overflow-y: auto; /* Make the world list scrollable */
-    max-height: 50%;  /* Allow both lists to co-exist in harmony */
+    max-height: 50%; /* Allow both lists to co-exist in harmony */
 }
 #sidebar fieldset#players {
     margin: 10px 0 0;
     overflow-y: auto;
-    max-height: 50%;  /* Allow both lists to co-exist in harmony */
+    max-height: 50%; /* Allow both lists to co-exist in harmony */
 }
 #sidebar fieldset#players::-webkit-scrollbar {
     width: 6px;
