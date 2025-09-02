@@ -14,7 +14,7 @@
         "globals": "^16.0.0",
         "leaflet": "^1.9.4",
         "prettier": "^3.5.3",
-        "vite": "^6.3.2"
+        "vite": "^7.0.0"
     },
     "private": true,
     "type": "module"
