@@ -29,7 +29,7 @@ guice = "7.0.0"
 neoforge = "21.8.29"
 neoform = "1.21.8-20250717.133445"
 htmlSanitizer = "20240325.1"
-resource-factory = "1.3.0"
+resource-factory = "1.3.1"
 
 # buildSrc
 indra = "3.2.0"
