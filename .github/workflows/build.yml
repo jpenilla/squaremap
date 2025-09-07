@@ -21,7 +21,7 @@ jobs:
       - name: "lint frontend"
         run: cd web && bun run lint
       - name: "setup jdk"
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: 21
