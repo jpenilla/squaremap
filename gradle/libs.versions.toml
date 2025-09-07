@@ -1,7 +1,7 @@
 [plugins]
 sponge-gradle-plugin = { id = "org.spongepowered.gradle.plugin", version.ref = "sponge-gradle" }
 sponge-gradle-ore = { id = "org.spongepowered.gradle.ore", version.ref = "sponge-gradle" }
-run-paper = { id = "xyz.jpenilla.run-paper", version = "2.3.1" }
+run-paper = { id = "xyz.jpenilla.run-paper", version = "3.0.0" }
 hangar-publish = { id = "io.papermc.hangar-publish-plugin", version = "0.1.3" }
 resource-factory-bukkit = { id = "xyz.jpenilla.resource-factory-bukkit-convention", version.ref = "resource-factory" }
 resource-factory-fabric = { id = "xyz.jpenilla.resource-factory-fabric-convention", version.ref = "resource-factory" }
