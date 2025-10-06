@@ -1,9 +1,9 @@
 package xyz.jpenilla.squaremap.forge;
 
 import com.google.inject.Inject;
-import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.material.Fluid;
@@ -39,7 +39,7 @@ public final class ForgeFluidColorExporter extends AbstractFluidColorExporter {
 
     public static int color(final FluidType fluidType) {
         final IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(fluidType);
-        final TextureAtlasSprite sprite = new Material(TextureAtlas.LOCATION_BLOCKS, ext.getStillTexture()).sprite();
+        final TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS).getSprite(ext.getStillTexture());
         final ColorBlender blender = new ColorBlender();
         for (int i = 0; i < sprite.contents().width(); i++) {
             for (int h = 0; h < sprite.contents().height(); h++) {

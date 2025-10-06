@@ -26,7 +26,7 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
 
     @Override
     public boolean hasPermission(final String permission) {
-        return Permissions.check(this.stack, permission, this.stack.getServer().getOperatorUserPermissionLevel());
+        return Permissions.check(this.stack, permission, this.stack.getServer().operatorUserPermissionLevel());
     }
 
     public CommandSourceStack stack() {
@@ -57,7 +57,7 @@ public class FabricCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public Object commanderId() {
-            return this.player().getGameProfile().getId();
+            return this.player().getGameProfile().id();
         }
     }
 }

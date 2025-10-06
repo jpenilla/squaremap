@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
@@ -65,10 +66,13 @@ public final class SpawnIconLayer implements LayerProvider {
 
     @Override
     public Collection<Marker> getMarkers() {
-        final BlockPos spawn = this.world.serverLevel().getSharedSpawnPos();
-        return List.of(
-            Marker.icon(point(spawn.getX(), spawn.getZ()), KEY, 16)
-                .markerOptions(this.options)
-        );
+        final @Nullable BlockPos spawn = this.world.getSpawnPos();
+        if (spawn != null) {
+            return List.of(
+                Marker.icon(point(spawn.getX(), spawn.getZ()), KEY, 16)
+                    .markerOptions(this.options)
+            );
+        }
+        return List.of();
     }
 }

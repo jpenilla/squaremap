@@ -55,7 +55,7 @@ public class SpongeCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public Object commanderId() {
-            return this.player().getGameProfile().getId();
+            return this.player().getGameProfile().id();
         }
     }
 }

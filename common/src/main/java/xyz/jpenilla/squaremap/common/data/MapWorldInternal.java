@@ -13,9 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.LevelData;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.MapWorld;
@@ -136,6 +139,22 @@ public abstract class MapWorldInternal implements MapWorld {
 
     public Path tilesPath() {
         return this.tilesPath;
+    }
+
+    public @Nullable BlockPos getSpawnPos() {
+        final LevelData.RespawnData respawnData = this.level.getServer().getRespawnData();
+        if (respawnData.dimension().equals(this.level.dimension())) {
+            return respawnData.pos();
+        }
+        return null;
+    }
+
+    public final BlockPos getAnySpawnPos() {
+        @Nullable BlockPos pos = this.getSpawnPos();
+        if (pos == null) {
+            pos = this.level.getServer().getRespawnData().pos();
+        }
+        return pos;
     }
 
     @SuppressWarnings("ConstantConditions") // params for getMapColor are never used, check on mc update

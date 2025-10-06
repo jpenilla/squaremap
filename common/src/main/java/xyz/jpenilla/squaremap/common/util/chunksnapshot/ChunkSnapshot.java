@@ -60,7 +60,7 @@ public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBi
                 empty[i] = sectionEmpty;
 
                 if (sectionEmpty) {
-                    states[i] = ChunkSnapshotImpl.EMPTY_SECTION_BLOCK_STATES;
+                    states[i] = EmptySectionHolder.getEmptySectionBlockStates();
                 } else {
                     states[i] = sections[i].getStates().copy();
                 }
