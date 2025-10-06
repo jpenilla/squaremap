@@ -40,7 +40,7 @@ public final class ForgePlayerManager extends AbstractPlayerManager {
 
     @Override
     public Component displayName(final ServerPlayer player) {
-        final MinecraftServerAudiences audiences = MinecraftServerAudiences.of(player.getServer());
+        final MinecraftServerAudiences audiences = MinecraftServerAudiences.of(player.level().getServer());
         return Optional.ofNullable(player.getDisplayName())
             .map(audiences::asAdventure)
             .orElseGet(() -> audiences.asAdventure(player.getName()));

@@ -30,7 +30,7 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
 
     @Override
     public boolean hasPermission(final String permission) {
-        return this.stack.hasPermission(this.stack.getServer().getOperatorUserPermissionLevel());
+        return this.stack.hasPermission(this.stack.getServer().operatorUserPermissionLevel());
     }
 
     public CommandSourceStack stack() {
@@ -63,7 +63,7 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
 
         @Override
         public Object commanderId() {
-            return this.player().getGameProfile().getId();
+            return this.player().getGameProfile().id();
         }
 
         @SuppressWarnings("unchecked")

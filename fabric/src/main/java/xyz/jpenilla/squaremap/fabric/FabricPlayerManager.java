@@ -19,7 +19,7 @@ public final class FabricPlayerManager extends AbstractPlayerManager {
 
     @Override
     public Component displayName(final ServerPlayer player) {
-        return MinecraftServerAudiences.of(player.getServer()).asAdventure(player.getDisplayName());
+        return MinecraftServerAudiences.of(player.level().getServer()).asAdventure(player.getDisplayName());
     }
 
     @Override

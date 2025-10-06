@@ -91,7 +91,7 @@ public final class UpdatePlayers implements Runnable {
                 }
                 final Map<String, Object> playerEntry = new HashMap<>();
                 final Vec3 playerLoc = player.position();
-                playerEntry.put("name", player.getGameProfile().getName());
+                playerEntry.put("name", player.getGameProfile().name());
                 if (worldConfig.PLAYER_TRACKER_USE_DISPLAY_NAME) {
                     playerEntry.put("display_name", htmlComponentSerializer.serialize(this.playerManager.displayName(player)));
                 }

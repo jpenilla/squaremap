@@ -47,7 +47,7 @@ public final class Components {
     }
 
     public static TagResolver.Single playerPlaceholder(final ServerPlayer player) {
-        return placeholder("player", player.getGameProfile().getName());
+        return placeholder("player", player.getGameProfile().name());
     }
 
     public static Component highlightSpecialCharacters(final Component component, final TextColor highlightColor) {

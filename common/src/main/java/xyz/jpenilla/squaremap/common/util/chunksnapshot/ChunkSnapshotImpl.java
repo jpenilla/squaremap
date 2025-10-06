@@ -9,14 +9,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.PalettedContainerFactory;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -30,11 +31,7 @@ record ChunkSnapshotImpl(
     DimensionType dimensionType,
     ChunkPos pos
 ) implements ChunkSnapshot {
-    static final PalettedContainer<BlockState> EMPTY_SECTION_BLOCK_STATES = new PalettedContainer<>(
-        Block.BLOCK_STATE_REGISTRY,
-        Blocks.AIR.defaultBlockState(),
-        PalettedContainer.Strategy.SECTION_STATES
-    );
+
     static final EnumMap<Heightmap.Types, HeightmapSnapshot> EMPTY_HEIGHTMAPS = new EnumMap<>(Heightmap.Types.class);
 
     @Override

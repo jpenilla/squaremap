@@ -106,7 +106,7 @@ public final class UpdateWorldData implements Runnable {
         final WorldConfig worldConfig
     ) {
         final Map<String, Object> spawn = new HashMap<>();
-        final BlockPos loc = level.getSharedSpawnPos();
+        final BlockPos loc = mapWorld.getAnySpawnPos();
         spawn.put("x", loc.getX());
         spawn.put("z", loc.getZ());
 
@@ -157,7 +157,7 @@ public final class UpdateWorldData implements Runnable {
 
     private record ChangingData(BlockPos spawn, long lastReset) {
         static ChangingData snapshot(final MapWorldInternal world) {
-            return new ChangingData(world.serverLevel().getSharedSpawnPos(), world.lastReset());
+            return new ChangingData(world.getAnySpawnPos(), world.lastReset());
         }
     }
 }

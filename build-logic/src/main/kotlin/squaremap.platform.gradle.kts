@@ -22,6 +22,11 @@ tasks {
   }
   shadowJar {
     mergeServiceFiles()
+    // Needed for mergeServiceFiles to work properly in Shadow 9+
+    filesMatching("META-INF/services/**") {
+      duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+
     from(rootProject.projectDir.resolve("LICENSE")) {
       rename("LICENSE", "META-INF/LICENSE_${rootProject.name}")
     }
