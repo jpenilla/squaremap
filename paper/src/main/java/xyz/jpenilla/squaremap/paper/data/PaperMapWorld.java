@@ -5,11 +5,13 @@ import com.google.inject.assistedinject.AssistedInject;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
@@ -41,6 +43,11 @@ public final class PaperMapWorld extends MapWorldInternal {
         } else {
             this.markerTaskHandler = new PaperMarkerTaskHandler(plugin, server, taskFactory);
         }
+    }
+
+    @Override
+    public BlockPos getSpawnPos() {
+        return this.serverLevel().serverLevelData.getRespawnData().pos();
     }
 
     @Override
