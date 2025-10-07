@@ -53,6 +53,7 @@ public class WorldManagerImpl implements WorldManager {
     }
 
     public void initWorld(final ServerLevel level) {
+        EmptySectionHolder.init(level.palettedContainerFactory());
         final WorldIdentifier identifier = Util.worldIdentifier(level);
         if (this.worlds.containsKey(identifier)) {
             throw new IllegalStateException("MapWorld already exists for '" + identifier.asString() + "'");
@@ -64,7 +65,6 @@ public class WorldManagerImpl implements WorldManager {
 
     public void start() {
         for (final ServerLevel level : this.serverAccess.levels()) {
-            EmptySectionHolder.init(level.palettedContainerFactory());
             this.initWorld(level);
         }
     }
