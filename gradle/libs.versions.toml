@@ -37,7 +37,7 @@ sponge-gradle = "2.3.0"
 shadow = "9.2.2"
 mod-publish-plugin = "1.0.0"
 loom = "1.11-SNAPSHOT"
-mdg = "2.0.113"
+mdg = "2.0.115"
 paperweight = "2.0.0-beta.18"
 cloud-build-logic = "0.0.17"
 
