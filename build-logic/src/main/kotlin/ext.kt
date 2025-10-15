@@ -1,6 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.kyori.indra.git.IndraGitExtension
-import org.eclipse.jgit.lib.Repository
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFile
@@ -20,7 +19,7 @@ val Project.releaseNotes: Provider<String>
 val Project.githubUrl: Provider<String>
   get() = providers.gradleProperty("githubUrl")
 
-fun Project.lastCommitHash(): String = extensions.getByType<IndraGitExtension>().commit()?.name?.substring(0, 7)
+fun Project.lastCommitHash(): String = extensions.getByType<IndraGitExtension>().commit().orNull?.name?.substring(0, 7)
   ?: error("Could not determine commit hash")
 
 fun Project.decorateVersion() {
@@ -44,10 +43,7 @@ fun Project.currentBranch(): String {
 
   val indraGit = extensions.getByType<IndraGitExtension>().takeIf { it.isPresent }
 
-  val ref = indraGit?.git()?.repository?.exactRef("HEAD")?.target
-    ?: return "detached-head"
-
-  return Repository.shortenRefName(ref.name)
+  return indraGit?.branchName()?.orNull ?: "detached-head"
 }
 
 fun Project.productionJarName(mcVer: Provider<String>): Provider<String> = extensions.getByType<BasePluginExtension>()
