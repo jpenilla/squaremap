@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "checkout git repository"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: "setup bun"
         uses: oven-sh/setup-bun@v2
       - name: "install bun dependencies"
@@ -83,7 +83,7 @@ jobs:
           ORE_TOKEN: "${{ secrets.ORE_TOKEN }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
       - name: "upload artifacts"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
             name: artifacts
             path: "build/libs/*.jar"
