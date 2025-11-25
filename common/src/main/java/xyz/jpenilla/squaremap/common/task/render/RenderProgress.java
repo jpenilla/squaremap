@@ -52,7 +52,7 @@ public final class RenderProgress extends TimerTask {
         if (!Config.PROGRESS_LOGGING) {
             return null;
         }
-        final Timer timer = new Timer("squaremap-render-progresslogger-[" + render.level.dimension().location() + "]");
+        final Timer timer = new Timer("squaremap-render-progresslogger-[" + render.level.dimension().identifier() + "]");
         final RenderProgress renderProgress = new RenderProgress(render, old);
         timer.scheduleAtFixedRate(renderProgress, 1000L, 1000L);
         return Pair.of(timer, renderProgress);

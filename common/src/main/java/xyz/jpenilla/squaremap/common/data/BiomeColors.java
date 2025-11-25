@@ -80,7 +80,7 @@ public final class BiomeColors {
     }
 
     private int grassColorSampler(final Biome biome, final BlockPos pos) {
-        return biome.getSpecialEffects().getGrassColorModifier().modifyColor(pos.getX(), pos.getZ(), this.colorData.grassColors().getInt(biome));
+        return biome.getSpecialEffects().grassColorModifier().modifyColor(pos.getX(), pos.getZ(), this.colorData.grassColors().getInt(biome));
     }
 
     private int foliage(final BlockPos pos) {

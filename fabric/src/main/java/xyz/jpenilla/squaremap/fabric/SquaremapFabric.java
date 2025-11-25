@@ -14,7 +14,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -75,7 +75,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
             ServerLifecycleEvents.SERVER_STARTED.register($ -> this.common.updateCheck());
         }
 
-        final ResourceLocation early = ResourceLocation.parse("squaremap:early");
+        final Identifier early = Identifier.parse("squaremap:early");
         ServerWorldEvents.LOAD.register(early, (server, level) -> this.worldManager.initWorld(level));
         ServerWorldEvents.LOAD.addPhaseOrdering(early, Event.DEFAULT_PHASE);
 

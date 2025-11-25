@@ -61,7 +61,7 @@ public final class DirectoryProvider {
         } catch (final IOException ex) {
             Logging.error(
                 Messages.LOG_COULD_NOT_CREATE_DIR,
-                new IllegalStateException("Failed to create data directory for world '%s'".formatted(level.dimension().location()), ex),
+                new IllegalStateException("Failed to create data directory for world '%s'".formatted(level.dimension().identifier()), ex),
                 "path", data.toAbsolutePath()
             );
         }
@@ -77,7 +77,7 @@ public final class DirectoryProvider {
         } catch (final IOException ex) {
             Logging.error(
                 Messages.LOG_COULD_NOT_CREATE_DIR,
-                new IllegalStateException("Failed to create tiles directory for world '%s'".formatted(level.dimension().location()), ex),
+                new IllegalStateException("Failed to create tiles directory for world '%s'".formatted(level.dimension().identifier()), ex),
                 "path", dir.toAbsolutePath()
             );
         }

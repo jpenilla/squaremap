@@ -55,7 +55,7 @@ public final class ResetMapCommand extends SquaremapCommand {
         try {
             FileUtil.deleteContentsRecursively(worldTilesDir);
         } catch (final IOException ex) {
-            throw new RuntimeException("Could not reset map for level '" + world.dimension().location() + "'", ex);
+            throw new RuntimeException("Could not reset map for level '" + world.dimension().identifier() + "'", ex);
         }
         this.worldManager.getWorldIfEnabled(world).ifPresent(MapWorldInternal::didReset);
         sender.sendMessage(Messages.SUCCESSFULLY_RESET_MAP.withPlaceholders(Components.worldPlaceholder(world)));

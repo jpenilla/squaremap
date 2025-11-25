@@ -59,8 +59,8 @@ public final class FabricServerAccess implements ServerAccess {
             return null;
         }
         for (final ServerLevel level : this.server.getAllLevels()) {
-            if (level.dimension().location().getNamespace().equals(identifier.namespace())
-                && level.dimension().location().getPath().equals(identifier.value())) {
+            if (level.dimension().identifier().getNamespace().equals(identifier.namespace())
+                && level.dimension().identifier().getPath().equals(identifier.value())) {
                 return level;
             }
         }

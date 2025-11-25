@@ -54,6 +54,13 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
         }
     }
 
+    private static String getMinecraftVersion() {
+        String name = Bukkit.getMinecraftVersion();
+        name = name.replace(" Pre-Release ", "-pre");
+        name = name.replace(" Release Candidate ", "-rc");
+        return name;
+    }
+
     private boolean checkCompatibility() {
         try {
             Class.forName("com.destroystokyo.paper.PaperConfig");
@@ -68,14 +75,14 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
                 "Cannot proceed to load squaremap with mappings mismatch."
             );
         }
-        if (!Bukkit.getMinecraftVersion().equals(TARGET_MINECRAFT_VERSION)) {
+        if (!getMinecraftVersion().equals(TARGET_MINECRAFT_VERSION)) {
             if (mojangMapped) {
                 // When we have proper mappings, we may be able to load on a newer version than we compiled for
                 // if Minecraft's code didn't change in a way that breaks squaremap. Still print a warning.
                 this.logIncompatibilityMessage(
                     Level.WARNING,
                     "This squaremap jar is built for Minecraft " + TARGET_MINECRAFT_VERSION + ".",
-                    "It will attempt to load even though the current Minecraft version is " + Bukkit.getMinecraftVersion(),
+                    "It will attempt to load even though the current Minecraft version is " + getMinecraftVersion(),
                     "as the environment is Mojang-mapped. This may or may not work, prefer running",
                     "the correct squaremap version for your server. Check for newer or older releases",
                     "which are intended for your Minecraft version at " + SQUAREMAP_RELEASES_URL + ".",
@@ -86,7 +93,7 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
             }
             return this.incompatible(
                 "This squaremap jar is built for Minecraft " + TARGET_MINECRAFT_VERSION + ".",
-                "It cannot run in the current environment (Minecraft " + Bukkit.getMinecraftVersion() + ").",
+                "It cannot run in the current environment (Minecraft " + getMinecraftVersion() + ").",
                 "Check for newer or older releases which are compatible with your Minecraft version",
                 "at " + SQUAREMAP_RELEASES_URL + ". Keep in mind only the latest release",
                 "of squaremap is officially supported."

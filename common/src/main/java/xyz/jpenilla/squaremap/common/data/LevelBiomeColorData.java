@@ -50,19 +50,19 @@ public record LevelBiomeColorData(
             float humidity = Mth.clamp(downfall(biome), 0.0F, 1.0F);
             grassColors.put(
                 biome,
-                biome.getSpecialEffects().getGrassColorOverride()
+                biome.getSpecialEffects().grassColorOverride()
                     .orElse(defaultGrassColor(temperature, humidity))
                     .intValue()
             );
             foliageColors.put(
                 biome,
-                biome.getSpecialEffects().getFoliageColorOverride()
+                biome.getSpecialEffects().foliageColorOverride()
                     .orElse(Colors.mix(Colors.plantMapColor(), defaultFoliageColor(temperature, humidity), 0.85f))
                     .intValue()
             );
             waterColors.put(
                 biome,
-                biome.getSpecialEffects().getWaterColor()
+                biome.getSpecialEffects().waterColor()
             );
         }
 

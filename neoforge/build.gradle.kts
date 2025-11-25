@@ -7,6 +7,14 @@ plugins {
 
 repositories {
   maven("https://maven.neoforged.net/releases/")
+  maven { // TODO remove on neoforge release
+    name = "Maven for PR #2815" // https://github.com/neoforged/NeoForge/pull/2815
+    url = uri("https://prmaven.neoforged.net/NeoForge/pr2815")
+    content {
+      includeModule("net.neoforged", "neoforge")
+      includeModule("net.neoforged", "testframework")
+    }
+  }
 }
 
 neoForge {

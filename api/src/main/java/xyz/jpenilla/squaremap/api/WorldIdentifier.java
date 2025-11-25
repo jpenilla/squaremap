@@ -6,7 +6,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 /**
  * Namespaced identifier used to query worlds from squaremap.
  *
- * <p>Mirrors Minecraft's {@code ResourceLocation}. This means the same rules apply regarding allowed characters.</p>
+ * <p>Mirrors Minecraft's {@code Identifier}. This means the same rules apply regarding allowed characters.</p>
  *
  * @see <a href="https://minecraft.wiki/w/Resource_location#Legal_characters">https://minecraft.wiki/w/Resource_location#Legal_characters</a>
  */

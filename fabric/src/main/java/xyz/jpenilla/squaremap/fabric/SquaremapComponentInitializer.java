@@ -1,6 +1,6 @@
 package xyz.jpenilla.squaremap.fabric;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -15,7 +15,7 @@ import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy;
 @DefaultQualifier(NonNull.class)
 public class SquaremapComponentInitializer implements EntityComponentInitializer {
     public static final ComponentKey<PlayerComponent> SQUAREMAP_PLAYER_COMPONENT =
-        ComponentRegistryV3.INSTANCE.getOrCreate(ResourceLocation.parse("squaremap:player_component"), PlayerComponent.class);
+        ComponentRegistryV3.INSTANCE.getOrCreate(Identifier.parse("squaremap:player_component"), PlayerComponent.class);
 
     @Override
     public void registerEntityComponentFactories(final EntityComponentFactoryRegistry registry) {

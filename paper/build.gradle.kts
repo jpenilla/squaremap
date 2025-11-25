@@ -10,6 +10,16 @@ plugins {
   alias(libs.plugins.resource.factory.bukkit)
 }
 
+repositories { // TODO remove when PR merged
+  maven("https://maven-prs.papermc.io/Paper/pr13194") {
+    name = "Maven for PR #13194" // https://github.com/PaperMC/Paper/pull/13194
+    mavenContent {
+      includeModule("io.papermc.paper", "dev-bundle")
+      includeModule("io.papermc.paper", "paper-api")
+    }
+  }
+}
+
 val minecraftVersion = libs.versions.minecraft
 val plainMinecraftVersion = minecraftVersion.get()
   .split("[.-]".toRegex())
@@ -17,7 +27,7 @@ val plainMinecraftVersion = minecraftVersion.get()
   .joinToString(".")
 
 dependencies {
-  paperweight.paperDevBundle("$plainMinecraftVersion-R0.1-SNAPSHOT")
+  paperweight.paperDevBundle("${minecraftVersion.get()}-R0.1-SNAPSHOT")
 
   implementation(projects.squaremapCommon)
   implementation(projects.squaremapPaper.folia)
