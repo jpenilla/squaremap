@@ -64,7 +64,13 @@ record PaperChunkSnapshotProvider(
 
     private Executor executor(final int x, final int z) {
         if (!Folia.FOLIA) {
-            return this.level.getServer();
+            return task -> {
+                if (this.level.getServer().isSameThread()) {
+                    task.run();
+                    return;
+                }
+                this.level.getServer().execute(task);
+            };
         }
         return task -> {
             if (this.server.isOwnedByCurrentRegion(this.level.getWorld(), x, z)) {

@@ -3,9 +3,9 @@ package xyz.jpenilla.squaremap.common.util.chunksnapshot;
 import ca.spottedleaf.moonrise.common.PlatformHooks;
 import ca.spottedleaf.moonrise.libs.ca.spottedleaf.concurrentutil.util.Priority;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
@@ -22,6 +22,16 @@ import xyz.jpenilla.squaremap.common.util.ChunkMapAccess;
 record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) implements ChunkSnapshotProvider {
     private static final Identifier FULL = BuiltInRegistries.CHUNK_STATUS.getKey(ChunkStatus.FULL);
 
+    private Executor mainThreadExecutor() {
+        return task -> {
+            if (this.level.getServer().isSameThread()) {
+                task.run();
+                return;
+            }
+            this.level.getServer().execute(task);
+        };
+    }
+
     @Override
     public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(final int x, final int z) {
         if (this.moonrise) {
@@ -33,7 +43,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
                 return null;
             }
             return ChunkSnapshot.snapshot(this.level, chunk, false);
-        }, this.level.getServer());
+        }, this.mainThreadExecutor());
     }
 
     private CompletableFuture<@Nullable ChunkSnapshot> moonriseAsyncSnapshot(final int x, final int z) {
@@ -67,7 +77,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
                 }
             );
             return load;
-        }, this.level.getServer()).thenCompose(future -> future);
+        }, this.mainThreadExecutor()).thenCompose(future -> future);
     }
 
     private static @Nullable ChunkAccess chunkIfGenerated(final ServerLevel level, final int x, final int z) {
