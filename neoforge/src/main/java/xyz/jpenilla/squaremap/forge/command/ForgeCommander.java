@@ -7,6 +7,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permission;
 import net.neoforged.neoforge.server.permission.PermissionAPI;
 import net.neoforged.neoforge.server.permission.nodes.PermissionNode;
 import net.neoforged.neoforge.server.permission.nodes.PermissionTypes;
@@ -30,7 +31,8 @@ public class ForgeCommander implements Commander, ForwardingAudience.Single {
 
     @Override
     public boolean hasPermission(final String permission) {
-        return this.stack.hasPermission(this.stack.getServer().operatorUserPermissionLevel());
+        final var p = new Permission.HasCommandLevel(this.stack.getServer().operatorUserPermissions().level());
+        return this.stack.permissions().hasPermission(p);
     }
 
     public CommandSourceStack stack() {

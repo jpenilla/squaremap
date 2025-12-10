@@ -6,7 +6,9 @@ plugins {
 }
 
 repositories {
-  maven("https://maven.neoforged.net/releases/")
+  maven("https://maven.neoforged.net/releases/") {
+    mavenContent { releasesOnly() }
+  }
 }
 
 neoForge {

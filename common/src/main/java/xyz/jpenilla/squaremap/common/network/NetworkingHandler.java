@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.maps.MapId;
@@ -28,7 +28,7 @@ import xyz.jpenilla.squaremap.common.util.Util;
  */
 @DefaultQualifier(NonNull.class)
 public final class NetworkingHandler {
-    public static final ResourceLocation CHANNEL = ResourceLocation.parse("squaremap:client");
+    public static final Identifier CHANNEL = Identifier.parse("squaremap:client");
 
     private final WorldManager worldManager;
     private final ServerAccess serverAccess;
@@ -87,7 +87,7 @@ public final class NetworkingHandler {
             out.writeInt(mapWorld.config().ZOOM_EXTRA);
         }
 
-        out.writeUTF(player.level().dimension().location().toString());
+        out.writeUTF(player.level().dimension().identifier().toString());
 
         send(player, out);
     }
@@ -117,7 +117,7 @@ public final class NetworkingHandler {
             return out;
         }
 
-        final @Nullable ServerLevel world = this.serverAccess.level(Util.worldIdentifier(mapData.dimension.location()));
+        final @Nullable ServerLevel world = this.serverAccess.level(Util.worldIdentifier(mapData.dimension.identifier()));
         if (world == null) {
             out.writeInt(Constants.ERROR_NO_SUCH_WORLD);
             out.writeInt(id);
@@ -135,7 +135,7 @@ public final class NetworkingHandler {
         out.writeByte(mapData.scale);
         out.writeInt(mapData.centerX);
         out.writeInt(mapData.centerZ);
-        out.writeUTF(world.dimension().location().toString());
+        out.writeUTF(world.dimension().identifier().toString());
 
         return out;
     }
@@ -150,7 +150,7 @@ public final class NetworkingHandler {
         out.writeInt(Constants.PROTOCOL);
         out.writeInt(Constants.RESPONSE_SUCCESS);
 
-        out.writeUTF(player.level().dimension().location().toString());
+        out.writeUTF(player.level().dimension().identifier().toString());
 
         send(player, out);
     }
@@ -168,7 +168,7 @@ public final class NetworkingHandler {
         }
 
         @Override
-        public ResourceLocation id() {
+        public Identifier id() {
             return CHANNEL;
         }
     }

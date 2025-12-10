@@ -18,7 +18,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.CommonLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
@@ -60,7 +60,7 @@ public final class Util {
     }
 
     public static ThreadFactory squaremapThreadFactory(final String name, final ServerLevel level) {
-        return squaremapThreadFactory(name + "-[" + level.dimension().location() + "]");
+        return squaremapThreadFactory(name + "-[" + level.dimension().identifier() + "]");
     }
 
     public static ThreadPoolExecutor newFixedThreadPool(final int size, final ThreadFactory threadFactory, final RejectedExecutionHandler rejectedExecutionHandler) {
@@ -88,7 +88,7 @@ public final class Util {
         }
     }
 
-    public static <T> T requireEntry(final Registry<T> registry, final ResourceLocation location) {
+    public static <T> T requireEntry(final Registry<T> registry, final Identifier location) {
         // manually check for key, we don't want the default value if registry is a DefaultedRegistry
         if (!registry.containsKey(location)) {
             throw new IllegalArgumentException("No such entry '" + location + "' in registry '" + registry.key() + "'");
@@ -97,19 +97,19 @@ public final class Util {
     }
 
     public static String levelConfigName(final ServerLevel level) {
-        return level.dimension().location().toString();
+        return level.dimension().identifier().toString();
     }
 
     public static String levelWebName(final ServerLevel level) {
-        return level.dimension().location().toString().replace(":", "_");
+        return level.dimension().identifier().toString().replace(":", "_");
     }
 
     public static WorldIdentifier worldIdentifier(final ServerLevel level) {
-        final ResourceLocation location = level.dimension().location();
+        final Identifier location = level.dimension().identifier();
         return worldIdentifier(location);
     }
 
-    public static WorldIdentifier worldIdentifier(final ResourceLocation location) {
+    public static WorldIdentifier worldIdentifier(final Identifier location) {
         return WorldIdentifier.create(location.getNamespace(), location.getPath());
     }
 

@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.util.ComponentMessageThrowable;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -39,7 +39,7 @@ public final class MapWorldParser<C> implements ArgumentParser<C, MapWorldIntern
     public ArgumentParseResult<MapWorldInternal> parse(final CommandContext<C> commandContext, final CommandInput commandInput) {
         final String input = commandInput.readString();
 
-        final @Nullable ResourceLocation key = ResourceLocation.tryParse(input);
+        final @Nullable Identifier key = Identifier.tryParse(input);
         if (key == null || key.getPath().isEmpty()) {
             return failure(new MapWorldParseException(input, MapWorldParseException.FailureReason.NO_SUCH_WORLD));
         }
@@ -62,7 +62,7 @@ public final class MapWorldParser<C> implements ArgumentParser<C, MapWorldIntern
         return commandContext.get(Commands.WORLD_MANAGER).worlds().stream()
             .flatMap(mapWorld -> {
                 final WorldIdentifier identifier = mapWorld.identifier();
-                if (!commandInput.remainingInput().isBlank() && identifier.namespace().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
+                if (!commandInput.remainingInput().isBlank() && identifier.namespace().equals(Identifier.DEFAULT_NAMESPACE)) {
                     return Stream.of(identifier.value(), identifier.asString());
                 }
                 return Stream.of(identifier.asString());

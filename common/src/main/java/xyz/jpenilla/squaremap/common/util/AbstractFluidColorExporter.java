@@ -39,7 +39,7 @@ public abstract class AbstractFluidColorExporter {
             }
             final @Nullable String color = this.color(fluid);
             if (color != null) {
-                map.put(entry.getKey().location().toString(), color);
+                map.put(entry.getKey().identifier().toString(), color);
             }
         });
 

@@ -43,7 +43,7 @@ public final class Components {
     }
 
     public static TagResolver.Single worldPlaceholder(final ServerLevel level) {
-        return placeholder("world", level.dimension().location());
+        return placeholder("world", level.dimension().identifier());
     }
 
     public static TagResolver.Single playerPlaceholder(final ServerPlayer player) {

@@ -2,7 +2,7 @@ package xyz.jpenilla.squaremap.common.command.argument.parser;
 
 import java.util.List;
 import java.util.stream.Stream;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -30,7 +30,7 @@ public final class LevelParser<C> implements ArgumentParser<C, ServerLevel>, Blo
     public ArgumentParseResult<ServerLevel> parse(final CommandContext<C> commandContext, final CommandInput commandInput) {
         final String input = commandInput.readString();
 
-        final @Nullable ResourceLocation key = ResourceLocation.tryParse(input);
+        final @Nullable Identifier key = Identifier.tryParse(input);
         if (key == null || key.getPath().isEmpty()) {
             return failure(new MapWorldParser.MapWorldParseException(input, MapWorldParser.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
         }
@@ -47,8 +47,8 @@ public final class LevelParser<C> implements ArgumentParser<C, ServerLevel>, Blo
     public List<String> stringSuggestions(final CommandContext<C> commandContext, final CommandInput commandInput) {
         return commandContext.get(Commands.SERVER_ACCESS).levels().stream()
             .flatMap(mapWorld -> {
-                final ResourceLocation identifier = mapWorld.dimension().location();
-                if (!commandInput.remainingInput().isBlank() && identifier.getNamespace().equals(ResourceLocation.DEFAULT_NAMESPACE)) {
+                final Identifier identifier = mapWorld.dimension().identifier();
+                if (!commandInput.remainingInput().isBlank() && identifier.getNamespace().equals(Identifier.DEFAULT_NAMESPACE)) {
                     return Stream.of(identifier.getPath(), identifier.toString());
                 }
                 return Stream.of(identifier.toString());

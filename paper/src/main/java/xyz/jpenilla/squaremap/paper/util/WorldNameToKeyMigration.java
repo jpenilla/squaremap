@@ -26,7 +26,7 @@ public final class WorldNameToKeyMigration {
         try {
             moveDirectories(directoryProvider, level);
         } catch (final IOException ex) {
-            Logging.logger().error("Failed to migrate directories for '{}'", level.dimension().location());
+            Logging.logger().error("Failed to migrate directories for '{}'", level.dimension().identifier());
         }
     }
 
