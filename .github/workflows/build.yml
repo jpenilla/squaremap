@@ -29,7 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
         # gradle-build-action doesn't support caching files in the project dir
       - name: "cache project local caches"
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             .gradle/loom-cache
@@ -83,7 +83,7 @@ jobs:
           ORE_TOKEN: "${{ secrets.ORE_TOKEN }}"
           RELEASE_NOTES: "${{ github.event.release.body }}"
       - name: "upload artifacts"
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
             name: artifacts
             path: "build/libs/*.jar"
