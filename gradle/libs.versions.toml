@@ -39,7 +39,7 @@ mod-publish-plugin = "1.1.0"
 loom = "1.13-SNAPSHOT"
 mdg = "2.0.140"
 paperweight = "2.0.0-beta.19"
-cloud-build-logic = "0.0.17"
+cloud-build-logic = "0.0.18"
 
 [libraries]
 guice = { group = "com.google.inject", name = "guice", version.ref = "guice" }
