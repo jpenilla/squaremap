@@ -11,7 +11,7 @@ public final class ChunkHashMapKey implements Comparable<ChunkHashMapKey> {
     }
 
     public ChunkHashMapKey(final ChunkPos pos) {
-        this(ChunkPos.pack(pos.x(), pos.z()));
+        this(pos.pack());
     }
 
     @Override
