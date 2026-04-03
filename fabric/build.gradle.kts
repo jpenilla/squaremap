@@ -17,9 +17,8 @@ repositories {
 
 dependencies {
   minecraft(libs.minecraft)
-  mappings(loom.officialMojangMappings())
-  modImplementation(libs.fabricLoader)
-  modImplementation(libs.fabricApi)
+  implementation(libs.fabricLoader)
+  implementation(libs.fabricApi)
 
   shade(projects.squaremapCommon) {
     exclude("org.incendo", "cloud-core")
@@ -28,13 +27,13 @@ dependencies {
     exclude("io.leangen.geantyref")
   }
 
-  modImplementation(libs.adventurePlatformFabric)
+  implementation(libs.adventurePlatformFabric)
   include(libs.adventurePlatformFabric)
 
-  modImplementation(libs.cloudFabric)
+  implementation(libs.cloudFabric)
   include(libs.cloudFabric)
 
-  modImplementation(libs.fabricPermissionsApi)
+  implementation(libs.fabricPermissionsApi)
   include(libs.fabricPermissionsApi)
 
   implementation(libs.cloudMinecraftExtras) {
@@ -45,13 +44,13 @@ dependencies {
   include(libs.cloudConfirmation)
   include(libs.cloudProcessorsCommon)
 
-  modImplementation(libs.cardinalComponentsBase)
+  implementation(libs.cardinalComponentsBase)
   include(libs.cardinalComponentsBase)
-  modImplementation(libs.cardinalComponentsEntity)
+  implementation(libs.cardinalComponentsEntity)
   include(libs.cardinalComponentsEntity)
 }
 
-tasks.remapJar {
+tasks.shadowJar {
   archiveFileName = productionJarName(libs.versions.minecraft)
 }
 

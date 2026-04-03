@@ -10,8 +10,8 @@ description = rootProject.description
 
 indra {
   javaVersions {
-    minimumToolchain(21)
-    target(21)
+    minimumToolchain(25)
+    target(25)
   }
 }
 

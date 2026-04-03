@@ -625,8 +625,8 @@ public abstract class AbstractRender implements Runnable {
                 return future;
             }
 
-            final int x = chunkPos.x;
-            final int z = chunkPos.z;
+            final int x = chunkPos.x();
+            final int z = chunkPos.z();
 
             final List<CompletableFuture<@Nullable ChunkSnapshot>> neighborFutures = List.of(
                 this.snapshotDirect(new ChunkPos(x - 1, z - 1)),

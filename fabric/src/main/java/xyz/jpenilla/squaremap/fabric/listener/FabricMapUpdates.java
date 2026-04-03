@@ -68,7 +68,7 @@ public final class FabricMapUpdates {
     }
 
     private void markChunk(final ServerLevel level, final ChunkPos chunk) {
-        this.markChunk(level, new ChunkCoordinate(chunk.x, chunk.z));
+        this.markChunk(level, new ChunkCoordinate(chunk.x(), chunk.z()));
     }
 
     private void markChunk(final ServerLevel level, final ChunkCoordinate chunk) {

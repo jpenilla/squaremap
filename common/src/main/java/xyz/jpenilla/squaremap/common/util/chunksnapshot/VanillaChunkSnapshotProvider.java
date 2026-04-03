@@ -51,7 +51,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
             final ChunkPos chunkPos = new ChunkPos(x, z);
             final ChunkMapAccess chunkMap = (ChunkMapAccess) this.level.getChunkSource().chunkMap;
 
-            final ChunkHolder visibleChunk = chunkMap.squaremap$getVisibleChunkIfPresent(chunkPos.toLong());
+            final ChunkHolder visibleChunk = chunkMap.squaremap$getVisibleChunkIfPresent(ChunkPos.pack(chunkPos.x(), chunkPos.z()));
             if (visibleChunk != null) {
                 final @Nullable ChunkAccess chunk = fullIfPresent(visibleChunk);
                 if (chunk != null) {
@@ -84,7 +84,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         final ChunkPos chunkPos = new ChunkPos(x, z);
         final ChunkMapAccess chunkMap = (ChunkMapAccess) level.getChunkSource().chunkMap;
 
-        final ChunkHolder visibleChunk = chunkMap.squaremap$getVisibleChunkIfPresent(chunkPos.toLong());
+        final ChunkHolder visibleChunk = chunkMap.squaremap$getVisibleChunkIfPresent(ChunkPos.pack(chunkPos.x(), chunkPos.z()));
         if (visibleChunk != null) {
             final @Nullable ChunkAccess chunk = fullIfPresent(visibleChunk);
             if (chunk != null) {
@@ -92,7 +92,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
             }
         }
 
-        final ChunkHolder unloadingChunk = chunkMap.squaremap$pendingUnloads().get(chunkPos.toLong());
+        final ChunkHolder unloadingChunk = chunkMap.squaremap$pendingUnloads().get(ChunkPos.pack(chunkPos.x(), chunkPos.z()));
         if (unloadingChunk != null) {
             final @Nullable ChunkAccess chunk = fullIfPresent(unloadingChunk);
             if (chunk != null) {

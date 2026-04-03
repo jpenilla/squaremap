@@ -6,7 +6,7 @@
     "ignoreDeps": [
         "com.mojang:minecraft",
         "dev.architectury:architectury-loom",
-        "net.fabricmc:quiet-fabric-loom"
+        "xyz.jpenilla.quiet-fabric-loom:xyz.jpenilla.quiet-fabric-loom.gradle.plugin"
     ],
     "labels": [
         "dependencies"

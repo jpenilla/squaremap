@@ -20,8 +20,8 @@ rootProject.name = "squaremap"
 
 setupSubproject("api")
 setupSubproject("common")
-setupSubproject("paper")
-include(":squaremap-paper:folia")
+//setupSubproject("paper")
+//include(":squaremap-paper:folia")
 setupSubproject("fabric")
 setupSubproject("neoforge")
 setupSubproject("sponge")

@@ -32,14 +32,14 @@ configurations.spongeRuntime {
     resolutionStrategy {
         eachDependency {
             if (target.name == "spongevanilla") {
-                useVersion("1.21.9-17.+")
+                useVersion("26.1-19.+")
             }
         }
     }
 }
 
 sponge {
-  apiVersion("17.0.0-SNAPSHOT")
+  apiVersion("19.0.0-SNAPSHOT")
   plugin("squaremap") {
     loader {
       name(PluginLoaders.JAVA_PLAIN)

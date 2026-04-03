@@ -76,7 +76,7 @@ neoForgeModsToml {
   mitLicense()
   issueTrackerUrl = githubUrl.map { "${it}issues/" }
   showAsResourcePack = false
-  mixins("squaremap-forge.mixins.json")
+  mixins("squaremap-neoforge.mixins.json")
 
   conventionMod("squaremap") {
     displayName = "squaremap"

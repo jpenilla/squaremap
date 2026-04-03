@@ -10,8 +10,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.resources.Identifier;
@@ -76,10 +76,10 @@ public final class SquaremapFabric implements SquaremapPlatform {
         }
 
         final Identifier early = Identifier.parse("squaremap:early");
-        ServerWorldEvents.LOAD.register(early, (server, level) -> this.worldManager.initWorld(level));
-        ServerWorldEvents.LOAD.addPhaseOrdering(early, Event.DEFAULT_PHASE);
+        ServerLevelEvents.LOAD.register(early, (server, level) -> this.worldManager.initWorld(level));
+        ServerLevelEvents.LOAD.addPhaseOrdering(early, Event.DEFAULT_PHASE);
 
-        ServerWorldEvents.UNLOAD.register((server, level) -> this.worldManager.worldUnloaded(level));
+        ServerLevelEvents.UNLOAD.register((server, level) -> this.worldManager.worldUnloaded(level));
 
         ServerTickEvents.END_SERVER_TICK.register(new TickEndListener());
     }
@@ -151,7 +151,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
             ClientLifecycleEvents.CLIENT_STOPPING.register($ -> this.squaremap.shutdown());
 
             final AtomicBoolean exportedFluids = new AtomicBoolean(false);
-            ClientTickEvents.START_WORLD_TICK.register((clientLevel) -> {
+            ClientTickEvents.START_LEVEL_TICK.register((clientLevel) -> {
                 if (!exportedFluids.getAndSet(true)) {
                     this.fluidColorExporter.export(clientLevel.registryAccess());
                 }

@@ -6,6 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
@@ -37,10 +41,7 @@ public abstract class AbstractFluidColorExporter {
                 || fluid == Fluids.FLOWING_WATER || fluid == Fluids.FLOWING_LAVA) {
                 return;
             }
-            final @Nullable String color = this.color(fluid);
-            if (color != null) {
-                map.put(entry.getKey().identifier().toString(), color);
-            }
+            map.put(entry.getKey().identifier().toString(), this.colorFromClientFluidModel(fluid));
         });
 
         final Path file = this.directoryProvider.dataDirectory().resolve("fluids-export.yml");
@@ -61,7 +62,20 @@ public abstract class AbstractFluidColorExporter {
 
     protected abstract @Nullable Fluid fluid(Block block);
 
-    protected abstract @Nullable String color(Fluid fluid);
+    protected final String colorFromClientFluidModel(final Fluid fluid) {
+        final FluidModel model = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
+        final TextureAtlasSprite sprite = model.stillMaterial().sprite();
+        final ColorBlender blender = new ColorBlender();
+        for (int i = 0; i < sprite.contents().width(); i++) {
+            for (int h = 0; h < sprite.contents().height(); h++) {
+                blender.addColor(this.spritePixel(sprite, i, h));
+            }
+        }
+        final BlockTintSource tintSource = model.tintSource();
+        return Colors.toHexString(Colors.argbToRgba(color(blender.result(), tintSource.color(fluid.defaultFluidState().createLegacyBlock()))));
+    }
+
+    protected abstract int spritePixel(TextureAtlasSprite sprite, int x, int y);
 
     protected static int color(final int blended, final int tint) {
         final int tintA = tint >> 24 & 0xFF;
