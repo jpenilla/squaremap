@@ -18,9 +18,6 @@ public final class PaperRegionFileDirectoryResolver implements RegionFileDirecto
 
     @Override
     public Path resolveRegionFileDirectory(final ServerLevel level) {
-        return LevelStorageSource.getStorageFolder(
-            level.getWorld().getWorldFolder().toPath(),
-            level.getTypeKey()
-        ).resolve("region");
+        return level.getWorld().getWorldPath().resolve("region");
     }
 }

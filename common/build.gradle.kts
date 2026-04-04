@@ -12,7 +12,7 @@ neoForge {
 
 dependencies {
   api(projects.squaremapApi)
-  api(libs.guice) {
+  api("com.google.inject:guice:${libs.versions.guice.get()}:classes") {
     exclude("com.google.guava") // provided by minecraft
   }
   api(libs.guiceAssistedInject) {
