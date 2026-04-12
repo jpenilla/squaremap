@@ -24,6 +24,7 @@ import xyz.jpenilla.squaremap.api.HtmlComponentSerializer;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
+import xyz.jpenilla.squaremap.common.config.PlayerVisibility;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.httpd.JsonCache;
 import xyz.jpenilla.squaremap.common.util.Util;
@@ -86,7 +87,10 @@ public final class UpdatePlayers implements Runnable {
                 if (worldConfig.PLAYER_TRACKER_HIDE_MAP_INVISIBILITY_EQUIPMENT && hasMapInvisibilityItemEquipped(player)) {
                     return;
                 }
-                if (this.playerManager.hidden(player) || this.playerManager.otherwiseHidden(player)) {
+                if (worldConfig.MAP_PLAYER_VISIBILITY == PlayerVisibility.FORCED_HIDDEN) {
+                    return;
+                }
+                if ((worldConfig.MAP_PLAYER_VISIBILITY == PlayerVisibility.PLAYER_SETTING && this.playerManager.hidden(player)) || this.playerManager.otherwiseHidden(player)) {
                     return;
                 }
                 final Map<String, Object> playerEntry = new HashMap<>();

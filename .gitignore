@@ -14,6 +14,7 @@ out/
 .settings/
 plugin/bin/
 api/bin/
+.eclipse/
 
 # Compiled class file
 *.class
