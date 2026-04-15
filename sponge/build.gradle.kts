@@ -32,7 +32,7 @@ configurations.spongeRuntime {
     resolutionStrategy {
         eachDependency {
             if (target.name == "spongevanilla") {
-                useVersion("26.1-19.+")
+                useVersion("26.1.2-19.+")
             }
         }
     }
