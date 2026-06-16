@@ -49,7 +49,7 @@ public final class ForgeMapUpdates {
             }
             if (event instanceof BlockEvent.EntityMultiPlaceEvent multiPlace) {
                 multiPlace.getReplacedBlockSnapshots().stream().map(BlockSnapshot::getPos)
-                    .forEach(pos -> this.markBlock(level, event.getPos()));
+                    .forEach(pos -> this.markBlock(level, pos));
             }
             this.markBlock(level, event.getPos());
         }));
