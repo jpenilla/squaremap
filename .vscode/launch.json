@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "squaremap-neoforge - Client",
+      "presentation": {
+        "group": "Mod Development - squaremap-neoforge",
+        "order": 0
+      },
+      "projectName": "squaremap-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@/Users/elysia/CursorProjects/weiran-squaremap/weiran-squaremap/neoforge/build/moddev/clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@/Users/elysia/CursorProjects/weiran-squaremap/weiran-squaremap/neoforge/build/moddev/clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003d"
+      ],
+      "cwd": "${workspaceFolder}/neoforge/run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "squaremap-neoforge - Server",
+      "presentation": {
+        "group": "Mod Development - squaremap-neoforge",
+        "order": 1
+      },
+      "projectName": "squaremap-neoforge",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@/Users/elysia/CursorProjects/weiran-squaremap/weiran-squaremap/neoforge/build/moddev/serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@/Users/elysia/CursorProjects/weiran-squaremap/weiran-squaremap/neoforge/build/moddev/serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003d"
+      ],
+      "cwd": "${workspaceFolder}/neoforge/run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    }
+  ]
+}

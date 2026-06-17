@@ -1,0 +1,132 @@
+# Magic Flower 服务器 squaremap 配置
+# 复制到服务端: plugins/squaremap/config.yml
+# 修改后执行 /squaremap reload 或重启服务器
+#
+# 说明:
+# - magicflower.org:25566 是 squaremap 插件的内嵌 HTTP 端口（浏览器访问地图、前端 dev 代理数据）
+# - 与 Minecraft 游戏连接端口无关，在 config.yml 的 internal-webserver.port 中配置
+
+config-version: 2
+
+settings:
+  # 使用简体中文
+  language-file: lang-zh-cn.yml
+
+  debug-mode: false
+  update-checker: true
+
+  # 玩家在浏览器中访问地图的地址（用于游戏内 /map link 等）
+  # 若已配置 Nginx 反代到 443，可改为 https://map.magicflower.org
+  web-address: http://magicflower.org:25566
+
+  web-directory:
+    path: web
+    # 二开前端后建议设为 false，避免插件启动时覆盖自定义 web 文件
+    auto-update: false
+
+  image-quality:
+    compress-images:
+      enabled: false
+      value: 0.0
+
+  internal-webserver:
+    enabled: true
+    bind: 0.0.0.0
+    port: 25566
+    flush-json-immediately: false
+
+  ui:
+    coordinates:
+      enabled: true
+    link:
+      enabled: true
+    sidebar:
+      pinned: unpinned
+
+  commands:
+    main-command-label: squaremap
+    main-command-aliases:
+      - map
+
+  render-progress-logging:
+    enabled: true
+    interval-seconds: 1
+
+world-settings:
+  default:
+    map:
+      enabled: true
+      display-name: '{world}'
+      order: 0
+      icon: ''
+      iterate-up: false
+      max-height: -1
+      max-render-threads: -1
+
+      background-render:
+        enabled: true
+        max-chunks-per-interval: 1024
+        interval-seconds: 15
+        max-render-threads: -1
+
+      biomes:
+        enabled: true
+        blend-biomes: 3
+
+      glass:
+        clear: true
+
+      lava:
+        checkerboard: true
+
+      water:
+        clear-depth: true
+        checkerboard: false
+
+      zoom:
+        maximum: 3
+        default: 3
+        extra: 2
+
+      markers:
+        update-interval-seconds: 15
+
+        spawn-icon:
+          enabled: true
+          show-controls: true
+          default-hidden: false
+          layer-priority: 0
+          z-index: 0
+
+        world-border:
+          enabled: true
+          show-controls: true
+          default-hidden: false
+          layer-priority: 1
+          z-index: 1
+
+      visibility-limits:
+        - type: world-border
+          enabled: 'false'
+
+    player-tracker:
+      enabled: true
+      update-interval-seconds: 1
+      show-controls: true
+      default-hidden: false
+      layer-priority: 2
+      z-index: 2
+
+      nameplate:
+        enabled: true
+        show-head: true
+        heads-url: https://mc-heads.net/avatar/{uuid}/16
+        show-armor: true
+        show-health: true
+
+      hide:
+        invisible: true
+        spectators: true
+        map-invisibility-equipment: true
+
+      use-display-names: false
