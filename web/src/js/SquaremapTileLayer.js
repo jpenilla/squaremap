@@ -1,4 +1,5 @@
 import L from "leaflet";
+import { queuedFetch } from "./util/fetchQueue.js";
 
 export const SquaremapTileLayer = L.TileLayer.extend({
     // @method createTile(coords: Object, done?: Function): HTMLElement
@@ -25,7 +26,7 @@ export const SquaremapTileLayer = L.TileLayer.extend({
         //Retrieve image via a fetch instead of just setting the src
         //This works around the fact that browsers usually don't make a request for an image that was previously loaded,
         //without resorting to changing the URL (which would break caching).
-        fetch(this.getTileUrl(coords))
+        queuedFetch(this.getTileUrl(coords))
             .then((res) => {
                 //Call leaflet's error handler if request fails for some reason
                 if (!res.ok) {

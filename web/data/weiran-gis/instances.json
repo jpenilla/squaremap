@@ -1,0 +1,125 @@
+{
+    "version": 3,
+    "instances": [
+        {
+            "layer": "nations",
+            "id": "nations-1",
+            "point": { "x": 3096, "z": 3325 },
+            "text": "蔚然"
+        },
+        {
+            "layer": "nations",
+            "id": "nations-2",
+            "point": { "x": 1725, "z": 3927 },
+            "text": "大洋"
+        },
+        {
+            "layer": "nations",
+            "id": "nations-3",
+            "point": { "x": 1718, "z": 2734 },
+            "text": "柏拉图"
+        },
+        {
+            "layer": "nations",
+            "id": "nations-4",
+            "point": { "x": 0, "z": 0 },
+            "text": "零陵"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-1",
+            "point": { "x": 3114, "z": 3250 },
+            "text": "樱谷"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-2",
+            "point": { "x": 2676, "z": 2882 },
+            "text": "湖海"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-3",
+            "point": { "x": 2835, "z": 2909 },
+            "text": "白沫"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-4",
+            "point": { "x": 3165, "z": 2812 },
+            "text": "栖心"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-5",
+            "point": { "x": 2490, "z": 3375 },
+            "text": "生栗屯"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-6",
+            "point": { "x": 2760, "z": 3950 },
+            "text": "蓬洲"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-7",
+            "point": { "x": 3319, "z": 3849 },
+            "text": "南天门"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-8",
+            "point": { "x": 3606, "z": 3388 },
+            "text": "东昇"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-9",
+            "point": { "x": 2128, "z": 2800 },
+            "text": "嘉海"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-10",
+            "point": { "x": 1700, "z": 2640 },
+            "text": "海北"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-11",
+            "point": { "x": 1835, "z": 2690 },
+            "text": "鹰角"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-12",
+            "point": { "x": 1793, "z": 2793 },
+            "text": "武陵"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-13",
+            "point": { "x": 1614, "z": 2918 },
+            "text": "西绛"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-14",
+            "point": { "x": 1156, "z": 3490 },
+            "text": "天南"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-15",
+            "point": { "x": 1917, "z": 3611 },
+            "text": "瑰洋"
+        },
+        {
+            "layer": "admin-names",
+            "id": "admin-names-16",
+            "point": { "x": 2200, "z": 3700 },
+            "text": "鱿城"
+        }
+    ]
+}

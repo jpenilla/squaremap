@@ -1,0 +1,57 @@
+{
+    "version": 2,
+    "layers": {
+        "nations": {
+            "name": "国家",
+            "control": true,
+            "hide": false,
+            "order": -1,
+            "z_index": 11,
+            "version": 1,
+            "minZoom": null,
+            "maxZoom": 1,
+            "markerType": "label",
+            "style": {
+                "fontSize": 28,
+                "fontWeight": 700,
+                "color": "#ffffff",
+                "colorOpacity": 1,
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0.8,
+                "borderRadius": 8,
+                "paddingX": 14,
+                "paddingY": 6,
+                "boxShadow": "0 2px 6px rgba(0,0,0,0.45)",
+                "icon": null,
+                "iconSize": 16,
+                "gap": 6
+            }
+        },
+        "admin-names": {
+            "name": "行政区名",
+            "control": true,
+            "hide": false,
+            "order": 0,
+            "z_index": 10,
+            "version": 2,
+            "minZoom": 2,
+            "maxZoom": null,
+            "markerType": "label",
+            "style": {
+                "fontSize": 20,
+                "fontWeight": 600,
+                "color": "#ffffff",
+                "colorOpacity": 1,
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0.55,
+                "borderRadius": 6,
+                "paddingX": 10,
+                "paddingY": 4,
+                "boxShadow": "0 1px 4px rgba(0,0,0,0.35)",
+                "icon": null,
+                "iconSize": 16,
+                "gap": 6
+            }
+        }
+    }
+}

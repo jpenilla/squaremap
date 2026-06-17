@@ -66,7 +66,7 @@ world-settings:
       background-render:
         enabled: true
         max-chunks-per-interval: 1024
-        interval-seconds: 15
+        interval-seconds: 30
         max-render-threads: -1
 
       biomes:
@@ -89,7 +89,7 @@ world-settings:
         extra: 2
 
       markers:
-        update-interval-seconds: 15
+        update-interval-seconds: 30
 
         spawn-icon:
           enabled: true
@@ -111,7 +111,7 @@ world-settings:
 
     player-tracker:
       enabled: true
-      update-interval-seconds: 1
+      update-interval-seconds: 3
       show-controls: true
       default-hidden: false
       layer-priority: 2

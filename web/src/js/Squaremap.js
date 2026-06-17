@@ -57,6 +57,9 @@ class SquaremapMap {
 
         this.tick_count = 1;
 
+        /** @type {number} */
+        this.tickMs = Number(import.meta.env.VITE_MAP_TICK_MS) || 1000;
+
         this.layerControl = new LayerControl();
 
         this.init();
@@ -66,7 +69,7 @@ class SquaremapMap {
             this.tick();
             this.tick_count++;
         }
-        setTimeout(() => this.loop(), 1000);
+        setTimeout(() => this.loop(), this.tickMs);
     }
     tick() {
         // tick player tracker

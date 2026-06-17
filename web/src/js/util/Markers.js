@@ -172,4 +172,131 @@ class Icon extends Marker {
     }
 }
 
-export { Marker, Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon };
+class RegionLabel {
+    /** @type {L.Marker} */
+    marker;
+
+    /**
+     * @param {Options} opts
+     */
+    constructor(opts) {
+        const point = opts.pop("point");
+        const text = opts.pop("text");
+        const style = opts.pop("style", {});
+
+        const html = buildRegionLabelHtml(text, style);
+        this.marker = L.marker(S.toLatLng(point.x, point.z), {
+            icon: L.divIcon({
+                className: "weiran-region-label-icon",
+                html,
+            }),
+            interactive: false,
+        });
+    }
+    addTo(layer) {
+        this.marker.remove();
+        this.marker.addTo(layer);
+    }
+}
+
+/**
+ * @param {string} text
+ * @param {Record<string, unknown>} style
+ */
+function buildRegionLabelHtml(text, style) {
+    const inlineStyle = buildRegionLabelStyle(style);
+    const icon = style.icon;
+    const iconSize = Number(style.iconSize ?? 16);
+    const gap = Number(style.gap ?? 6);
+    const iconHtml =
+        icon != null && icon !== ""
+            ? `<img class="weiran-region-label-img" src="${escapeAttr(String(icon))}" alt="" style="width:${iconSize}px;height:${iconSize}px;margin-right:${gap}px">`
+            : "";
+    return `<div class="weiran-region-label" style="${inlineStyle}">${iconHtml}<span>${escapeHtml(String(text))}</span></div>`;
+}
+
+/**
+ * @param {Record<string, unknown>} style
+ */
+function buildRegionLabelStyle(style) {
+    /** @type {string[]} */
+    const parts = [
+        "display:inline-flex",
+        "align-items:center",
+        "transform:translate(-50%,-50%)",
+        "white-space:nowrap",
+        "pointer-events:none",
+        "line-height:1.25",
+    ];
+
+    if (style.fontSize != null) {
+        parts.push(`font-size:${Number(style.fontSize)}px`);
+    }
+    if (style.fontWeight != null) {
+        parts.push(`font-weight:${style.fontWeight}`);
+    }
+    if (style.color != null) {
+        parts.push(`color:${colorWithOpacity(String(style.color), Number(style.colorOpacity ?? 1))}`);
+    }
+    if (style.backgroundColor != null) {
+        parts.push(
+            `background:${colorWithOpacity(String(style.backgroundColor), Number(style.backgroundOpacity ?? 0.55))}`,
+        );
+    }
+    if (style.borderRadius != null) {
+        parts.push(`border-radius:${Number(style.borderRadius)}px`);
+    }
+    if (style.paddingX != null || style.paddingY != null) {
+        parts.push(`padding:${Number(style.paddingY ?? 4)}px ${Number(style.paddingX ?? 10)}px`);
+    }
+    if (style.boxShadow != null && style.boxShadow !== "") {
+        parts.push(`box-shadow:${style.boxShadow}`);
+    }
+
+    return parts.join(";");
+}
+
+/**
+ * @param {string} color
+ * @param {number} opacity
+ */
+function colorWithOpacity(color, opacity) {
+    const alpha = Math.min(1, Math.max(0, opacity));
+    if (color.startsWith("rgba(") || color.startsWith("rgb(")) {
+        return color;
+    }
+    const hex = color.replace("#", "");
+    if (hex.length === 3) {
+        const r = parseInt(hex[0] + hex[0], 16);
+        const g = parseInt(hex[1] + hex[1], 16);
+        const b = parseInt(hex[2] + hex[2], 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
+    if (hex.length === 6) {
+        const r = parseInt(hex.slice(0, 2), 16);
+        const g = parseInt(hex.slice(2, 4), 16);
+        const b = parseInt(hex.slice(4, 6), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    }
+    return color;
+}
+
+/**
+ * @param {string} text
+ */
+function escapeAttr(text) {
+    return escapeHtml(text).replace(/'/g, "&#39;");
+}
+
+/**
+ * @param {string} text
+ */
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+export { Marker, Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon, RegionLabel };

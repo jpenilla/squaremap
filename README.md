@@ -101,11 +101,22 @@ npm run dev
 
 ```env
 MAP_SERVER_URL=http://magicflower.org:25566
+PROXY_MAX_SOCKETS=3
+PROXY_TIMEOUT_MS=60000
+VITE_MAP_TILE_CONCURRENCY=3
+VITE_MAP_TICK_MS=3000
 ```
 
-`npm run dev` 时会自动加载，将 `/tiles`、`/images` 等请求代理到远程插件。无需在本机跑 MC 服。
+`npm run dev` 时会自动加载，将 `/tiles`、`/images` 等请求代理到远程插件。为避免远程服并发连接过多导致 `ETIMEDOUT`，默认做了两层限流：
 
-修改代理目标后需重启 dev 进程。
+| 变量 | 作用 | 默认（开发） |
+|------|------|----------------|
+| `PROXY_MAX_SOCKETS` | Vite 代理到远程的最大并发 TCP 连接 | 3 |
+| `PROXY_TIMEOUT_MS` | 代理超时（毫秒） | 60000 |
+| `VITE_MAP_TILE_CONCURRENCY` | 浏览器同时请求的 PNG 瓦片数 | 3 |
+| `VITE_MAP_TICK_MS` | 玩家/标记/瓦片刷新主循环间隔（毫秒） | 3000（生产构建默认 1000） |
+
+修改后需重启 `npm run dev`。
 
 ### 可选：本机前端 + 本机 MC 测试服
 
@@ -158,10 +169,88 @@ bun run preview
 
 这对纯前端二开通常不是必须的；`npm run dev` + 代理到 `magicflower.org:25566` 即可。
 
+## 图层双数据源
+
+地图左上角可勾选的 overlay 图层来自两个来源，前端自动合并：
+
+| 来源 | 数据文件 | 维护方式 |
+|------|----------|----------|
+| **squaremap 原生** | `tiles/{世界名}/markers.json` | 游戏服插件生成（出生点、世界边界、第三方 API 等） |
+| **蔚然 GIS** | `web/data/weiran-gis/` | 本仓库本地 JSON（图层定义 + 实例），随前端打包部署 |
+
+图层控件分为 **Square Map**（服务端，已过滤误传的 Weiran GIS 图层）与 **Weiran GIS**（本地配置）两组。逻辑见 `web/src/js/util/markerLayers.js`。
+
+### 编辑蔚然 GIS 图层
+
+蔚然 GIS 拆成两个 JSON：**图层类型定义**（样式）与 **实例**（具体点位）。运行时由 `web/src/js/util/weiranGis.js` 合并。
+
+#### 1. 图层定义 `web/data/weiran-gis/layers.json`
+
+每种图层类型只定义一次，包含显示样式（字体、颜色透明度、背景、圆角、阴影、icon 等）：
+
+```json
+{
+  "version": 1,
+  "layers": {
+    "admin-names": {
+      "name": "行政区名",
+      "control": true,
+      "hide": false,
+      "order": 0,
+      "z_index": 10,
+      "version": 1,
+      "markerType": "label",
+      "style": {
+        "fontSize": 13,
+        "fontWeight": 600,
+        "color": "#ffffff",
+        "colorOpacity": 1,
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 0.55,
+        "borderRadius": 6,
+        "paddingX": 10,
+        "paddingY": 4,
+        "boxShadow": "0 1px 4px rgba(0,0,0,0.35)",
+        "icon": null,
+        "iconSize": 16,
+        "gap": 6
+      }
+    }
+  }
+}
+```
+
+修改样式后递增对应图层的 `version`，前端会自动重绘该层。
+
+#### 2. 实例 `web/data/weiran-gis/instances.json`
+
+同一类型可有多个实例（例如多个行政区名）。`layer` 字段引用 `layers.json` 中的 key：
+
+```json
+{
+  "version": 1,
+  "instances": [
+    {
+      "layer": "admin-names",
+      "id": "yinggu",
+      "point": { "x": 3094, "z": 3324 },
+      "text": "樱谷"
+    }
+  ]
+}
+```
+
+单个实例可通过 `icon` 覆盖图层默认 icon。增删实例后递增 `instances.json` 的 `version` 即可。
+
+前端左上角图层控件分为 **Square Map**（服务端）与 **Weiran GIS**（本地 JSON）两个分组展示。
+
+修改 marker 内容后，递增 `timestamp` 可强制前端刷新该层。`npm run dev` 下保存 JSON 后刷新页面即可；上线需重新 `./gradlew build` 并部署插件。
+
 ## 目录结构
 
 ```
 web/                  # 前端（Leaflet 地图 UI）
+web/data/weiran-gis/   # 蔚然 GIS：layers.json（类型/样式）+ instances.json（实例）
 common/               # 插件核心（渲染、HTTP 服务、配置）
 paper/                # Paper 平台插件入口
 deploy/magicflower/   # Magic Flower 服务端配置示例

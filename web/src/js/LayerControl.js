@@ -1,6 +1,7 @@
 import { S } from "./Squaremap.js";
 import L from "leaflet";
 import { SquaremapTileLayer } from "./SquaremapTileLayer.js";
+import { GroupedLayerControl } from "./GroupedLayerControl.js";
 
 class LayerControl {
     /** @type {number} */
@@ -9,7 +10,7 @@ class LayerControl {
     updateInterval;
     /** @type {L.LayerGroup} */
     playersLayer;
-    /** @type {L.Control.Layers} */
+    /** @type {GroupedLayerControl} */
     controls;
     /** @type {L.TileLayer} */
     tileLayer1;
@@ -25,43 +26,34 @@ class LayerControl {
         this.playersLayer = new L.LayerGroup();
         this.playersLayer.id = "players_layer";
 
-        this.controls = L.control
-            .layers(
-                {},
-                {},
-                {
-                    position: "topleft",
-                    sortLayers: true,
-                    sortFunction: (a, b) => {
-                        return a.order - b.order;
-                    },
-                },
-            )
-            .addTo(S.map);
+        this.controls = new GroupedLayerControl();
+        this.controls.setHandlers(
+            (layer, def) => this.shouldHide(layer, def),
+            (layer) => this.showLayer(layer),
+            (layer) => this.hideLayer(layer),
+        );
+        this.controls.addTo(S.map);
     }
     /**
-     * @param name {string}
-     * @param layer {L.Layer}
-     * @param hide {boolean}
+     * @param {string} name
+     * @param {L.Layer} layer
+     * @param {boolean} hide
+     * @param {'squaremap' | 'weiran-gis'} [source]
      */
-    addOverlay(name, layer, hide) {
-        this.controls.addOverlay(layer, name);
-        if (this.shouldHide(layer, hide) !== true) {
-            layer.addTo(S.map);
-        }
+    addOverlay(name, layer, hide, source = "squaremap") {
+        this.controls.addOverlay(name, layer, hide, source);
     }
     /**
-     * @param layer {L.Layer}
+     * @param {L.Layer} layer
      */
     removeOverlay(layer) {
         this.ignoreLayer = layer;
-        this.controls.removeLayer(layer);
-        layer.remove();
+        this.controls.removeOverlay(layer);
         this.ignoreLayer = null;
     }
     /**
-     * @param layer {L.Layer}
-     * @param def {boolean}
+     * @param {L.Layer} layer
+     * @param {boolean} def
      * @returns {boolean}
      */
     shouldHide(layer, def) {
@@ -69,7 +61,7 @@ class LayerControl {
         return value == null ? def : value === "true";
     }
     /**
-     * @param layer {L.Layer}
+     * @param {L.Layer} layer
      */
     hideLayer(layer) {
         if (layer !== this.ignoreLayer) {
@@ -77,7 +69,7 @@ class LayerControl {
         }
     }
     /**
-     * @param layer {L.Layer}
+     * @param {L.Layer} layer
      */
     showLayer(layer) {
         if (layer !== this.ignoreLayer) {
@@ -102,7 +94,12 @@ class LayerControl {
         // refresh player's control
         this.removeOverlay(this.playersLayer);
         if (world.player_tracker.show_controls) {
-            this.addOverlay(world.player_tracker.label, this.playersLayer, world.player_tracker.default_hidden);
+            this.addOverlay(
+                world.player_tracker.label,
+                this.playersLayer,
+                world.player_tracker.default_hidden,
+                "squaremap",
+            );
         }
         this.playersLayer.order = world.player_tracker.priority;
         this.playersLayer.setZIndex(world.player_tracker.z_index);

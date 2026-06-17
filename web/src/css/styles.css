@@ -21,6 +21,15 @@ img.leaflet-tile {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
 }
+.weiran-region-label-icon {
+    background: transparent;
+    border: none;
+}
+.weiran-region-label-img {
+    display: block;
+    flex-shrink: 0;
+    object-fit: contain;
+}
 .nameplate-container {
     display: flex;
     gap: 0.375rem;
@@ -80,6 +89,27 @@ div.leaflet-control-layers.coordinates {
     padding: 2px 5px;
     line-height: 14px;
     height: 30px;
+}
+.weiran-layer-control .weiran-layer-section-divider {
+    border-top: 1px solid #bbb;
+    margin: 6px 0;
+}
+.weiran-layer-control.leaflet-control-layers-expanded .weiran-layer-section-title {
+    display: block;
+    padding: 4px 10px 2px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #555;
+}
+.weiran-layer-control .weiran-layer-section-list label {
+    display: block;
+    padding: 2px 10px;
+    color: #333;
+}
+.weiran-layer-control .weiran-layer-section-list label span {
+    color: #333;
 }
 #sidebar {
     display: flex;
