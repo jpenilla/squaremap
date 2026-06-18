@@ -18,7 +18,7 @@ import org.incendo.cloud.bukkit.parser.location.Location2DParser;
 import org.incendo.cloud.bukkit.parser.selector.SinglePlayerSelectorParser;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.execution.ExecutionCoordinator;
-import org.incendo.cloud.paper.PaperCommandManager;
+import org.incendo.cloud.paper.SquaremapPaperCommandManager;
 import org.incendo.cloud.parser.ParserDescriptor;
 import xyz.jpenilla.squaremap.common.command.BrigadierSetup;
 import xyz.jpenilla.squaremap.common.command.Commander;
@@ -45,11 +45,13 @@ public final class PaperCommands implements PlatformCommands {
             commander -> ((PaperCommander) commander).stack()
         );
 
-        final PaperCommandManager<Commander> mgr = PaperCommandManager.builder(senderMapper)
-            .executionCoordinator(ExecutionCoordinator.<Commander>builder()
+        final SquaremapPaperCommandManager<Commander> mgr = new SquaremapPaperCommandManager<>(
+            this.plugin,
+            ExecutionCoordinator.<Commander>builder()
                 .synchronizeExecution(Folia.FOLIA)
-                .build())
-            .buildOnEnable(this.plugin);
+                .build(),
+            senderMapper
+        );
 
         BrigadierSetup.setup(mgr);
 
