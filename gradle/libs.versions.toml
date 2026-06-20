@@ -38,7 +38,7 @@ shadow = "9.4.2"
 mod-publish-plugin = "1.1.0"
 loom = "1.17-SNAPSHOT"
 mdg = "2.0.141"
-paperweight = "2.0.0-beta.21"
+paperweight = "2.0.0-SNAPSHOT"
 cloud-build-logic = "0.0.21"
 
 [libraries]
