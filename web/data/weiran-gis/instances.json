@@ -1,125 +1,152 @@
 {
-    "version": 3,
+    "version": 5,
     "instances": [
         {
-            "layer": "nations",
-            "id": "nations-1",
+            "layer": "nation",
+            "id": "nation-weiran",
+            "parentNode": null,
             "point": { "x": 3096, "z": 3325 },
             "text": "蔚然"
         },
         {
-            "layer": "nations",
-            "id": "nations-2",
+            "layer": "nation",
+            "id": "nation-ocieania",
+            "parentNode": null,
             "point": { "x": 1725, "z": 3927 },
             "text": "大洋"
         },
         {
-            "layer": "nations",
-            "id": "nations-3",
+            "layer": "nation",
+            "id": "nation-plato",
+            "parentNode": null,
             "point": { "x": 1718, "z": 2734 },
             "text": "柏拉图"
         },
         {
-            "layer": "nations",
-            "id": "nations-4",
+            "layer": "nation",
+            "id": "nation-doublezero",
+            "parentNode": null,
             "point": { "x": 0, "z": 0 },
             "text": "零陵"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-1",
+            "layer": "region",
+            "id": "region-1",
+            "parentNode": "nation-weiran",
             "point": { "x": 3114, "z": 3250 },
             "text": "樱谷"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-2",
+            "layer": "region",
+            "id": "region-2",
+            "parentNode": "nation-weiran",
             "point": { "x": 2676, "z": 2882 },
             "text": "湖海"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-3",
+            "layer": "region",
+            "id": "region-3",
+            "parentNode": "nation-weiran",
             "point": { "x": 2835, "z": 2909 },
             "text": "白沫"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-4",
+            "layer": "region",
+            "id": "region-4",
+            "parentNode": "nation-weiran",
             "point": { "x": 3165, "z": 2812 },
             "text": "栖心"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-5",
+            "layer": "region",
+            "id": "region-5",
+            "parentNode": "nation-weiran",
             "point": { "x": 2490, "z": 3375 },
             "text": "生栗屯"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-6",
+            "layer": "region",
+            "id": "region-6",
+            "parentNode": "nation-weiran",
             "point": { "x": 2760, "z": 3950 },
             "text": "蓬洲"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-7",
+            "layer": "region",
+            "id": "region-7",
+            "parentNode": "nation-weiran",
             "point": { "x": 3319, "z": 3849 },
             "text": "南天门"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-8",
+            "layer": "region",
+            "id": "region-8",
+            "parentNode": "nation-weiran",
             "point": { "x": 3606, "z": 3388 },
             "text": "东昇"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-9",
+            "layer": "region",
+            "id": "region-9",
+            "parentNode": "nation-weiran",
             "point": { "x": 2128, "z": 2800 },
             "text": "嘉海"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-10",
+            "layer": "region",
+            "id": "region-10",
+            "parentNode": "nation-plato",
             "point": { "x": 1700, "z": 2640 },
             "text": "海北"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-11",
+            "layer": "region",
+            "id": "region-11",
+            "parentNode": "nation-plato",
             "point": { "x": 1835, "z": 2690 },
             "text": "鹰角"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-12",
+            "layer": "region",
+            "id": "region-12",
+            "parentNode": "nation-plato",
             "point": { "x": 1793, "z": 2793 },
             "text": "武陵"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-13",
+            "layer": "region",
+            "id": "region-13",
+            "parentNode": "nation-plato",
             "point": { "x": 1614, "z": 2918 },
             "text": "西绛"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-14",
+            "layer": "region",
+            "id": "region-14",
+            "parentNode": "nation-plato",
             "point": { "x": 1156, "z": 3490 },
             "text": "天南"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-15",
+            "layer": "region",
+            "id": "region-15",
+            "parentNode": "nation-ocieania",
             "point": { "x": 1917, "z": 3611 },
             "text": "瑰洋"
         },
         {
-            "layer": "admin-names",
-            "id": "admin-names-16",
+            "layer": "region",
+            "id": "region-16",
+            "parentNode": "nation-ocieania",
             "point": { "x": 2200, "z": 3700 },
             "text": "鱿城"
+        },
+        {
+            "layer": "region",
+            "id": "region-17",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 1725, "z": 3924 },
+            "text": "西南海"
         }
     ]
 }

@@ -1,7 +1,7 @@
 {
     "version": 2,
     "layers": {
-        "nations": {
+        "nation": {
             "name": "国家",
             "control": true,
             "hide": false,
@@ -27,8 +27,8 @@
                 "gap": 6
             }
         },
-        "admin-names": {
-            "name": "行政区名",
+        "region": {
+            "name": "政区",
             "control": true,
             "hide": false,
             "order": 0,
@@ -48,6 +48,58 @@
                 "paddingX": 10,
                 "paddingY": 4,
                 "boxShadow": "0 1px 4px rgba(0,0,0,0.35)",
+                "icon": null,
+                "iconSize": 16,
+                "gap": 6
+            }
+        },
+        "village": {
+            "name": "自然村",
+            "control": true,
+            "hide": false,
+            "order": 1,
+            "z_index": 9,
+            "version": 1,
+            "minZoom": 3,
+            "maxZoom": null,
+            "markerType": "label",
+            "style": {
+                "fontSize": 14,
+                "fontWeight": 400,
+                "color": "#ffffff",
+                "colorOpacity": 1,
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0.35,
+                "borderRadius": 4,
+                "paddingX": 8,
+                "paddingY": 3,
+                "boxShadow": "0 1px 3px rgba(0,0,0,0.25)",
+                "icon": null,
+                "iconSize": 16,
+                "gap": 6
+            }
+        },
+        "office": {
+            "name": "办事处",
+            "control": true,
+            "hide": false,
+            "order": 2,
+            "z_index": 9,
+            "version": 1,
+            "minZoom": 3,
+            "maxZoom": null,
+            "markerType": "label",
+            "style": {
+                "fontSize": 14,
+                "fontWeight": 400,
+                "color": "#ffffff",
+                "colorOpacity": 1,
+                "backgroundColor": "#000000",
+                "backgroundOpacity": 0.35,
+                "borderRadius": 4,
+                "paddingX": 8,
+                "paddingY": 3,
+                "boxShadow": "0 1px 3px rgba(0,0,0,0.25)",
                 "icon": null,
                 "iconSize": 16,
                 "gap": 6
