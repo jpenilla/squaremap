@@ -1,5 +1,5 @@
 {
-    "version": 5,
+    "version": 9,
     "instances": [
         {
             "layer": "nation",
@@ -147,6 +147,174 @@
             "parentNode": "nation-ocieania",
             "point": { "x": 1725, "z": 3924 },
             "text": "西南海"
+        },
+        {
+            "layer": "region",
+            "id": "region-18",
+            "parentNode": "nation-doublezero",
+            "point": { "x": 4100, "z": 1737 },
+            "text": "雪原猫村"
+        },
+        {
+            "layer": "region",
+            "id": "region-19",
+            "parentNode": "nation-doublezero",
+            "point": { "x": 1522, "z": 229 },
+            "text": "小猪神社"
+        },
+        {
+            "layer": "region",
+            "id": "region-20",
+            "parentNode": "nation-doublezero",
+            "point": { "x": 74, "z": 205 },
+            "text": "使馆区"
+        },
+        {
+            "layer": "region",
+            "id": "region-21",
+            "parentNode": "nation-doublezero",
+            "point": { "x": 197, "z": -43 },
+            "text": "联合赤石公司"
+        },
+        {
+            "layer": "region",
+            "id": "region-22",
+            "parentNode": "nation-doublezero",
+            "point": { "x": -145, "z": 90 },
+            "text": "涉津国"
+        },
+        {
+            "layer": "region",
+            "id": "region-23",
+            "parentNode": "nation-doublezero",
+            "point": { "x": -235, "z": -190 },
+            "text": "未命名"
+        },
+        {
+            "layer": "office",
+            "id": "office-1",
+            "parentNode": "region-9",
+            "point": { "x": 2294, "z": 3235 },
+            "text": "星蔚岛办事处"
+        },
+        {
+            "layer": "office",
+            "id": "office-2",
+            "parentNode": "region-9",
+            "point": { "x": 2343, "z": 2658 },
+            "text": "捕鱼岛办事处"
+        },
+        {
+            "layer": "office",
+            "id": "office-3",
+            "parentNode": "region-9",
+            "point": { "x": 1443, "z": 3322 },
+            "text": "暮汐岛办事处"
+        },
+        {
+            "layer": "office",
+            "id": "office-4",
+            "parentNode": "region-2",
+            "point": { "x": 2781, "z": 2942 },
+            "text": "鱿鱼庄办事处"
+        },
+        {
+            "layer": "office",
+            "id": "office-5",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3925, "z": -2232 },
+            "text": "恶地办事处"
+        },
+        {
+            "layer": "office",
+            "id": "office-6",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3848, "z": 3864 },
+            "text": "末地要塞办事处"
+        },
+        {
+            "layer": "village",
+            "id": "village-1",
+            "parentNode": "region-2",
+            "point": { "x": 2724, "z": 3083 },
+            "text": "湖光村"
+        },
+        {
+            "layer": "village",
+            "id": "village-2",
+            "parentNode": "region-2",
+            "point": { "x": 2556, "z": 3050 },
+            "text": "沙隙村"
+        },
+        {
+            "layer": "village",
+            "id": "village-3",
+            "parentNode": "region-1",
+            "point": { "x": 2741, "z": 3316 },
+            "text": "雪下村"
+        },
+        {
+            "layer": "village",
+            "id": "village-4",
+            "parentNode": "region-4",
+            "point": { "x": 2843, "z": 2277 },
+            "text": "舟水村"
+        },
+        {
+            "layer": "village",
+            "id": "village-5",
+            "parentNode": "region-4",
+            "point": { "x": 3405, "z": 2509 },
+            "text": "白猫村"
+        },
+        {
+            "layer": "village",
+            "id": "village-6",
+            "parentNode": "region-8",
+            "point": { "x": 3541, "z": 3095 },
+            "text": "东昇村"
+        },
+        {
+            "layer": "village",
+            "id": "village-7",
+            "parentNode": "region-8",
+            "point": { "x": 4070, "z": 2878 },
+            "text": "东日村"
+        },
+        {
+            "layer": "village",
+            "id": "village-8",
+            "parentNode": "region-8",
+            "point": { "x": 4741, "z": 2842 },
+            "text": "东旭村"
+        },
+        {
+            "layer": "village",
+            "id": "village-9",
+            "parentNode": "region-8",
+            "point": { "x": 3957, "z": 3362 },
+            "text": "两户村"
+        },
+        {
+            "layer": "village",
+            "id": "village-10",
+            "parentNode": "region-7",
+            "point": { "x": 3541, "z": 4090 },
+            "text": "南安村"
+        },
+        {
+            "layer": "village",
+            "id": "village-11",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 1772, "z": 4039 },
+            "text": "雪东村"
+        },
+        {
+            "layer": "village",
+            "id": "village-12",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 1940, "z": 4413 },
+            "text": "洋北村"
         }
     ]
 }
