@@ -21,6 +21,20 @@ img.leaflet-tile {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
 }
+.weiran-icon-with-text-icon {
+    background: transparent;
+    border: none;
+}
+.weiran-icon-with-text {
+    display: inline-flex;
+    align-items: center;
+    pointer-events: none;
+}
+.weiran-icon-with-text-img {
+    display: block;
+    flex-shrink: 0;
+    object-fit: contain;
+}
 .weiran-region-label-icon {
     background: transparent;
     border: none;

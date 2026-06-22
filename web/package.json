@@ -17,5 +17,8 @@
         "vite": "^8.0.0"
     },
     "private": true,
-    "type": "module"
+    "type": "module",
+    "dependencies": {
+        "@mapbox/maki": "^8.2.0"
+    }
 }

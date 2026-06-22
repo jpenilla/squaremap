@@ -172,6 +172,36 @@ class Icon extends Marker {
     }
 }
 
+class IconWithText {
+    /** @type {L.Marker} */
+    marker;
+
+    /**
+     * @param {Options} opts
+     */
+    constructor(opts) {
+        const point = opts.pop("point");
+        const text = opts.pop("text");
+        const style = opts.pop("style", {});
+
+        const iconBackgroundSize = Number(style.iconBackgroundSize ?? 28);
+        const html = buildIconWithTextHtml(text, style);
+
+        this.marker = L.marker(S.toLatLng(point.x, point.z), {
+            icon: L.divIcon({
+                className: "weiran-icon-with-text-icon",
+                html,
+                iconAnchor: [iconBackgroundSize / 2, iconBackgroundSize / 2],
+            }),
+            interactive: false,
+        });
+    }
+    addTo(layer) {
+        this.marker.remove();
+        this.marker.addTo(layer);
+    }
+}
+
 class RegionLabel {
     /** @type {L.Marker} */
     marker;
@@ -203,6 +233,67 @@ class RegionLabel {
  * @param {string} text
  * @param {Record<string, unknown>} style
  */
+function buildIconWithTextHtml(text, style) {
+    const icon = style.icon;
+    const iconSize = Number(style.iconSize ?? 12);
+    const iconBackgroundSize = Number(style.iconBackgroundSize ?? 28);
+    const gap = Number(style.gap ?? 6);
+    const badgeStyle = buildIconWithTextBadgeStyle(style, iconBackgroundSize);
+    const labelStyle = buildIconWithTextLabelStyle(style);
+    const iconHtml =
+        icon != null && icon !== ""
+            ? `<img class="weiran-icon-with-text-img" src="${escapeAttr(String(icon))}" alt="" style="${buildRegionLabelIconStyle(style, iconSize, 0)}">`
+            : "";
+    return `<div class="weiran-icon-with-text"><div class="weiran-icon-with-text-badge" style="${badgeStyle}">${iconHtml}</div><span class="weiran-icon-with-text-label" style="${labelStyle};margin-left:${gap}px">${escapeHtml(String(text))}</span></div>`;
+}
+
+/**
+ * @param {Record<string, unknown>} style
+ * @param {number} iconBackgroundSize
+ */
+function buildIconWithTextBadgeStyle(style, iconBackgroundSize) {
+    /** @type {string[]} */
+    const parts = [
+        `width:${iconBackgroundSize}px`,
+        `height:${iconBackgroundSize}px`,
+        "border-radius:50%",
+        "display:flex",
+        "align-items:center",
+        "justify-content:center",
+        "flex-shrink:0",
+        "box-shadow:0 1px 4px rgba(0,0,0,0.35)",
+    ];
+    const bg = style.iconBackgroundColor ?? "#ffffff";
+    parts.push(`background:${colorWithOpacity(String(bg), Number(style.iconBackgroundOpacity ?? 1))}`);
+    return parts.join(";");
+}
+
+/**
+ * @param {Record<string, unknown>} style
+ */
+function buildIconWithTextLabelStyle(style) {
+    /** @type {string[]} */
+    const parts = ["white-space:nowrap", "line-height:1.25"];
+    if (style.fontSize != null) {
+        parts.push(`font-size:${Number(style.fontSize)}px`);
+    }
+    if (style.fontWeight != null) {
+        parts.push(`font-weight:${style.fontWeight}`);
+    }
+    if (style.color != null) {
+        parts.push(`color:${colorWithOpacity(String(style.color), Number(style.colorOpacity ?? 1))}`);
+    }
+    const strokeColor = style.textStrokeColor ?? "#ffffff";
+    const strokeWidth = Number(style.textStrokeWidth ?? 2);
+    parts.push(`-webkit-text-stroke:${strokeWidth}px ${strokeColor}`);
+    parts.push("paint-order:stroke fill");
+    return parts.join(";");
+}
+
+/**
+ * @param {string} text
+ * @param {Record<string, unknown>} style
+ */
 function buildRegionLabelHtml(text, style) {
     const inlineStyle = buildRegionLabelStyle(style);
     const icon = style.icon;
@@ -210,7 +301,7 @@ function buildRegionLabelHtml(text, style) {
     const gap = Number(style.gap ?? 6);
     const iconHtml =
         icon != null && icon !== ""
-            ? `<img class="weiran-region-label-img" src="${escapeAttr(String(icon))}" alt="" style="width:${iconSize}px;height:${iconSize}px;margin-right:${gap}px">`
+            ? `<img class="weiran-region-label-img" src="${escapeAttr(String(icon))}" alt="" style="${buildRegionLabelIconStyle(style, iconSize, gap)}">`
             : "";
     return `<div class="weiran-region-label" style="${inlineStyle}">${iconHtml}<span>${escapeHtml(String(text))}</span></div>`;
 }
@@ -257,6 +348,42 @@ function buildRegionLabelStyle(style) {
 }
 
 /**
+ * @param {Record<string, unknown>} style
+ * @param {number} iconSize
+ * @param {number} gap
+ */
+function buildRegionLabelIconStyle(style, iconSize, gap) {
+    /** @type {string[]} */
+    const parts = [
+        `width:${iconSize}px`,
+        `height:${iconSize}px`,
+        `margin-right:${gap}px`,
+    ];
+    if (style.iconColor != null) {
+        parts.push(`filter:${makiIconFilter(String(style.iconColor))}`);
+    }
+    return parts.join(";");
+}
+
+/**
+ * @param {string} color
+ */
+function makiIconFilter(color) {
+    if (color === "#ffffff" || color === "#fff" || color === "white") {
+        return "brightness(0) invert(1)";
+    }
+    if (
+        color === "#e53935" ||
+        color === "#f44336" ||
+        color === "#ff0000" ||
+        color === "red"
+    ) {
+        return "brightness(0) saturate(100%) invert(27%) sepia(93%) saturate(7471%) hue-rotate(356deg) brightness(91%) contrast(119%)";
+    }
+    return "none";
+}
+
+/**
  * @param {string} color
  * @param {number} opacity
  */
@@ -299,4 +426,4 @@ function escapeHtml(text) {
         .replace(/"/g, "&quot;");
 }
 
-export { Marker, Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon, RegionLabel };
+export { Marker, Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon, RegionLabel, IconWithText };

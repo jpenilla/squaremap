@@ -1,5 +1,6 @@
 import layerCatalog from "../../../data/weiran-gis/layers.json";
 import instanceCatalog from "../../../data/weiran-gis/instances.json";
+import { resolveMakiIcon } from "./makiIcons.js";
 
 /** @typedef {import('../../../data/weiran-gis/layers.json')} LayerCatalog */
 /** @typedef {import('../../../data/weiran-gis/instances.json')} InstanceCatalog */
@@ -47,6 +48,9 @@ function buildMarkerPayload(layerDef, instance) {
     const style = { ...(/** @type {Record<string, unknown>} */ (layerDef.style) ?? {}) };
     if (instance.icon != null) {
         style.icon = instance.icon;
+    }
+    if (style.icon != null) {
+        style.icon = resolveMakiIcon(style.icon);
     }
 
     return {

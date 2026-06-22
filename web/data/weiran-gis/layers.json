@@ -1,5 +1,5 @@
 {
-    "version": 2,
+    "version": 4,
     "layers": {
         "nation": {
             "name": "国家",
@@ -103,6 +103,58 @@
                 "icon": null,
                 "iconSize": 16,
                 "gap": 6
+            }
+        },
+        "central-department": {
+            "name": "中央行政单位",
+            "control": true,
+            "hide": false,
+            "order": 3,
+            "z_index": 9,
+            "version": 1,
+            "minZoom": 4,
+            "maxZoom": null,
+            "markerType": "iconWithText",
+            "style": {
+                "fontSize": 16,
+                "fontWeight": 700,
+                "color": "#e53935",
+                "colorOpacity": 1,
+                "textStrokeColor": "#ffffff",
+                "textStrokeWidth": 2.5,
+                "icon": "star",
+                "iconSize": 11,
+                "iconColor": "#e53935",
+                "iconBackgroundColor": "#ffffff",
+                "iconBackgroundOpacity": 0.72,
+                "iconBackgroundSize": 24,
+                "gap": 6
+            }
+        },
+        "department": {
+            "name": "行政单位",
+            "control": true,
+            "hide": false,
+            "order": 4,
+            "z_index": 8,
+            "version": 3,
+            "minZoom": 4,
+            "maxZoom": null,
+            "markerType": "iconWithText",
+            "style": {
+                "fontSize": 13,
+                "fontWeight": 600,
+                "color": "#000000",
+                "colorOpacity": 1,
+                "textStrokeColor": "#ffffff",
+                "textStrokeWidth": 2,
+                "icon": "town-hall",
+                "iconSize": 10,
+                "iconColor": "#e53935",
+                "iconBackgroundColor": "#ffffff",
+                "iconBackgroundOpacity": 0.72,
+                "iconBackgroundSize": 22,
+                "gap": 5
             }
         }
     }

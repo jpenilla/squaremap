@@ -1,5 +1,5 @@
 {
-    "version": 9,
+    "version": 12,
     "instances": [
         {
             "layer": "nation",
@@ -231,6 +231,69 @@
             "parentNode": "nation-weiran",
             "point": { "x": 3848, "z": 3864 },
             "text": "末地要塞办事处"
+        },
+        {
+            "layer": "department",
+            "id": "department-1",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3107, "z": 3363 },
+            "text": "农业部"
+        },
+        {
+            "layer": "department",
+            "id": "department-2",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3140, "z": 3270 },
+            "text": "工业部"
+        },
+        {
+            "layer": "department",
+            "id": "department-3",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3090, "z": 3255 },
+            "text": "建设部"
+        },
+        {
+            "layer": "department",
+            "id": "department-4",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3063, "z": 3321 },
+            "text": "科技部"
+        },
+        {
+            "layer": "department",
+            "id": "department-5",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3125, "z": 3311 },
+            "text": "环境部"
+        },
+        {
+            "layer": "department",
+            "id": "department-6",
+            "parentNode": "nation-plato",
+            "point": { "x": 3092, "z": 3454 },
+            "text": "柏拉图驻蔚大使馆"
+        },
+        {
+            "layer": "central-department",
+            "id": "central-department-1",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3093, "z": 3321 },
+            "text": "中央委员会"
+        },
+        {
+            "layer": "central-department",
+            "id": "central-department-2",
+            "parentNode": "nation-plato",
+            "point": { "x": 1828, "z": 2695 },
+            "text": "行政中心"
+        },
+        {
+            "layer": "central-department",
+            "id": "central-department-3",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 1760, "z": 3924 },
+            "text": "总统府"
         },
         {
             "layer": "village",

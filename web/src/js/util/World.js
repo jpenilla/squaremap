@@ -1,4 +1,4 @@
-import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon, RegionLabel } from "./Markers.js";
+import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon, RegionLabel, IconWithText } from "./Markers.js";
 import { S } from "../Squaremap.js";
 import { fetchMarkerLayersBySource } from "./markerLayers.js";
 import L from "leaflet";
@@ -213,6 +213,9 @@ class World {
                     break;
                 case "label":
                     marker = new RegionLabel(opts);
+                    break;
+                case "iconWithText":
+                    marker = new IconWithText(opts);
                     break;
             }
             if (marker != null) {
