@@ -88,9 +88,13 @@ div.leaflet-marker-pane img {
     transition: all 0.25s;
 }
 .leaflet-bottom.leaflet-left .link,
-.leaflet-bottom.leaflet-left .coordinates {
+.leaflet-bottom.leaflet-left .coordinates,
+.leaflet-bottom.leaflet-left .scale-bar {
     display: inline-block;
     float: none;
+    clear: none;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 div.leaflet-control-layers.link img {
     width: 34px;
@@ -102,11 +106,50 @@ div.leaflet-control-layers.link img {
     background-repeat: no-repeat;
     background-position: 50% 50%;
 }
+div.leaflet-control.scale-bar {
+    vertical-align: bottom;
+    padding: 4px 8px 2px;
+    height: 30px;
+    box-sizing: border-box;
+}
 div.leaflet-control-layers.coordinates {
     vertical-align: bottom;
     padding: 2px 5px;
     line-height: 14px;
     height: 30px;
+}
+.scale-bar-ruler {
+    display: flex;
+    height: 8px;
+    box-sizing: border-box;
+}
+.scale-bar-segment {
+    height: 100%;
+    border-bottom: 2px solid #ccc;
+    border-left: 2px solid #ccc;
+    box-sizing: border-box;
+}
+.scale-bar-segment:last-child {
+    border-right: 2px solid #ccc;
+}
+.scale-bar-labels {
+    position: relative;
+    height: 14px;
+    margin-top: 1px;
+}
+.scale-bar-tick-label {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 11px;
+    line-height: 14px;
+    color: #ccc;
+    white-space: nowrap;
+}
+.scale-bar-tick-label:first-child {
+    transform: none;
+}
+.scale-bar-tick-label:last-child {
+    transform: translateX(-100%);
 }
 .weiran-layer-control .weiran-layer-section-divider {
     border-top: 1px solid #bbb;
@@ -121,13 +164,24 @@ div.leaflet-control-layers.coordinates {
     text-transform: uppercase;
     color: #555;
 }
-.weiran-layer-control .weiran-layer-section-list label {
-    display: block;
+.weiran-layer-control .weiran-layer-section-list label.weiran-layer-entry {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     padding: 2px 10px;
     color: #333;
 }
-.weiran-layer-control .weiran-layer-section-list label span {
+.weiran-layer-control .weiran-layer-section-list label span.weiran-layer-label-text {
     color: #333;
+}
+.weiran-layer-control .weiran-layer-legend {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    line-height: 0;
+}
+.weiran-layer-control .weiran-layer-legend svg {
+    display: block;
 }
 #sidebar {
     display: flex;

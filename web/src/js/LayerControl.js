@@ -38,10 +38,11 @@ class LayerControl {
      * @param {string} name
      * @param {L.Layer} layer
      * @param {boolean} hide
-     * @param {'squaremap' | 'weiran-gis'} [source]
+     * @param {'squaremap' | 'geo-region' | 'unit-point'} [source]
+     * @param {{ icon: string, iconColor: string, iconBackgroundColor: string, iconBackgroundOpacity: number } | null} [legend]
      */
-    addOverlay(name, layer, hide, source = "squaremap") {
-        this.controls.addOverlay(name, layer, hide, source);
+    addOverlay(name, layer, hide, source = "squaremap", legend = null) {
+        this.controls.addOverlay(name, layer, hide, source, legend);
     }
     /**
      * @param {L.Layer} layer

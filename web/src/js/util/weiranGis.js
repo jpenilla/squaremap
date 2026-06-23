@@ -41,6 +41,35 @@ function computeLayerTimestamp(layerKey, layerDef, layerInstances) {
 
 /**
  * @param {Record<string, unknown>} layerDef
+ * @returns {'geo-region' | 'unit-point'}
+ */
+function getControlSource(layerDef) {
+    return layerDef.markerType === "iconWithText" ? "unit-point" : "geo-region";
+}
+
+/**
+ * @param {Record<string, unknown>} layerDef
+ * @returns {{ icon: string, iconColor: string, iconBackgroundColor: string, iconBackgroundOpacity: number } | null}
+ */
+export function buildLayerLegend(layerDef) {
+    if (layerDef.markerType !== "iconWithText") {
+        return null;
+    }
+    /** @type {Record<string, unknown>} */
+    const style = /** @type {Record<string, unknown>} */ (layerDef.style) ?? {};
+    if (style.icon == null || style.iconColor == null) {
+        return null;
+    }
+    return {
+        icon: String(style.icon),
+        iconColor: String(style.iconColor),
+        iconBackgroundColor: String(style.iconBackgroundColor ?? "#ffffff"),
+        iconBackgroundOpacity: Number(style.iconBackgroundOpacity ?? 0.72),
+    };
+}
+
+/**
+ * @param {Record<string, unknown>} layerDef
  * @param {Record<string, unknown>} instance
  */
 function buildMarkerPayload(layerDef, instance) {
@@ -106,6 +135,8 @@ export function buildWeiranGisLayers() {
             z_index: layerDef.z_index ?? 0,
             minZoom: layerDef.minZoom ?? null,
             maxZoom: layerDef.maxZoom ?? null,
+            controlSource: getControlSource(layerDef),
+            legend: buildLayerLegend(layerDef),
             timestamp: computeLayerTimestamp(layerKey, layerDef, layerInstances),
             markers,
         });

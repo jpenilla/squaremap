@@ -1,12 +1,19 @@
 import L from "leaflet";
+import { buildColoredMakiIconSvg } from "./util/makiIcons.js";
 
-/** @typedef {'squaremap' | 'weiran-gis'} LayerSource */
+/** @typedef {'squaremap' | 'geo-region' | 'unit-point'} LayerSource */
+
+/** @typedef {{ icon: string, iconColor: string, iconBackgroundColor: string, iconBackgroundOpacity: number }} LayerLegend */
 
 /** @type {Record<LayerSource, string>} */
 const SECTION_TITLES = {
-    squaremap: "Square Map",
-    "weiran-gis": "Weiran GIS",
+    squaremap: "SQUARE MAP",
+    "geo-region": "GEO REGION",
+    "unit-point": "UNIT POINT",
 };
+
+/** @type {LayerSource[]} */
+const SOURCE_ORDER = ["squaremap", "geo-region", "unit-point"];
 
 class GroupedLayerControl extends L.Control {
     /** @type {L.Map | null} */
@@ -15,7 +22,8 @@ class GroupedLayerControl extends L.Control {
     /** @type {Record<LayerSource, { list: HTMLElement | null, section: HTMLElement | null, entries: Array<{ layer: L.Layer, order: number, label: HTMLElement }> }>} */
     _sections = {
         squaremap: { list: null, section: null, entries: [] },
-        "weiran-gis": { list: null, section: null, entries: [] },
+        "geo-region": { list: null, section: null, entries: [] },
+        "unit-point": { list: null, section: null, entries: [] },
     };
 
     /** @type {(layer: L.Layer, def: boolean) => boolean} */
@@ -52,10 +60,8 @@ class GroupedLayerControl extends L.Control {
 
         const form = L.DomUtil.create("form", "leaflet-control-layers-list", container);
 
-        /** @type {LayerSource[]} */
-        const sourceOrder = ["squaremap", "weiran-gis"];
-        for (let i = 0; i < sourceOrder.length; i++) {
-            const source = sourceOrder[i];
+        for (let i = 0; i < SOURCE_ORDER.length; i++) {
+            const source = SOURCE_ORDER[i];
             if (i > 0) {
                 L.DomUtil.create("div", "weiran-layer-section-divider", form);
             }
@@ -99,18 +105,24 @@ class GroupedLayerControl extends L.Control {
      * @param {L.Layer} layer
      * @param {boolean} hide
      * @param {LayerSource} source
+     * @param {LayerLegend | null} [legend]
      */
-    addOverlay(name, layer, hide, source = "squaremap") {
+    addOverlay(name, layer, hide, source = "squaremap", legend = null) {
         const section = this._sections[source] ?? this._sections.squaremap;
         if (section.list == null) {
             return;
         }
-        const label = L.DomUtil.create("label", "", section.list);
+        const label = L.DomUtil.create("label", "weiran-layer-entry", section.list);
         const input = L.DomUtil.create("input", "leaflet-control-layers-selector", label);
         input.type = "checkbox";
         input.checked = this._shouldHide(layer, hide) !== true;
 
-        L.DomUtil.create("span", "", label).textContent = ` ${name}`;
+        if (legend != null && source === "unit-point") {
+            this._appendLegend(label, legend);
+        }
+
+        const nameSpan = L.DomUtil.create("span", "weiran-layer-label-text", label);
+        nameSpan.textContent = name;
 
         L.DomEvent.on(input, "click", (e) => {
             L.DomEvent.stopPropagation(e);
@@ -130,6 +142,19 @@ class GroupedLayerControl extends L.Control {
 
         if (input.checked && this._map != null) {
             layer.addTo(this._map);
+        }
+    }
+
+    /**
+     * @param {HTMLElement} label
+     * @param {LayerLegend} legend
+     */
+    _appendLegend(label, legend) {
+        const legendEl = L.DomUtil.create("span", "weiran-layer-legend", label);
+        const iconSize = 12;
+        const inlineSvg = buildColoredMakiIconSvg(legend.icon, legend.iconColor, iconSize);
+        if (inlineSvg != null) {
+            legendEl.innerHTML = inlineSvg;
         }
     }
 
@@ -158,7 +183,7 @@ class GroupedLayerControl extends L.Control {
      * @param {L.Layer} layer
      */
     removeOverlay(layer) {
-        for (const source of /** @type {LayerSource[]} */ (["squaremap", "weiran-gis"])) {
+        for (const source of SOURCE_ORDER) {
             const section = this._sections[source];
             const index = section.entries.findIndex((entry) => entry.layer === layer);
             if (index === -1) {

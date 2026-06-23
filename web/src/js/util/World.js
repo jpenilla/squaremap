@@ -91,6 +91,7 @@ class World {
                 S.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)
                     .setMinZoom(0) // extra zoom out doesn't work :(
                     .setMaxZoom(this.zoom.max + this.zoom.extra);
+                S.scaleBar?.update();
 
                 // update page title
                 document.title = S.title.replace(/{world}/g, this.display_name);
@@ -157,12 +158,12 @@ class World {
             this.applyMarkerEntry(entry, "squaremap");
         }
         for (const entry of weiranGisLayers) {
-            this.applyMarkerEntry(entry, "weiran-gis");
+            this.applyMarkerEntry(entry, entry.controlSource ?? "geo-region");
         }
     }
     /**
      * @param {any} entry
-     * @param {'squaremap' | 'weiran-gis'} source
+     * @param {'squaremap' | 'geo-region' | 'unit-point'} source
      */
     applyMarkerEntry(entry, source) {
         if (entry == null || entry.id == null) {
@@ -186,7 +187,7 @@ class World {
         this.markerLayers.set(layer.id, layer);
 
         if (entry.control === true) {
-            S.layerControl.addOverlay(entry.name, layer, entry.hide, source);
+            S.layerControl.addOverlay(entry.name, layer, entry.hide, source, entry.legend ?? null);
         }
 
         for (const shape in entry.markers) {

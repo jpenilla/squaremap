@@ -2,6 +2,7 @@ import { Sidebar } from "./Sidebar.js";
 import { PlayerList } from "./PlayerList.js";
 import { WorldList } from "./WorldList.js";
 import { UICoordinates } from "./UICoordinates.js";
+import { UIScaleBar } from "./UIScaleBar.js";
 import { UILink } from "./UILink.js";
 import { LayerControl } from "./LayerControl.js";
 import L from "leaflet";
@@ -27,6 +28,8 @@ class SquaremapMap {
     worldList;
     /** @type {UICoordinates} */
     coordinates;
+    /** @type {UIScaleBar} */
+    scaleBar;
     /** @type {UILink} */
     uiLink;
     /** @type {number} */
@@ -89,6 +92,7 @@ class SquaremapMap {
                 this.sidebar = new Sidebar(json.ui.sidebar, this.getUrlParam("show_sidebar", "true") === "true");
                 this.playerList = new PlayerList(json.ui.sidebar);
                 this.worldList = new WorldList(json.worlds);
+                this.scaleBar = new UIScaleBar();
                 this.coordinates = new UICoordinates(
                     json.ui.coordinates,
                     this.getUrlParam("show_coordinates", "true") === "true",
