@@ -1,5 +1,5 @@
 {
-    "version": 19,
+    "version": 21,
     "instances": [
         {
             "layer": "nation",
@@ -269,6 +269,13 @@
         },
         {
             "layer": "department",
+            "id": "department-16",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3095, "z": 3305 },
+            "text": "文旅部"
+        },
+        {
+            "layer": "department",
             "id": "department-6",
             "parentNode": "nation-plato",
             "point": { "x": 3092, "z": 3454 },
@@ -352,9 +359,9 @@
             "text": "国家图书馆"
         },
         {
-            "layer": "public-institution",
-            "id": "public-institution-9",
-            "parentNode": "nation-weiran",
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-15",
+            "parentNode": "region-1",
             "point": { "x": 2609, "z": 3348 },
             "text": "神樱大社"
         },
@@ -453,7 +460,7 @@
             "layer": "economic-unit",
             "id": "economic-unit-10",
             "parentNode": "region-7",
-            "point": { "x": 3320, "z": 2857 },
+            "point": { "x": 3320, "z": 3857 },
             "text": "生物质厂"
         },
         {
@@ -483,6 +490,104 @@
             "parentNode": "nation-doublezero",
             "point": { "x": -3005, "z": 4662 },
             "text": "女巫塔"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-1",
+            "parentNode": "department-16",
+            "point": { "x": 2622, "z": 3065 },
+            "text": "终末核心登海广场"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-2",
+            "parentNode": "department-16",
+            "point": { "x": 2680, "z": 3057 },
+            "text": "望天际·登海豪庭"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-3",
+            "parentNode": "department-16",
+            "point": { "x": 2654, "z": 2881 },
+            "text": "国宾馆"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-4",
+            "parentNode": "department-16",
+            "point": { "x": 3052, "z": 3361 },
+            "text": "丰收饭店"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-5",
+            "parentNode": "department-16",
+            "point": { "x": 3044, "z": 3179 },
+            "text": "樱谷洲际酒店"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-6",
+            "parentNode": "department-16",
+            "point": { "x": 3212, "z": 3328 },
+            "text": "2800营地"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-7",
+            "parentNode": "region-13",
+            "point": { "x": 1723, "z": 2947 },
+            "text": "西绛度假村"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-8",
+            "parentNode": "region-15",
+            "point": { "x": 1909, "z": 3654 },
+            "text": "瑰洋康莱德酒店"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-9",
+            "parentNode": "region-15",
+            "point": { "x": 2372, "z": 3845 },
+            "text": "募兵遗址"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-10",
+            "parentNode": "region-6",
+            "point": { "x": 2777, "z": 3918 },
+            "text": "烟花观景台"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-11",
+            "parentNode": "region-1",
+            "point": { "x": 2695, "z": 3342 },
+            "text": "悟道堂"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-12",
+            "parentNode": "region-1",
+            "point": { "x": 3265, "z": 3295 },
+            "text": "紫门峰"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-13",
+            "parentNode": "region-1",
+            "point": { "x": 3203, "z": 3387 },
+            "text": "苏维埃峰"
+        },
+        {
+            "layer": "culture-tourism-unit",
+            "id": "culture-tourism-unit-14",
+            "parentNode": "department-5",
+            "point": { "x": 2850, "z": 3371 },
+            "text": "玉衡殿"
         },
         {
             "layer": "department",

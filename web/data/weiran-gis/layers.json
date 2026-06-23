@@ -1,5 +1,5 @@
 {
-    "version": 6,
+    "version": 7,
     "layers": {
         "nation": {
             "name": "国家",
@@ -203,6 +203,32 @@
                 "icon": "industry",
                 "iconSize": 10,
                 "iconColor": "#3574F0",
+                "iconBackgroundColor": "#ffffff",
+                "iconBackgroundOpacity": 0.72,
+                "iconBackgroundSize": 22,
+                "gap": 5
+            }
+        },
+        "culture-tourism-unit": {
+            "name": "文旅单位",
+            "control": true,
+            "hide": false,
+            "order": 7,
+            "z_index": 8,
+            "version": 1,
+            "minZoom": 4,
+            "maxZoom": null,
+            "markerType": "iconWithText",
+            "style": {
+                "fontSize": 13,
+                "fontWeight": 600,
+                "color": "#388e3c",
+                "colorOpacity": 1,
+                "textStrokeColor": "#ffffff",
+                "textStrokeWidth": 2,
+                "icon": "attraction",
+                "iconSize": 10,
+                "iconColor": "#388e3c",
                 "iconBackgroundColor": "#ffffff",
                 "iconBackgroundOpacity": 0.72,
                 "iconBackgroundSize": 22,
