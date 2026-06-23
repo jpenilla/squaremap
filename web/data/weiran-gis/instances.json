@@ -1,5 +1,5 @@
 {
-    "version": 12,
+    "version": 19,
     "instances": [
         {
             "layer": "nation",
@@ -273,6 +273,251 @@
             "parentNode": "nation-plato",
             "point": { "x": 3092, "z": 3454 },
             "text": "柏拉图驻蔚大使馆"
+        },
+        {
+            "layer": "department",
+            "id": "department-7",
+            "parentNode": "nation-weiran",
+            "point": { "x": 44, "z": 132 },
+            "text": "蔚然驻零大使馆"
+        },
+        {
+            "layer": "department",
+            "id": "department-8",
+            "parentNode": "nation-plato",
+            "point": { "x": 153, "z": 240 },
+            "text": "柏拉图驻零大使馆"
+        },
+        {
+            "layer": "department",
+            "id": "department-15",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 78, "z": 297 },
+            "text": "大洋国驻零大使馆（租用）"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-1",
+            "parentNode": "nation-weiran",
+            "point": { "x": 2453, "z": 3750 },
+            "text": "便民服务中心"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-2",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 2218, "z": 3875 },
+            "text": "八角笼"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-3",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 1873, "z": 3673 },
+            "text": "图书馆"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-4",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 1904, "z": 3816 },
+            "text": "动物园"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-5",
+            "parentNode": "nation-plato",
+            "point": { "x": 1717, "z": 2734 },
+            "text": "太阳宫"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-6",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3101, "z": 3177 },
+            "text": "主题思想堂"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-7",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3212, "z": 3294 },
+            "text": "深空实验室"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-8",
+            "parentNode": "nation-weiran",
+            "point": { "x": 3063, "z": 3264 },
+            "text": "国家图书馆"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-9",
+            "parentNode": "nation-weiran",
+            "point": { "x": 2609, "z": 3348 },
+            "text": "神樱大社"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-10",
+            "parentNode": "nation-weiran",
+            "point": { "x": 2504, "z": 3428 },
+            "text": "Gormin烈士墓"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-11",
+            "parentNode": "nation-weiran",
+            "point": { "x": 2754, "z": 3029 },
+            "text": "村民交易所"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-12",
+            "parentNode": "nation-plato",
+            "point": { "x": 1633, "z": 2731 },
+            "text": "柏拉图银行"
+        },
+        {
+            "layer": "public-institution",
+            "id": "public-institution-13",
+            "parentNode": "nation-doublezero",
+            "point": { "x": 138, "z": 8 },
+            "text": "零陵村民交易所"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-1",
+            "parentNode": "region-1",
+            "point": { "x": 3109, "z": 3337 },
+            "text": "樱谷地质燃料厂"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-2",
+            "parentNode": "region-2",
+            "point": { "x": 2609, "z": 2967 },
+            "text": "湖海酒业"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-3",
+            "parentNode": "region-2",
+            "point": { "x": 2627, "z": 3007 },
+            "text": "湖海林业"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-4",
+            "parentNode": "region-2",
+            "point": { "x": 2474, "z": 3044 },
+            "text": "沙隙石业"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-5",
+            "parentNode": "region-2",
+            "point": { "x": 2646, "z": 2932 },
+            "text": "湖海羊毛"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-6",
+            "parentNode": "region-2",
+            "point": { "x": 2629, "z": 2924 },
+            "text": "湖海造纸"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-7",
+            "parentNode": "region-2",
+            "point": { "x": 2721, "z": 2904 },
+            "text": "湖海瓜果"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-8",
+            "parentNode": "region-2",
+            "point": { "x": 2667, "z": 2889 },
+            "text": "快速熔炉"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-9",
+            "parentNode": "region-2",
+            "point": { "x": 2700, "z": 2934 },
+            "text": "湖海化肥"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-10",
+            "parentNode": "region-7",
+            "point": { "x": 3320, "z": 2857 },
+            "text": "生物质厂"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-11",
+            "parentNode": "nation-plato",
+            "point": { "x": 1732, "z": 3694 },
+            "text": "快速熔炉"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-12",
+            "parentNode": "nation-doublezero",
+            "point": { "x": 401, "z": 136 },
+            "text": "经验塔"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-13",
+            "parentNode": "nation-doublezero",
+            "point": { "x": -182, "z": 3192 },
+            "text": "蛙明灯厂"
+        },
+        {
+            "layer": "economic-unit",
+            "id": "economic-unit-14",
+            "parentNode": "nation-doublezero",
+            "point": { "x": -3005, "z": 4662 },
+            "text": "女巫塔"
+        },
+        {
+            "layer": "department",
+            "id": "department-10",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 2492, "z": 3329 },
+            "text": "大洋驻蔚大使馆"
+        },
+        {
+            "layer": "department",
+            "id": "department-11",
+            "parentNode": "nation-weiran",
+            "point": { "x": 1876, "z": 3697 },
+            "text": "蔚然驻洋大使馆"
+        },
+        {
+            "layer": "department",
+            "id": "department-12",
+            "parentNode": "nation-weiran",
+            "point": { "x": 1756, "z": 2714 },
+            "text": "蔚然驻柏大使馆"
+        },
+        {
+            "layer": "department",
+            "id": "department-13",
+            "parentNode": "nation-ocieania",
+            "point": { "x": 1788, "z": 2745 },
+            "text": "大洋驻柏大使馆"
+        },
+        {
+            "layer": "department",
+            "id": "department-14",
+            "parentNode": "nation-plato",
+            "point": { "x": 1612, "z": 2614 },
+            "text": "酥州"
         },
         {
             "layer": "central-department",

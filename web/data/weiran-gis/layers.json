@@ -1,5 +1,5 @@
 {
-    "version": 4,
+    "version": 6,
     "layers": {
         "nation": {
             "name": "国家",
@@ -151,6 +151,58 @@
                 "icon": "town-hall",
                 "iconSize": 10,
                 "iconColor": "#e53935",
+                "iconBackgroundColor": "#ffffff",
+                "iconBackgroundOpacity": 0.72,
+                "iconBackgroundSize": 22,
+                "gap": 5
+            }
+        },
+        "public-institution": {
+            "name": "事业单位",
+            "control": true,
+            "hide": false,
+            "order": 5,
+            "z_index": 8,
+            "version": 1,
+            "minZoom": 4,
+            "maxZoom": null,
+            "markerType": "iconWithText",
+            "style": {
+                "fontSize": 13,
+                "fontWeight": 600,
+                "color": "#f57c00",
+                "colorOpacity": 1,
+                "textStrokeColor": "#ffffff",
+                "textStrokeWidth": 2,
+                "icon": "building",
+                "iconSize": 10,
+                "iconColor": "#f57c00",
+                "iconBackgroundColor": "#ffffff",
+                "iconBackgroundOpacity": 0.72,
+                "iconBackgroundSize": 22,
+                "gap": 5
+            }
+        },
+        "economic-unit": {
+            "name": "经济单位",
+            "control": true,
+            "hide": false,
+            "order": 6,
+            "z_index": 8,
+            "version": 1,
+            "minZoom": 4,
+            "maxZoom": null,
+            "markerType": "iconWithText",
+            "style": {
+                "fontSize": 13,
+                "fontWeight": 600,
+                "color": "#3574F0",
+                "colorOpacity": 1,
+                "textStrokeColor": "#ffffff",
+                "textStrokeWidth": 2,
+                "icon": "industry",
+                "iconSize": 10,
+                "iconColor": "#3574F0",
                 "iconBackgroundColor": "#ffffff",
                 "iconBackgroundOpacity": 0.72,
                 "iconBackgroundSize": 22,

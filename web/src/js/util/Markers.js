@@ -1,5 +1,6 @@
 import { S } from "../Squaremap.js";
 import L from "leaflet";
+import { buildColoredMakiIconSvg, resolveMakiIcon } from "./makiIcons.js";
 
 class Marker {
     /** @type {L.Marker} */
@@ -242,7 +243,7 @@ function buildIconWithTextHtml(text, style) {
     const labelStyle = buildIconWithTextLabelStyle(style);
     const iconHtml =
         icon != null && icon !== ""
-            ? `<img class="weiran-icon-with-text-img" src="${escapeAttr(String(icon))}" alt="" style="${buildRegionLabelIconStyle(style, iconSize, 0)}">`
+            ? buildColoredMakiIconHtml(icon, style, iconSize, 0, "weiran-icon-with-text-img")
             : "";
     return `<div class="weiran-icon-with-text"><div class="weiran-icon-with-text-badge" style="${badgeStyle}">${iconHtml}</div><span class="weiran-icon-with-text-label" style="${labelStyle};margin-left:${gap}px">${escapeHtml(String(text))}</span></div>`;
 }
@@ -301,7 +302,7 @@ function buildRegionLabelHtml(text, style) {
     const gap = Number(style.gap ?? 6);
     const iconHtml =
         icon != null && icon !== ""
-            ? `<img class="weiran-region-label-img" src="${escapeAttr(String(icon))}" alt="" style="${buildRegionLabelIconStyle(style, iconSize, gap)}">`
+            ? buildColoredMakiIconHtml(icon, style, iconSize, gap, "weiran-region-label-img")
             : "";
     return `<div class="weiran-region-label" style="${inlineStyle}">${iconHtml}<span>${escapeHtml(String(text))}</span></div>`;
 }
@@ -348,39 +349,26 @@ function buildRegionLabelStyle(style) {
 }
 
 /**
+ * @param {string | unknown} icon
  * @param {Record<string, unknown>} style
  * @param {number} iconSize
  * @param {number} gap
+ * @param {string} imgClass
  */
-function buildRegionLabelIconStyle(style, iconSize, gap) {
-    /** @type {string[]} */
-    const parts = [
-        `width:${iconSize}px`,
-        `height:${iconSize}px`,
-        `margin-right:${gap}px`,
-    ];
-    if (style.iconColor != null) {
-        parts.push(`filter:${makiIconFilter(String(style.iconColor))}`);
-    }
-    return parts.join(";");
-}
+function buildColoredMakiIconHtml(icon, style, iconSize, gap, imgClass) {
+    const iconUrl = escapeAttr(String(resolveMakiIcon(icon) ?? icon));
+    const sizeStyle = `width:${iconSize}px;height:${iconSize}px`;
+    const gapStyle = gap > 0 ? `margin-right:${gap}px` : "";
 
-/**
- * @param {string} color
- */
-function makiIconFilter(color) {
-    if (color === "#ffffff" || color === "#fff" || color === "white") {
-        return "brightness(0) invert(1)";
+    if (style.iconColor != null) {
+        const color = colorWithOpacity(String(style.iconColor), Number(style.iconColorOpacity ?? 1));
+        const inlineSvg = buildColoredMakiIconSvg(icon, color, iconSize);
+        if (inlineSvg != null) {
+            return `<span class="weiran-maki-icon ${imgClass}" style="${sizeStyle};${gapStyle};display:block;line-height:0">${inlineSvg}</span>`;
+        }
     }
-    if (
-        color === "#e53935" ||
-        color === "#f44336" ||
-        color === "#ff0000" ||
-        color === "red"
-    ) {
-        return "brightness(0) saturate(100%) invert(27%) sepia(93%) saturate(7471%) hue-rotate(356deg) brightness(91%) contrast(119%)";
-    }
-    return "none";
+
+    return `<img class="${imgClass}" src="${iconUrl}" alt="" style="${sizeStyle};${gapStyle}">`;
 }
 
 /**

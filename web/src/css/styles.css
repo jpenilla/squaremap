@@ -30,19 +30,23 @@ img.leaflet-tile {
     align-items: center;
     pointer-events: none;
 }
-.weiran-icon-with-text-img {
-    display: block;
-    flex-shrink: 0;
-    object-fit: contain;
-}
-.weiran-region-label-icon {
-    background: transparent;
-    border: none;
-}
+.weiran-icon-with-text-img,
 .weiran-region-label-img {
     display: block;
     flex-shrink: 0;
     object-fit: contain;
+}
+.weiran-maki-icon {
+    display: block;
+    flex-shrink: 0;
+    line-height: 0;
+}
+.weiran-maki-icon svg {
+    display: block;
+}
+.weiran-region-label-icon {
+    background: transparent;
+    border: none;
 }
 .nameplate-container {
     display: flex;
