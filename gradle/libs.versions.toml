@@ -24,7 +24,6 @@ paperApi = "1.20.2-R0.1-SNAPSHOT"
 bStats = "3.2.1"
 fabricApi = "0.153.0+26.2"
 fabricLoader = "0.19.3"
-cardinalComponents = "8.0.0"
 guice = "7.0.0"
 neoforge = "26.2.0.7-beta"
 neoform = "26.2-1"
@@ -94,9 +93,6 @@ fabricLoader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "
 fabricPermissionsApi = "me.lucko:fabric-permissions-api:0.7.0"
 
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
-
-cardinalComponentsBase = { group = "org.ladysnake.cardinal-components-api", name = "cardinal-components-base", version.ref = "cardinalComponents" }
-cardinalComponentsEntity = { group = "org.ladysnake.cardinal-components-api", name = "cardinal-components-entity", version.ref = "cardinalComponents" }
 
 zNeoforge = { group = "net.neoforged", name = "neoforge", version.ref = "neoforge" }
 

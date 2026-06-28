@@ -7,14 +7,6 @@ plugins {
 
 loom.accessWidenerPath = layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener")
 
-repositories {
-  maven("https://maven.ladysnake.org/releases/") {
-    mavenContent {
-      includeGroup("org.ladysnake.cardinal-components-api")
-    }
-  }
-}
-
 dependencies {
   minecraft(libs.minecraft)
   implementation(libs.fabricLoader)
@@ -43,11 +35,6 @@ dependencies {
   implementation(libs.cloudConfirmation)
   include(libs.cloudConfirmation)
   include(libs.cloudProcessorsCommon)
-
-  implementation(libs.cardinalComponentsBase)
-  include(libs.cardinalComponentsBase)
-  implementation(libs.cardinalComponentsEntity)
-  include(libs.cardinalComponentsEntity)
 }
 
 tasks.shadowJar {
@@ -71,8 +58,6 @@ fabricModJson {
   }
   environment = Environment.ANY
   mainEntrypoint("xyz.jpenilla.squaremap.fabric.SquaremapFabricInitializer")
-  entrypoint("cardinal-components", "xyz.jpenilla.squaremap.fabric.SquaremapComponentInitializer")
-  custom.put("cardinal-components", simpleCustomValueList(listOf("squaremap:player_component")))
   mitLicense()
   mixin("squaremap-fabric.mixins.json")
   accessWidener = "squaremap-fabric.accesswidener"
