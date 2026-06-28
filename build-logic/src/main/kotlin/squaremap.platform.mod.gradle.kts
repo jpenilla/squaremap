@@ -2,11 +2,11 @@ plugins {
   id("squaremap.platform")
 }
 
-val shade: Configuration by configurations.creating
+val shade = configurations.register("shade")
 configurations.implementation {
   extendsFrom(shade)
 }
-val shadeFiltered: Configuration by configurations.creating {
+val shadeFiltered = configurations.register("shadeFiltered") {
   extendsFrom(shade)
 
   exclude("org.checkerframework")
@@ -14,7 +14,7 @@ val shadeFiltered: Configuration by configurations.creating {
 
 tasks {
   shadowJar {
-    configurations = listOf(shadeFiltered)
+    configurations = listOf(shadeFiltered.get())
     listOf(
       "jakarta.inject",
       "com.google.inject",
