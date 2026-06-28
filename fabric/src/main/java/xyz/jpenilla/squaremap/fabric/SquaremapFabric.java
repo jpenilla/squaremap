@@ -59,6 +59,7 @@ public final class SquaremapFabric implements SquaremapPlatform {
         this.registerLifecycleListeners();
         this.injector.getInstance(FabricMapUpdates.class).register();
         this.injector.getInstance(FabricNetworking.class).register();
+        this.injector.getInstance(FabricPlayerManager.class).setupAttachments();
     }
 
     private void registerLifecycleListeners() {
