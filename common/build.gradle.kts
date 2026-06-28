@@ -51,7 +51,7 @@ dependencies {
     isTransitive = false // depends on guava, provided by mc at runtime
   }
 
-  compileOnly("curse.maven:moonrise-1096335:6008360")
+  compileOnly("curse.maven:moonrise-1096335:8324171")
 }
 
 @UntrackedTask(because = "Up-to-date checking for this needs further thought")
