@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "checkout git repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: "setup bun"
         uses: oven-sh/setup-bun@v2
       - name: "install bun dependencies"
@@ -29,7 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         # gradle-build-action doesn't support caching files in the project dir
       - name: "cache project local caches"
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             .gradle/loom-cache
