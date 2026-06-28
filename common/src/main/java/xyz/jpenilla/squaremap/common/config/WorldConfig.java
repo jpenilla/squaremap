@@ -20,6 +20,7 @@ public final class WorldConfig extends AbstractWorldConfig<Config> {
     public int MAX_RENDER_THREADS = -1;
     public boolean MAP_ITERATE_UP = false;
     public int MAP_MAX_HEIGHT = -1;
+    public PlayerVisibility MAP_PLAYER_VISIBILITY = PlayerVisibility.PLAYER_SETTING;
 
     private void worldSettings() {
         this.MAP_ENABLED = this.getBoolean("map.enabled", this.MAP_ENABLED);
@@ -29,6 +30,9 @@ public final class WorldConfig extends AbstractWorldConfig<Config> {
         this.MAX_RENDER_THREADS = this.getInt("map.max-render-threads", this.MAX_RENDER_THREADS);
         this.MAP_ITERATE_UP = this.getBoolean("map.iterate-up", this.MAP_ITERATE_UP);
         this.MAP_MAX_HEIGHT = this.getInt("map.max-height", this.MAP_MAX_HEIGHT);
+        try {
+            this.MAP_PLAYER_VISIBILITY = PlayerVisibility.valueOf(this.getString("map.player-visibility", this.MAP_PLAYER_VISIBILITY.name()));
+        } catch (IllegalArgumentException ignored) {}
     }
 
     public boolean MAP_BIOMES = true;
