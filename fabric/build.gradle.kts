@@ -1,3 +1,4 @@
+import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
 import xyz.jpenilla.resourcefactory.fabric.Environment
 
 plugins {
@@ -69,6 +70,7 @@ fabricModJson {
 }
 
 publishMods.modrinth {
+  environment = ModrinthEnvironment.SERVER_ONLY_CLIENT_OPTIONAL
   minecraftVersions.add(libs.versions.minecraft)
   modLoaders.add("fabric")
   requires("fabric-api")
