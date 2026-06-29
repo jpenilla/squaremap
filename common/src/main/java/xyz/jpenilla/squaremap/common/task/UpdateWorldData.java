@@ -134,6 +134,8 @@ public final class UpdateWorldData implements Runnable {
 
         final Map<String, Object> settings = new HashMap<>();
         settings.put("spawn", spawn);
+        // 新增
+        settings.put("world_border_label", Messages.getString("ui.layers.world-border"));
         settings.put("player_tracker", playerTracker);
         settings.put("zoom", zoom);
         settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
