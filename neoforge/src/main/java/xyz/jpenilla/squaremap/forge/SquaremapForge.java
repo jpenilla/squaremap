@@ -10,6 +10,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -67,7 +68,12 @@ public final class SquaremapForge implements SquaremapPlatform {
 
     private void registerLifecycleListeners() {
         NeoForge.EVENT_BUS.addListener((ServerStartingEvent event) -> this.serverAccess.setServer(event.getServer()));
-        NeoForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> this.serverAccess.clearServer());
+        NeoForge.EVENT_BUS.addListener((ServerStoppedEvent event) -> {
+            if (event.getServer().isDedicatedServer()) {
+                this.common.shutdown();
+            }
+            this.serverAccess.clearServer();
+        });
         final AtomicBoolean exportedFluids = new AtomicBoolean(false);
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> exportedFluids.set(false));
         NeoForge.EVENT_BUS.addListener(EventPriority.HIGH, (LevelEvent.Load event) -> {
@@ -86,7 +92,11 @@ public final class SquaremapForge implements SquaremapPlatform {
             this.worldManager.worldUnloaded(serverLevel);
         });
         NeoForge.EVENT_BUS.addListener(new TickEndListener());
-        NeoForge.EVENT_BUS.addListener((GameShuttingDownEvent event) -> this.common.shutdown());
+        NeoForge.EVENT_BUS.addListener((GameShuttingDownEvent event) -> {
+            if (FMLEnvironment.getDist().isClient()) {
+                this.common.shutdown();
+            }
+        });
         NeoForge.EVENT_BUS.addListener((ServerStartedEvent event) -> this.common.updateCheck());
     }
 
