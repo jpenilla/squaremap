@@ -1,0 +1,54 @@
+/**
+ * Gloom 静夜 — 深色 UI 皮肤（仅 #react-root 内 Ant Design 可交互组件）。
+ */
+#react-root[data-ui-skin="gloom"] {
+    /* 主色 */
+    --weiran-ui-color-primary: #1677ff;
+
+    /* 文字 */
+    --weiran-ui-color-text: rgba(255, 255, 255, 0.88);
+    --weiran-ui-color-text-muted: rgba(255, 255, 255, 0.55);
+    --weiran-ui-color-text-hover: #ffffff;
+
+    /* 背景 */
+    --weiran-ui-bg-container: rgba(0, 0, 0, 0.72);
+    --weiran-ui-bg-container-hover: rgba(255, 255, 255, 0.14);
+    --weiran-ui-bg-hover: rgba(255, 255, 255, 0.12);
+    --weiran-ui-bg-hover-subtle: rgba(255, 255, 255, 0.06);
+
+    /* 主色悬停 */
+    --weiran-ui-color-primary-hover: #4096ff;
+
+    /* 边框 */
+    --weiran-ui-border: rgba(255, 255, 255, 0.18);
+    --weiran-ui-border-hover: rgba(255, 255, 255, 0.28);
+    --weiran-ui-border-subtle: rgba(255, 255, 255, 0.14);
+    --weiran-ui-border-divider: rgba(255, 255, 255, 0.12);
+
+    /* 圆角 */
+    --weiran-ui-radius: 8px;
+    --weiran-ui-radius-control: 8px;
+    --weiran-ui-radius-none: 0;
+
+    /* 阴影 */
+    --weiran-ui-shadow-control: 0 1px 5px rgba(0, 0, 0, 0.45);
+    --weiran-ui-shadow-panel: 0 1px 5px rgba(0, 0, 0, 0.65);
+
+    /* 字号 / 行高 */
+    --weiran-ui-font-size-sm: 12px;
+    --weiran-ui-font-size-section: 11px;
+    --weiran-ui-line-height-sm: 14px;
+    --weiran-ui-letter-spacing-section: 0.04em;
+
+    /* 内边距 */
+    --weiran-ui-padding-coordinates-body: 2px 8px;
+    --weiran-ui-padding-panel-body: 8px 0;
+    --weiran-ui-padding-panel-section-x: 12px;
+    --weiran-ui-padding-panel-section-y: 4px;
+    --weiran-ui-padding-panel-item: 4px 12px;
+
+    /* 布局间距 */
+    --weiran-ui-inset-edge: 10px;
+    --weiran-ui-gap-control: 8px;
+    --weiran-ui-control-width: 40px;
+}

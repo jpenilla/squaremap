@@ -1,0 +1,162 @@
+.skin-preview-card {
+    --skin-preview-bg: rgba(255, 255, 255, 0.94);
+    --skin-preview-border: #d9d9d9;
+    --skin-preview-text: rgba(0, 0, 0, 0.88);
+    --skin-preview-text-muted: rgba(0, 0, 0, 0.45);
+    --skin-preview-primary: #1677ff;
+    --skin-preview-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin: 0;
+    padding: 8px;
+    border: 2px solid transparent;
+    border-radius: var(--weiran-ui-radius);
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    color: var(--weiran-ui-color-text);
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.skin-preview-card:hover {
+    background: var(--weiran-ui-bg-hover-subtle);
+}
+
+.skin-preview-card.is-selected {
+    border-color: var(--weiran-ui-color-primary);
+    background: var(--weiran-ui-bg-hover-subtle);
+    box-shadow: 0 0 0 1px var(--weiran-ui-color-primary);
+}
+
+.skin-preview-mock {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--skin-preview-border);
+    border-radius: calc(var(--weiran-ui-radius) - 2px);
+    background: var(--skin-preview-bg);
+    box-shadow: var(--skin-preview-shadow);
+    min-height: 52px;
+    box-sizing: border-box;
+}
+
+.skin-preview-mock-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 14px;
+    flex-shrink: 0;
+}
+
+.skin-preview-mock-btn {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--skin-preview-border);
+    border-radius: 3px;
+    background: var(--skin-preview-bg);
+    box-sizing: border-box;
+}
+
+.skin-preview-mock-btn-primary {
+    background: var(--skin-preview-primary);
+    border-color: var(--skin-preview-primary);
+}
+
+.skin-preview-mock-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    padding-top: 2px;
+}
+
+.skin-preview-mock-line {
+    display: block;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--skin-preview-text-muted);
+    opacity: 0.65;
+}
+
+.skin-preview-mock-line-short {
+    width: 55%;
+}
+
+.skin-preview-label {
+    font-size: var(--weiran-ui-font-size-sm);
+    line-height: var(--weiran-ui-line-height-sm);
+    color: var(--weiran-ui-color-text);
+    text-align: center;
+}
+
+.skin-preview-card.is-selected .skin-preview-label {
+    color: var(--weiran-ui-color-primary);
+    font-weight: 600;
+}
+
+.skin-preview-card[data-preview="minecraft"] .skin-preview-mock {
+    border: 2px solid #000000;
+    border-radius: 0;
+    box-shadow:
+        inset 1px 1px 0 #ffffff,
+        inset -1px -1px 0 #555555;
+}
+
+.skin-preview-card[data-preview="minecraft"] .skin-preview-mock-btn {
+    border: 1px solid #000000;
+    border-radius: 0;
+    background: #8b8b8b;
+    box-shadow:
+        inset 1px 1px 0 #ffffff,
+        inset -1px -1px 0 #555555;
+}
+
+.skin-preview-card[data-preview="minecraft"] .skin-preview-mock-btn-primary {
+    background: #5b8731;
+    border-color: #000000;
+}
+
+.skin-preview-card[data-preview="minecraft"] .skin-preview-mock-line {
+    border-radius: 0;
+}
+
+.skin-preview-card[data-preview="parchment"] .skin-preview-mock {
+    position: relative;
+    border: 2px solid #6b5344;
+    border-radius: 8px;
+    box-shadow:
+        inset 0 0 0 1px rgba(74, 55, 40, 0.35),
+        inset 0 0 0 3px rgba(217, 201, 168, 0.55);
+    background:
+        radial-gradient(ellipse 100% 80% at 15% 10%, rgba(255, 248, 235, 0.7) 0%, transparent 55%),
+        linear-gradient(175deg, #f7eed8 0%, #e8d9b8 100%);
+}
+
+.skin-preview-card[data-preview="parchment"] .skin-preview-mock::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+        linear-gradient(#4a3728, #4a3728) 6px 6px / 8px 1px no-repeat,
+        linear-gradient(#4a3728, #4a3728) 6px 6px / 1px 8px no-repeat,
+        linear-gradient(#4a3728, #4a3728) calc(100% - 14px) 6px / 8px 1px no-repeat,
+        linear-gradient(#4a3728, #4a3728) calc(100% - 7px) 6px / 1px 8px no-repeat;
+    opacity: 0.65;
+}
+
+.skin-preview-card[data-preview="parchment"] .skin-preview-mock-btn {
+    border: 1px solid #8b7355;
+    box-shadow: inset 0 0 0 1px rgba(74, 55, 40, 0.25);
+}

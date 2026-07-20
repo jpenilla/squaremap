@@ -2,6 +2,7 @@ import { S } from "./Squaremap.js";
 import L from "leaflet";
 import { SquaremapTileLayer } from "./SquaremapTileLayer.js";
 import { GroupedLayerControl } from "./GroupedLayerControl.js";
+import { registerGroupedLayerControl } from "../react/bridge/layerBridge.js";
 
 class LayerControl {
     /** @type {number} */
@@ -33,6 +34,7 @@ class LayerControl {
             (layer) => this.hideLayer(layer),
         );
         this.controls.addTo(S.map);
+        registerGroupedLayerControl(this.controls);
     }
     /**
      * @param {string} name

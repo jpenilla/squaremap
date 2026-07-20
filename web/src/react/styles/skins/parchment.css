@@ -1,0 +1,211 @@
+/**
+ * Parchment 羊皮纸 — 复古制图 / 藏宝图风格。
+ * 暖米黄哑光面板、深褐勾线、土金点缀；纸纹与角标纯 CSS 实现。
+ */
+#react-root[data-ui-skin="parchment"] {
+    /* 主色 — 土金（制图台 / 藏宝图点缀） */
+    --weiran-ui-color-primary: #b8860b;
+    --weiran-ui-color-primary-hover: #cfa832;
+
+    /* 文字 — 深褐墨水 */
+    --weiran-ui-color-text: #4a3728;
+    --weiran-ui-color-text-muted: rgba(74, 55, 40, 0.62);
+    --weiran-ui-color-text-hover: #3d2b1f;
+
+    /* 背景 — 暖米黄哑光 */
+    --weiran-ui-bg-container: rgba(243, 233, 210, 0.96);
+    --weiran-ui-bg-container-hover: #ebe0c8;
+    --weiran-ui-bg-hover: rgba(74, 55, 40, 0.06);
+    --weiran-ui-bg-hover-subtle: rgba(74, 55, 40, 0.03);
+
+    /* 边框 — 勾线 / 框线 */
+    --weiran-ui-border: #8b7355;
+    --weiran-ui-border-hover: #a08050;
+    --weiran-ui-border-subtle: rgba(74, 55, 40, 0.28);
+    --weiran-ui-border-divider: rgba(74, 55, 40, 0.32);
+
+    /* 羊皮纸专用 */
+    --weiran-ui-parchment-ink: #4a3728;
+    --weiran-ui-parchment-ink-soft: rgba(74, 55, 40, 0.42);
+    --weiran-ui-parchment-frame: #6b5344;
+    --weiran-ui-parchment-gilt: rgba(184, 134, 11, 0.55);
+    --weiran-ui-parchment-paper-fill:
+        radial-gradient(ellipse 120% 80% at 12% 8%, rgba(255, 248, 235, 0.65) 0%, transparent 55%),
+        radial-gradient(ellipse 90% 70% at 88% 92%, rgba(139, 115, 85, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 70% 20%, rgba(184, 134, 11, 0.05) 0%, transparent 35%),
+        linear-gradient(175deg, #f7eed8 0%, #f0e4c8 48%, #e8d9b8 100%);
+    --weiran-ui-parchment-inner-line: inset 0 0 0 1px var(--weiran-ui-parchment-ink-soft);
+    --weiran-ui-parchment-gilt-line: inset 0 0 0 3px rgba(217, 201, 168, 0.65);
+    --weiran-ui-parchment-ink-line: inset 0 0 0 4px rgba(74, 55, 40, 0.18);
+
+    /* 圆角 */
+    --weiran-ui-radius: 10px;
+    --weiran-ui-radius-control: 10px;
+    --weiran-ui-radius-none: 0;
+
+    /* 阴影 — 淡墨晕 + 勾线 */
+    --weiran-ui-shadow-control:
+        0 1px 3px rgba(74, 55, 40, 0.12),
+        var(--weiran-ui-parchment-inner-line),
+        var(--weiran-ui-parchment-gilt-line);
+    --weiran-ui-shadow-panel:
+        0 3px 12px rgba(74, 55, 40, 0.14),
+        var(--weiran-ui-parchment-inner-line),
+        var(--weiran-ui-parchment-gilt-line),
+        var(--weiran-ui-parchment-ink-line);
+
+    /* 字号 / 行高 */
+    --weiran-ui-font-size-sm: 12px;
+    --weiran-ui-font-size-section: 11px;
+    --weiran-ui-line-height-sm: 14px;
+    --weiran-ui-letter-spacing-section: 0.03em;
+
+    /* 内边距 */
+    --weiran-ui-padding-coordinates-body: 2px 8px;
+    --weiran-ui-padding-panel-body: 8px 0;
+    --weiran-ui-padding-panel-section-x: 12px;
+    --weiran-ui-padding-panel-section-y: 4px;
+    --weiran-ui-padding-panel-item: 4px 12px;
+
+    /* 布局间距 */
+    --weiran-ui-inset-edge: 10px;
+    --weiran-ui-gap-control: 8px;
+    --weiran-ui-control-width: 40px;
+}
+
+/* 纸面 + 外框勾线 — 控件 */
+#react-root[data-ui-skin="parchment"] .map-tool-btn.ant-btn:not(.ant-btn-primary),
+#react-root[data-ui-skin="parchment"] .map-layer-control-btn.ant-btn:not(.ant-btn-primary),
+#react-root[data-ui-skin="parchment"] .map-zoom-control {
+    border: 2px solid var(--weiran-ui-parchment-frame);
+    background:
+        var(--weiran-ui-parchment-paper-fill),
+        var(--weiran-ui-bg-container);
+}
+
+#react-root[data-ui-skin="parchment"] .map-tool-btn.ant-btn:not(.ant-btn-primary):hover,
+#react-root[data-ui-skin="parchment"] .map-tool-btn.ant-btn:not(.ant-btn-primary):focus-visible,
+#react-root[data-ui-skin="parchment"] .map-layer-control-btn.ant-btn:not(.ant-btn-primary):hover,
+#react-root[data-ui-skin="parchment"] .map-layer-control-btn.ant-btn:not(.ant-btn-primary):focus-visible {
+    border-color: var(--weiran-ui-border-hover);
+}
+
+#react-root[data-ui-skin="parchment"] .map-tool-btn.ant-btn-primary,
+#react-root[data-ui-skin="parchment"] .map-layer-control-btn.ant-btn-primary {
+    border: 2px solid #8b6914;
+    color: #fff8eb;
+    background:
+        linear-gradient(180deg, #cfa832 0%, #b8860b 52%, #9a7209 100%);
+    box-shadow:
+        0 1px 3px rgba(74, 55, 40, 0.16),
+        inset 0 1px 0 rgba(255, 248, 235, 0.35),
+        inset 0 0 0 1px rgba(74, 55, 40, 0.35);
+}
+
+#react-root[data-ui-skin="parchment"] .map-zoom-control-btn-in {
+    border-bottom: 1px dashed var(--weiran-ui-border-subtle) !important;
+}
+
+/* 纸面 + 双线勾边 + 角标 — 侧栏面板 */
+#react-root[data-ui-skin="parchment"] .layer-panel .ant-card,
+#react-root[data-ui-skin="parchment"] .settings-panel .ant-card {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--weiran-ui-parchment-frame) !important;
+    background:
+        var(--weiran-ui-parchment-paper-fill),
+        var(--weiran-ui-bg-container) !important;
+}
+
+/* 坐标栏 — 紧凑简式，不做面板级角标 */
+#react-root[data-ui-skin="parchment"] .map-coordinates {
+    border: 1px solid var(--weiran-ui-parchment-frame);
+    border-radius: 6px;
+    background: rgba(243, 233, 210, 0.94);
+    box-shadow: 0 1px 2px rgba(74, 55, 40, 0.1);
+    padding: 3px 10px;
+}
+
+#react-root[data-ui-skin="parchment"] .layer-panel .ant-card::before,
+#react-root[data-ui-skin="parchment"] .settings-panel .ant-card::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--weiran-ui-parchment-ink-soft);
+    border-radius: calc(var(--weiran-ui-radius) - 4px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+#react-root[data-ui-skin="parchment"] .layer-panel .ant-card::after,
+#react-root[data-ui-skin="parchment"] .settings-panel .ant-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+    /* 四角 L 形勾线（藏宝图角标） */
+    background:
+        linear-gradient(var(--weiran-ui-parchment-ink), var(--weiran-ui-parchment-ink)) 10px 10px / 14px 2px
+            no-repeat,
+        linear-gradient(var(--weiran-ui-parchment-ink), var(--weiran-ui-parchment-ink)) 10px 10px / 2px 14px
+            no-repeat,
+        linear-gradient(var(--weiran-ui-parchment-ink), var(--weiran-ui-parchment-ink)) calc(100% - 24px) 10px /
+            14px 2px no-repeat,
+        linear-gradient(var(--weiran-ui-parchment-ink), var(--weiran-ui-parchment-ink)) calc(100% - 12px) 10px /
+            2px 14px no-repeat,
+        linear-gradient(var(--weiran-ui-parchment-ink), var(--weiran-ui-parchment-ink)) 10px calc(100% - 12px) /
+            14px 2px no-repeat,
+        linear-gradient(var(--weiran-ui-parchment-ink), var(--weiran-ui-parchment-ink)) 10px calc(100% - 24px) /
+            2px 14px no-repeat,
+        linear-gradient(var(--weiran-ui-parchment-ink), var(--weiran-ui-parchment-ink))
+            calc(100% - 24px) calc(100% - 12px) / 14px 2px no-repeat,
+        linear-gradient(var(--weiran-ui-parchment-ink), var(--weiran-ui-parchment-ink))
+            calc(100% - 12px) calc(100% - 24px) / 2px 14px no-repeat;
+    opacity: 0.72;
+}
+
+#react-root[data-ui-skin="parchment"] .layer-panel .ant-card-body,
+#react-root[data-ui-skin="parchment"] .settings-panel .ant-card-body {
+    position: relative;
+    z-index: 2;
+}
+
+#react-root[data-ui-skin="parchment"] .layer-panel-section-title,
+#react-root[data-ui-skin="parchment"] .map-side-panel-section-title {
+    border-bottom: 1px solid var(--weiran-ui-parchment-gilt);
+    padding-bottom: 6px;
+    margin-bottom: 2px;
+}
+
+#react-root[data-ui-skin="parchment"] .layer-panel-divider {
+    border-top: 1px dashed var(--weiran-ui-border-divider) !important;
+    border-bottom: none !important;
+    opacity: 1;
+}
+
+#react-root[data-ui-skin="parchment"] .ant-checkbox .ant-checkbox-inner {
+    border: 2px solid var(--weiran-ui-parchment-frame);
+    background:
+        var(--weiran-ui-parchment-paper-fill),
+        var(--weiran-ui-bg-container);
+    box-shadow: inset 0 0 0 1px var(--weiran-ui-parchment-ink-soft);
+}
+
+#react-root[data-ui-skin="parchment"] .ant-checkbox-checked .ant-checkbox-inner {
+    background: linear-gradient(180deg, #cfa832 0%, #b8860b 100%);
+    border-color: #8b6914;
+}
+
+#react-root[data-ui-skin="parchment"] .settings-panel-skin-list .skin-preview-card {
+    border: 2px solid transparent;
+}
+
+#react-root[data-ui-skin="parchment"] .settings-panel-skin-list .skin-preview-card.is-selected {
+    border-color: var(--weiran-ui-parchment-frame);
+    box-shadow:
+        var(--weiran-ui-parchment-inner-line),
+        var(--weiran-ui-parchment-gilt-line),
+        0 0 0 1px var(--weiran-ui-color-primary);
+}

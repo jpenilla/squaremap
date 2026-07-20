@@ -4,7 +4,7 @@ import globals from "globals";
 
 export default defineConfig([
     {
-        files: ["**/*.js"],
+        files: ["**/*.{js,jsx}"],
         plugins: {
             js,
         },

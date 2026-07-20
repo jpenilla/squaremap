@@ -1,45 +1,64 @@
 import { S } from "./Squaremap.js";
-import L from "leaflet";
+import { registerUICoordinates } from "../react/bridge/coordinatesBridge.js";
 
 class UICoordinates {
+    /** @type {boolean} */
+    showCoordinates;
+
+    /** @type {boolean} */
+    enabled;
+
+    /** @type {string} */
+    html;
+
+    /** @type {{ x: number | string, z: number | string }} */
+    coords;
+
+    /** @type {(() => void) | null} */
+    _onChange = null;
+
     /**
      * @param {Settings_UI_Coordinates} json
      * @param {boolean} show
      */
     constructor(json, show) {
-        const Coords = L.Control.extend({
-            _container: null,
-            options: {
-                position: "bottomleft",
-            },
-            onAdd: function () {
-                const coords = L.DomUtil.create("div", "leaflet-control-layers coordinates");
-                this._coords = coords;
-                if (!show) {
-                    this._coords.style.display = "none";
-                }
-                return coords;
-            },
-            update: function (html, point) {
-                this.x = point == null ? "---" : Math.floor(point.x);
-                this.z = point == null ? "---" : Math.floor(point.y);
-                if (html != null) {
-                    this._coords.innerHTML = html.replace(/{x}/g, this.x).replace(/{z}/g, this.z);
-                }
-            },
-        });
         this.showCoordinates = show;
+        this.enabled = json.enabled !== false;
         this.html = json.html == null ? "undefined" : json.html;
-        this.coords = new Coords();
-        S.map.addControl(this.coords).addEventListener("mousemove", (event) => {
+        this.coords = { x: "---", z: "---" };
+
+        S.map.addEventListener("mousemove", (event) => {
             if (S.worldList.curWorld != null) {
-                this.coords.update(this.html, S.toPoint(event.latlng));
+                this.update(S.toPoint(event.latlng));
             }
         });
-        if (!json.enabled) {
-            this.coords._coords.style.display = "none";
-        }
-        this.coords.update(this.html);
+
+        this.update(null);
+        registerUICoordinates(this);
+    }
+
+    /**
+     * @param {() => void} listener
+     */
+    onChange(listener) {
+        this._onChange = listener;
+    }
+
+    /**
+     * @param {import("leaflet").Point | null} point
+     */
+    update(point) {
+        this.coords.x = point == null ? "---" : Math.floor(point.x);
+        this.coords.z = point == null ? "---" : Math.floor(point.y);
+        this._onChange?.();
+    }
+
+    getFormattedHtml() {
+        return this.html.replace(/{x}/g, String(this.coords.x)).replace(/{z}/g, String(this.coords.z));
+    }
+
+    isVisible() {
+        return this.enabled && this.showCoordinates;
     }
 }
 

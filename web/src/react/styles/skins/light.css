@@ -1,0 +1,60 @@
+/**
+ * Light 光昼 — 浅色 UI 皮肤（默认；Ant Design / Material 白天模式思路）。
+ * 半透明白色浮层叠在地图上，主色与 Ant Design 默认蓝对齐。
+ */
+#react-root[data-ui-skin="light"],
+#react-root:not([data-ui-skin]) {
+    /* 主色 — Ant Design 默认 primary */
+    --weiran-ui-color-primary: #1677ff;
+
+    /* 文字 — Ant Design / Material 正文层级 */
+    --weiran-ui-color-text: rgba(0, 0, 0, 0.88);
+    --weiran-ui-color-text-muted: rgba(0, 0, 0, 0.45);
+    --weiran-ui-color-text-hover: rgba(0, 0, 0, 0.88);
+
+    /* 背景 — Material surface（略透明以融入地图） */
+    --weiran-ui-bg-container: rgba(255, 255, 255, 0.94);
+    --weiran-ui-bg-container-hover: #f5f5f5;
+    --weiran-ui-bg-hover: rgba(0, 0, 0, 0.04);
+    --weiran-ui-bg-hover-subtle: rgba(0, 0, 0, 0.02);
+
+    /* 主色悬停 — Ant Design primary hover */
+    --weiran-ui-color-primary-hover: #4096ff;
+
+    /* 边框 — Ant Design 默认分割 / 描边 */
+    --weiran-ui-border: #d9d9d9;
+    --weiran-ui-border-hover: #4096ff;
+    --weiran-ui-border-subtle: rgba(0, 0, 0, 0.06);
+    --weiran-ui-border-divider: rgba(5, 5, 5, 0.06);
+
+    /* 圆角 — Ant Design 控件常用 8px */
+    --weiran-ui-radius: 8px;
+    --weiran-ui-radius-control: 8px;
+    --weiran-ui-radius-none: 0;
+
+    /* 阴影 — Ant Design / Material 轻 elevation */
+    --weiran-ui-shadow-control:
+        0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02),
+        0 2px 4px 0 rgba(0, 0, 0, 0.02);
+    --weiran-ui-shadow-panel:
+        0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+        0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+    /* 字号 / 行高 */
+    --weiran-ui-font-size-sm: 12px;
+    --weiran-ui-font-size-section: 11px;
+    --weiran-ui-line-height-sm: 14px;
+    --weiran-ui-letter-spacing-section: 0.04em;
+
+    /* 内边距 */
+    --weiran-ui-padding-coordinates-body: 2px 8px;
+    --weiran-ui-padding-panel-body: 8px 0;
+    --weiran-ui-padding-panel-section-x: 12px;
+    --weiran-ui-padding-panel-section-y: 4px;
+    --weiran-ui-padding-panel-item: 4px 12px;
+
+    /* 布局间距 */
+    --weiran-ui-inset-edge: 10px;
+    --weiran-ui-gap-control: 8px;
+    --weiran-ui-control-width: 40px;
+}

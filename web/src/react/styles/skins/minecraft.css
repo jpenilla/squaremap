@@ -1,0 +1,159 @@
+/**
+ * Minecraft 方块 — 游戏内 GUI 风格：灰色面板、直角、浮雕描边。
+ */
+#react-root[data-ui-skin="minecraft"] {
+    /* 主色 — 草方块绿（选中 / 高亮） */
+    --weiran-ui-color-primary: #5b8731;
+    --weiran-ui-color-primary-hover: #6ea03c;
+
+    /* 文字 — 背包界面深灰字 */
+    --weiran-ui-color-text: #3f3f3f;
+    --weiran-ui-color-text-muted: #6b6b6b;
+    --weiran-ui-color-text-hover: #1a1a1a;
+
+    /* 背景 — 物品栏 / 按钮灰 */
+    --weiran-ui-bg-container: #c6c6c6;
+    --weiran-ui-bg-container-hover: #d2d2d2;
+    --weiran-ui-bg-hover: #b0b0b0;
+    --weiran-ui-bg-hover-subtle: #bcbcbc;
+
+    /* 边框 — 浮雕亮/暗边 */
+    --weiran-ui-border: #555555;
+    --weiran-ui-border-hover: #777777;
+    --weiran-ui-border-subtle: #555555;
+    --weiran-ui-border-divider: #555555;
+    --weiran-ui-bevel-light: #ffffff;
+    --weiran-ui-bevel-dark: #555555;
+    --weiran-ui-bevel-outer: #000000;
+
+    /* 圆角 — 直角 */
+    --weiran-ui-radius: 0;
+    --weiran-ui-radius-control: 0;
+    --weiran-ui-radius-none: 0;
+
+    /* 阴影 — 用硬边浮雕代替柔影 */
+    --weiran-ui-shadow-control: none;
+    --weiran-ui-shadow-panel: none;
+
+    /* 字号 / 字体 — 等宽像素感 */
+    --weiran-ui-font-family: "Courier New", Courier, monospace;
+    --weiran-ui-font-size-sm: 12px;
+    --weiran-ui-font-size-section: 11px;
+    --weiran-ui-line-height-sm: 14px;
+    --weiran-ui-letter-spacing-section: 0;
+
+    /* 内边距 */
+    --weiran-ui-padding-coordinates-body: 2px 8px;
+    --weiran-ui-padding-panel-body: 6px 0;
+    --weiran-ui-padding-panel-section-x: 10px;
+    --weiran-ui-padding-panel-section-y: 4px;
+    --weiran-ui-padding-panel-item: 4px 10px;
+
+    /* 布局间距 */
+    --weiran-ui-inset-edge: 10px;
+    --weiran-ui-gap-control: 4px;
+    --weiran-ui-control-width: 40px;
+
+    font-family: var(--weiran-ui-font-family);
+    -webkit-font-smoothing: none;
+}
+
+#react-root[data-ui-skin="minecraft"] .map-tool-btn.ant-btn:not(.ant-btn-primary),
+#react-root[data-ui-skin="minecraft"] .map-layer-control-btn.ant-btn:not(.ant-btn-primary),
+#react-root[data-ui-skin="minecraft"] .map-zoom-control {
+    border: 2px solid var(--weiran-ui-bevel-outer);
+    box-shadow:
+        inset 1px 1px 0 var(--weiran-ui-bevel-light),
+        inset -1px -1px 0 var(--weiran-ui-bevel-dark);
+}
+
+#react-root[data-ui-skin="minecraft"] .map-tool-btn.ant-btn:not(.ant-btn-primary):hover,
+#react-root[data-ui-skin="minecraft"] .map-tool-btn.ant-btn:not(.ant-btn-primary):focus-visible,
+#react-root[data-ui-skin="minecraft"] .map-layer-control-btn.ant-btn:not(.ant-btn-primary):hover,
+#react-root[data-ui-skin="minecraft"] .map-layer-control-btn.ant-btn:not(.ant-btn-primary):focus-visible {
+    background: var(--weiran-ui-bg-container-hover) !important;
+    border-color: var(--weiran-ui-bevel-outer);
+}
+
+#react-root[data-ui-skin="minecraft"] .map-tool-btn.ant-btn-primary,
+#react-root[data-ui-skin="minecraft"] .map-layer-control-btn.ant-btn-primary {
+    background: var(--weiran-ui-color-primary);
+    border: 2px solid var(--weiran-ui-bevel-outer);
+    color: #ffffff;
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.35),
+        inset -1px -1px 0 #2d4218;
+}
+
+#react-root[data-ui-skin="minecraft"] .map-tool-btn.ant-btn-primary:hover,
+#react-root[data-ui-skin="minecraft"] .map-tool-btn.ant-btn-primary:focus-visible,
+#react-root[data-ui-skin="minecraft"] .map-layer-control-btn.ant-btn-primary:hover,
+#react-root[data-ui-skin="minecraft"] .map-layer-control-btn.ant-btn-primary:focus-visible {
+    background: var(--weiran-ui-color-primary-hover) !important;
+    border-color: var(--weiran-ui-bevel-outer);
+}
+
+#react-root[data-ui-skin="minecraft"] .map-zoom-control-btn.ant-btn:hover,
+#react-root[data-ui-skin="minecraft"] .map-zoom-control-btn.ant-btn:focus-visible {
+    background: var(--weiran-ui-bg-hover) !important;
+}
+
+#react-root[data-ui-skin="minecraft"] .map-zoom-control-btn-in {
+    border-bottom: 2px solid var(--weiran-ui-bevel-dark) !important;
+}
+
+#react-root[data-ui-skin="minecraft"] .layer-panel .ant-card,
+#react-root[data-ui-skin="minecraft"] .settings-panel .ant-card {
+    border: 2px solid var(--weiran-ui-bevel-outer) !important;
+    background: var(--weiran-ui-bg-container) !important;
+    box-shadow:
+        inset 2px 2px 0 var(--weiran-ui-bevel-light),
+        inset -2px -2px 0 var(--weiran-ui-bevel-dark);
+}
+
+#react-root[data-ui-skin="minecraft"] .map-coordinates {
+    border: 2px solid var(--weiran-ui-bevel-outer);
+    background: var(--weiran-ui-bg-container);
+    box-shadow:
+        inset 2px 2px 0 var(--weiran-ui-bevel-light),
+        inset -2px -2px 0 var(--weiran-ui-bevel-dark);
+}
+
+#react-root[data-ui-skin="minecraft"] .layer-panel-section-title,
+#react-root[data-ui-skin="minecraft"] .map-side-panel-section-title {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 700;
+}
+
+#react-root[data-ui-skin="minecraft"] .layer-panel-divider {
+    margin: 4px 0 !important;
+    border-top: 2px solid var(--weiran-ui-bevel-dark) !important;
+    border-bottom: 1px solid var(--weiran-ui-bevel-light) !important;
+}
+
+#react-root[data-ui-skin="minecraft"] .settings-panel-skin-list .skin-preview-card {
+    border-radius: 0;
+}
+
+#react-root[data-ui-skin="minecraft"] .settings-panel-skin-list .skin-preview-card.is-selected {
+    border: 2px solid var(--weiran-ui-bevel-outer);
+    box-shadow:
+        inset 0 0 0 1px var(--weiran-ui-color-primary),
+        inset 1px 1px 0 var(--weiran-ui-bevel-light),
+        inset -1px -1px 0 var(--weiran-ui-bevel-dark);
+}
+
+#react-root[data-ui-skin="minecraft"] .ant-checkbox .ant-checkbox-inner {
+    border-radius: 0;
+    border: 2px solid var(--weiran-ui-bevel-outer);
+    background: #8b8b8b;
+    box-shadow:
+        inset 1px 1px 0 var(--weiran-ui-bevel-light),
+        inset -1px -1px 0 var(--weiran-ui-bevel-dark);
+}
+
+#react-root[data-ui-skin="minecraft"] .ant-checkbox-checked .ant-checkbox-inner {
+    background: var(--weiran-ui-color-primary);
+    border-color: var(--weiran-ui-bevel-outer);
+}

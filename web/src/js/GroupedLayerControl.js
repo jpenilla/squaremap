@@ -5,25 +5,36 @@ import { buildColoredMakiIconSvg } from "./util/makiIcons.js";
 
 /** @typedef {{ icon: string, iconColor: string, iconBackgroundColor: string, iconBackgroundOpacity: number }} LayerLegend */
 
+/**
+ * @typedef {object} LayerEntry
+ * @property {L.Layer} layer
+ * @property {number} order
+ * @property {string} id
+ * @property {string} name
+ * @property {LayerSource} source
+ * @property {LayerLegend | null} legend
+ * @property {boolean} checked
+ */
+
 /** @type {Record<LayerSource, string>} */
-const SECTION_TITLES = {
+export const SECTION_TITLES = {
     squaremap: "SQUARE MAP",
     "geo-region": "GEO REGION",
     "unit-point": "UNIT POINT",
 };
 
 /** @type {LayerSource[]} */
-const SOURCE_ORDER = ["squaremap", "geo-region", "unit-point"];
+export const SOURCE_ORDER = ["squaremap", "geo-region", "unit-point"];
 
 class GroupedLayerControl extends L.Control {
     /** @type {L.Map | null} */
     _map = null;
 
-    /** @type {Record<LayerSource, { list: HTMLElement | null, section: HTMLElement | null, entries: Array<{ layer: L.Layer, order: number, label: HTMLElement }> }>} */
+    /** @type {Record<LayerSource, { entries: LayerEntry[] }>} */
     _sections = {
-        squaremap: { list: null, section: null, entries: [] },
-        "geo-region": { list: null, section: null, entries: [] },
-        "unit-point": { list: null, section: null, entries: [] },
+        squaremap: { entries: [] },
+        "geo-region": { entries: [] },
+        "unit-point": { entries: [] },
     };
 
     /** @type {(layer: L.Layer, def: boolean) => boolean} */
@@ -35,8 +46,18 @@ class GroupedLayerControl extends L.Control {
     /** @type {(layer: L.Layer) => void} */
     _onHide = () => {};
 
+    /** @type {(() => void) | null} */
+    _layersChangeListener = null;
+
     constructor() {
         super({ position: "topleft" });
+    }
+
+    /**
+     * @param {() => void} listener
+     */
+    onLayersChange(listener) {
+        this._layersChangeListener = listener;
     }
 
     /**
@@ -52,52 +73,62 @@ class GroupedLayerControl extends L.Control {
 
     onAdd(map) {
         this._map = map;
-
-        const container = L.DomUtil.create("div", "leaflet-control-layers leaflet-control weiran-layer-control");
-        const toggle = L.DomUtil.create("a", "leaflet-control-layers-toggle", container);
-        toggle.href = "#";
-        toggle.title = "Layers";
-
-        const form = L.DomUtil.create("form", "leaflet-control-layers-list", container);
-
-        for (let i = 0; i < SOURCE_ORDER.length; i++) {
-            const source = SOURCE_ORDER[i];
-            if (i > 0) {
-                L.DomUtil.create("div", "weiran-layer-section-divider", form);
-            }
-
-            const section = L.DomUtil.create("div", "weiran-layer-section", form);
-            section.dataset.source = source;
-            const title = L.DomUtil.create("div", "weiran-layer-section-title", section);
-            title.textContent = SECTION_TITLES[source];
-            const list = L.DomUtil.create("div", "weiran-layer-section-list", section);
-            this._sections[source].list = list;
-            this._sections[source].section = section;
-        }
-
-        L.DomEvent.disableClickPropagation(container);
-        L.DomEvent.on(toggle, "click", L.DomEvent.stop);
-        L.DomEvent.on(toggle, "click", this._toggleExpand, this);
-
+        const container = L.DomUtil.create("div", "weiran-layer-control-host");
+        container.style.display = "none";
         return container;
     }
 
-    _toggleExpand() {
-        const container = this.getContainer();
-        if (container == null) {
-            return;
+    /**
+     * @returns {Array<{ source: LayerSource, title: string, layers: Array<{ id: string, name: string, checked: boolean, legendHtml: string | null }> }>}
+     */
+    getGroupedLayers() {
+        /** @type {Array<{ source: LayerSource, title: string, layers: Array<{ id: string, name: string, checked: boolean, legendHtml: string | null }> }>} */
+        const groups = [];
+
+        for (const source of SOURCE_ORDER) {
+            const section = this._sections[source];
+            if (section.entries.length === 0) {
+                continue;
+            }
+
+            groups.push({
+                source,
+                title: SECTION_TITLES[source],
+                layers: section.entries.map((entry) => ({
+                    id: entry.id,
+                    name: entry.name,
+                    checked: entry.checked,
+                    legendHtml:
+                        entry.legend != null && source === "unit-point"
+                            ? buildColoredMakiIconSvg(entry.legend.icon, entry.legend.iconColor, 12)
+                            : null,
+                })),
+            });
         }
-        L.DomUtil.addClass(container, "leaflet-control-layers-expanded");
-        L.DomEvent.on(document, "click", this._collapseIfOutside, this);
+
+        return groups;
     }
 
-    _collapseIfOutside(e) {
-        const container = this.getContainer();
-        if (container == null || container.contains(/** @type {Node} */ (e.target))) {
+    /**
+     * @param {string} id
+     * @param {boolean} checked
+     */
+    setLayerVisible(id, checked) {
+        const entry = this._findEntry(id);
+        if (entry == null || entry.checked === checked) {
             return;
         }
-        L.DomUtil.removeClass(container, "leaflet-control-layers-expanded");
-        L.DomEvent.off(document, "click", this._collapseIfOutside, this);
+
+        entry.checked = checked;
+        if (checked) {
+            entry.layer.addTo(/** @type {L.Map} */ (this._map));
+            this._onShow(entry.layer);
+        } else {
+            entry.layer.remove();
+            this._onHide(entry.layer);
+        }
+
+        this._notifyLayersChange();
     }
 
     /**
@@ -109,74 +140,25 @@ class GroupedLayerControl extends L.Control {
      */
     addOverlay(name, layer, hide, source = "squaremap", legend = null) {
         const section = this._sections[source] ?? this._sections.squaremap;
-        if (section.list == null) {
-            return;
-        }
-        const label = L.DomUtil.create("label", "weiran-layer-entry", section.list);
-        const input = L.DomUtil.create("input", "leaflet-control-layers-selector", label);
-        input.type = "checkbox";
-        input.checked = this._shouldHide(layer, hide) !== true;
+        const checked = this._shouldHide(layer, hide) !== true;
+        const id = layer.id != null ? String(layer.id) : `${source}-${name}-${section.entries.length}`;
 
-        if (legend != null && source === "unit-point") {
-            this._appendLegend(label, legend);
-        }
-
-        const nameSpan = L.DomUtil.create("span", "weiran-layer-label-text", label);
-        nameSpan.textContent = name;
-
-        L.DomEvent.on(input, "click", (e) => {
-            L.DomEvent.stopPropagation(e);
-            if (input.checked) {
-                layer.addTo(/** @type {L.Map} */ (this._map));
-                this._onShow(layer);
-            } else {
-                layer.remove();
-                this._onHide(layer);
-            }
+        section.entries.push({
+            layer,
+            order: layer.order ?? 0,
+            id,
+            name,
+            source,
+            legend,
+            checked,
         });
-
-        const order = layer.order ?? 0;
-        section.entries.push({ layer, order, label });
         this._sortSection(section);
-        this._updateSectionVisibility(source);
 
-        if (input.checked && this._map != null) {
+        if (checked && this._map != null) {
             layer.addTo(this._map);
         }
-    }
 
-    /**
-     * @param {HTMLElement} label
-     * @param {LayerLegend} legend
-     */
-    _appendLegend(label, legend) {
-        const legendEl = L.DomUtil.create("span", "weiran-layer-legend", label);
-        const iconSize = 12;
-        const inlineSvg = buildColoredMakiIconSvg(legend.icon, legend.iconColor, iconSize);
-        if (inlineSvg != null) {
-            legendEl.innerHTML = inlineSvg;
-        }
-    }
-
-    /**
-     * @param {LayerSource} source
-     */
-    _updateSectionVisibility(source) {
-        const section = this._sections[source];
-        if (section.section == null) {
-            return;
-        }
-        section.section.style.display = section.entries.length === 0 ? "none" : "";
-    }
-
-    /**
-     * @param {{ list: HTMLElement, entries: Array<{ layer: L.Layer, order: number, label: HTMLElement }> }} section
-     */
-    _sortSection(section) {
-        section.entries.sort((a, b) => a.order - b.order);
-        for (const entry of section.entries) {
-            section.list.appendChild(entry.label);
-        }
+        this._notifyLayersChange();
     }
 
     /**
@@ -189,12 +171,43 @@ class GroupedLayerControl extends L.Control {
             if (index === -1) {
                 continue;
             }
-            section.entries[index].label.remove();
             section.entries.splice(index, 1);
             layer.remove();
-            this._updateSectionVisibility(source);
+            this._notifyLayersChange();
             return;
         }
+    }
+
+    /**
+     * @param {L.Layer} layer
+     */
+    removeLayer(layer) {
+        this.removeOverlay(layer);
+    }
+
+    /**
+     * @param {string} id
+     * @returns {LayerEntry | null}
+     */
+    _findEntry(id) {
+        for (const source of SOURCE_ORDER) {
+            const entry = this._sections[source].entries.find((item) => item.id === id);
+            if (entry != null) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param {{ entries: LayerEntry[] }} section
+     */
+    _sortSection(section) {
+        section.entries.sort((a, b) => a.order - b.order);
+    }
+
+    _notifyLayersChange() {
+        this._layersChangeListener?.();
     }
 }
 

@@ -88,7 +88,6 @@ div.leaflet-marker-pane img {
     transition: all 0.25s;
 }
 .leaflet-bottom.leaflet-left .link,
-.leaflet-bottom.leaflet-left .coordinates,
 .leaflet-bottom.leaflet-left .scale-bar {
     display: inline-block;
     float: none;
@@ -111,12 +110,6 @@ div.leaflet-control.scale-bar {
     padding: 4px 8px 2px;
     height: 30px;
     box-sizing: border-box;
-}
-div.leaflet-control-layers.coordinates {
-    vertical-align: bottom;
-    padding: 2px 5px;
-    line-height: 14px;
-    height: 30px;
 }
 .scale-bar-ruler {
     display: flex;
@@ -151,37 +144,8 @@ div.leaflet-control-layers.coordinates {
 .scale-bar-tick-label:last-child {
     transform: translateX(-100%);
 }
-.weiran-layer-control .weiran-layer-section-divider {
-    border-top: 1px solid #bbb;
-    margin: 6px 0;
-}
-.weiran-layer-control.leaflet-control-layers-expanded .weiran-layer-section-title {
-    display: block;
-    padding: 4px 10px 2px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #555;
-}
-.weiran-layer-control .weiran-layer-section-list label.weiran-layer-entry {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 2px 10px;
-    color: #333;
-}
-.weiran-layer-control .weiran-layer-section-list label span.weiran-layer-label-text {
-    color: #333;
-}
-.weiran-layer-control .weiran-layer-legend {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-    line-height: 0;
-}
-.weiran-layer-control .weiran-layer-legend svg {
-    display: block;
+.weiran-layer-control-host {
+    display: none !important;
 }
 #sidebar {
     display: flex;

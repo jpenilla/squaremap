@@ -5,6 +5,7 @@ import { UICoordinates } from "./UICoordinates.js";
 import { UIScaleBar } from "./UIScaleBar.js";
 import { UILink } from "./UILink.js";
 import { LayerControl } from "./LayerControl.js";
+import { setControlsVisible } from "../react/bridge/layerBridge.js";
 import L from "leaflet";
 import "./addons/Ellipse.js";
 import "./addons/RotateMarker.js";
@@ -44,6 +45,7 @@ class SquaremapMap {
             attributionControl: false,
             preferCanvas: true,
             noWrap: true,
+            zoomControl: false,
         })
             .on("overlayadd", (e) => {
                 this.layerControl.showLayer(e.layer);
@@ -100,6 +102,7 @@ class SquaremapMap {
                 this.uiLink = new UILink(json.ui.link, this.getUrlParam("show_link_button", "true") === "true");
 
                 this.showControls = this.getUrlParam("show_controls", "true") === "true";
+                setControlsVisible(this.showControls);
                 if (!this.showControls) {
                     let controlLayers = document.getElementsByClassName("leaflet-top leaflet-left");
                     controlLayers[0].style.display = "none";
@@ -211,6 +214,12 @@ class SquaremapMap {
 
 export const S = new SquaremapMap();
 
+import { registerSquaremap } from "../react/bridge/mapBridge.js";
+
+registerSquaremap(S);
+
+import("../react/mountReactUI.jsx").then(({ mountReactUI }) => mountReactUI());
+
 // https://stackoverflow.com/a/3955096
 Array.prototype.remove = function () {
     var what,
@@ -227,7 +236,9 @@ Array.prototype.remove = function () {
 };
 
 if (import.meta.hot) {
-    import.meta.hot.dispose(() => {
+    import.meta.hot.dispose(async () => {
+        const { unmountReactUI } = await import("../react/mountReactUI.jsx");
+        unmountReactUI();
         S.sidebar.remove();
         S.map.remove();
     });
