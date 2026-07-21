@@ -1,0 +1,149 @@
+/* 组织树面板 — 视觉由 --weiran-ui-* 皮肤变量驱动 */
+
+.org-panel.map-side-panel {
+    scrollbar-width: thin;
+    scrollbar-color: var(--weiran-ui-scrollbar-thumb) var(--weiran-ui-scrollbar-track);
+}
+
+.org-panel.map-side-panel::-webkit-scrollbar {
+    width: var(--weiran-ui-scrollbar-size);
+    height: var(--weiran-ui-scrollbar-size);
+}
+
+.org-panel.map-side-panel::-webkit-scrollbar-track {
+    background: var(--weiran-ui-scrollbar-track);
+}
+
+.org-panel.map-side-panel::-webkit-scrollbar-thumb {
+    background-color: var(--weiran-ui-scrollbar-thumb);
+    border-radius: var(--weiran-ui-scrollbar-radius);
+}
+
+.org-panel.map-side-panel::-webkit-scrollbar-thumb:hover {
+    background-color: var(--weiran-ui-scrollbar-thumb-hover);
+}
+
+.org-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.org-panel-header .map-side-panel-section-title {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.org-panel-tree-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex: 0 0 auto;
+}
+
+.org-panel-tree-action-btn.ant-btn {
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0;
+    color: var(--weiran-ui-color-text-muted);
+}
+
+.org-panel-tree-action-btn.ant-btn:hover,
+.org-panel-tree-action-btn.ant-btn:focus-visible {
+    color: var(--weiran-ui-color-text);
+    background: var(--weiran-ui-bg-hover-subtle);
+}
+
+.org-panel-sort {
+    display: flex;
+    width: 100%;
+    margin-top: 6px;
+}
+
+.org-panel-sort.ant-segmented {
+    background: var(--weiran-ui-bg-hover-subtle);
+}
+
+.org-panel-sort .ant-segmented-item-label {
+    font-size: var(--weiran-ui-font-size-sm);
+    line-height: var(--weiran-ui-line-height-sm);
+    color: var(--weiran-ui-color-text-muted);
+}
+
+.org-panel-sort .ant-segmented-item-selected .ant-segmented-item-label {
+    color: var(--weiran-ui-color-text);
+}
+
+.org-panel-tree {
+    margin-top: 8px;
+}
+
+.org-panel-tree.ant-tree {
+    background: transparent;
+    color: var(--weiran-ui-color-text);
+    font-size: var(--weiran-ui-font-size-sm);
+    line-height: var(--weiran-ui-line-height-sm);
+}
+
+.org-panel-tree .ant-tree-treenode {
+    padding-block: 1px;
+}
+
+.org-panel-tree .ant-tree-node-content-wrapper {
+    border-radius: calc(var(--weiran-ui-radius-control) - 2px);
+    color: var(--weiran-ui-color-text);
+    min-width: 0;
+}
+
+.org-panel-tree .ant-tree-node-content-wrapper:hover,
+.org-panel-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background: var(--weiran-ui-bg-hover-subtle);
+    color: var(--weiran-ui-color-text-hover);
+}
+
+.org-panel-tree .ant-tree-switcher {
+    color: var(--weiran-ui-color-text-muted);
+}
+
+.org-panel-tree .ant-tree-indent-unit {
+    width: 14px;
+}
+
+.org-tree-node-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.org-tree-node-icon {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    line-height: 0;
+}
+
+.org-tree-node-icon svg {
+    display: block;
+}
+
+.org-tree-node-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.org-tree-node-tag.ant-tag {
+    flex: 0 0 auto;
+    margin-inline-end: 0;
+    padding-inline: 5px;
+    font-size: var(--weiran-ui-font-size-section);
+    line-height: 16px;
+    color: var(--weiran-ui-color-text-muted);
+    background: var(--weiran-ui-bg-hover-subtle);
+}

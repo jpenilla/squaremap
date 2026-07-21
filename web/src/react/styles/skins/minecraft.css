@@ -6,10 +6,10 @@
     --weiran-ui-color-primary: #5b8731;
     --weiran-ui-color-primary-hover: #6ea03c;
 
-    /* 文字 — 背包界面深灰字 */
-    --weiran-ui-color-text: #3f3f3f;
-    --weiran-ui-color-text-muted: #6b6b6b;
-    --weiran-ui-color-text-hover: #1a1a1a;
+    /* 文字 — 背包界面深灰字（略加深、加粗，避免在灰底上发虚） */
+    --weiran-ui-color-text: #1f1f1f;
+    --weiran-ui-color-text-muted: #454545;
+    --weiran-ui-color-text-hover: #000000;
 
     /* 背景 — 物品栏 / 按钮灰 */
     --weiran-ui-bg-container: #c6c6c6;
@@ -35,8 +35,10 @@
     --weiran-ui-shadow-control: none;
     --weiran-ui-shadow-panel: none;
 
-    /* 字号 / 字体 — 等宽像素感 */
-    --weiran-ui-font-family: "Courier New", Courier, monospace;
+    /* 字号 / 字体 — 系统无衬线 + 半粗，比 Courier 在灰底上更易读 */
+    --weiran-ui-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --weiran-ui-font-weight: 600;
+    --weiran-ui-font-weight-strong: 700;
     --weiran-ui-font-size-sm: 12px;
     --weiran-ui-font-size-section: 11px;
     --weiran-ui-line-height-sm: 14px;
@@ -72,8 +74,15 @@
     --weiran-ui-search-divider-width: 2px;
     --weiran-ui-search-divider: var(--weiran-ui-bevel-dark);
 
+    /* 滚动条 — 方块 GUI 直角 */
+    --weiran-ui-scrollbar-size: 8px;
+    --weiran-ui-scrollbar-track: #8b8b8b;
+    --weiran-ui-scrollbar-thumb: #555555;
+    --weiran-ui-scrollbar-thumb-hover: #3f3f3f;
+    --weiran-ui-scrollbar-radius: var(--weiran-ui-radius-none);
+
     font-family: var(--weiran-ui-font-family);
-    -webkit-font-smoothing: none;
+    font-weight: var(--weiran-ui-font-weight);
 }
 
 #react-root[data-ui-skin="minecraft"] .map-tool-btn.ant-btn:not(.ant-btn-primary),

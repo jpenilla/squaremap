@@ -52,12 +52,9 @@ function getControlSource(layerDef) {
  * @returns {{ icon: string, iconColor: string, iconBackgroundColor: string, iconBackgroundOpacity: number } | null}
  */
 export function buildLayerLegend(layerDef) {
-    if (layerDef.markerType !== "iconWithText") {
-        return null;
-    }
     /** @type {Record<string, unknown>} */
     const style = /** @type {Record<string, unknown>} */ (layerDef.style) ?? {};
-    if (style.icon == null || style.iconColor == null) {
+    if (style.icon == null || style.icon === "" || style.iconColor == null) {
         return null;
     }
     return {

@@ -68,4 +68,11 @@
     --weiran-ui-search-item-radius: 8px;
     --weiran-ui-search-divider-width: 0.5px;
     --weiran-ui-search-divider: rgba(255, 255, 255, 0.1);
+
+    /* 滚动条 */
+    --weiran-ui-scrollbar-size: 6px;
+    --weiran-ui-scrollbar-track: transparent;
+    --weiran-ui-scrollbar-thumb: rgba(255, 255, 255, 0.22);
+    --weiran-ui-scrollbar-thumb-hover: rgba(255, 255, 255, 0.36);
+    --weiran-ui-scrollbar-radius: 999px;
 }

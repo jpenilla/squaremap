@@ -38,10 +38,11 @@ const MINECRAFT_FALLBACK_ANT_TOKENS = {
     colorPrimary: "#5b8731",
     colorBgContainer: "#c6c6c6",
     colorBorder: "#555555",
-    colorText: "#3f3f3f",
-    colorTextSecondary: "#6b6b6b",
+    colorText: "#1f1f1f",
+    colorTextSecondary: "#454545",
     colorBgTextHover: "#b0b0b0",
     borderRadius: 0,
+    fontWeightStrong: 700,
 };
 
 /** Parchment 羊皮纸 — Ant Design token 回退值 */

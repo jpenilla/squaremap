@@ -71,7 +71,7 @@ export function getPanelBridge() {
  * @param {EventTarget | null} target
  */
 export function shouldDismissSidePanels(target) {
-    if (!(target instanceof HTMLElement)) {
+    if (!(target instanceof Element)) {
         return true;
     }
     return (
