@@ -51,4 +51,21 @@
     --weiran-ui-inset-edge: 10px;
     --weiran-ui-gap-control: 8px;
     --weiran-ui-control-width: 40px;
+
+    /* 搜索 — Spotlight 深色毛玻璃 */
+    --weiran-ui-search-bg: rgba(36, 36, 38, 0.68);
+    --weiran-ui-search-backdrop-filter: blur(24px) saturate(180%);
+    --weiran-ui-search-border-width: 0.5px;
+    --weiran-ui-search-border: rgba(255, 255, 255, 0.14);
+    --weiran-ui-search-shadow:
+        0 22px 70px rgba(0, 0, 0, 0.52), 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+    --weiran-ui-search-radius: 14px;
+    --weiran-ui-search-input-size: 18px;
+    --weiran-ui-search-input-height: 52px;
+    --weiran-ui-search-input-padding-x: 18px;
+    --weiran-ui-search-scrim: rgba(0, 0, 0, 0.32);
+    --weiran-ui-search-item-hover: rgba(255, 255, 255, 0.1);
+    --weiran-ui-search-item-radius: 8px;
+    --weiran-ui-search-divider-width: 0.5px;
+    --weiran-ui-search-divider: rgba(255, 255, 255, 0.1);
 }

@@ -71,6 +71,22 @@
     --weiran-ui-inset-edge: 10px;
     --weiran-ui-gap-control: 8px;
     --weiran-ui-control-width: 40px;
+
+    /* 搜索 — 实心纸面（无模糊 / 无遮罩） */
+    --weiran-ui-search-bg: var(--weiran-ui-bg-container);
+    --weiran-ui-search-backdrop-filter: none;
+    --weiran-ui-search-border-width: 2px;
+    --weiran-ui-search-border: var(--weiran-ui-parchment-frame);
+    --weiran-ui-search-shadow: var(--weiran-ui-shadow-panel);
+    --weiran-ui-search-radius: var(--weiran-ui-radius);
+    --weiran-ui-search-input-size: 17px;
+    --weiran-ui-search-input-height: 50px;
+    --weiran-ui-search-input-padding-x: 16px;
+    --weiran-ui-search-scrim: transparent;
+    --weiran-ui-search-item-hover: var(--weiran-ui-bg-hover-subtle);
+    --weiran-ui-search-item-radius: 6px;
+    --weiran-ui-search-divider-width: 1px;
+    --weiran-ui-search-divider: var(--weiran-ui-border-divider);
 }
 
 /* 纸面 + 外框勾线 — 控件 */
@@ -106,9 +122,10 @@
     border-bottom: 1px dashed var(--weiran-ui-border-subtle) !important;
 }
 
-/* 纸面 + 双线勾边 + 角标 — 侧栏面板 */
+/* 纸面 + 双线勾边 + 角标 — 侧栏面板与搜索 */
 #react-root[data-ui-skin="parchment"] .layer-panel .ant-card,
-#react-root[data-ui-skin="parchment"] .settings-panel .ant-card {
+#react-root[data-ui-skin="parchment"] .settings-panel .ant-card,
+#react-root[data-ui-skin="parchment"] .search-panel-shell {
     position: relative;
     overflow: hidden;
     border: 2px solid var(--weiran-ui-parchment-frame) !important;
@@ -127,7 +144,8 @@
 }
 
 #react-root[data-ui-skin="parchment"] .layer-panel .ant-card::before,
-#react-root[data-ui-skin="parchment"] .settings-panel .ant-card::before {
+#react-root[data-ui-skin="parchment"] .settings-panel .ant-card::before,
+#react-root[data-ui-skin="parchment"] .search-panel-shell::before {
     content: "";
     position: absolute;
     inset: 5px;
@@ -138,7 +156,8 @@
 }
 
 #react-root[data-ui-skin="parchment"] .layer-panel .ant-card::after,
-#react-root[data-ui-skin="parchment"] .settings-panel .ant-card::after {
+#react-root[data-ui-skin="parchment"] .settings-panel .ant-card::after,
+#react-root[data-ui-skin="parchment"] .search-panel-shell::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -167,7 +186,8 @@
 }
 
 #react-root[data-ui-skin="parchment"] .layer-panel .ant-card-body,
-#react-root[data-ui-skin="parchment"] .settings-panel .ant-card-body {
+#react-root[data-ui-skin="parchment"] .settings-panel .ant-card-body,
+#react-root[data-ui-skin="parchment"] .search-panel-shell > * {
     position: relative;
     z-index: 2;
 }

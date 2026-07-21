@@ -54,6 +54,24 @@
     --weiran-ui-gap-control: 4px;
     --weiran-ui-control-width: 40px;
 
+    /* 搜索 — 实心 GUI（直角、浮雕、无模糊 / 无遮罩） */
+    --weiran-ui-search-bg: var(--weiran-ui-bg-container);
+    --weiran-ui-search-backdrop-filter: none;
+    --weiran-ui-search-border-width: 2px;
+    --weiran-ui-search-border: var(--weiran-ui-bevel-outer);
+    --weiran-ui-search-shadow:
+        inset 2px 2px 0 var(--weiran-ui-bevel-light),
+        inset -2px -2px 0 var(--weiran-ui-bevel-dark);
+    --weiran-ui-search-radius: var(--weiran-ui-radius-none);
+    --weiran-ui-search-input-size: 14px;
+    --weiran-ui-search-input-height: 44px;
+    --weiran-ui-search-input-padding-x: 14px;
+    --weiran-ui-search-scrim: transparent;
+    --weiran-ui-search-item-hover: var(--weiran-ui-bg-hover);
+    --weiran-ui-search-item-radius: var(--weiran-ui-radius-none);
+    --weiran-ui-search-divider-width: 2px;
+    --weiran-ui-search-divider: var(--weiran-ui-bevel-dark);
+
     font-family: var(--weiran-ui-font-family);
     -webkit-font-smoothing: none;
 }

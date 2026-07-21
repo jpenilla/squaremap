@@ -1,8 +1,8 @@
 import { Card, Checkbox, Divider, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { getLayerBridge } from "../bridge/layerBridge.js";
-import { SIDE_PANEL } from "../bridge/panelBridge.js";
-import { useSidePanelOpen } from "../hooks/useSidePanelOpen.js";
+import { getLayerBridge } from "../../bridge/layerBridge.js";
+import { SIDE_PANEL } from "../../bridge/panelBridge.js";
+import { useSidePanelOpen } from "../../hooks/useSidePanelOpen.js";
 
 /**
  * @param {{ html: string | null }} props

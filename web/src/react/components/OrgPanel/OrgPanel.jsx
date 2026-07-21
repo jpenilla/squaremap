@@ -1,6 +1,6 @@
 import { Card, Typography } from "antd";
-import { SIDE_PANEL } from "../bridge/panelBridge.js";
-import { useSidePanelOpen } from "../hooks/useSidePanelOpen.js";
+import { SIDE_PANEL } from "../../bridge/panelBridge.js";
+import { useSidePanelOpen } from "../../hooks/useSidePanelOpen.js";
 
 export function OrgPanel() {
     const open = useSidePanelOpen(SIDE_PANEL.ORG);

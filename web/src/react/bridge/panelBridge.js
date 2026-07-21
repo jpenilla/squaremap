@@ -75,6 +75,8 @@ export function shouldDismissSidePanels(target) {
         return true;
     }
     return (
-        target.closest(".map-floating-controls") == null && target.closest(".map-side-panel") == null
+        target.closest(".map-floating-controls") == null &&
+        target.closest(".map-side-panel") == null &&
+        target.closest(".search-panel") == null
     );
 }
