@@ -10,7 +10,7 @@ resource-factory-neoforge = { id = "xyz.jpenilla.resource-factory-neoforge-conve
 [versions]
 minecraft = "26.2"
 checkerQual = "3.55.1"
-cloud = "2.0.0"
+cloud = "2.1.0"
 cloudMinecraft = "2.0.0"
 cloudProcessors = "1.0.0-rc.1"
 cloudModded = "2.0.0-beta.17"
