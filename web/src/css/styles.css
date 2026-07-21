@@ -15,6 +15,7 @@ li {
 #map {
     width: 100%;
     height: 100vh;
+    height: 100dvh;
     background: black;
 }
 img.leaflet-tile {
@@ -94,6 +95,17 @@ div.leaflet-marker-pane img {
     clear: none;
     margin-left: 10px;
     margin-bottom: 10px;
+}
+
+@media (max-width: 639px) {
+    .leaflet-bottom.leaflet-left .scale-bar {
+        display: none !important;
+    }
+
+    .leaflet-bottom.leaflet-left .link {
+        margin-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        margin-left: calc(10px + env(safe-area-inset-left, 0px));
+    }
 }
 div.leaflet-control-layers.link img {
     width: 34px;

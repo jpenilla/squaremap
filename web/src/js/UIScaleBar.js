@@ -1,5 +1,6 @@
 import { S } from "./Squaremap.js";
 import L from "leaflet";
+import { publishScaleBarState } from "../react/bridge/scaleBarBridge.js";
 
 /** @type {number[]} */
 const NICE_STEPS = [1, 2, 5, 10, 20, 25, 50, 100, 200, 400, 500, 1000, 2000, 5000, 10000];
@@ -125,7 +126,9 @@ class UIScaleBar {
             return;
         }
 
-        this.control.update(pickScaleTicks(pixelsPerBlock));
+        const scale = pickScaleTicks(pixelsPerBlock);
+        this.control.update(scale);
+        publishScaleBarState(scale);
     }
 }
 

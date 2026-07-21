@@ -1,7 +1,5 @@
 import { applyUiSkin, getCurrentUiSkin, UI_SKINS } from "../theme/applyUiSkin.js";
-
-/** @type {boolean} */
-let settingsPanelOpen = false;
+import { getPanelBridge, SIDE_PANEL } from "./panelBridge.js";
 
 /** @type {Set<() => void>} */
 const listeners = new Set();
@@ -15,18 +13,13 @@ function notify() {
 export function getSettingsBridge() {
     return {
         isSettingsPanelOpen() {
-            return settingsPanelOpen;
+            return getPanelBridge().isOpen(SIDE_PANEL.SETTINGS);
         },
         toggleSettingsPanel() {
-            settingsPanelOpen = !settingsPanelOpen;
-            notify();
+            getPanelBridge().toggle(SIDE_PANEL.SETTINGS);
         },
         collapseSettingsPanel() {
-            if (!settingsPanelOpen) {
-                return;
-            }
-            settingsPanelOpen = false;
-            notify();
+            getPanelBridge().collapse(SIDE_PANEL.SETTINGS);
         },
         /**
          * @returns {typeof UI_SKINS}

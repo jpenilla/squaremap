@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { getCoordinatesBridge } from "../bridge/coordinatesBridge.js";
+import { useCompactMapLayout } from "../hooks/useCompactMapLayout.js";
 import { readSkinPxVar } from "../theme/skinTokens.js";
+import { MapScaleBar } from "./MapScaleBar.jsx";
 
 export function MapCoordinates() {
     const coordinatesBridge = getCoordinatesBridge();
+    const compactLayout = useCompactMapLayout();
     const rootRef = useRef(/** @type {HTMLDivElement | null} */ (null));
     const [visible, setVisible] = useState(coordinatesBridge.isVisible());
     const [html, setHtml] = useState(coordinatesBridge.getFormattedHtml());
@@ -16,6 +19,14 @@ export function MapCoordinates() {
     }, [coordinatesBridge]);
 
     useEffect(() => {
+        if (compactLayout) {
+            const scaleBar = document.querySelector(".leaflet-bottom.leaflet-left .scale-bar");
+            if (scaleBar instanceof HTMLElement) {
+                scaleBar.style.marginLeft = "";
+            }
+            return undefined;
+        }
+
         const updateScaleBarOffset = () => {
             const scaleBar = document.querySelector(".leaflet-bottom.leaflet-left .scale-bar");
             if (scaleBar == null) {
@@ -52,11 +63,30 @@ export function MapCoordinates() {
             resizeObserver?.disconnect();
             window.removeEventListener("resize", updateScaleBarOffset);
             const scaleBar = document.querySelector(".leaflet-bottom.leaflet-left .scale-bar");
-            if (scaleBar != null) {
+            if (scaleBar instanceof HTMLElement) {
                 scaleBar.style.marginLeft = "";
             }
         };
-    }, [visible, html]);
+    }, [visible, html, compactLayout]);
+
+    if (compactLayout) {
+        if (!visible) {
+            return (
+                <div className="map-bottom-bar map-bottom-bar--compact">
+                    <MapScaleBar />
+                </div>
+            );
+        }
+
+        return (
+            <div className="map-bottom-bar map-bottom-bar--compact">
+                <div className="map-coordinates">
+                    <div className="map-coordinates-content" dangerouslySetInnerHTML={{ __html: html }} />
+                </div>
+                <MapScaleBar />
+            </div>
+        );
+    }
 
     if (!visible) {
         return null;

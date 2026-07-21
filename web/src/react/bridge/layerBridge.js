@@ -2,14 +2,13 @@
 
 /** @typedef {{ source: string, title: string, layers: Array<{ id: string, name: string, checked: boolean, legendHtml: string | null }> }} LayerGroup */
 
+import { getPanelBridge, SIDE_PANEL } from "./panelBridge.js";
+
 /** @type {GroupedLayerControl | null} */
 let groupedLayerControl = null;
 
 /** @type {boolean} */
 let controlsVisible = true;
-
-/** @type {boolean} */
-let layersPanelOpen = false;
 
 /** @type {Set<() => void>} */
 const listeners = new Set();
@@ -34,7 +33,7 @@ export function registerGroupedLayerControl(control) {
 export function setControlsVisible(visible) {
     controlsVisible = visible;
     if (!visible) {
-        layersPanelOpen = false;
+        getPanelBridge().collapseAll();
     }
     notify();
 }
@@ -45,18 +44,13 @@ export function getLayerBridge() {
             return controlsVisible;
         },
         isLayersPanelExpanded() {
-            return layersPanelOpen;
+            return getPanelBridge().isOpen(SIDE_PANEL.LAYERS);
         },
         toggleLayersPanel() {
-            layersPanelOpen = !layersPanelOpen;
-            notify();
+            getPanelBridge().toggle(SIDE_PANEL.LAYERS);
         },
         collapseLayersPanel() {
-            if (!layersPanelOpen) {
-                return;
-            }
-            layersPanelOpen = false;
-            notify();
+            getPanelBridge().collapse(SIDE_PANEL.LAYERS);
         },
         /**
          * @returns {LayerGroup[]}

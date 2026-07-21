@@ -6,6 +6,12 @@
     pointer-events: none;
 }
 
+@media (max-width: 639px) {
+    #react-root {
+        height: 100dvh;
+    }
+}
+
 .map-floating-controls {
     position: absolute;
     top: var(--weiran-ui-inset-edge);
@@ -15,6 +21,15 @@
     align-items: stretch;
     width: var(--weiran-ui-control-width);
     pointer-events: auto;
+    gap: var(--weiran-ui-gap-control);
+}
+
+.map-toolbar-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: var(--weiran-ui-gap-control);
 }
 
 .map-zoom-control {
@@ -58,12 +73,14 @@
 }
 
 /* Tooltip 包裹后保持工具栏布局 */
-.map-floating-controls > .ant-tooltip {
+.map-floating-controls > .ant-tooltip,
+.map-toolbar-controls > .ant-tooltip {
     display: block;
     width: 100%;
 }
 
-.map-floating-controls > .ant-tooltip .map-tool-btn {
+.map-floating-controls > .ant-tooltip .map-tool-btn,
+.map-toolbar-controls > .ant-tooltip .map-tool-btn {
     width: 100%;
 }
 
@@ -120,9 +137,14 @@
 }
 
 .layer-panel,
-.settings-panel {
+.settings-panel,
+.search-panel,
+.org-panel {
     position: absolute;
     top: var(--weiran-ui-inset-edge);
+    left: calc(
+        var(--weiran-ui-inset-edge) + var(--weiran-ui-control-width) + var(--weiran-ui-gap-control)
+    );
     pointer-events: auto;
     border-radius: var(--weiran-ui-radius);
     box-shadow: var(--weiran-ui-shadow-panel);
@@ -135,11 +157,67 @@
     overflow-y: auto;
 }
 
-.settings-panel {
+.settings-panel,
+.search-panel,
+.org-panel {
     min-width: 160px;
     max-width: min(calc(100vw - 80px), 360px);
     max-height: calc(100vh - 24px);
     overflow-y: auto;
+}
+
+/* 手机端：工具栏右上、缩放下放右侧；侧栏面板改锚定到右侧 */
+@media (max-width: 639px) {
+    .map-floating-controls {
+        display: contents;
+    }
+
+    .map-toolbar-controls {
+        position: absolute;
+        top: var(--weiran-ui-inset-edge);
+        right: var(--weiran-ui-inset-edge);
+        left: auto;
+        width: var(--weiran-ui-control-width);
+        pointer-events: auto;
+    }
+
+    .map-toolbar-controls .map-tool-btn--search {
+        order: 1;
+    }
+
+    .map-toolbar-controls .map-tool-btn--layers {
+        order: 2;
+    }
+
+    .map-toolbar-controls .map-tool-btn--org {
+        order: 3;
+    }
+
+    .map-toolbar-controls .map-tool-btn--settings {
+        order: 4;
+    }
+
+    .map-zoom-control {
+        position: absolute;
+        top: 62%;
+        right: var(--weiran-ui-inset-edge);
+        left: auto;
+        width: var(--weiran-ui-control-width);
+        flex-shrink: 0;
+        transform: translateY(-50%);
+        pointer-events: auto;
+    }
+
+    .layer-panel,
+    .settings-panel,
+    .search-panel,
+    .org-panel {
+        left: auto;
+        right: calc(
+            var(--weiran-ui-inset-edge) + var(--weiran-ui-control-width) + var(--weiran-ui-gap-control)
+        );
+        max-width: min(280px, calc(100vw - 24px - var(--weiran-ui-control-width) - var(--weiran-ui-gap-control)));
+    }
 }
 
 .settings-panel-skin-list {
@@ -243,6 +321,7 @@
     position: absolute;
     bottom: var(--weiran-ui-inset-edge);
     left: var(--weiran-ui-inset-edge);
+    z-index: 1;
     min-height: 30px;
     box-sizing: border-box;
     pointer-events: auto;
@@ -258,4 +337,39 @@
     line-height: var(--weiran-ui-line-height-sm);
     color: var(--weiran-ui-color-text);
     white-space: nowrap;
+}
+
+/* 手机端：坐标 + 比例尺合并为 fixed 底栏（避开 Leaflet 层被遮挡） */
+.map-bottom-bar--compact {
+    position: fixed;
+    z-index: 1100;
+    left: calc(var(--weiran-ui-inset-edge) + env(safe-area-inset-left, 0px));
+    right: auto;
+    bottom: calc(var(--weiran-ui-inset-edge) + env(safe-area-inset-bottom, 0px));
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--weiran-ui-gap-control);
+    max-width: calc(
+        100vw - (var(--weiran-ui-inset-edge) + env(safe-area-inset-left, 0px)) -
+            (var(--weiran-ui-inset-edge) + env(safe-area-inset-right, 0px))
+    );
+    pointer-events: none;
+}
+
+.map-bottom-bar--compact > .map-coordinates,
+.map-bottom-bar--compact > .map-scale-bar {
+    position: static;
+    flex-shrink: 0;
+    pointer-events: auto;
+}
+
+.map-bottom-bar--compact .map-scale-bar {
+    padding: 4px 8px 2px;
+    height: 30px;
+    box-sizing: border-box;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
 }

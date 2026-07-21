@@ -12,6 +12,7 @@ import { Button, Tooltip } from "antd";
  * @param {() => void} [props.onClick]
  * @param {string} [props.ariaLabel]
  * @param {boolean} [props.ariaExpanded]
+ * @param {import("antd/es/tooltip").TooltipProps["placement"]} [props.tooltipPlacement]
  */
 export function MapToolButton({
     title,
@@ -22,11 +23,12 @@ export function MapToolButton({
     onClick,
     ariaLabel,
     ariaExpanded,
+    tooltipPlacement = "right",
 }) {
     const buttonType = active ? "primary" : type;
 
     return (
-        <Tooltip title={title} placement="right" mouseEnterDelay={0.4}>
+        <Tooltip title={title} placement={tooltipPlacement} mouseEnterDelay={0.4}>
             <Button
                 className={`map-tool-btn ${className}`.trim()}
                 type={buttonType}

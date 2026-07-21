@@ -1,6 +1,8 @@
 import { Card, Checkbox, Divider, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { getLayerBridge } from "../bridge/layerBridge.js";
+import { SIDE_PANEL } from "../bridge/panelBridge.js";
+import { useSidePanelOpen } from "../hooks/useSidePanelOpen.js";
 
 /**
  * @param {{ html: string | null }} props
@@ -14,45 +16,21 @@ function LayerLegendIcon({ html }) {
 
 export function LayerPanel() {
     const layerBridge = getLayerBridge();
-    const [open, setOpen] = useState(layerBridge.isLayersPanelExpanded());
+    const open = useSidePanelOpen(SIDE_PANEL.LAYERS);
     const [groups, setGroups] = useState(layerBridge.getGroupedLayers());
 
     useEffect(() => {
         return layerBridge.subscribe(() => {
-            setOpen(layerBridge.isLayersPanelExpanded());
             setGroups(layerBridge.getGroupedLayers());
         });
     }, [layerBridge]);
-
-    useEffect(() => {
-        if (!open) {
-            return undefined;
-        }
-
-        const handlePointerDown = (event) => {
-            const target = /** @type {HTMLElement} */ (event.target);
-            if (target.closest(".map-floating-controls") || target.closest(".layer-panel") || target.closest(".settings-panel")) {
-                return;
-            }
-            layerBridge.collapseLayersPanel();
-        };
-
-        document.addEventListener("pointerdown", handlePointerDown);
-        return () => document.removeEventListener("pointerdown", handlePointerDown);
-    }, [open, layerBridge]);
 
     if (!open || groups.length === 0) {
         return null;
     }
 
     return (
-        <Card
-            className="layer-panel map-side-panel"
-            size="small"
-            style={{
-                left: "calc(var(--weiran-ui-inset-edge) + var(--weiran-ui-control-width) + var(--weiran-ui-gap-control))",
-            }}
-        >
+        <Card className="layer-panel map-side-panel" size="small">
             {groups.map((group, groupIndex) => (
                 <div key={group.source} className="layer-panel-section">
                     {groupIndex > 0 ? <Divider className="layer-panel-divider" /> : null}
