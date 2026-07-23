@@ -1,5 +1,6 @@
 import layerCatalog from "../../../data/weiran-gis/layers.json";
 import instanceCatalog from "../../../data/weiran-gis/instances.json";
+import { getInstanceDimension, gisDimensionMatchesWorld } from "./gisDimension.js";
 import { resolveMakiIcon } from "./makiIcons.js";
 
 /** @typedef {import('../../../data/weiran-gis/layers.json')} LayerCatalog */
@@ -88,10 +89,11 @@ function buildMarkerPayload(layerDef, instance) {
 }
 
 /**
- * 将图层定义 + 实例合并为 World.applyMarkerEntry 可用的图层列表
+ * 将图层定义 + 实例合并为 World.applyMarkerEntry 可用的图层列表。
+ * @param {string | null | undefined} [worldType] squaremap 当前世界的 type；传入时仅包含 dimension 匹配的实例
  * @returns {any[]}
  */
-export function buildWeiranGisLayers() {
+export function buildWeiranGisLayers(worldType) {
     /** @type {Record<string, Record<string, unknown>>} */
     const layerDefs = layerCatalog.layers ?? {};
     /** @type {Array<Record<string, unknown>>} */
@@ -101,6 +103,9 @@ export function buildWeiranGisLayers() {
     const instancesByLayer = new Map();
     for (const instance of instances) {
         if (instance == null || instance.layer == null || instance.id == null) {
+            continue;
+        }
+        if (worldType != null && !gisDimensionMatchesWorld(getInstanceDimension(instance), worldType)) {
             continue;
         }
         const layerKey = String(instance.layer);

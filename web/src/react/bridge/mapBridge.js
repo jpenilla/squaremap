@@ -3,11 +3,20 @@
 /** @type {SquaremapMap | null} */
 let squaremap = null;
 
+/** @type {Set<() => void>} */
+const worldChangeListeners = new Set();
+
 /**
  * @param {SquaremapMap} instance
  */
 export function registerSquaremap(instance) {
     squaremap = instance;
+}
+
+export function notifyMapWorldChanged() {
+    for (const listener of worldChangeListeners) {
+        listener();
+    }
 }
 
 /**
@@ -19,6 +28,22 @@ export function getMapBridge() {
         /** @returns {import("leaflet").Map | null} */
         getMap() {
             return squaremap?.map ?? null;
+        },
+        /** @returns {string | null} */
+        getCurrentWorldName() {
+            return squaremap?.worldList?.curWorld?.name ?? null;
+        },
+        /** @returns {string} squaremap World.type */
+        getCurrentWorldType() {
+            return squaremap?.worldList?.curWorld?.type ?? "normal";
+        },
+        /**
+         * @param {() => void} listener
+         * @returns {() => void}
+         */
+        subscribeWorldChange(listener) {
+            worldChangeListeners.add(listener);
+            return () => worldChangeListeners.delete(listener);
         },
         /**
          * @param {number | string} x

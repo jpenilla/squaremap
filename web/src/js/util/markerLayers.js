@@ -57,18 +57,19 @@ export function filterSquaremapLayers(layers) {
 }
 
 /** @returns {any[]} */
-export function getWeiranGisLayers() {
-    return buildWeiranGisLayers();
+export function getWeiranGisLayers(worldType) {
+    return buildWeiranGisLayers(worldType);
 }
 
 /**
  * @param {string} worldName
+ * @param {string | null | undefined} worldType
  * @returns {Promise<{ squaremap: any[], weiranGis: any[] }>}
  */
-export async function fetchMarkerLayersBySource(worldName) {
+export async function fetchMarkerLayersBySource(worldName, worldType) {
     const serverLayers = filterSquaremapLayers(await fetchMarkerLayerList(`tiles/${worldName}/markers.json`));
     return {
         squaremap: serverLayers,
-        weiranGis: getWeiranGisLayers(),
+        weiranGis: getWeiranGisLayers(worldType),
     };
 }

@@ -1,6 +1,11 @@
-import { buildWeiranGisLayers, WEIRAN_GIS_ID_PREFIX } from "../../js/util/weiranGis.js";
+import instanceCatalog from "../../../data/weiran-gis/instances.json";
+import layerCatalog from "../../../data/weiran-gis/layers.json";
+import { getInstanceDimension, gisDimensionMatchesWorld } from "../../js/util/gisDimension.js";
+import { WEIRAN_GIS_ID_PREFIX } from "../../js/util/weiranGis.js";
 
-/** @typedef {{ id: string, name: string, layerKey: string, layerName: string, layerId: string, x: number, z: number, minZoom: number | null, maxZoom: number | null }} SearchPoi */
+/** @typedef {import('../../js/util/gisDimension.js').GisDimension} GisDimension */
+
+/** @typedef {{ id: string, name: string, layerKey: string, layerName: string, layerId: string, dimension: GisDimension, x: number, z: number, minZoom: number | null, maxZoom: number | null }} SearchPoi */
 
 /** @type {SearchPoi[] | null} */
 let cachedPois = null;
@@ -13,21 +18,47 @@ export function getSearchablePois() {
         return cachedPois;
     }
 
-    cachedPois = buildWeiranGisLayers().flatMap((layer) =>
-        Object.entries(layer.markers ?? {}).map(([id, marker]) => ({
-            id,
-            name: String(marker.text ?? ""),
-            layerKey: String(layer.id).replace(`${WEIRAN_GIS_ID_PREFIX}-`, ""),
-            layerName: String(layer.name ?? ""),
-            layerId: String(layer.id),
-            x: Number(marker.point?.x),
-            z: Number(marker.point?.z),
-            minZoom: layer.minZoom ?? null,
-            maxZoom: layer.maxZoom ?? null,
-        })),
+    /** @type {Map<string, number | null>} */
+    const layerMinZoom = new Map(
+        Object.entries(layerCatalog.layers ?? {}).map(([key, layer]) => [
+            key,
+            layer.minZoom == null ? null : Number(layer.minZoom),
+        ]),
     );
 
+    /** @type {Map<string, string>} */
+    const layerNames = new Map(
+        Object.entries(layerCatalog.layers ?? {}).map(([key, layer]) => [key, String(layer.name ?? key)]),
+    );
+
+    cachedPois = (instanceCatalog.instances ?? []).map((instance) => {
+        const layerKey = String(instance.layer);
+        return {
+            id: String(instance.id),
+            name: String(instance.text ?? instance.id),
+            layerKey,
+            layerName: layerNames.get(layerKey) ?? layerKey,
+            layerId: `${WEIRAN_GIS_ID_PREFIX}-${layerKey}`,
+            dimension: getInstanceDimension(instance),
+            x: Number(instance.point?.x),
+            z: Number(instance.point?.z),
+            minZoom: layerMinZoom.get(layerKey) ?? null,
+            maxZoom: null,
+        };
+    });
+
     return cachedPois;
+}
+
+/**
+ * @param {SearchPoi[]} pois
+ * @param {string | null | undefined} worldType
+ */
+export function filterPoisByWorld(pois, worldType) {
+    if (worldType == null) {
+        return pois;
+    }
+    return pois.filter((poi) => gisDimensionMatchesWorld(poi.dimension, worldType));
 }
 
 /**

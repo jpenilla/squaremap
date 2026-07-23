@@ -1,11 +1,14 @@
 import instanceCatalog from "../../../data/weiran-gis/instances.json";
 import layerCatalog from "../../../data/weiran-gis/layers.json";
+import { getInstanceDimension, gisDimensionMatchesWorld } from "../../js/util/gisDimension.js";
 import { WEIRAN_GIS_ID_PREFIX } from "../../js/util/weiranGis.js";
 import { listToTree } from "../utils/listToTree.js";
 
 /** @typedef {'category' | 'alpha'} OrgSortMode */
 
-/** @typedef {{ id: string, parentId: string | null, title: string, layerKey: string, layerName: string, layerId: string, x: number, z: number, minZoom: number | null }} OrgListNode */
+/** @typedef {import('../../js/util/gisDimension.js').GisDimension} GisDimension */
+
+/** @typedef {{ id: string, parentId: string | null, title: string, layerKey: string, layerName: string, layerId: string, dimension: GisDimension, x: number, z: number, minZoom: number | null }} OrgListNode */
 
 /** @typedef {OrgListNode & { children?: OrgTreeBranch[] }} OrgTreeBranch */
 
@@ -67,6 +70,7 @@ export function getOrgListNodes() {
             layerKey,
             layerName: layerNames.get(layerKey) ?? layerKey,
             layerId: `${WEIRAN_GIS_ID_PREFIX}-${layerKey}`,
+            dimension: getInstanceDimension(instance),
             x: Number(instance.point?.x),
             z: Number(instance.point?.z),
             minZoom: layerMinZoom.get(layerKey) ?? null,
@@ -74,6 +78,38 @@ export function getOrgListNodes() {
     });
 
     return cachedOrgList;
+}
+
+/**
+ * 保留当前维度节点及其祖先，以维持组织树结构。
+ *
+ * @param {OrgListNode[]} nodes
+ * @param {string | null | undefined} worldType
+ */
+function filterOrgListByWorld(nodes, worldType) {
+    if (worldType == null) {
+        return nodes;
+    }
+
+    /** @type {Map<string, OrgListNode>} */
+    const byId = new Map(nodes.map((node) => [node.id, node]));
+    /** @type {Set<string>} */
+    const keepIds = new Set();
+
+    for (const node of nodes) {
+        if (!gisDimensionMatchesWorld(node.dimension, worldType)) {
+            continue;
+        }
+        keepIds.add(node.id);
+        let parentId = node.parentId;
+        while (parentId != null) {
+            keepIds.add(parentId);
+            const parent = byId.get(parentId);
+            parentId = parent?.parentId ?? null;
+        }
+    }
+
+    return nodes.filter((node) => keepIds.has(node.id));
 }
 
 /**
@@ -134,10 +170,12 @@ function toTreeDataNode(node) {
 
 /**
  * @param {OrgSortMode} [sortMode]
+ * @param {string | null | undefined} [worldType]
  * @returns {OrgTreeDataNode[]}
  */
-export function getOrgTreeData(sortMode = ORG_SORT.CATEGORY) {
-    const tree = listToTree(getOrgListNodes(), { sort: getOrgCompareFn(sortMode) });
+export function getOrgTreeData(sortMode = ORG_SORT.CATEGORY, worldType) {
+    const nodes = filterOrgListByWorld(getOrgListNodes(), worldType);
+    const tree = listToTree(nodes, { sort: getOrgCompareFn(sortMode) });
     return tree.map(toTreeDataNode);
 }
 

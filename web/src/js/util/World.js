@@ -1,6 +1,7 @@
 import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon, RegionLabel, IconWithText } from "./Markers.js";
 import { S } from "../Squaremap.js";
 import { fetchMarkerLayersBySource } from "./markerLayers.js";
+import { notifyMapWorldChanged } from "../../react/bridge/mapBridge.js";
 import L from "leaflet";
 
 class World {
@@ -53,7 +54,7 @@ class World {
         }
     }
     tickMarkers() {
-        fetchMarkerLayersBySource(this.name).then(({ squaremap, weiranGis }) => {
+        fetchMarkerLayersBySource(this.name, this.type).then(({ squaremap, weiranGis }) => {
             if (this === S.worldList.curWorld) {
                 this.markersFromSources(squaremap, weiranGis);
             }
@@ -115,6 +116,8 @@ class World {
                 if (callback != null) {
                     callback(this);
                 }
+
+                notifyMapWorldChanged();
             },
         );
     }

@@ -1,6 +1,6 @@
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { Button, Card, Segmented, Tooltip, Tree, Typography } from "antd";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getLayerBridge } from "../../bridge/layerBridge.js";
 import { getMapBridge } from "../../bridge/mapBridge.js";
 import { SIDE_PANEL } from "../../bridge/panelBridge.js";
@@ -14,9 +14,20 @@ export function OrgPanel() {
     const mapBridge = getMapBridge();
     const layerBridge = getLayerBridge();
     const [sortMode, setSortMode] = useState(/** @type {import('../../org/orgCatalog.js').OrgSortMode} */ (ORG_SORT.CATEGORY));
-    const treeData = useMemo(() => getOrgTreeData(sortMode), [sortMode]);
+    const [worldType, setWorldType] = useState(() => mapBridge.getCurrentWorldType());
+    const treeData = useMemo(() => getOrgTreeData(sortMode, worldType), [sortMode, worldType]);
     const expandableKeys = useMemo(() => collectExpandableTreeKeys(treeData), [treeData]);
     const [expandedKeys, setExpandedKeys] = useState(() => treeData.map((node) => String(node.key)));
+
+    useEffect(() => {
+        return mapBridge.subscribeWorldChange(() => {
+            setWorldType(mapBridge.getCurrentWorldType());
+        });
+    }, [mapBridge]);
+
+    useEffect(() => {
+        setExpandedKeys(treeData.map((node) => String(node.key)));
+    }, [treeData]);
 
     if (!open || treeData.length === 0) {
         return null;

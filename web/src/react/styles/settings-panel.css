@@ -1,0 +1,27 @@
+/* 设置面板 — 视觉由 --weiran-ui-* 皮肤变量驱动 */
+
+.settings-panel-divider {
+    margin: 10px 0 !important;
+    border-top-color: var(--weiran-ui-border-subtle) !important;
+}
+
+.settings-panel-about {
+    padding-bottom: 2px;
+}
+
+.settings-panel-about-version {
+    margin: 8px 0 4px;
+    font-size: calc(var(--weiran-ui-font-size-sm) + 4px);
+    line-height: 1.3;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    color: var(--weiran-ui-color-text);
+}
+
+.settings-panel-about-caption {
+    display: block;
+    font-size: var(--weiran-ui-font-size-sm);
+    line-height: var(--weiran-ui-line-height-sm);
+    color: var(--weiran-ui-color-text-muted);
+}
