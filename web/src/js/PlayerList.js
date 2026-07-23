@@ -1,6 +1,8 @@
 import { Player } from "./util/Player.js";
 import { S } from "./Squaremap.js";
 
+/** @typedef {import("./types.ts").PlayersData} PlayersData */
+
 class PlayerList {
     /** @type {Map<string, Player>} */
     players;
