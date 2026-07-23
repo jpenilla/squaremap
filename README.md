@@ -260,8 +260,9 @@ bun run preview
 | 段 | 配置文件 | 何时递增 |
 |----|----------|----------|
 | **大版本** | `web/data/weiran-gis/release.json` → `major` | 架构级或不兼容变更 |
-| **小版本** | `web/data/weiran-gis/release.json` → `minor` | 每次向服主交付新的前端构建（`npm run build` 并发包） |
+| **小版本** | `web/data/weiran-gis/release.json` → `minor` | 每次向服主交付新的前端构建（`npm run package` 并发包） |
 | **编辑版本** | `web/data/weiran-gis/instances.json` → 顶层 `version` | 增删改 GIS 实例或实例字段（如 `dimension`、坐标、名称） |
+| **构建日期** | `web/data/weiran-gis/build.json` → `builtAt` | 执行 `npm run package` 时自动写入（精确到日，`YYYY-MM-DD`） |
 
 `release.json` 示例：
 
@@ -284,11 +285,13 @@ bun run preview
 
 仅改 GIS 数据、未发新包时：只递增 `instances.json` 的 `version`（编辑版本 +1），小版本不变，例如仍为 `1.2.23`。
 
+向服主交付时请用 **`npm run package`**（会先写入当日 `builtAt`，再执行构建）；本地调试仍可用 `npm run build` 或 `npm run dev`，此时关于页不显示构建日期。
+
 ## 目录结构
 
 ```
 web/                  # 前端（Leaflet 地图 UI）
-web/data/weiran-gis/   # 蔚然 GIS：layers.json、instances.json、release.json（大/小版本）
+web/data/weiran-gis/   # 蔚然 GIS：layers.json、instances.json、release.json、build.json
 common/               # 插件核心（渲染、HTTP 服务、配置）
 paper/                # Paper 平台插件入口
 deploy/magicflower/   # Magic Flower 服务端配置示例

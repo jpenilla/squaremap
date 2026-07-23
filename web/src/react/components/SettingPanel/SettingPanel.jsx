@@ -8,6 +8,8 @@ import { SkinPreviewCard } from "./SkinPreviewCard.jsx";
 import "../../styles/skin-previews.css";
 import "../../styles/settings-panel.css";
 
+const SQUAREMAP_REPO_URL = "https://github.com/jpenilla/squaremap";
+
 export function SettingPanel() {
     const settingsBridge = getSettingsBridge();
     const open = useSidePanelOpen(SIDE_PANEL.SETTINGS);
@@ -43,12 +45,28 @@ export function SettingPanel() {
 
             <section className="settings-panel-about" aria-label="关于">
                 <Typography.Text className="map-side-panel-section-title">关于</Typography.Text>
-                <p className="settings-panel-about-version" aria-label={`版本 ${appVersion.label}`}>
-                    {appVersion.label}
-                </p>
-                <Typography.Text type="secondary" className="settings-panel-about-caption">
-                    蔚然 GIS 地图前端
-                </Typography.Text>
+                <div className="settings-panel-about-body">
+                    <p className="settings-panel-about-name">蔚然GIS</p>
+                    <p className="settings-panel-about-version" aria-label={`版本 ${appVersion.label}`}>
+                        {appVersion.label}
+                    </p>
+                    {appVersion.builtAt != null && (
+                        <p className="settings-panel-about-meta">构建于 {appVersion.builtAt}</p>
+                    )}
+                    <p className="settings-panel-about-meta">
+                        基于{" "}
+                        <a
+                            className="settings-panel-about-link"
+                            href={SQUAREMAP_REPO_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Squaremap
+                        </a>{" "}
+                        开发
+                    </p>
+                    <p className="settings-panel-about-meta settings-panel-about-license">MIT License</p>
+                </div>
             </section>
         </Card>
     );

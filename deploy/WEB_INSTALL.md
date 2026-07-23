@@ -2,7 +2,7 @@
 
 本文说明如何安装 **weiran-squaremap** 二开版的前端构建产物。该更新**只替换地图网页 UI**，**不需要**更换 squaremap 插件 JAR，**不需要**在服务器上安装 Node.js 或运行 `npm`。
 
-开发者会在本地执行 `npm run build`，将 `common/build/web/` 目录打成压缩包（如 `web.zip`）通过 IM 等方式发送给你。
+开发者会在本地执行 `npm run package`，将 `common/build/web/` 目录打成压缩包（如 `web.zip`）通过 IM 等方式发送给你。
 
 ---
 
