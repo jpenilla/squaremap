@@ -1,0 +1,10 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "env": {
+        "browser": true
+    },
+    "rules": {
+        "eslint/no-unused-vars": "warn",
+        "eslint/no-undef": "warn"
+    }
+}

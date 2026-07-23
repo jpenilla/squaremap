@@ -1,0 +1,8 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "endOfLine": "lf",
+    "useTabs": false,
+    "tabWidth": 4,
+    "printWidth": 120,
+    "ignorePatterns": ["build", "coverage", "package-lock.json", "pnpm-lock.yaml", "yarn.lock", "bun.lock"]
+}
