@@ -1,21 +1,20 @@
 {
     "name": "web",
+    "private": true,
+    "type": "module",
     "scripts": {
         "dev": "vite dev --host",
         "build": "vite build --emptyOutDir",
         "preview": "vite preview",
-        "format": "prettier --write .",
-        "lint": "prettier --check . && eslint ."
+        "format": "oxfmt --write .",
+        "lint": "oxfmt --check . && oxlint --type-aware --type-check ."
     },
     "devDependencies": {
-        "@eslint/js": "^10.0.0",
         "@types/leaflet": "^1.9.21",
-        "eslint": "^10.0.0",
-        "globals": "^16.5.0",
         "leaflet": "^1.9.4",
-        "prettier": "^3.7.4",
-        "vite": "^8.0.0"
-    },
-    "private": true,
-    "type": "module"
+        "oxfmt": "^0.60.0",
+        "oxlint": "^1.75.0",
+        "oxlint-tsgolint": "^7.0.2001",
+        "vite": "^8.1.5"
+    }
 }
