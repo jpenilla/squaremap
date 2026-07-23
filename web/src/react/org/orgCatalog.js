@@ -121,10 +121,10 @@ function compareOrgNodesByCategory(a, b) {
         return NATION_ORDER.indexOf(a.id) - NATION_ORDER.indexOf(b.id);
     }
 
-    const orderA = layerOrder.get(a.layerKey) ?? 999;
-    const orderB = layerOrder.get(b.layerKey) ?? 999;
-    if (orderA !== orderB) {
-        return orderA - orderB;
+    const rankA = a.layerKey === "central-department" ? -1 : (layerOrder.get(a.layerKey) ?? 999);
+    const rankB = b.layerKey === "central-department" ? -1 : (layerOrder.get(b.layerKey) ?? 999);
+    if (rankA !== rankB) {
+        return rankA - rankB;
     }
 
     return a.title.localeCompare(b.title, "zh-Hans");

@@ -1,5 +1,5 @@
 {
-    "version": 22,
+    "version": 24,
     "instances": [
         {
             "layer": "nation",
@@ -295,7 +295,7 @@
                 "x": -235,
                 "z": -190
             },
-            "text": "未命名",
+            "text": "静海镇",
             "dimension": "normal"
         },
         {
@@ -537,7 +537,7 @@
                 "x": 3101,
                 "z": 3177
             },
-            "text": "主题思想堂",
+            "text": "主体思想堂",
             "dimension": "normal"
         },
         {
@@ -733,7 +733,7 @@
             "parentNode": "nation-plato",
             "point": {
                 "x": 1732,
-                "z": 3694
+                "z": 2696
             },
             "text": "快速熔炉",
             "dimension": "normal"
