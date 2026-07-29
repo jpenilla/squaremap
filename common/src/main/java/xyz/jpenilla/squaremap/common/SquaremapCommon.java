@@ -26,7 +26,7 @@ import xyz.jpenilla.squaremap.common.layer.SpawnIconLayer;
 import xyz.jpenilla.squaremap.common.util.Components;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
-import xyz.jpenilla.squaremap.common.util.UpdateChecker;
+import xyz.jpenilla.squaremap.common.updatechecker.UpdateChecker;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -115,7 +115,7 @@ public final class SquaremapCommon {
         if (!Config.UPDATE_CHECKER) {
             return;
         }
-        ForkJoinPool.commonPool().execute(() -> new UpdateChecker(Logging.logger(), "jpenilla/squaremap").checkVersion());
+        ForkJoinPool.commonPool().execute(() -> new UpdateChecker(Logging.logger()).checkVersion());
     }
 
     private void setupApi() {
