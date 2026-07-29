@@ -17,6 +17,7 @@ import net.neoforged.neoforge.event.level.BlockGrowFeatureEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.PistonEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -35,7 +36,7 @@ public final class ForgeMapUpdates {
 
     public void register() {
         List.of(
-            BlockEvent.BreakEvent.class,
+            BreakBlockEvent.class,
             BlockEvent.EntityPlaceEvent.class,
             CropGrowEvent.Post.class,
             BlockEvent.BlockToolModificationEvent.class,
