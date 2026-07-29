@@ -25,7 +25,7 @@
             "matchPackageNames": [
                 "net.neoforged:neoforge"
             ],
-            "versioning": "regex:^(?<compatibility>(\\d+\\.){2})(?<minor>\\d+)(-beta)?$"
+            "versioning": "regex:^(?<compatibility>(?:\\d+\\.){3})(?<minor>\\d+)(?:-beta)?$"
         },
         {
             "matchManagers": [
