@@ -10,17 +10,15 @@ class Player {
     world;
     /** @type {string} */
     displayName;
-    /** @type {number} */
-    x;
-    /** @type {number} */
-    z;
-    /** @type {number} */
+    /** @type {{x: number, z: number, yaw: number} | null} */
+    position;
+    /** @type {number | undefined} */
     armor;
-    /** @type {number} */
+    /** @type {number | undefined} */
     health;
     /** @type {L.Tooltip} */
     tooltip;
-    /** @type {L.Marker} */
+    /** @type {L.Marker | null} */
     marker;
 
     /**
@@ -31,10 +29,9 @@ class Player {
         this.uuid = json.uuid;
         this.world = json.world;
         this.displayName = json.display_name !== undefined ? json.display_name : json.name;
-        this.x = 0;
-        this.z = 0;
-        this.armor = 0;
-        this.health = 20;
+        this.updatePosition(json);
+        this.armor = json.armor;
+        this.health = json.health;
         this.tooltip = L.tooltip({
             permanent: true,
             direction: "right",
@@ -42,18 +39,46 @@ class Player {
             pane: "nameplate",
             content: this.makeNameplateContent(json),
         });
-        this.marker = L.marker(S.toLatLng(json.x, json.z), {
-            icon: L.icon({
-                iconUrl: "images/icon/player.png",
-                iconSize: [17, 16],
-                iconAnchor: [8, 9],
-                tooltipAnchor: [0, 0],
-            }),
-            rotationAngle: 180 + json.yaw,
-        });
-        if (S.worldList.curWorld.player_tracker.nameplates.enabled) {
-            this.updateNameplate(json);
-            this.marker.bindTooltip(this.tooltip);
+        this.marker = null;
+        this.syncMarker(json);
+    }
+    /**
+     * @param {PlayerData} player
+     */
+    syncMarker(player) {
+        const world = S.worldList.curWorld;
+        if (world == null || world.name !== this.world || !world.player_tracker.enabled || this.position == null) {
+            this.removeMarker();
+            return;
+        }
+
+        const latlng = S.toLatLng(this.position.x, this.position.z);
+        if (this.marker == null) {
+            this.marker = L.marker(latlng, {
+                icon: L.icon({
+                    iconUrl: "images/icon/player.png",
+                    iconSize: [17, 16],
+                    iconAnchor: [8, 9],
+                    tooltipAnchor: [0, 0],
+                }),
+                rotationAngle: 180 + this.position.yaw,
+            });
+            if (world.player_tracker.nameplates.enabled) {
+                this.updateNameplate(player);
+                this.marker.bindTooltip(this.tooltip);
+            }
+        } else {
+            if (!this.marker.getLatLng().equals(latlng)) {
+                this.marker.setLatLng(latlng);
+            }
+            const angle = 180 + this.position.yaw;
+            if (this.marker.options.rotationAngle != angle) {
+                this.marker.setRotationAngle(angle);
+            }
+        }
+        if (!S.playerList.markers.has(this.uuid)) {
+            this.marker.addTo(S.layerControl.playersLayer);
+            S.playerList.markers.set(this.uuid, this.marker);
         }
     }
     getHeadUrl() {
@@ -174,47 +199,52 @@ class Player {
      * @param {PlayerData} player
      */
     update(player) {
-        this.x = player.x;
-        this.z = player.z;
+        this.updatePosition(player);
         this.world = player.world;
         this.armor = player.armor;
         this.health = player.health;
         this.displayName = player.display_name !== undefined ? player.display_name : player.name;
         const link = document.getElementById(player.uuid);
-        const img = link.getElementsByTagName("img")[0];
-        const span = link.getElementsByTagName("span")[0];
-        if (S.worldList.curWorld.name == player.world) {
-            if (S.worldList.curWorld.player_tracker.enabled) {
-                this.addMarker();
+        if (link != null) {
+            const img = link.getElementsByTagName("img")[0];
+            const span = link.getElementsByTagName("span")[0];
+            if (S.worldList.curWorld.name == player.world) {
+                img.classList.remove("other-world");
+                span.classList.remove("other-world");
+            } else {
+                img.classList.add("other-world");
+                span.classList.add("other-world");
             }
-            const latlng = S.toLatLng(player.x, player.z);
-            if (!this.marker.getLatLng().equals(latlng)) {
-                this.marker.setLatLng(latlng);
-            }
-            const angle = 180 + player.yaw;
-            if (this.marker.options.rotationAngle != angle) {
-                this.marker.setRotationAngle(angle);
-            }
-            img.classList.remove("other-world");
-            span.classList.remove("other-world");
-        } else {
-            this.removeMarker();
-            img.classList.add("other-world");
-            span.classList.add("other-world");
         }
+        this.syncMarker(player);
         this.updateNameplate(player);
     }
     removeMarker() {
-        this.marker.remove();
-        S.playerList.markers.delete(this.uuid);
-        S.map.removeLayer(this.marker);
-        S.layerControl.playersLayer.removeLayer(this.marker);
-    }
-    addMarker() {
-        if (!S.playerList.markers.has(this.uuid)) {
-            this.marker.addTo(S.layerControl.playersLayer);
-            S.playerList.markers.set(this.uuid, this.marker);
+        const marker = this.marker;
+        if (marker == null) {
+            S.playerList.markers.delete(this.uuid);
+            return;
         }
+        marker.remove();
+        S.playerList.markers.delete(this.uuid);
+        S.map.removeLayer(marker);
+        if (S.layerControl.playersLayer != null) {
+            S.layerControl.playersLayer.removeLayer(marker);
+        }
+        this.marker = null;
+    }
+    /**
+     * @param {PlayerData} player
+     */
+    updatePosition(player) {
+        this.position =
+            player.x === undefined
+                ? null
+                : /** @type {{x: number, z: number, yaw: number}} */ ({
+                      x: player.x,
+                      z: player.z,
+                      yaw: player.yaw,
+                  });
     }
 }
 
