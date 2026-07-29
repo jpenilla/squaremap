@@ -68,13 +68,20 @@ class PlayerList {
      */
     showPlayer(uuid) {
         const player = this.players.get(uuid);
-        if (!S.worldList.worlds.has(player.world)) {
+        if (player == null || !S.worldList.worlds.has(player.world)) {
             return false;
         }
-        S.worldList.showWorld(player.world, () => {
-            S.map.panTo(S.toLatLng(player.x, player.z));
-        });
+        S.worldList.showWorld(player.world, () => this.panToPlayer(player));
         return true;
+    }
+    /**
+     * @param {Player} player
+     */
+    panToPlayer(player) {
+        if (S.worldList.curWorld?.name !== player.world || player.position == null) {
+            return;
+        }
+        S.map.panTo(S.toLatLng(player.position.x, player.position.z));
     }
     /**
      * @param {Player} player
@@ -111,6 +118,9 @@ class PlayerList {
         const link = document.getElementById(player.uuid);
         if (link != null) {
             link.remove();
+        }
+        if (this.following === player.uuid) {
+            this.followPlayerMarker(null);
         }
         this.players.delete(player.uuid);
         player.removeMarker();
@@ -173,13 +183,11 @@ class PlayerList {
         // follow highlighted player
         if (this.following != null) {
             const player = this.players.get(this.following);
-            if (player != null && S.worldList.curWorld != null) {
+            if (player != null && S.worldList.curWorld != null && S.worldList.worlds.has(player.world)) {
                 if (player.world !== S.worldList.curWorld.name) {
-                    S.worldList.showWorld(player.world, () => {
-                        S.map.panTo(S.toLatLng(player.x, player.z));
-                    });
+                    S.worldList.showWorld(player.world, () => this.panToPlayer(player));
                 } else {
-                    S.map.panTo(S.toLatLng(player.x, player.z));
+                    this.panToPlayer(player);
                 }
             }
         }
@@ -198,11 +206,11 @@ class PlayerList {
      */
     followPlayerMarker(uuid) {
         if (this.following !== null && this.following !== uuid) {
-            document.getElementById(this.following).classList.remove("following");
+            document.getElementById(this.following)?.classList.remove("following");
         }
         this.following = uuid;
         if (this.following != null) {
-            document.getElementById(this.following).classList.add("following");
+            document.getElementById(this.following)?.classList.add("following");
         }
     }
 }

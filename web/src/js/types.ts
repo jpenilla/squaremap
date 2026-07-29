@@ -74,15 +74,15 @@ export interface WorldSettings {
 
 export interface PlayerData {
     name: string;
-    display_name: string;
+    display_name?: string;
     uuid: string;
     world: string;
-    x: number;
-    y: number;
-    z: number;
-    yaw: number;
-    armor: number;
-    health: number;
+    x?: number;
+    y?: number;
+    z?: number;
+    yaw?: number;
+    armor?: number;
+    health?: number;
 }
 
 export interface PlayersData {
