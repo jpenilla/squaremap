@@ -45,11 +45,14 @@ jobs:
         run: ./gradlew build
       - name: "determine status"
         run: |
-          if [ "$(./gradlew properties | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
-            echo "STATUS=snapshot" >> $GITHUB_ENV
+          PROPERTIES="$(./gradlew properties)"
+          if [ "$(echo "$PROPERTIES" | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
+            echo "STATUS=snapshot" >> "$GITHUB_ENV"
           else
-            echo "STATUS=release" >> $GITHUB_ENV
+            echo "STATUS=release" >> "$GITHUB_ENV"
           fi
+          PUBLISH_API="$(awk -F= '/^publishApi=/ { print $2; }' gradle.properties)"
+          echo "PUBLISH_API=${PUBLISH_API:-true}" >> "$GITHUB_ENV"
       - name: "publish snapshot to sonatype snapshots"
         if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}"
         run: ./gradlew publishAllPublicationsToSonatypeSnapshots
@@ -57,7 +60,7 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SONATYPE_PASSWORD }}"
       - name: "publish release to maven central"
-        if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+        if: "${{ env.STATUS == 'release' && env.PUBLISH_API == 'true' && github.event_name == 'release' }}"
         run: ./gradlew publishReleaseCentralPortalBundle
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: "${{ secrets.SONATYPE_USERNAME }}"
