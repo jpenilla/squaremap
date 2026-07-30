@@ -6,10 +6,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.nio.file.Path;
-import java.util.Arrays;
 import javax.imageio.ImageIO;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
@@ -78,33 +75,17 @@ public record LevelBiomeColorData(
     }
 
     private static float downfall(final Biome biome) {
-        // climateSettings is the first instance field in Biome
-        final Field climateSettingsField = Arrays.stream(biome.getClass().getDeclaredFields())
-            .filter(it -> !Modifier.isStatic(it.getModifiers()))
-            .findFirst()
-            .orElseThrow();
-        climateSettingsField.setAccessible(true);
-        float downfall = Float.MAX_VALUE;
-        // downfall() record accessor is second float returning method on Biome.ClimateSettings
         try {
+            final Field climateSettingsField = biome.getClass().getDeclaredField("climateSettings");
+            climateSettingsField.setAccessible(true);
             final Object climateSettings = climateSettingsField.get(biome);
-            int count = 0;
-            for (final Method m : climateSettings.getClass().getDeclaredMethods()) {
-                if (m.getReturnType() == Float.TYPE) {
-                    count++;
-                    if (count == 2) {
-                        downfall = (float) m.invoke(climateSettings);
-                        break;
-                    }
-                }
-            }
+
+            final Field downfallField = climateSettings.getClass().getDeclaredField("downfall");
+            downfallField.setAccessible(true);
+            return downfallField.getFloat(climateSettings);
         } catch (final ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-        if (downfall == Float.MAX_VALUE) {
-            throw new IllegalStateException("Could not determine 'downfall' for biome: " + biome);
-        }
-        return downfall;
     }
 
     private static int[] toArray(final BufferedImage image) {
