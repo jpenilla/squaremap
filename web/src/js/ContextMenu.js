@@ -77,7 +77,7 @@ class ContextMenu {
         }
         const x = Math.floor(this.point.x);
         const z = Math.floor(this.point.y);
-        const text = y == null ? `${x}, ${z}` : `${x}, ${y}, ${z}`;
+        const text = y == null ? `${x} ${z}` : `${x} ${y} ${z}`;
         await navigator.clipboard.writeText(text);
     }
 
