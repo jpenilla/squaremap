@@ -18,7 +18,12 @@ import xyz.jpenilla.squaremap.common.util.Util;
 @DefaultQualifier(NonNull.class)
 public final class TileUpdates {
     public static final String FILE_NAME = "updates.json";
-    private static final int MAX_ENTRIES = 2048;
+    // a client that last read the manifest within this window can still be told exactly which
+    // tiles changed; one that has been away longer has to reload what it is displaying
+    private static final long RETENTION_MS = 120_000L;
+    // bound on the manifest size, only reached by a render rewriting tiles faster than the
+    // retention window can drop them
+    private static final int MAX_ENTRIES = 8192;
     private static final long MIN_WRITE_INTERVAL_MS = 500L;
 
     private final String jsonPathString;
@@ -42,14 +47,20 @@ public final class TileUpdates {
      * @param tile tile written to disk
      */
     public synchronized void record(final TileCoordinate tile) {
+        final long now = System.currentTimeMillis();
         final String key = tile.key();
         // remove before putting so the map stays ordered from oldest to newest
         this.tiles.remove(key);
-        this.tiles.put(key, System.currentTimeMillis());
+        this.tiles.put(key, now);
 
+        final long oldest = now - RETENTION_MS;
         final Iterator<Map.Entry<String, Long>> it = this.tiles.entrySet().iterator();
-        while (this.tiles.size() > MAX_ENTRIES && it.hasNext()) {
-            this.newestDropped = Math.max(this.newestDropped, it.next().getValue());
+        while (it.hasNext()) {
+            final Map.Entry<String, Long> entry = it.next();
+            if (entry.getValue() > oldest && this.tiles.size() <= MAX_ENTRIES) {
+                break;
+            }
+            this.newestDropped = Math.max(this.newestDropped, entry.getValue());
             it.remove();
         }
 
