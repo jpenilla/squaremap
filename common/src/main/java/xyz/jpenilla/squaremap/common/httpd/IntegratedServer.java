@@ -12,18 +12,26 @@ import io.undertow.server.handlers.resource.ResourceHandler;
 import io.undertow.server.handlers.resource.ResourceManager;
 import io.undertow.util.ETag;
 import io.undertow.util.Headers;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
+
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.util.Util;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 
 public final class IntegratedServer {
     private static final boolean DEV_FRONTEND = Boolean.getBoolean("squaremap.devFrontend");
@@ -43,7 +51,7 @@ public final class IntegratedServer {
 
         CACHE = jsonCache;
         try {
-            SERVER = buildUndertow(createResourceHandler(directoryProvider));
+            SERVER = buildUndertow(directoryProvider);
             SERVER.start();
 
             Logging.info(Messages.LOG_INTERNAL_WEB_STARTED, "bind", Config.HTTPD_BIND, "port", Config.HTTPD_PORT);
@@ -53,10 +61,30 @@ public final class IntegratedServer {
         }
     }
 
-    private static Undertow buildUndertow(final ResourceHandler resourceHandler) {
+    private static Undertow buildUndertow(final DirectoryProvider directoryProvider) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException {
+        ResourceHandler resourceHandler = createResourceHandler(directoryProvider);
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+
+        try (FileInputStream fis = new FileInputStream(directoryProvider.dataDirectory().resolve("keystore.p12").toFile())) {
+            ks.load(fis, new char[0]);
+        } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
+            Logging.info(Messages.LOG_INTERNAL_WEB_TLS_DISABLED);
+            return Undertow.builder()
+                    .setServerOption(UndertowOptions.ENABLE_HTTP2, true)
+                    .addHttpListener(Config.HTTPD_PORT, Config.HTTPD_BIND)
+                    .setHandler(createHttpHandler(resourceHandler))
+                    .build();
+        }
+
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, new char[0]);
+        SSLContext ssl = SSLContext.getInstance("TLS");
+        ssl.init(kmf.getKeyManagers(), null, null);
+
+        Logging.info(Messages.LOG_INTERNAL_WEB_TLS_ENABLED);
         return Undertow.builder()
             .setServerOption(UndertowOptions.ENABLE_HTTP2, true)
-            .addHttpListener(Config.HTTPD_PORT, Config.HTTPD_BIND)
+            .addHttpsListener(Config.HTTPD_PORT, Config.HTTPD_BIND, ssl)
             .setHandler(createHttpHandler(resourceHandler))
             .build();
     }
