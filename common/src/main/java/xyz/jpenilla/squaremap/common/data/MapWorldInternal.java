@@ -30,6 +30,7 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.WorldAdvanced;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.httpd.JsonCache;
 import xyz.jpenilla.squaremap.common.layer.SpawnIconLayer;
 import xyz.jpenilla.squaremap.common.layer.WorldBorderLayer;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
@@ -61,7 +62,8 @@ public abstract class MapWorldInternal implements MapWorld {
         final ServerLevel level,
         final RenderFactory renderFactory,
         final DirectoryProvider directoryProvider,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final JsonCache jsonCache
     ) {
         this.level = level;
 
@@ -74,7 +76,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.dataPath = directoryProvider.getAndCreateDataDirectory(this.serverLevel());
         this.tilesPath = directoryProvider.getAndCreateTilesDirectory(this.serverLevel());
 
-        this.imageIOExecutor = ImageIOExecutor.create(level, new TileUpdates(this.tilesPath));
+        this.imageIOExecutor = ImageIOExecutor.create(level, new TileUpdates(directoryProvider, this.tilesPath, jsonCache));
 
         this.layerRegistry(); // init the layer registry
         if (this.config().SPAWN_MARKER_ICON_ENABLED) {

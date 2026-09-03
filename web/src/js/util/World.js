@@ -60,6 +60,7 @@ class World {
                     S.layerControl.updateTileLayer(json);
                 }
             },
+            true,
         );
     }
     tickMarkers() {
