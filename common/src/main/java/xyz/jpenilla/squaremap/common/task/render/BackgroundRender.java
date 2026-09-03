@@ -3,6 +3,9 @@ package xyz.jpenilla.squaremap.common.task.render;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +29,13 @@ import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFac
 
 @DefaultQualifier(NonNull.class)
 public final class BackgroundRender extends AbstractRender {
+    // how many cycles a chunk that could not be read is retried for before it is given up on.
+    // a freshly generated chunk can briefly be readable from neither memory nor disk, but a
+    // chunk that simply does not exist must not be requeued forever
+    private static final int MAX_ATTEMPTS = 3;
+
     private final ServerAccess serverAccess;
+    private final Map<ChunkCoordinate, Integer> failedAttempts = new HashMap<>();
 
     @AssistedInject
     private BackgroundRender(
@@ -73,15 +82,24 @@ public final class BackgroundRender extends AbstractRender {
         regionChunksMap.forEach((region, chunksToRenderInRegion) -> {
             final Image image = new Image(region, this.mapWorld.config().ZOOM_MAX);
 
-            final CompletableFuture<?>[] chunkFutures = chunksToRenderInRegion.stream()
-                .map(coord -> this.mapSingleChunk(image, coord.x(), coord.z()))
-                .toArray(CompletableFuture<?>[]::new);
+            final Map<ChunkCoordinate, CompletableFuture<Boolean>> chunkFutures = new LinkedHashMap<>();
+            for (final ChunkCoordinate coord : chunksToRenderInRegion) {
+                chunkFutures.put(coord, this.mapSingleChunk(image, coord.x(), coord.z()));
+            }
 
-            regionFutures.add(CompletableFuture.allOf(chunkFutures).thenRun(() -> {
+            regionFutures.add(CompletableFuture.allOf(chunkFutures.values().toArray(CompletableFuture<?>[]::new)).thenRun(() -> {
                 if (!this.running()) {
                     return;
                 }
-                chunksToRenderInRegion.forEach(chunks::remove);
+                // only drop the chunks that were actually drawn. one that could not be read
+                // contributed nothing to the image, so leaving it queued lets it be retried
+                // instead of leaving a permanent hole in the map
+                chunkFutures.forEach((coord, future) -> {
+                    if (future.join()) {
+                        this.failedAttempts.remove(coord);
+                        chunks.remove(coord);
+                    }
+                });
                 this.mapWorld.saveImage(image);
             }));
         });
@@ -95,12 +113,31 @@ public final class BackgroundRender extends AbstractRender {
 
         this.clearCaches();
 
-        chunks.forEach(this.mapWorld::chunkModified);
+        this.requeueFailed(chunks);
 
         Logging.debug(() -> String.format(
             "Finished background render cycle in %.2f seconds",
             (double) (System.currentTimeMillis() - time) / 1000.0D
         ));
+    }
+
+    /**
+     * Requeues chunks that could not be read this cycle, giving up on any that have failed
+     * {@link #MAX_ATTEMPTS} times so that chunks which will never be readable do not
+     * accumulate in the queue.
+     *
+     * @param chunks chunks left unrendered
+     */
+    private void requeueFailed(final Set<ChunkCoordinate> chunks) {
+        final Iterator<ChunkCoordinate> it = chunks.iterator();
+        while (it.hasNext()) {
+            final ChunkCoordinate coord = it.next();
+            if (this.failedAttempts.merge(coord, 1, Integer::sum) >= MAX_ATTEMPTS) {
+                this.failedAttempts.remove(coord);
+                it.remove();
+            }
+        }
+        chunks.forEach(this.mapWorld::chunkModified);
     }
 
     private static ExecutorService createBackgroundRenderWorkerPool(final MapWorldInternal world) {
