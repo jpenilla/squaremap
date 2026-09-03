@@ -62,6 +62,7 @@ export interface WorldSettings_Zoom {
     max: number;
     def: number;
     extra: number;
+    extra_out: number;
 }
 
 export interface WorldSettings {
