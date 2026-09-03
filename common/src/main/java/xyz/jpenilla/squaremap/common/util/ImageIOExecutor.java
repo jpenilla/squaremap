@@ -9,19 +9,22 @@ import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.data.TileUpdates;
 
 @DefaultQualifier(NonNull.class)
 public final class ImageIOExecutor {
     private static final int IMAGE_IO_MAX_TASKS = 100;
 
     private final ExecutorService executor;
+    private final TileUpdates tileUpdates;
     private final AtomicLong submittedTasks = new AtomicLong();
     private final AtomicLong executedTasks = new AtomicLong();
 
-    private ImageIOExecutor(final ServerLevel level) {
+    private ImageIOExecutor(final ServerLevel level, final TileUpdates tileUpdates) {
         this.executor = Executors.newSingleThreadExecutor(
             Util.squaremapThreadFactory("imageio", level)
         );
+        this.tileUpdates = tileUpdates;
     }
 
     /**
@@ -36,7 +39,13 @@ public final class ImageIOExecutor {
         this.submittedTasks.getAndIncrement();
         this.executor.execute(() -> {
             try {
-                image.save();
+                this.tileUpdates.record(image.save());
+                if (this.submittedTasks.get() - this.executedTasks.get() == 1) {
+                    // nothing else is queued, publish the manifest without waiting for the write interval
+                    this.tileUpdates.writeIfDirty();
+                } else {
+                    this.tileUpdates.writeIfDue();
+                }
             } finally {
                 this.executedTasks.getAndIncrement();
             }
@@ -58,9 +67,10 @@ public final class ImageIOExecutor {
 
     public void shutdown() {
         Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 5L);
+        this.tileUpdates.writeIfDirty();
     }
 
-    public static ImageIOExecutor create(final ServerLevel level) {
-        return new ImageIOExecutor(level);
+    public static ImageIOExecutor create(final ServerLevel level, final TileUpdates tileUpdates) {
+        return new ImageIOExecutor(level, tileUpdates);
     }
 }

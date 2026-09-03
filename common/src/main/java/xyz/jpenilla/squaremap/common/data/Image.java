@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -48,11 +50,12 @@ public final class Image {
         this.pixels[x & (SIZE - 1)][z & (SIZE - 1)] = color;
     }
 
-    public synchronized void save() {
+    public synchronized List<TileCoordinate> save() {
         if (this.pixels == null) {
-            return;
+            return List.of();
         }
 
+        final List<TileCoordinate> written = new ArrayList<>(this.maxZoom + 1);
         for (int zoom = 0; zoom <= this.maxZoom; zoom++) {
             int step = (int) Math.pow(2, zoom);
             int size = SIZE / step;
@@ -73,8 +76,11 @@ public final class Image {
                 }
             }
 
-            this.save(this.maxZoom - zoom, scaledX, scaledZ, image);
+            if (this.save(this.maxZoom - zoom, scaledX, scaledZ, image)) {
+                written.add(new TileCoordinate(this.maxZoom - zoom, scaledX, scaledZ));
+            }
         }
+        return written;
     }
 
     private BufferedImage getOrCreate(final int zoom, final int scaledX, final int scaledZ) {
@@ -102,7 +108,7 @@ public final class Image {
         }
     }
 
-    private void save(final int zoom, final int scaledX, final int scaledZ, final BufferedImage image) {
+    private boolean save(final int zoom, final int scaledX, final int scaledZ, final BufferedImage image) {
         final Path out = this.imageInDirectory(zoom, scaledX, scaledZ);
         try {
             FileUtil.atomicWrite(out, tmp -> {
@@ -112,7 +118,9 @@ public final class Image {
             });
         } catch (final IOException ex) {
             this.logCouldNotSave(ex);
+            return false;
         }
+        return true;
     }
 
     private static void save(final BufferedImage image, final OutputStream out) throws IOException {

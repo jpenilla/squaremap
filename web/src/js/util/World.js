@@ -40,7 +40,7 @@ class World {
     tick() {
         // refresh map tile layer
         if (!S.staticMode && S.tick_count % this.tiles_update_interval === 0) {
-            S.layerControl.updateTileLayer();
+            this.tickTiles();
         }
         // load and draw markers
         if (!S.staticMode && S.tick_count % this.marker_update_interval === 0) {
@@ -50,6 +50,17 @@ class World {
             this.tickMarkers();
             this.staticNeedsMarkerTick = false;
         }
+    }
+    tickTiles() {
+        S.getJSON(
+            `tiles/${this.name}/updates.json`,
+            /** @param {TileUpdates} json */
+            (json) => {
+                if (this === S.worldList.curWorld) {
+                    S.layerControl.updateTileLayer(json);
+                }
+            },
+        );
     }
     tickMarkers() {
         S.getJSON(
@@ -102,7 +113,7 @@ class World {
                 document.getElementById("map").style.background = this.getBackground();
 
                 // setup tile layers
-                S.layerControl.setupTileLayers(this);
+                S.layerControl.setupTileLayer(this);
 
                 // force clear player markers
                 S.playerList.clearPlayerMarkers();

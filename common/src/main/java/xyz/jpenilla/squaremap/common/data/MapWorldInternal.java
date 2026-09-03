@@ -65,8 +65,6 @@ public abstract class MapWorldInternal implements MapWorld {
     ) {
         this.level = level;
 
-        this.imageIOExecutor = ImageIOExecutor.create(level);
-
         this.worldConfig = configManager.worldConfig(this.level);
         this.advancedWorldConfig = configManager.worldAdvanced(this.level);
 
@@ -75,6 +73,8 @@ public abstract class MapWorldInternal implements MapWorld {
 
         this.dataPath = directoryProvider.getAndCreateDataDirectory(this.serverLevel());
         this.tilesPath = directoryProvider.getAndCreateTilesDirectory(this.serverLevel());
+
+        this.imageIOExecutor = ImageIOExecutor.create(level, new TileUpdates(this.tilesPath));
 
         this.layerRegistry(); // init the layer registry
         if (this.config().SPAWN_MARKER_ICON_ENABLED) {
