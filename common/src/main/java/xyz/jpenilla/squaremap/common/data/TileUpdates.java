@@ -3,7 +3,6 @@ package xyz.jpenilla.squaremap.common.data;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -38,22 +37,15 @@ public final class TileUpdates {
     }
 
     /**
-     * Records that the given tile images have been rewritten.
+     * Records that the given tile image has been rewritten.
      *
-     * @param written tiles written to disk
+     * @param tile tile written to disk
      */
-    public synchronized void record(final List<TileCoordinate> written) {
-        if (written.isEmpty()) {
-            return;
-        }
-
-        final long now = System.currentTimeMillis();
-        for (final TileCoordinate tile : written) {
-            final String key = tile.key();
-            // remove before putting so the map stays ordered from oldest to newest
-            this.tiles.remove(key);
-            this.tiles.put(key, now);
-        }
+    public synchronized void record(final TileCoordinate tile) {
+        final String key = tile.key();
+        // remove before putting so the map stays ordered from oldest to newest
+        this.tiles.remove(key);
+        this.tiles.put(key, System.currentTimeMillis());
 
         final Iterator<Map.Entry<String, Long>> it = this.tiles.entrySet().iterator();
         while (this.tiles.size() > MAX_ENTRIES && it.hasNext()) {

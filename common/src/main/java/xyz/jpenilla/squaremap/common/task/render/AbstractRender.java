@@ -202,7 +202,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     protected final void mapRegion(final RegionCoordinate region) {
-        final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+        final Image image = new Image(region, this.mapWorld.config().ZOOM_MAX);
         final int startX = region.getChunkX();
         final int startZ = region.getChunkZ();
         final List<CompletableFuture<Void>> futures = new ArrayList<>();

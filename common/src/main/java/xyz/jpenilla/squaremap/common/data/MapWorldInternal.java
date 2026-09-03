@@ -76,7 +76,8 @@ public abstract class MapWorldInternal implements MapWorld {
         this.dataPath = directoryProvider.getAndCreateDataDirectory(this.serverLevel());
         this.tilesPath = directoryProvider.getAndCreateTilesDirectory(this.serverLevel());
 
-        this.imageIOExecutor = ImageIOExecutor.create(level, new TileUpdates(directoryProvider, this.tilesPath, jsonCache));
+        final TileUpdates tileUpdates = new TileUpdates(directoryProvider, this.tilesPath, jsonCache);
+        this.imageIOExecutor = ImageIOExecutor.create(level, new TileCache(this.tilesPath, tileUpdates), tileUpdates);
 
         this.layerRegistry(); // init the layer registry
         if (this.config().SPAWN_MARKER_ICON_ENABLED) {

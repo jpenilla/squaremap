@@ -112,7 +112,7 @@ public final class RadiusRender extends AbstractRender {
                 this.mapRegion(region);
                 continue;
             }
-            final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+            final Image image = new Image(region, this.mapWorld.config().ZOOM_MAX);
             final List<CompletableFuture<Void>> chunkFutures = new ArrayList<>();
             for (final ChunkCoordinate chunkCoord : chunkCoords) {
                 chunkFutures.add(this.mapSingleChunk(image, chunkCoord.x(), chunkCoord.z()));

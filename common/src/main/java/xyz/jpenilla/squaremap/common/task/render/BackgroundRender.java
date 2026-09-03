@@ -71,7 +71,7 @@ public final class BackgroundRender extends AbstractRender {
 
         final Map<RegionCoordinate, List<ChunkCoordinate>> regionChunksMap = chunks.stream().collect(Collectors.groupingBy(ChunkCoordinate::regionCoordinate));
         regionChunksMap.forEach((region, chunksToRenderInRegion) -> {
-            final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+            final Image image = new Image(region, this.mapWorld.config().ZOOM_MAX);
 
             final CompletableFuture<?>[] chunkFutures = chunksToRenderInRegion.stream()
                 .map(coord -> this.mapSingleChunk(image, coord.x(), coord.z()))
