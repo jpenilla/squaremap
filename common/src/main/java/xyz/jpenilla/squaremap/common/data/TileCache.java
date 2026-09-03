@@ -1,5 +1,7 @@
 package xyz.jpenilla.squaremap.common.data;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -125,7 +127,7 @@ public final class TileCache {
                 throw new IOException("Failed to read image file " + file.toAbsolutePath() + ", ImageIO.read(File) result is null. This means no " +
                     "supported image format was able to read it. The image file may have been malformed or corrupted, it will be overwritten.");
             }
-            return read;
+            return toArgb(read);
         } catch (final IOException ex) {
             try {
                 Files.deleteIfExists(file);
@@ -182,6 +184,20 @@ public final class TileCache {
 
     private static BufferedImage newBufferedImage() {
         return new BufferedImage(Image.SIZE, Image.SIZE, BufferedImage.TYPE_INT_ARGB);
+    }
+
+    // a decoded png is whatever type the reader picked, so normalize it to the type tiles are
+    // created with, which is the one callers write into directly
+    private static BufferedImage toArgb(final BufferedImage image) {
+        if (image.getType() == BufferedImage.TYPE_INT_ARGB && image.getWidth() == Image.SIZE && image.getHeight() == Image.SIZE) {
+            return image;
+        }
+        final BufferedImage converted = newBufferedImage();
+        final Graphics2D graphics = converted.createGraphics();
+        graphics.setComposite(AlphaComposite.Src);
+        graphics.drawImage(image, 0, 0, null);
+        graphics.dispose();
+        return converted;
     }
 
     private static String xz(final String message, final TileCoordinate coordinate) {

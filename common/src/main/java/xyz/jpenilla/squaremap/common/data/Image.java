@@ -1,6 +1,7 @@
 package xyz.jpenilla.squaremap.common.data;
 
 import java.awt.Color;
+import java.awt.image.DataBufferInt;
 import java.util.Arrays;
 import net.minecraft.util.Mth;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,12 +53,16 @@ public final class Image {
             final boolean retain = fileZoom != this.maxZoom;
 
             cache.draw(new TileCoordinate(fileZoom, scaledX, scaledZ), retain, image -> {
+                // tiles are always SIZE wide and of type int argb, so the backing array is
+                // addressed directly instead of going through setRGB for every pixel
+                final int[] target = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
                 for (int x = 0; x < SIZE; x += step) {
+                    final int[] column = pixels[x];
+                    final int targetX = baseX + (x / step);
                     for (int z = 0; z < SIZE; z += step) {
-                        final int pixel = pixels[x][z];
+                        final int pixel = column[z];
                         if (pixel != Integer.MIN_VALUE) {
-                            final int color = pixel == 0 ? TRANSPARENT : pixel;
-                            image.setRGB(baseX + (x / step), baseZ + (z / step), color);
+                            target[(baseZ + (z / step)) * SIZE + targetX] = pixel == 0 ? TRANSPARENT : pixel;
                         }
                     }
                 }
