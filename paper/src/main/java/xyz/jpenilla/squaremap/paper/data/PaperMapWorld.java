@@ -16,6 +16,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.httpd.JsonCache;
 import xyz.jpenilla.squaremap.common.task.TaskFactory;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
@@ -34,9 +35,10 @@ public final class PaperMapWorld extends MapWorldInternal {
         final DirectoryProvider directoryProvider,
         final Server server,
         final ConfigManager configManager,
-        final TaskFactory taskFactory
+        final TaskFactory taskFactory,
+        final JsonCache jsonCache
     ) {
-        super(level, renderFactory, directoryProvider, configManager);
+        super(level, renderFactory, directoryProvider, configManager, jsonCache);
 
         if (Folia.FOLIA) {
             this.markerTaskHandler = new FoliaMarkerTaskHandler(level, taskFactory);

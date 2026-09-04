@@ -99,9 +99,15 @@ public final class IntegratedServer {
             }
 
             if (exchange.getRelativePath().startsWith("/tiles")) {
+                // tile images are requested with a version parameter that changes whenever the tile is
+                // rewritten, so those responses can be cached indefinitely
+                final boolean versioned = exchange.getRelativePath().endsWith(".png")
+                    && !exchange.getQueryString().isEmpty();
                 exchange.getResponseHeaders().put(
                     Headers.CACHE_CONTROL,
-                    "max-age=0, must-revalidate, no-cache"
+                    versioned
+                        ? "public, max-age=31536000, immutable"
+                        : "max-age=0, must-revalidate, no-cache"
                 );
             }
 
