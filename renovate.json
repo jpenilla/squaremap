@@ -11,6 +11,9 @@
     "labels": [
         "dependencies"
     ],
+    "lockFileMaintenance": {
+        "enabled": true
+    },
     "packageRules": [
         {
             "description": "Correct version handling for dependencies with format major.minor.patch+mcver",
