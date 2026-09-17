@@ -72,6 +72,12 @@ export interface WorldSettings {
     tiles_update_interval: number;
 }
 
+export interface TileUpdates {
+    timestamp: number;
+    dropped: number;
+    tiles: Record<string, number>;
+}
+
 export interface PlayerData {
     name: string;
     display_name?: string;

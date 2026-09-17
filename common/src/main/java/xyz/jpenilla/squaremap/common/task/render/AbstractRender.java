@@ -202,7 +202,7 @@ public abstract class AbstractRender implements Runnable {
     }
 
     protected final void mapRegion(final RegionCoordinate region) {
-        final Image image = new Image(region, this.mapWorld.tilesPath(), this.mapWorld.config().ZOOM_MAX);
+        final Image image = new Image(region, this.mapWorld.config().ZOOM_MAX);
         final int startX = region.getChunkX();
         final int startZ = region.getChunkZ();
         final List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -223,7 +223,12 @@ public abstract class AbstractRender implements Runnable {
         }
     }
 
-    protected final CompletableFuture<Void> mapSingleChunk(final Image image, final int chunkX, final int chunkZ) {
+    /**
+     * Maps a single chunk into the given image.
+     *
+     * @return future completing with whether the chunk itself could be read and was scanned
+     */
+    protected final CompletableFuture<Boolean> mapSingleChunk(final Image image, final int chunkX, final int chunkZ) {
         final CompletableFuture<@Nullable ChunkSnapshot> chunkFuture = this.chunks.snapshot(new ChunkPos(chunkX, chunkZ));
         final CompletableFuture<@Nullable ChunkSnapshot> northChunk = this.chunks.snapshotDirect(new ChunkPos(chunkX, chunkZ - 1));
 
@@ -242,9 +247,9 @@ public abstract class AbstractRender implements Runnable {
             southChunk = CompletableFuture.completedFuture(null);
         }
 
-        return CompletableFuture.allOf(northChunk, chunkFuture, southChunk).thenRunAsync(() -> {
+        return CompletableFuture.allOf(northChunk, chunkFuture, southChunk).thenApplyAsync($ -> {
             if (!this.running()) {
-                return;
+                return false;
             }
             int[] lastY = new int[16];
 
@@ -266,9 +271,10 @@ public abstract class AbstractRender implements Runnable {
             }
 
             this.processedChunks.incrementAndGet();
+            return chunk != null && this.running();
         }, this.executor).exceptionally(thr -> {
             Logging.logger().warn("Exception mapping chunk at [{}, {}] in {}", chunkX, chunkZ, this.mapWorld.identifier().asString(), thr);
-            return null;
+            return false;
         });
     }
 

@@ -48,6 +48,12 @@ public final class JsonCache {
             Headers.ETAG,
             timestamp
         );
+        // clients poll these on a fixed interval, revalidating lets an unchanged document
+        // answer with a 304 instead of the full body
+        exchange.getResponseHeaders().put(
+            Headers.CACHE_CONTROL,
+            "no-cache"
+        );
 
         final String requestedEtag = exchange.getRequestHeaders().getFirst(Headers.IF_NONE_MATCH);
         if (requestedEtag != null && requestedEtag.equals(timestamp)) {
