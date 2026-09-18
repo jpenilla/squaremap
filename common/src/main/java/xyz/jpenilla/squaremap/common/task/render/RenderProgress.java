@@ -110,10 +110,10 @@ public final class RenderProgress extends TimerTask {
         );
     }
 
-    private static String formatMilliseconds(final long timeLeft) {
-        final int hrs = (int) TimeUnit.MILLISECONDS.toHours(timeLeft) % 24;
-        final int min = (int) TimeUnit.MILLISECONDS.toMinutes(timeLeft) % 60;
-        final int sec = (int) TimeUnit.MILLISECONDS.toSeconds(timeLeft) % 60;
-        return String.format("%02d:%02d:%02d", hrs, min, sec);
+    private static String formatMilliseconds(final long timeInMs) {
+        final int hrs = (int) TimeUnit.MILLISECONDS.toHours(timeInMs);
+        final int min = (int) TimeUnit.MILLISECONDS.toMinutes(timeInMs) % 60;
+        final int sec = (int) TimeUnit.MILLISECONDS.toSeconds(timeInMs) % 60;
+        return String.format("%02dh%02dm%02ds", hrs, min, sec);
     }
 }
