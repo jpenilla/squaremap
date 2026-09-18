@@ -4,6 +4,7 @@ import { WorldList } from "./WorldList.js";
 import { UICoordinates } from "./UICoordinates.js";
 import { UILink } from "./UILink.js";
 import { LayerControl } from "./LayerControl.js";
+import { ContextMenu } from "./ContextMenu.js";
 import L from "leaflet";
 import "./addons/Ellipse.js";
 import "./addons/RotateMarker.js";
@@ -29,6 +30,8 @@ class SquaremapMap {
     coordinates;
     /** @type {UILink} */
     uiLink;
+    /** @type {ContextMenu} */
+    contextMenu;
     /** @type {number} */
     tick_count;
     /** @type {boolean} */
@@ -91,6 +94,7 @@ class SquaremapMap {
                     this.getUrlParam("show_coordinates", "true") === "true",
                 );
                 this.uiLink = new UILink(json.ui.link, this.getUrlParam("show_link_button", "true") === "true");
+                this.contextMenu = new ContextMenu();
 
                 this.showControls = this.getUrlParam("show_controls", "true") === "true";
                 if (!this.showControls) {

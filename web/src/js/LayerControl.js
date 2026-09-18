@@ -114,6 +114,7 @@ class LayerControl {
     createTileLayer(world) {
         return new SquaremapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
             tileSize: 512,
+            minZoom: 0 - (world.zoom.extra_out ?? 0),
             minNativeZoom: 0,
             maxNativeZoom: world.zoom.max,
             errorTileUrl: "images/clear.png",

@@ -15,6 +15,10 @@ out/
 plugin/bin/
 api/bin/
 
+#VScode
+.vscode/
+*.code-workspace
+
 # Compiled class file
 *.class
 

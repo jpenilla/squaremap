@@ -62,11 +62,13 @@ public final class WorldConfig extends AbstractWorldConfig<Config> {
     public int ZOOM_MAX = 3;
     public int ZOOM_DEFAULT = 3;
     public int ZOOM_EXTRA = 2;
+    public int ZOOM_EXTRA_OUT = 0;
 
     private void zoomSettings() {
         this.ZOOM_MAX = this.getInt("map.zoom.maximum", this.ZOOM_MAX);
         this.ZOOM_DEFAULT = this.getInt("map.zoom.default", this.ZOOM_DEFAULT);
         this.ZOOM_EXTRA = this.getInt("map.zoom.extra", this.ZOOM_EXTRA);
+        this.ZOOM_EXTRA_OUT = this.getInt("map.zoom.extra-out", this.ZOOM_EXTRA_OUT);
     }
 
     public boolean BACKGROUND_RENDER_ENABLED = true;

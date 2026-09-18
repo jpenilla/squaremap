@@ -131,6 +131,7 @@ public final class UpdateWorldData implements Runnable {
         zoom.put("max", worldConfig.ZOOM_MAX);
         zoom.put("def", worldConfig.ZOOM_DEFAULT);
         zoom.put("extra", worldConfig.ZOOM_EXTRA);
+        zoom.put("extra_out", worldConfig.ZOOM_EXTRA_OUT);
 
         final Map<String, Object> settings = new HashMap<>();
         settings.put("spawn", spawn);
