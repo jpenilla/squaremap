@@ -205,7 +205,7 @@ public final class FullRender extends AbstractRender {
                 if (!fileName.startsWith("r.")) {
                     return false;
                 }
-                return fileName.endsWith(".mca") || fileName.endsWith(".linear");
+                return fileName.endsWith(".mca") || fileName.endsWith(".linear") || fileName.endsWith(".b_linear");
             }).toArray(Path[]::new);
         } catch (final IOException ex) {
             throw new RuntimeException("Failed to list region files in directory '" + regionFolder.toAbsolutePath() + "'", ex);
