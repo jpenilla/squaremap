@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -163,7 +164,7 @@ public final class BiomeColors {
             );
             final @Nullable ChunkSnapshot chunk = this.chunkSnapshotManager.snapshotDirect(chunkPos).join();
 
-            final BiomeManager.NoiseBiomeSource noiseBiomeSource = chunk == null
+            final BiomeResolver noiseBiomeSource = chunk == null
                 ? this.level::getUncachedNoiseBiome // no chunk exists, this will get from the chunk generator
                 : chunk;
 

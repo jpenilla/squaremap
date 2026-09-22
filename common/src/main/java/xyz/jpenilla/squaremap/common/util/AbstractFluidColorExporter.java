@@ -71,8 +71,12 @@ public abstract class AbstractFluidColorExporter {
                 blender.addColor(this.spritePixel(sprite, i, h));
             }
         }
-        final BlockTintSource tintSource = model.tintSource();
-        return Colors.toHexString(Colors.argbToRgba(color(blender.result(), tintSource.color(fluid.defaultFluidState().createLegacyBlock()))));
+        final @Nullable BlockTintSource tintSource = model.tintSource();
+        final int color = color(
+            blender.result(),
+            tintSource == null ? 0xFFFFFFFF : tintSource.color(fluid.defaultFluidState().createLegacyBlock())
+        );
+        return Colors.toHexString(Colors.argbToRgba(color));
     }
 
     protected abstract int spritePixel(TextureAtlasSprite sprite, int x, int y);

@@ -9,7 +9,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.biome.BiomeResolver;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
@@ -21,7 +21,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
-public interface ChunkSnapshot extends LevelHeightAccessor, BiomeManager.NoiseBiomeSource {
+public interface ChunkSnapshot extends LevelHeightAccessor, BiomeResolver {
     BlockState getBlockState(BlockPos pos);
 
     FluidState getFluidState(BlockPos pos);
