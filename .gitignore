@@ -20,6 +20,8 @@ api/bin/
 
 # Log file
 *.log
+/common/logs/
+/logs/
 
 # BlueJ files
 *.ctxt
