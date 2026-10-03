@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.util.chunksnapshot;
+package xyz.jpenilla.squaremap.common.chunksnapshot;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -12,12 +12,11 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.PalettedContainer;
-import net.minecraft.world.level.chunk.PalettedContainerFactory;
+import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
@@ -25,7 +24,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 record ChunkSnapshotImpl(
     LevelHeightAccessor heightAccessor,
     PalettedContainer<BlockState>[] states,
-    PalettedContainer<Holder<Biome>>[] biomes,
+    PalettedContainerRO<Holder<Biome>>[] biomes,
     Map<Heightmap.Types, HeightmapSnapshot> heightmaps,
     boolean[] emptySections,
     DimensionType dimensionType,

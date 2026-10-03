@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.util.chunksnapshot;
+package xyz.jpenilla.squaremap.common.chunksnapshot;
 
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;

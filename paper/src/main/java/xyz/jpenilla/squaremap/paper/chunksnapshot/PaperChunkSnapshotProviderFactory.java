@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.paper.util.chunksnapshot;
+package xyz.jpenilla.squaremap.paper.chunksnapshot;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -7,8 +7,8 @@ import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 @Singleton

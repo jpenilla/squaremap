@@ -22,7 +22,7 @@ import xyz.jpenilla.squaremap.common.data.Image;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.Util;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 public final class BackgroundRender extends AbstractRender {

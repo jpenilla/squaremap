@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.util.chunksnapshot;
+package xyz.jpenilla.squaremap.common.chunksnapshot;
 
 import net.minecraft.util.BitStorage;
 import net.minecraft.util.Mth;
@@ -16,10 +16,17 @@ final class HeightmapSnapshot {
         final LevelHeightAccessor heightAccessor,
         final Heightmap.Types heightmapType
     ) {
+        this(chunk.getOrCreateHeightmapUnprimed(heightmapType).getRawData().clone(), heightAccessor);
+    }
+
+    HeightmapSnapshot(
+        final long[] data,
+        final LevelHeightAccessor heightAccessor
+    ) {
         this.data = new SimpleBitStorage(
             Mth.ceillog2(heightAccessor.getHeight() + 1),
             256,
-            chunk.getOrCreateHeightmapUnprimed(heightmapType).getRawData().clone()
+            data
         );
         this.heightAccessor = heightAccessor;
     }

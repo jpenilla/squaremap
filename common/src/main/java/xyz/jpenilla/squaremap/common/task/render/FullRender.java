@@ -22,7 +22,7 @@ import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
 import xyz.jpenilla.squaremap.common.util.SpiralIterator;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 
 @DefaultQualifier(NonNull.class)

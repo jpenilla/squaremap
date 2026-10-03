@@ -20,7 +20,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.common.util.ColorBlender;
 import xyz.jpenilla.squaremap.common.util.Colors;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshot;
 
 @DefaultQualifier(NonNull.class)
 public final class BiomeColors {
