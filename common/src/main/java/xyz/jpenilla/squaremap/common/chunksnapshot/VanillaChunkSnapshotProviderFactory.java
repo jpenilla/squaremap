@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.util.chunksnapshot;
+package xyz.jpenilla.squaremap.common.chunksnapshot;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;

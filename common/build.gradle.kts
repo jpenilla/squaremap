@@ -8,6 +8,7 @@ neoForge {
     neoFormVersion = libs.versions.neoform.get()
   }
   accessTransformers.from(layout.projectDirectory.file("src/main/resources/squaremap-common-at.cfg"))
+  addModdingDependenciesTo(sourceSets.test.get())
 }
 
 dependencies {
@@ -52,6 +53,10 @@ dependencies {
   }
 
   compileOnly("curse.maven:moonrise-1096335:8986181")
+
+  testImplementation(platform(libs.junitBom))
+  testImplementation(libs.junitJupiter)
+  testRuntimeOnly(libs.junitLauncher)
 }
 
 @UntrackedTask(because = "Up-to-date checking for this needs further thought")

@@ -24,4 +24,8 @@ public interface ChunkMapAccess extends xyz.jpenilla.squaremap.common.util.Chunk
     @Accessor("pendingUnloads")
     @Override
     Long2ObjectLinkedOpenHashMap<ChunkHolder> squaremap$pendingUnloads();
+
+    @Invoker("upgradeChunkTag")
+    @Override
+    CompoundTag squaremap$upgradeChunkTag(CompoundTag compoundTag);
 }

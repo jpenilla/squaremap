@@ -13,12 +13,12 @@ import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
 import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
 import xyz.jpenilla.squaremap.paper.PaperPlayerManager;
 import xyz.jpenilla.squaremap.paper.PaperServerAccess;
 import xyz.jpenilla.squaremap.paper.command.PaperCommands;
 import xyz.jpenilla.squaremap.paper.util.PaperRegionFileDirectoryResolver;
-import xyz.jpenilla.squaremap.paper.util.chunksnapshot.PaperChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.paper.chunksnapshot.PaperChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperModule extends AbstractModule {
