@@ -58,7 +58,7 @@ record PaperChunkSnapshotProvider(
             if (chunkHolder != null) {
                 final @Nullable ChunkAccess chunk = chunkHolder.getChunkIfPresent(ChunkStatus.FULL);
                 if (chunk != null && ChunkSnapshotEligibility.get(chunk.getPersistedStatus(), chunk.getBelowZeroRetrogen()) == ChunkSnapshotEligibility.ELIGIBLE) {
-                    return CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotLiveChunk(this.level, chunk, true));
+                    return CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotLiveChunk(this.level, chunk));
                 }
             }
 
@@ -112,7 +112,7 @@ record PaperChunkSnapshotProvider(
                         } else {
                             switch (ChunkSnapshotEligibility.get(unwrapped.getPersistedStatus(), unwrapped.getBelowZeroRetrogen())) {
                                 case INELIGIBLE -> load.complete(null);
-                                case ELIGIBLE -> load.complete(ChunkSnapshotFactory.snapshotLiveChunk(this.level, unwrapped, true));
+                                case ELIGIBLE -> load.complete(ChunkSnapshotFactory.snapshotLiveChunk(this.level, unwrapped));
                                 case NEEDS_RETROGEN -> {
                                     // EMPTY only reads the chunk. Finish eligible upgrades before snapshotting;
                                     // ordinary incomplete chunks never request FULL.
@@ -140,7 +140,7 @@ record PaperChunkSnapshotProvider(
             } else if (ChunkSnapshotEligibility.get(completed.getPersistedStatus(), completed.getBelowZeroRetrogen()) != ChunkSnapshotEligibility.ELIGIBLE) {
                 result.completeExceptionally(new IllegalStateException("Chunk upgrade did not finish: " + completed.getPos()));
             } else {
-                result.complete(ChunkSnapshotFactory.snapshotLiveChunk(this.level, completed, true));
+                result.complete(ChunkSnapshotFactory.snapshotLiveChunk(this.level, completed));
             }
         } catch (final Throwable error) {
             result.completeExceptionally(error);

@@ -33,36 +33,18 @@ public final class ChunkSnapshotFactory {
     }
 
     /**
-     * Captures a live chunk without retaining mutable block-state or heightmap data.
-     * Biome containers are retained because normal section biome updates replace them.
+     * Captures a live chunk without retaining mutable block-state, biome, or heightmap data.
      *
      * <p>Must be called on the owning server thread while the chunk is safe to access.
      * The caller is responsible for completing any required chunk upgrades first.</p>
      *
      * @param level the level containing the chunk
      * @param chunk the chunk to snapshot
-     * @return the captured snapshot
-     * @throws IllegalStateException if the required world-surface heightmap is missing
-     */
-    public static ChunkSnapshot snapshotLiveChunk(final Level level, final ChunkAccess chunk) {
-        return snapshotLiveChunk(level, chunk, false);
-    }
-
-    /**
-     * Captures a live chunk, optionally copying biome containers for platforms that
-     * mutate them in place.
-     *
-     * <p>Must be called on the owning server thread while the chunk is safe to access.
-     * The caller is responsible for completing any required chunk upgrades first.</p>
-     *
-     * @param level the level containing the chunk
-     * @param chunk the chunk to snapshot
-     * @param copyBiomes whether to copy biome containers instead of retaining them
      * @return the captured snapshot
      * @throws IllegalStateException if the required world-surface heightmap is missing
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static ChunkSnapshot snapshotLiveChunk(final Level level, final ChunkAccess chunk, final boolean copyBiomes) {
+    public static ChunkSnapshot snapshotLiveChunk(final Level level, final ChunkAccess chunk) {
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(chunk.getMinY(), chunk.getHeight());
         final int sectionCount = heightAccessor.getSectionsCount();
         final LevelChunkSection[] sections = chunk.getSections();
@@ -86,8 +68,7 @@ public final class ChunkSnapshotFactory {
                 states[i] = sections[i].getStates().copy();
             }
 
-            // Vanilla replaces biome containers, but platforms like Paper mutate them in place.
-            biomes[i] = copyBiomes ? sections[i].getBiomes().copy() : sections[i].getBiomes();
+            biomes[i] = sections[i].getBiomes().copy();
         }
 
         return new ChunkSnapshotImpl(
