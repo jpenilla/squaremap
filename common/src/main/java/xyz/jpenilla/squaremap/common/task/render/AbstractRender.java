@@ -410,6 +410,10 @@ public abstract class AbstractRender implements Runnable {
 
         final int odd = (imgX + imgZ & 1);
 
+        final int curY = mutablePos.getY();
+        final int previousY = lastY[imgX];
+        lastY[imgX] = curY;
+
         final @Nullable DepthResult fluidDepthResult = findDepthIfFluid(mutablePos, state, chunk);
         if (fluidDepthResult != null) {
             final int fluidDepth = fluidDepthResult.depth;
@@ -417,10 +421,8 @@ public abstract class AbstractRender implements Runnable {
             return this.getFluidColor(fluidDepth, color, state, blockUnder, odd);
         }
 
-        final int curY = mutablePos.getY();
-        final double diffY = ((double) curY - lastY[imgX]) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
+        final double diffY = ((double) curY - previousY) * 4.0D / (double) 4 + ((double) odd - 0.5D) * 0.4D;
         final byte colorOffset = (byte) (diffY > 0.6D ? 2 : (diffY < -0.6D ? 0 : 1));
-        lastY[imgX] = curY;
         return Colors.shade(color, colorOffset);
     }
 
