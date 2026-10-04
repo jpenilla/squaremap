@@ -12,7 +12,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 final class HeightmapSnapshot {
     private final BitStorage data;
-    private final LevelHeightAccessor heightAccessor;
+    private final int minY;
 
     HeightmapSnapshot(
         final ChunkAccess chunk,
@@ -31,7 +31,7 @@ final class HeightmapSnapshot {
             256,
             data
         );
-        this.heightAccessor = heightAccessor;
+        this.minY = heightAccessor.getMinY();
     }
 
     static HeightmapSnapshot computeWorldSurface(
@@ -51,6 +51,7 @@ final class HeightmapSnapshot {
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
                     final int index = getIndex(x, z);
+                    // Zero means no surface found yet; stored heights are relative to minY plus one.
                     if (data.get(index) != 0) {
                         continue;
                     }
@@ -71,7 +72,7 @@ final class HeightmapSnapshot {
     }
 
     private int getFirstAvailable(final int index) {
-        return this.data.get(index) + this.heightAccessor.getMinY();
+        return this.data.get(index) + this.minY;
     }
 
     private static int getIndex(final int x, final int z) {
