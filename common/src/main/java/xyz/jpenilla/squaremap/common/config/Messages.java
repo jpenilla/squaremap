@@ -242,6 +242,10 @@ public final class Messages {
     public static String LOG_INTERNAL_WEB_DISABLED = "Internal webserver is disabled in config.yml";
     @MessageKey("log.internal-web-started")
     public static String LOG_INTERNAL_WEB_STARTED = "Internal webserver running on <bind>:<port>";
+    @MessageKey("log.internal-web-tls-enabled")
+    public static String LOG_INTERNAL_WEB_TLS_ENABLED = "SSL certificate detected, TLS enabled";
+    @MessageKey("log.internal-web-tls-disabled")
+    public static String LOG_INTERNAL_WEB_TLS_DISABLED = "SSL certificate not found, TLS disabled";
     @MessageKey("log.internal-web-stopped")
     public static String LOG_INTERNAL_WEB_STOPPED = "Internal webserver stopped";
 
