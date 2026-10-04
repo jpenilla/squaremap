@@ -25,9 +25,8 @@ public final class EmptySectionHolder {
                 palettedContainerFactory.blockStatesStrategy()
             );
         }
-        if (EMPTY_SECTION_BIOMES == null) {
-            EMPTY_SECTION_BIOMES = palettedContainerFactory.createForBiomes();
-        }
+        // Always replace, biomes can change between integrated server runs
+        EMPTY_SECTION_BIOMES = palettedContainerFactory.createForBiomes();
     }
 
     static PalettedContainer<BlockState> getEmptySectionBlockStates() {
