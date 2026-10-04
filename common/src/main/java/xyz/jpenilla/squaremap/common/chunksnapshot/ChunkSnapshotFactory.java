@@ -9,6 +9,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -22,8 +23,11 @@ import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.chunk.storage.SerializableChunkData;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 
+@DefaultQualifier(NonNull.class)
 public final class ChunkSnapshotFactory {
     private ChunkSnapshotFactory() {
     }
@@ -94,8 +98,7 @@ public final class ChunkSnapshotFactory {
      * @param x the expected chunk x coordinate
      * @param z the expected chunk z coordinate
      * @return the decoded snapshot
-     * @throws IllegalStateException if coordinates do not match or the required
-     *     world-surface heightmap is missing
+     * @throws IllegalStateException if coordinates do not match
      * @throws SerializableChunkData.ChunkReadException if a section palette cannot be decoded
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -114,16 +117,6 @@ public final class ChunkSnapshotFactory {
         if (chunkPos.x() != x || chunkPos.z() != z) {
             throw new IllegalStateException("Expected chunk at " + new ChunkPos(x, z) + ", but saved data was for " + chunkPos);
         }
-        final Map<Heightmap.Types, HeightmapSnapshot> heightmaps = new EnumMap<>(Heightmap.Types.class);
-        chunkData.getCompound(SerializableChunkData.HEIGHTMAPS_TAG)
-            .flatMap(heightmapsTag -> heightmapsTag.getLongArray(Heightmap.Types.WORLD_SURFACE.getSerializationKey()))
-            .ifPresent((longs) -> {
-                heightmaps.put(Heightmap.Types.WORLD_SURFACE, new HeightmapSnapshot(longs, levelHeight));
-            });
-        if (heightmaps.isEmpty()) {
-            throw new IllegalStateException("Expected WORLD_SURFACE heightmap to be present, but it wasn't! " + chunkPos);
-        }
-
         final ListTag sectionTags = chunkData.getListOrEmpty(SerializableChunkData.SECTIONS_TAG);
         final int sectionCount = levelHeight.getSectionsCount();
 
@@ -151,11 +144,14 @@ public final class ChunkSnapshotFactory {
                         .map((container) -> biomesCodec.parse(NbtOps.INSTANCE, container).promotePartial((msg) -> Logging.logger().warn("Failed to decode chunk {} section {}: {}", chunkPos, y, msg)).getOrThrow(SerializableChunkData.ChunkReadException::new));
                     final PalettedContainerRO<Holder<Biome>> sectionBiomes = maybeBiomes.orElse(EmptySectionHolder.getEmptySectionBiomes());
                     states[index] = blocks;
-                    empty[index] = blocks == EmptySectionHolder.getEmptySectionBlockStates();
+                    empty[index] = !blocks.maybeHas(state -> !state.isAir());
                     biomes[index] = sectionBiomes;
                 }
             }
         }
+
+        final Map<Heightmap.Types, HeightmapSnapshot> heightmaps = readOrComputeHeightmaps(
+            levelHeight, chunkData, states, empty);
 
         return new ChunkSnapshotImpl(
             levelHeight,
@@ -166,5 +162,24 @@ public final class ChunkSnapshotFactory {
             dimensionType,
             chunkPos
         );
+    }
+
+    private static Map<Heightmap.Types, HeightmapSnapshot> readOrComputeHeightmaps(
+        final LevelHeightAccessor levelHeight,
+        final CompoundTag chunkData,
+        final PalettedContainer<BlockState>[] states,
+        final boolean[] empty
+    ) {
+        final int bits = Mth.ceillog2(levelHeight.getHeight() + 1);
+        final int valuesPerLong = Long.SIZE / bits;
+        final int expectedLength = (256 + valuesPerLong - 1) / valuesPerLong;
+        final HeightmapSnapshot worldSurface = chunkData.getCompound(SerializableChunkData.HEIGHTMAPS_TAG)
+            .flatMap(heightmapsTag -> heightmapsTag.getLongArray(Heightmap.Types.WORLD_SURFACE.getSerializationKey()))
+            .filter(data -> data.length == expectedLength)
+            .map(data -> new HeightmapSnapshot(data, levelHeight))
+            .orElseGet(() -> HeightmapSnapshot.computeWorldSurface(levelHeight, states, empty));
+        final Map<Heightmap.Types, HeightmapSnapshot> heightmaps = new EnumMap<>(Heightmap.Types.class);
+        heightmaps.put(Heightmap.Types.WORLD_SURFACE, worldSurface);
+        return heightmaps;
     }
 }
