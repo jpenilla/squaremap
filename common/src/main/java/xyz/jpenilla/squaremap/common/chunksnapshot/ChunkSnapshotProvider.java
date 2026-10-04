@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.util.chunksnapshot;
+package xyz.jpenilla.squaremap.common.chunksnapshot;
 
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.NonNull;

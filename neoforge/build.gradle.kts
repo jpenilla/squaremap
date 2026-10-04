@@ -93,6 +93,7 @@ neoForgeModsToml {
       required("adventure_platform_neoforge", "*") {
         after()
       }
+      optional("moonrise", "*")
     }
   }
 }
@@ -101,4 +102,5 @@ publishMods.modrinth {
   environment = ModrinthEnvironment.SERVER_ONLY_CLIENT_OPTIONAL
   minecraftVersions.add(libs.versions.minecraft)
   modLoaders.add("neoforge")
+  optional("moonrise-opt")
 }

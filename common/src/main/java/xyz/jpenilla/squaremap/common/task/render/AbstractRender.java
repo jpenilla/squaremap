@@ -46,9 +46,9 @@ import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.ConcurrentFIFOLoadingCache;
 import xyz.jpenilla.squaremap.common.util.Numbers;
 import xyz.jpenilla.squaremap.common.util.Util;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshot;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProvider;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshot;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProvider;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractRender implements Runnable {

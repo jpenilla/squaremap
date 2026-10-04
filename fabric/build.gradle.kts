@@ -67,6 +67,7 @@ fabricModJson {
   depends("minecraft", libs.versions.minecraft.get())
   depends("cloud", "*")
   depends("adventure-platform-fabric", "*")
+  recommends("moonrise", "*")
 }
 
 publishMods.modrinth {
@@ -74,4 +75,5 @@ publishMods.modrinth {
   minecraftVersions.add(libs.versions.minecraft)
   modLoaders.add("fabric")
   requires("fabric-api")
+  optional("moonrise-opt")
 }

@@ -16,7 +16,7 @@ import xyz.jpenilla.squaremap.api.WorldIdentifier;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.util.Util;
-import xyz.jpenilla.squaremap.common.util.chunksnapshot.EmptySectionHolder;
+import xyz.jpenilla.squaremap.common.chunksnapshot.EmptySectionHolder;
 
 @DefaultQualifier(NonNull.class)
 @Singleton

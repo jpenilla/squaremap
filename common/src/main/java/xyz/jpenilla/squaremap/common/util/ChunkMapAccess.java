@@ -13,4 +13,6 @@ public interface ChunkMapAccess {
     CompletableFuture<Optional<CompoundTag>> squaremap$readChunk(ChunkPos pos);
 
     Long2ObjectLinkedOpenHashMap<ChunkHolder> squaremap$pendingUnloads();
+
+    CompoundTag squaremap$upgradeChunkTag(CompoundTag compoundTag);
 }
