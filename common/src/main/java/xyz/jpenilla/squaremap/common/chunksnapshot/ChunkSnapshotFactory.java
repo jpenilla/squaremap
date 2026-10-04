@@ -93,10 +93,7 @@ public final class ChunkSnapshotFactory {
      * @param dimensionType the level's dimension type
      * @param containerFactory the level's palette container factory
      * @param chunkData the upgraded, snapshot-ready chunk data
-     * @param x the expected chunk x coordinate
-     * @param z the expected chunk z coordinate
      * @return the decoded snapshot
-     * @throws IllegalStateException if coordinates do not match
      * @throws SerializableChunkData.ChunkReadException if a section palette cannot be decoded
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -104,17 +101,9 @@ public final class ChunkSnapshotFactory {
         final LevelHeightAccessor levelHeight,
         final DimensionType dimensionType,
         final PalettedContainerFactory containerFactory,
-        final CompoundTag chunkData,
-        final int x,
-        final int z
+        final CompoundTag chunkData
     ) {
-        final ChunkPos chunkPos = new ChunkPos(
-            chunkData.getIntOr(SerializableChunkData.X_POS_TAG, 0),
-            chunkData.getIntOr(SerializableChunkData.Z_POS_TAG, 0)
-        );
-        if (chunkPos.x() != x || chunkPos.z() != z) {
-            throw new IllegalStateException("Expected chunk at " + new ChunkPos(x, z) + ", but saved data was for " + chunkPos);
-        }
+        final ChunkPos chunkPos = readChunkPos(chunkData);
         final ListTag sectionTags = chunkData.getListOrEmpty(SerializableChunkData.SECTIONS_TAG);
         final int sectionCount = levelHeight.getSectionsCount();
 
@@ -159,6 +148,20 @@ public final class ChunkSnapshotFactory {
             empty,
             dimensionType,
             chunkPos
+        );
+    }
+
+    public static boolean chunkPosMatches(final CompoundTag chunkData, final int x, final int z) {
+        final int cx = chunkData.getIntOr(SerializableChunkData.X_POS_TAG, 0);
+        if (cx != x) return false;
+        final int cz = chunkData.getIntOr(SerializableChunkData.Z_POS_TAG, 0);
+        return cz == z;
+    }
+
+    public static ChunkPos readChunkPos(final CompoundTag chunkData) {
+        return new ChunkPos(
+            chunkData.getIntOr(SerializableChunkData.X_POS_TAG, 0),
+            chunkData.getIntOr(SerializableChunkData.Z_POS_TAG, 0)
         );
     }
 

@@ -69,7 +69,7 @@ class ChunkSnapshotFactoryTest {
             saved.remove(SerializableChunkData.HEIGHTMAPS_TAG);
         }
 
-        final ChunkSnapshot snapshot = ChunkSnapshotFactory.snapshotFromChunkData(chunk, dimensionType, factory, saved, 0, 0);
+        final ChunkSnapshot snapshot = ChunkSnapshotFactory.snapshotFromChunkData(chunk, dimensionType, factory, saved);
         final int[] expected = new int[256];
         final int[] actual = new int[256];
         for (int z = 0; z < 16; z++) {
@@ -84,7 +84,7 @@ class ChunkSnapshotFactoryTest {
     @Test
     void identifiesEmptyDecodedSections() {
         final ProtoChunk chunk = terrainFixture(-64, 384);
-        final ChunkSnapshot snapshot = ChunkSnapshotFactory.snapshotFromChunkData(chunk, dimensionType, factory, serialize(chunk), 0, 0);
+        final ChunkSnapshot snapshot = ChunkSnapshotFactory.snapshotFromChunkData(chunk, dimensionType, factory, serialize(chunk));
         for (int i = 0; i < chunk.getSectionsCount(); i++) {
             assertEquals(chunk.getSection(i).hasOnlyAir(), snapshot.sectionEmpty(i), "Section " + i);
         }

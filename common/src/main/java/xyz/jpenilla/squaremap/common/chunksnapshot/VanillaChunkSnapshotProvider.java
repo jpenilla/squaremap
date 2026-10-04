@@ -100,7 +100,13 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
                 final @Nullable BelowZeroRetrogen retroGen = tag.read(ChunkDataKeys.RETROGEN, BelowZeroRetrogen.CODEC).orElse(null);
                 return switch (ChunkSnapshotEligibility.get(status, retroGen)) {
                     case INELIGIBLE -> CompletableFuture.completedFuture(null);
-                    case ELIGIBLE -> CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, palettedContainerFactory, tag, x, z));
+                    case ELIGIBLE -> {
+                        if (ChunkSnapshotFactory.chunkPosMatches(tag, x, z)) {
+                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, palettedContainerFactory, tag));
+                        } else {
+                            yield this.moonriseChunkSystemSnapshot(x, z);
+                        }
+                    }
                     case NEEDS_RETROGEN -> this.moonriseChunkSystemSnapshot(x, z);
                 };
             },
