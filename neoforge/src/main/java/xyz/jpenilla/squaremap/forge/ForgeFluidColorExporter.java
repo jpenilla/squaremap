@@ -28,6 +28,6 @@ public final class ForgeFluidColorExporter extends AbstractFluidColorExporter {
 
     @Override
     protected int spritePixel(final TextureAtlasSprite sprite, final int x, final int y) {
-        return sprite.getPixelRGBA(0, x, y);
+        return sprite.getPixelARGB(0, x, y);
     }
 }
