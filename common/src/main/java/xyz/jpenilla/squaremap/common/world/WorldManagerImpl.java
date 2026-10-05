@@ -59,7 +59,9 @@ public class WorldManagerImpl implements WorldManager {
             throw new IllegalStateException("MapWorld already exists for '" + identifier.asString() + "'");
         }
         if (this.configManager.worldConfig(level).MAP_ENABLED) {
-            this.worlds.put(identifier, this.factory.create(level));
+            final MapWorldInternal world = this.factory.create(level);
+            world.renderScheduler().init();
+            this.worlds.put(identifier, world);
         }
     }
 

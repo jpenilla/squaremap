@@ -113,9 +113,8 @@ ui:
 log:
     started-full-render: Démarrage du rendu de la carte complète pour <world>
     started-radius-render: Rendu de la carte de rayon démarré pour <world>
-    scanning-region-files: Numérisation des fichiers de région... (cela peut prendre
-        un moment)
-    found-total-region-files: Fichiers Région <total> trouvé
+    scanning-region-files: Analyse des fichiers de région pour <world>... (cela peut prendre un moment)
+    found-total-region-files: <total> fichiers de région trouvés pour <world>
     finished-rendering: Carte de rendu terminée pour <world>
     cancelled-rendering: Le rendu de la map <world> a été intérrompu
     resumed-rendering: Le rendu de la map <world> a recontinuer
@@ -129,9 +128,8 @@ log:
     internal-web-stopped: Le serveur Web interne s'est arrêté
     internal-web-start-error: Le serveur Web interne n'a pas démarré
     could-not-create-directory: Impossible de crée le dossier ! <path>
-    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
-        It will be overwritten.
-    could-not-save-region: Impossible d'enregistrer la carte pour la région <x>,<z>
+    could-not-read-image: Impossible de lire l'image de la carte '<path>' (image corrompue ?). Elle sera écrasée.
+    could-not-save-image: Impossible d'enregistrer l'image de la carte dans '<path>'
     internal-web-not-running: Une erreur s'est produite avec le serveur Web interne
     update-checker:
         fetching-version-information: Fetching version information...

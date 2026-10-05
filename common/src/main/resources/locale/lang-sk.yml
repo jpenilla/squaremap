@@ -108,8 +108,8 @@ ui:
 log:
     started-full-render: Spustené vykresľovanie celej mapy pre <world>
     started-radius-render: Spustené vykresľovanie mapy v polomeru pre <world>
-    scanning-region-files: Skenovanie súborov oblastí... (môže to chvíľu trvať)
-    found-total-region-files: Celkovo nájdených <total> súborov oblastí
+    scanning-region-files: Skenovanie súborov oblastí pre <world>... (môže to chvíľu trvať)
+    found-total-region-files: Celkovo nájdených <total> súborov oblastí pre <world>
     finished-rendering: Dokončené vykresľovanie mapy pre <world>
     cancelled-rendering: Vykresľovanie mapy pre <world> bolo prerušené
     resumed-rendering: Obnovilo sa vykresľovanie mapy pre <world>
@@ -123,9 +123,8 @@ log:
     internal-web-stopped: Interný webserver je zastavený
     internal-web-start-error: Interný webserver sa nepodarilo spustiť
     could-not-create-directory: Adresár <path> sa nepodarilo vytvoriť!
-    could-not-read-region: Nepodarilo sa načítať obrázok mapy pre oblasť <x>,<z> (obrázok je poškodený?).
-        Bude prepísaný.
-    could-not-save-region: Nepodarilo sa uložiť mapu pre oblasť <x>,<z>
+    could-not-read-image: Nepodarilo sa načítať obrázok mapy '<path>' (obrázok je poškodený?). Bude prepísaný.
+    could-not-save-image: Nepodarilo sa uložiť obrázok mapy do '<path>'
     internal-web-not-running: Došlo k chybe interného webservera
     update-checker:
         fetching-version-information: Získavanie informácií o verzii...

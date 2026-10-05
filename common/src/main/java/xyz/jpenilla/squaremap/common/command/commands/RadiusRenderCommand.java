@@ -53,14 +53,11 @@ public final class RadiusRenderCommand extends SquaremapCommand {
             center = new BlockPos(0, 0, 0);
         }
 
-        if (world.renderManager().isRendering()) {
+        if (!world.renderScheduler().startRadiusRender(center, radius)) {
             sender.sendMessage(Messages.RENDER_IN_PROGRESS.withPlaceholders(Components.worldPlaceholder(world)));
             return;
         }
 
         sender.sendMessage(Components.miniMessage(Messages.LOG_STARTED_RADIUSRENDER, Components.worldPlaceholder(world)));
-        world.renderManager().startRender(
-            context.get(Commands.RENDER_FACTORY).createRadiusRender(world, center, radius)
-        );
     }
 }

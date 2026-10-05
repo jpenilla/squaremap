@@ -12,7 +12,7 @@ import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
-import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
+import xyz.jpenilla.squaremap.common.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.web.MarkerDataPublisher;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 

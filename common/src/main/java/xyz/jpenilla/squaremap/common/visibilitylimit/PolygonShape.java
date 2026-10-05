@@ -54,23 +54,6 @@ final class PolygonShape implements VisibilityShape {
         return this.contains(blockX, blockZ);
     }
 
-    @Override
-    public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
-        final int minX = CoordinateConversions.regionToChunk(regionX);
-        final int minZ = CoordinateConversions.regionToChunk(regionZ);
-        final int maxX = minX + 32;
-        final int maxZ = minZ + 32;
-        int count = 0;
-        for (int x = minX; x < maxX; x++) {
-            for (int z = minZ; z < maxZ; z++) {
-                if (this.shouldRenderChunk(world, x, z)) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
     private boolean contains(final double x, final double y) {
         final int npoints = this.points.size();
 

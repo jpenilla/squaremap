@@ -109,8 +109,8 @@ ui:
 log:
     started-full-render: Начато создание карты всего мира <world>
     started-radius-render: Начато создание карты в радиусе для мира <world>
-    scanning-region-files: Сканирование файлов регионов...
-    found-total-region-files: Найдено <total> файлов регионов
+    scanning-region-files: Сканирование файлов регионов для <world>... (это может занять некоторое время)
+    found-total-region-files: Найдено <total> файлов регионов для <world>
     finished-rendering: Завершено создание карты для <world>
     cancelled-rendering: Создание карты для <world> было прервано
     resumed-rendering: Создание карты для <world> было возобновлено
@@ -124,9 +124,8 @@ log:
     internal-web-stopped: Внутренний веб-сервер остановлен
     internal-web-start-error: Не удалось запустить внутренний веб-сервер
     could-not-create-directory: Не удалось создать папку! <path>
-    could-not-read-region: Не удалось прочитать изображение карты для региона <x>, <z> (изображение повреждено?).
-        Она будет перезаписана.
-    could-not-save-region: Не удалось сохранить карту для региона <x>,<z>
+    could-not-read-image: Не удалось прочитать изображение карты '<path>' (изображение повреждено?). Оно будет перезаписано.
+    could-not-save-image: Не удалось сохранить изображение карты в '<path>'
     internal-web-not-running: Ошибка внутреннего веб-сервера
     update-checker:
         fetching-version-information: Получение информации о версии...

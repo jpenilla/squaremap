@@ -104,8 +104,8 @@ ui:
 log:
     started-full-render: 開始世界 <world> 的完整渲染
     started-radius-render: 開始世界 <world> 的半徑渲染
-    scanning-region-files: 正在掃描區域文件... (這可能需要一點時間)
-    found-total-region-files: 共找到 <total> 個區域文件
+    scanning-region-files: 正在掃描世界 <world> 的區域文件... (這可能需要一點時間)
+    found-total-region-files: 世界 <world> 共找到 <total> 個區域文件
     finished-rendering: 世界 <world> 的渲染已完成
     cancelled-rendering: 世界 <world> 的渲染已取消
     resumed-rendering: 世界 <world> 的渲染已恢復
@@ -119,8 +119,8 @@ log:
     internal-web-stopped: 內部Web伺服器已停止
     internal-web-start-error: 內部Web伺服器無法啟動
     could-not-create-directory: 無法創建目錄! <path>
-    could-not-read-region: 無法讀取 <x>,<z> 區域的地圖圖片 (已損壞?) 它將被覆蓋
-    could-not-save-region: 無法保存 <x>,<z> 區域的地圖
+    could-not-read-image: 無法讀取地圖圖片 '<path>' (已損壞?) 它將被覆蓋
+    could-not-save-image: 無法將地圖圖片保存到 '<path>'
     internal-web-not-running: 內部Web伺服器發生錯誤
     update-checker:
         fetching-version-information: 正在獲取版本資訊...

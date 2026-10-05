@@ -66,7 +66,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         Config.toggleProgressLogging();
 
         this.worldManager.worlds()
-            .forEach(mapWorld -> mapWorld.renderManager().restartRenderProgressLogging());
+            .forEach(mapWorld -> mapWorld.renderScheduler().restartRenderProgressLogging());
 
         final ComponentLike message;
         if (Config.PROGRESS_LOGGING) {
@@ -87,7 +87,7 @@ public final class ProgressLoggingCommand extends SquaremapCommand {
         Config.setLoggingInterval(seconds);
 
         this.worldManager.worlds()
-            .forEach(mapWorld -> mapWorld.renderManager().restartRenderProgressLogging());
+            .forEach(mapWorld -> mapWorld.renderScheduler().restartRenderProgressLogging());
 
         context.sender().sendMessage(Messages.PROGRESSLOGGING_SET_RATE_MESSAGE.withPlaceholders(Components.placeholder("seconds", seconds)));
     }

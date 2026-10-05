@@ -71,19 +71,4 @@ final class RectangleShape implements VisibilityShape {
         return blockX >= this.minBlockX && blockX <= this.maxBlockX
             && blockZ >= this.minBlockZ && blockZ <= this.maxBlockZ;
     }
-
-    @Override
-    public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
-        int regionMinChunkX = CoordinateConversions.regionToChunk(regionX);
-        int regionMaxChunkX = CoordinateConversions.regionToChunk(regionX + 1) - 1;
-        int regionMinChunkZ = CoordinateConversions.regionToChunk(regionZ);
-        int regionMaxChunkZ = CoordinateConversions.regionToChunk(regionZ + 1) - 1;
-
-        int chunkWidth = Math.min(regionMaxChunkX, this.maxChunkX) - Math.max(regionMinChunkX, this.minChunkX) + 1;
-        int chunkHeight = Math.min(regionMaxChunkZ, this.maxChunkZ) - Math.max(regionMinChunkZ, this.minChunkZ) + 1;
-        if (chunkWidth < 0 || chunkHeight < 0) {
-            return 0;
-        }
-        return chunkWidth * chunkHeight;
-    }
 }

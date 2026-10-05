@@ -5,47 +5,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
 import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
 
 public final class VisibilityLimitImpl implements VisibilityLimit {
-    private static final int REGION_SIZE_CHUNKS = CoordinateConversions.regionToChunk(1);
     private final List<VisibilityShape> shapes = new CopyOnWriteArrayList<>();
     private final MapWorld world;
 
     public VisibilityLimitImpl(MapWorld world) {
         this.world = world;
-    }
-
-    /**
-     * Counts the amount of chunks in the region for which
-     * {@link #shouldRenderChunk(int, int)} returns {@code true}.
-     *
-     * @param region The region.
-     * @return The amount of chunks, from 0 to {@link #REGION_SIZE_CHUNKS} *
-     * {@link #REGION_SIZE_CHUNKS}.
-     */
-    public int countChunksInRegion(final @NonNull RegionCoordinate region) {
-        return switch (this.shapes.size()) {
-            case 0 -> REGION_SIZE_CHUNKS * REGION_SIZE_CHUNKS;
-            case 1 -> this.shapes.get(0).countChunksInRegion(world, region.x(), region.z());
-            default -> {
-                // multiple shapes overlap - need to check each chunk individually
-
-                int chunkXStart = region.getChunkX();
-                int chunkZStart = region.getChunkZ();
-
-                int count = 0;
-                for (int i = 0; i < REGION_SIZE_CHUNKS; i++) {
-                    for (int j = 0; j < REGION_SIZE_CHUNKS; j++) {
-                        if (this.shouldRenderChunk(chunkXStart + i, chunkZStart + j)) {
-                            count++;
-                        }
-                    }
-                }
-                yield count;
-            }
-        };
     }
 
     @Override
@@ -67,6 +34,20 @@ public final class VisibilityLimitImpl implements VisibilityLimit {
             }
             this.shapes.add(shape);
         }
+    }
+
+    /**
+     * Copies the configured visibility shapes, replacing world-border shapes with their
+     * current bounds so later border changes do not affect the render job's visibility checks.
+     *
+     * @return the snapshot
+     */
+    public VisibilityLimitImpl snapshot() {
+        final VisibilityLimitImpl snapshot = new VisibilityLimitImpl(this.world);
+        snapshot.load(this.shapes.stream()
+            .map(shape -> shape instanceof WorldBorderShape border ? border.snapshot(this.world) : shape)
+            .toList());
+        return snapshot;
     }
 
     public boolean shouldRenderChunk(final ChunkCoordinate chunkCoord) {

@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.data;
+package xyz.jpenilla.squaremap.common.render.scanning;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMaps;
@@ -8,14 +8,15 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
 import xyz.jpenilla.squaremap.common.SquaremapDirectories;
+import xyz.jpenilla.squaremap.common.config.WorldAdvanced;
 import xyz.jpenilla.squaremap.common.util.Colors;
 import xyz.jpenilla.squaremap.common.util.MinecraftRegistries;
-import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
-public record LevelBiomeColorData(
+public record BiomeColorTables(
     Reference2IntMap<Biome> grassColors,
     Reference2IntMap<Biome> foliageColors,
     Reference2IntMap<Biome> waterColors
@@ -39,12 +40,12 @@ public record LevelBiomeColorData(
         MAP_FOLIAGE = toArray(imgFoliage);
     }
 
-    public static LevelBiomeColorData create(final MapWorldInternal world) {
+    public static BiomeColorTables create(final ServerLevel level, final WorldAdvanced advanced) {
         final Reference2IntMap<Biome> grassColors = new Reference2IntOpenHashMap<>();
         final Reference2IntMap<Biome> foliageColors = new Reference2IntOpenHashMap<>();
         final Reference2IntMap<Biome> waterColors = new Reference2IntOpenHashMap<>();
 
-        for (final Biome biome : MinecraftRegistries.biomeRegistry(world.serverLevel())) {
+        for (final Biome biome : MinecraftRegistries.biomeRegistry(level)) {
             float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
             float humidity = Mth.clamp(downfall(biome), 0.0F, 1.0F);
             grassColors.put(
@@ -65,11 +66,11 @@ public record LevelBiomeColorData(
             );
         }
 
-        grassColors.putAll(world.advanced().COLOR_OVERRIDES_BIOME_GRASS);
-        foliageColors.putAll(world.advanced().COLOR_OVERRIDES_BIOME_FOLIAGE);
-        waterColors.putAll(world.advanced().COLOR_OVERRIDES_BIOME_WATER);
+        grassColors.putAll(advanced.COLOR_OVERRIDES_BIOME_GRASS);
+        foliageColors.putAll(advanced.COLOR_OVERRIDES_BIOME_FOLIAGE);
+        waterColors.putAll(advanced.COLOR_OVERRIDES_BIOME_WATER);
 
-        return new LevelBiomeColorData(
+        return new BiomeColorTables(
             Reference2IntMaps.unmodifiable(grassColors),
             Reference2IntMaps.unmodifiable(foliageColors),
             Reference2IntMaps.unmodifiable(waterColors)
