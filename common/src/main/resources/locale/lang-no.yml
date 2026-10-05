@@ -111,8 +111,8 @@ ui:
 log:
     started-full-render: Startet full rendring for <world>
     started-radius-render: Startet radiusrendring for <world>
-    scanning-region-files: Skanner regionfiler... (dette kan ta et øyeblikk)
-    found-total-region-files: Funnet <total> regionfiler
+    scanning-region-files: Skanner regionfiler for <world>... (dette kan ta et øyeblikk)
+    found-total-region-files: Fant <total> regionfiler for <world>
     finished-rendering: Fullført rendring av kart for <world>
     cancelled-rendering: Rendring av kart for <world> har blitt avbrutt
     resumed-rendering: Rendring av kart for <world> har blitt gjenopptatt
@@ -126,9 +126,8 @@ log:
     internal-web-stopped: Intern webserver stoppet
     internal-web-start-error: Intern webserver kunne ikke starte
     could-not-create-directory: Kunne ikke opprette mappe! <path>
-    could-not-read-region: Kunne ikke lese kartbilde for region <x>,<z> (bildet ødelagt?).
-        Den vil bli overskrevet.
-    could-not-save-region: Kunne ikke lagre kartet for regionen <x>,<z>
+    could-not-read-image: Kunne ikke lese kartbildet '<path>' (bildet ødelagt?). Det vil bli overskrevet.
+    could-not-save-image: Kunne ikke lagre kartbildet til '<path>'
     internal-web-not-running: Det oppsto en feil med den interne webserveren
     update-checker:
         fetching-version-information: Fetching version information...

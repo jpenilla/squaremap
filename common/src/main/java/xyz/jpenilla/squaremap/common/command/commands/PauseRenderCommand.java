@@ -36,9 +36,9 @@ public final class PauseRenderCommand extends SquaremapCommand {
         final Commander sender = context.sender();
         final MapWorldInternal world = CommandWorldResolver.resolveWorld(context);
 
-        world.renderManager().pauseRenders(!world.renderManager().rendersPaused());
+        world.renderScheduler().pauseRenders(!world.renderScheduler().rendersPaused());
 
-        if (world.renderManager().rendersPaused()) {
+        if (world.renderScheduler().rendersPaused()) {
             sender.sendMessage(Messages.PAUSED_RENDER.withPlaceholders(Components.worldPlaceholder(world)));
         } else {
             sender.sendMessage(Messages.UNPAUSED_RENDER.withPlaceholders(Components.worldPlaceholder(world)));

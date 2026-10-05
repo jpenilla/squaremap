@@ -10,7 +10,6 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.command.PlayerCommander;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.text.Components;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
@@ -19,15 +18,9 @@ import static xyz.jpenilla.squaremap.common.command.argument.parser.MapWorldPars
 
 @DefaultQualifier(NonNull.class)
 public final class FullRenderCommand extends SquaremapCommand {
-    private final RenderFactory renderFactory;
-
     @Inject
-    private FullRenderCommand(
-        final Commands commands,
-        final RenderFactory renderFactory
-    ) {
+    private FullRenderCommand(final Commands commands) {
         super(commands);
-        this.renderFactory = renderFactory;
     }
 
     @Override
@@ -43,7 +36,7 @@ public final class FullRenderCommand extends SquaremapCommand {
     private void executeFullRender(final CommandContext<Commander> context) {
         final Commander sender = context.sender();
         final MapWorldInternal world = CommandWorldResolver.resolveWorld(context);
-        if (world.renderManager().isRendering()) {
+        if (!world.renderScheduler().startFullRender()) {
             sender.sendMessage(Messages.RENDER_IN_PROGRESS.withPlaceholders(Components.worldPlaceholder(world)));
             return;
         }
@@ -51,6 +44,5 @@ public final class FullRenderCommand extends SquaremapCommand {
         if (sender instanceof PlayerCommander) {
             sender.sendMessage(Components.miniMessage(Messages.LOG_STARTED_FULLRENDER, Components.worldPlaceholder(world)));
         }
-        world.renderManager().startRender(this.renderFactory.createFullRender(world));
     }
 }

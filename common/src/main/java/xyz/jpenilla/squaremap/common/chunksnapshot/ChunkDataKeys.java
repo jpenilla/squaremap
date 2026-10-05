@@ -1,6 +1,8 @@
 package xyz.jpenilla.squaremap.common.chunksnapshot;
 
-/** Chunk NBT keys for which Minecraft does not expose constants. */
+/**
+ * Chunk NBT keys for which Minecraft does not expose constants.
+ */
 public final class ChunkDataKeys {
     public static final String RETROGEN = "below_zero_retrogen";
     public static final String STATUS = "Status";
