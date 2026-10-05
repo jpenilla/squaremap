@@ -14,7 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
-import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
+import xyz.jpenilla.squaremap.common.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.util.concurrent.ExceptionLoggingScheduledThreadPoolExecutor;
 import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 import xyz.jpenilla.squaremap.common.web.MarkerDataPublisher;

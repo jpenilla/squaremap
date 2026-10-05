@@ -112,8 +112,8 @@ ui:
 log:
     started-full-render: Comenzó el renderizado completo del mapa <world>
     started-radius-render: Comenzó el renderizado por radio del mapa <world>
-    scanning-region-files: Escaneando archivos de regiones...
-    found-total-region-files: Encontrados <total> archivos de regiones
+    scanning-region-files: Escaneando archivos de regiones de <world>... (esto puede tardar un momento)
+    found-total-region-files: Encontrados <total> archivos de regiones de <world>
     finished-rendering: Ha finalizado el renderizado del mapa <world>
     cancelled-rendering: Renderizando del mapa <world> ha sido interrumpido
     resumed-rendering: Renderizando del mapa <world> ha sido reanudado
@@ -127,9 +127,8 @@ log:
     internal-web-stopped: Servidor web interno detenido
     internal-web-start-error: El servidor web interno no pudo iniciarse
     could-not-create-directory: No se pudo crear el directorio <path>
-    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
-        It will be overwritten.
-    could-not-save-region: No se pudo guardar el mapa para la región <x>,<z>
+    could-not-read-image: No se pudo leer la imagen del mapa '<path>' (¿imagen corrupta?). Se sobrescribirá.
+    could-not-save-image: No se pudo guardar la imagen del mapa en '<path>'
     internal-web-not-running: Se ha producido un error con el servidor web interno
     update-checker:
         fetching-version-information: Fetching version information...

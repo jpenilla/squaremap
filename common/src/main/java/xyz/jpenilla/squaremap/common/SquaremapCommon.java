@@ -18,8 +18,8 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.data.LevelBiomeColorData;
 import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
+import xyz.jpenilla.squaremap.common.render.scanning.BiomeColorTables;
 import xyz.jpenilla.squaremap.common.updatechecker.UpdateChecker;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
@@ -75,7 +75,7 @@ public final class SquaremapCommon {
 
     private void start() {
         this.squaremapJar.extract("web", this.directories.webDirectory(), Config.UPDATE_WEB_DIR);
-        LevelBiomeColorData.loadImages(this.directories);
+        BiomeColorTables.loadImages(this.directories);
         this.worldManager.start();
         this.platform.startCallback();
         if (Config.HTTPD_ENABLED) {

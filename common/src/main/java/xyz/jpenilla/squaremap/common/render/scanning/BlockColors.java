@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.common.data;
+package xyz.jpenilla.squaremap.common.render.scanning;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMaps;
@@ -8,6 +8,8 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
@@ -16,16 +18,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.config.WorldAdvanced;
 import xyz.jpenilla.squaremap.common.util.Colors;
-import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
 public final class BlockColors {
     private final Reference2IntMap<Block> staticColorMap;
     private final Reference2ObjectMap<Block, DynamicColorGetter> dynamicColorMap;
 
-    private BlockColors(final MapWorldInternal world) {
-        final Reference2IntMap<Block> staticColors = new Reference2IntOpenHashMap<>(world.advanced().COLOR_OVERRIDES_BLOCKS);
+    public BlockColors(final WorldAdvanced advanced) {
+        final Reference2IntMap<Block> staticColors = new Reference2IntOpenHashMap<>(advanced.COLOR_OVERRIDES_BLOCKS);
         staticColors.defaultReturnValue(-1);
         this.staticColorMap = Reference2IntMaps.unmodifiable(staticColors);
 
@@ -43,11 +45,10 @@ public final class BlockColors {
     }
 
     /**
-     * Get a special color for a {@link BlockState}, if it exists. Will return -1 if there
-     * is no special color for the provided {@link BlockState}.
+     * Returns a configured or state-dependent block color, falling back to the vanilla map color.
      *
-     * @param state {@link BlockState} to test
-     * @return special color, or -1
+     * @param state the block state
+     * @return the map color
      */
     public int color(final BlockState state) {
         final Block block = state.getBlock();
@@ -59,10 +60,18 @@ public final class BlockColors {
 
         final @Nullable DynamicColorGetter func = this.dynamicColorMap.get(block);
         if (func != null) {
-            return func.color(state);
+            final int dynamicColor = func.color(state);
+            if (dynamicColor != -1) {
+                return dynamicColor;
+            }
         }
 
-        return -1;
+        // getMapColor params are never used by vanilla - check on update
+        // They are however used by certain mods like framed blocks, so we pass dummy values to avoid errors.
+        // Proper framed blocks compatibility would require including block entities in the snapshot and passing the real position.
+        // We would probably want to whitelist block entity types for performance and safety reasons.
+        // Generally, we can't support 100% of possible modded uses of these parameters because of our off-main-thread chunk snapshot use.
+        return Colors.rgb(state.getMapColor(EmptyBlockGetter.INSTANCE, BlockPos.ZERO));
     }
 
     private static int melonAndPumpkinStem(final BlockState state) {
@@ -76,10 +85,6 @@ public final class BlockColors {
     private static int wheat(final BlockState state) {
         float factor = (state.getValue(CropBlock.AGE) + 1) / 8F;
         return Colors.mix(Colors.plantMapColor(), 0xDCBB65, factor);
-    }
-
-    public static BlockColors create(final MapWorldInternal mapWorld) {
-        return new BlockColors(mapWorld);
     }
 
     @FunctionalInterface

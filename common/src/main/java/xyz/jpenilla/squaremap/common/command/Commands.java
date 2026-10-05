@@ -28,7 +28,6 @@ import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.server.ServerAccess;
-import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.world.WorldManager;
 
 @DefaultQualifier(NonNull.class)
@@ -36,7 +35,6 @@ import xyz.jpenilla.squaremap.common.world.WorldManager;
 public final class Commands {
     public static final CloudKey<AbstractPlayerManager> PLAYER_MANAGER = createTypeKey(AbstractPlayerManager.class);
     public static final CloudKey<ServerAccess> SERVER_ACCESS = createTypeKey(ServerAccess.class);
-    public static final CloudKey<RenderFactory> RENDER_FACTORY = createTypeKey(RenderFactory.class);
     public static final CloudKey<ConfigManager> CONFIG_MANAGER = createTypeKey(ConfigManager.class);
     public static final CloudKey<WorldManager> WORLD_MANAGER = createTypeKey(WorldManager.class);
 
@@ -50,7 +48,6 @@ public final class Commands {
         final ExceptionHandler exceptionHandler,
         final AbstractPlayerManager playerManager,
         final ServerAccess serverAccess,
-        final RenderFactory renderFactory,
         final ConfigManager configManager,
         final WorldManager worldManager
     ) {
@@ -61,7 +58,6 @@ public final class Commands {
             final CommandContext<Commander> commandContext = preprocessContext.commandContext();
             commandContext.store(PLAYER_MANAGER, playerManager);
             commandContext.store(SERVER_ACCESS, serverAccess);
-            commandContext.store(RENDER_FACTORY, renderFactory);
             commandContext.store(CONFIG_MANAGER, configManager);
             commandContext.store(WORLD_MANAGER, worldManager);
         });

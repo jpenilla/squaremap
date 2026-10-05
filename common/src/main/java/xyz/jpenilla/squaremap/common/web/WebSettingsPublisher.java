@@ -137,7 +137,7 @@ public final class WebSettingsPublisher implements Runnable {
         settings.put("player_tracker", playerTracker);
         settings.put("zoom", zoom);
         settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
-        settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER_INTERVAL_SECONDS);
+        settings.put("tiles_update_interval", worldConfig.BACKGROUND_RENDER.intervalSeconds);
 
         Json.writeAsync(mapWorld.tilesPath().resolve("settings.json"), settings);
     }

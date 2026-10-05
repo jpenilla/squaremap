@@ -110,8 +110,8 @@ ui:
 log:
     started-full-render: Pokrenut potpuni render karte za svijet <world>
     started-radius-render: Pokrenut render karte na određenom području za svijet <world>
-    scanning-region-files: Skeniranje region fajlova...
-    found-total-region-files: Pronađeno <total> region fajla/ova
+    scanning-region-files: Skeniranje region fajlova za svijet <world>... (ovo može potrajati)
+    found-total-region-files: Pronađeno <total> region fajla/ova za svijet <world>
     finished-rendering: Završeno renderovanje karte za svijet <world>
     cancelled-rendering: Renderovanje karte za svijet <world> je prekinuto
     resumed-rendering: Renderovanje karte za svijet <world> je nastavljeno
@@ -125,9 +125,8 @@ log:
     internal-web-stopped: Interni webserver zaustavljen
     internal-web-start-error: Interni webserver se ne može pokrenuti
     could-not-create-directory: Nije moguće napraviti direktorij! <path>
-    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
-        It will be overwritten.
-    could-not-save-region: Karta za regiju <x>,<z> se nije uspjela spremiti
+    could-not-read-image: Nije moguće pročitati sliku karte '<path>' (slika oštećena?). Bit će prepisana.
+    could-not-save-image: Nije moguće spremiti sliku karte u '<path>'
     internal-web-not-running: Desila se greška sa internim webserverom
     update-checker:
         fetching-version-information: Fetching version information...

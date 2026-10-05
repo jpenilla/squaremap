@@ -111,8 +111,8 @@ ui:
 log:
     started-full-render: Volledige kaart render voor <world> gestart
     started-radius-render: Straal kaart render voor <world> gestart
-    scanning-region-files: Scannen van regiobestanden...
-    found-total-region-files: <total> regiobestanden gevonden
+    scanning-region-files: Scannen van regiobestanden voor <world>... (dit kan even duren)
+    found-total-region-files: <total> regiobestanden gevonden voor <world>
     finished-rendering: Klaar met renderen van <world>
     cancelled-rendering: Rendering kaart voor <world> is onderbroken
     resumed-rendering: Rendering kaart voor <world> is hervat
@@ -126,9 +126,8 @@ log:
     internal-web-stopped: Interne webserver gestopt
     internal-web-start-error: Interne webserver kon niet starten
     could-not-create-directory: Kon map niet aanmaken! <path>
-    could-not-read-region: Could not read map image for region <x>,<z> (image corrupted?).
-        It will be overwritten.
-    could-not-save-region: Kan de kaart voor regio <x>,<z> niet opslaan
+    could-not-read-image: Kon kaartafbeelding '<path>' niet lezen (afbeelding beschadigd?). Deze wordt overschreven.
+    could-not-save-image: Kon kaartafbeelding niet opslaan in '<path>'
     internal-web-not-running: Er is een fout opgetreden met de interne webserver
     update-checker:
         fetching-version-information: Fetching version information...

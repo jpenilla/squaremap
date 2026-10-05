@@ -57,6 +57,8 @@ dependencies {
   testImplementation(platform(libs.junitBom))
   testImplementation(libs.junitJupiter)
   testRuntimeOnly(libs.junitLauncher)
+  testRuntimeOnly(libs.adventureApi)
+  testRuntimeOnly(libs.miniMessage)
 }
 
 @UntrackedTask(because = "Up-to-date checking for this needs further thought")

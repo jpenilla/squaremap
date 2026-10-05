@@ -224,9 +224,9 @@ public final class Messages {
     @MessageKey("log.started-radius-render")
     public static String LOG_STARTED_RADIUSRENDER = "Started radius map render for <world>";
     @MessageKey("log.scanning-region-files")
-    public static String LOG_SCANNING_REGION_FILES = "Scanning region files... (this may take a moment)";
+    public static String LOG_SCANNING_REGION_FILES = "Scanning region files for <world>... (this may take a moment)";
     @MessageKey("log.found-total-region-files")
-    public static String LOG_FOUND_TOTAL_REGION_FILES = "Found <total> region files";
+    public static String LOG_FOUND_TOTAL_REGION_FILES = "Found <total> region files for <world>";
     @MessageKey("log.finished-rendering")
     public static String LOG_FINISHED_RENDERING = "Finished rendering map for <world>";
     @MessageKey("log.cancelled-rendering")
@@ -249,10 +249,10 @@ public final class Messages {
     public static String LOG_INTERNAL_WEB_START_ERROR = "Internal webserver could not start";
     @MessageKey("log.could-not-create-directory")
     public static String LOG_COULD_NOT_CREATE_DIR = "Could not create directory! <path>";
-    @MessageKey("log.could-not-read-region")
-    public static String LOG_COULD_NOT_READ_REGION = "Could not read map image for region <x>,<z> (image corrupted?). It will be overwritten.";
-    @MessageKey("log.could-not-save-region")
-    public static String LOG_COULD_NOT_SAVE_REGION = "Could not save map for region <x>,<z>";
+    @MessageKey("log.could-not-read-image")
+    public static String LOG_COULD_NOT_READ_IMAGE = "Could not read map image '<path>' (image corrupted?). It will be overwritten.";
+    @MessageKey("log.could-not-save-image")
+    public static String LOG_COULD_NOT_SAVE_IMAGE = "Could not save map image to '<path>'";
     @MessageKey("log.internal-web-not-running")
     public static String LOG_INTERNAL_WEB_STOP_ERROR = "An error occurred with the internal webserver";
 

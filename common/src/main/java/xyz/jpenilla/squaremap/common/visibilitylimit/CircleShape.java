@@ -12,7 +12,6 @@ import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
 final class CircleShape implements VisibilityShape {
     private static final int REGION_SIZE_BLOCKS = CoordinateConversions.regionToBlock(1);
     private static final int CHUNK_SIZE_BLOCKS = CoordinateConversions.chunkToBlock(1);
-    private static final int REGION_SIZE_CHUNKS = CoordinateConversions.regionToChunk(1);
 
     private final int centerX;
     private final int centerZ;
@@ -82,32 +81,5 @@ final class CircleShape implements VisibilityShape {
 
         long distanceSquared = (long) (blockX - this.centerX) * (blockX - this.centerX) + (long) (blockZ - this.centerZ) * (blockZ - this.centerZ);
         return distanceSquared <= this.radiusSquared;
-    }
-
-    @Override
-    public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
-        int chunkXStart = CoordinateConversions.regionToChunk(regionX);
-        int chunkZStart = CoordinateConversions.regionToChunk(regionZ);
-        if (this.shouldRenderChunk(world, chunkXStart, chunkZStart)
-            && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart)
-            && this.shouldRenderChunk(world, chunkXStart, chunkZStart + REGION_SIZE_CHUNKS - 1)
-            && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart + REGION_SIZE_CHUNKS - 1)) {
-            // we need to render all four corners, so that means we need to render the
-            // entire region
-            // (note: this only works because the visibility limit is one single circle)
-            return REGION_SIZE_CHUNKS * REGION_SIZE_CHUNKS;
-        }
-
-        // check each chunk individually
-        int count = 0;
-        for (int i = 0; i < REGION_SIZE_CHUNKS; i++) {
-            for (int j = 0; j < REGION_SIZE_CHUNKS; j++) {
-                if (this.shouldRenderChunk(world, chunkXStart + i, chunkZStart + j)) {
-                    count++;
-                }
-            }
-        }
-        return count;
-
     }
 }
