@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.SharedConstants;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -85,9 +87,10 @@ public final class ChunkSnapshotFactory {
     /**
      * Decodes a snapshot directly from saved chunk data without loading a live chunk.
      *
-     * <p>The caller must supply independently owned NBT already upgraded to the current
-     * data version and classified as {@link ChunkSnapshotEligibility#ELIGIBLE}. This method
-     * does not check generation status or complete retrogen and may run off-thread.</p>
+     * <p>The caller must supply NBT already upgraded to the current data version and classified
+     * as {@link ChunkSnapshotEligibility#ELIGIBLE}. The data is only read, so it may be shared
+     * with other readers, but must not be mutated while this runs. This method does not check
+     * generation status or complete retrogen and may run off-thread.</p>
      *
      * @param levelHeight the level's vertical bounds
      * @param dimensionType the level's dimension type
@@ -149,6 +152,23 @@ public final class ChunkSnapshotFactory {
             dimensionType,
             chunkPos
         );
+    }
+
+    /**
+     * Returns chunk data that is safe to pass to an in-place chunk tag upgrade.
+     *
+     * <p>Chunk data read without copying may be shared with other readers. Upgrading mutates
+     * outdated data, so it is copied first; current data is not touched by the upgrade and is
+     * returned as-is.</p>
+     *
+     * @param chunkData the possibly shared chunk data
+     * @return chunk data the caller may upgrade
+     */
+    public static CompoundTag ownedForUpgrade(final CompoundTag chunkData) {
+        if (NbtUtils.getDataVersion(chunkData, -1) < SharedConstants.getCurrentVersion().dataVersion().version()) {
+            return chunkData.copy();
+        }
+        return chunkData;
     }
 
     public static boolean chunkPosMatches(final CompoundTag chunkData, final int x, final int z) {

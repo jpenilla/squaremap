@@ -9,6 +9,7 @@ import ca.spottedleaf.moonrise.patches.chunk_system.scheduling.ChunkTaskSchedule
 import ca.spottedleaf.moonrise.patches.chunk_system.scheduling.NewChunkHolder;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
@@ -84,18 +85,15 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         final ChunkMapAccess chunkMapAccess = (ChunkMapAccess) this.level.getChunkSource().chunkMap;
         final ChunkTaskScheduler scheduler = ((ChunkSystemServerLevel) this.level).moonrise$getChunkTaskScheduler();
         final Executor executor = task -> scheduler.loadExecutor.createTask(task, Priority.NORMAL).queue();
-        final CompletableFuture<@Nullable CompoundTag> upgraded = data.thenApplyAsync(
-            tag -> tag == null ? null : chunkMapAccess.squaremap$upgradeChunkTag(tag),
-            executor
-        );
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(this.level.getMinY(), this.level.getHeight());
         final PalettedContainerFactory palettedContainerFactory = this.level.palettedContainerFactory();
         final DimensionType dimensionType = this.level.dimensionType();
-        return upgraded.thenComposeAsync(
-            tag -> {
-                if (tag == null) {
+        return data.thenComposeAsync(
+            rawTag -> {
+                if (rawTag == null) {
                     return CompletableFuture.completedFuture(null);
                 }
+                final CompoundTag tag = chunkMapAccess.squaremap$upgradeChunkTag(ChunkSnapshotFactory.ownedForUpgrade(rawTag));
                 final ChunkStatus status = tag.read(ChunkDataKeys.STATUS, ChunkStatus.CODEC).orElse(ChunkStatus.EMPTY);
                 final @Nullable BelowZeroRetrogen retroGen = tag.read(ChunkDataKeys.RETROGEN, BelowZeroRetrogen.CODEC).orElse(null);
                 return switch (ChunkSnapshotEligibility.get(status, retroGen)) {
@@ -175,7 +173,8 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
             x,
             z,
             MoonriseRegionFileIO.RegionFileType.CHUNK_DATA,
-            (tag, error) -> {
+            // The data is only read (and copied before any upgrade), so skip Moonrise's defensive copy.
+            (BiConsumer<CompoundTag, Throwable> & MoonriseRegionFileIO.NoCopyNBTData) (tag, error) -> {
                 if (error != null) {
                     data.completeExceptionally(error);
                 } else {

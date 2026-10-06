@@ -70,18 +70,16 @@ record PaperChunkSnapshotProvider(
         final ChunkMap chunkMap = this.level.getChunkSource().chunkMap;
         final ChunkTaskScheduler scheduler = this.level.moonrise$getChunkTaskScheduler();
         final Executor executor = task -> scheduler.loadExecutor.createTask(task, Priority.NORMAL).queue();
-        final CompletableFuture<@Nullable CompoundTag> upgraded = data.thenApplyAsync(
-            tag -> tag == null ? null : chunkMap.upgradeChunkTag(tag),
-            executor
-        );
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(this.level.getMinY(), this.level.getHeight());
         final PalettedContainerFactory palettedContainerFactory = this.level.palettedContainerFactory();
         final DimensionType dimensionType = this.level.dimensionType();
-        return upgraded.thenComposeAsync(
-            tag -> {
-                if (tag == null) {
+        return data.thenComposeAsync(
+            rawTag -> {
+                if (rawTag == null) {
                     return CompletableFuture.completedFuture(null);
                 }
+                // Paper's Moonrise copies data for each read, so the tag can be upgraded in place
+                final CompoundTag tag = chunkMap.upgradeChunkTag(rawTag);
                 final ChunkStatus status = tag.read(ChunkDataKeys.STATUS, ChunkStatus.CODEC).orElse(ChunkStatus.EMPTY);
                 final @Nullable BelowZeroRetrogen retroGen = tag.read(ChunkDataKeys.RETROGEN, BelowZeroRetrogen.CODEC).orElse(null);
                 return switch (ChunkSnapshotEligibility.get(status, retroGen)) {
