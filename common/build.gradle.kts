@@ -52,7 +52,7 @@ dependencies {
     isTransitive = false // depends on guava, provided by mc at runtime
   }
 
-  compileOnly("curse.maven:moonrise-1096335:8324171")
+  compileOnly("curse.maven:moonrise-1096335:8986192")
 
   testImplementation(platform(libs.junitBom))
   testImplementation(libs.junitJupiter)
