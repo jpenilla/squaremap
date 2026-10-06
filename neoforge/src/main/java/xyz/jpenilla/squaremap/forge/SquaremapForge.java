@@ -32,7 +32,6 @@ import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.forge.data.ForgeMapWorld;
 import xyz.jpenilla.squaremap.forge.event.ForgeMapUpdates;
 import xyz.jpenilla.squaremap.forge.inject.module.ForgeModule;
-import xyz.jpenilla.squaremap.forge.network.ForgeNetworking;
 
 @DefaultQualifier(NonNull.class)
 @Mod("squaremap")
@@ -62,7 +61,6 @@ public final class SquaremapForge implements SquaremapPlatform {
         this.container = this.injector.getInstance(ModContainer.class);
         this.registerLifecycleListeners();
         this.injector.getInstance(ForgeMapUpdates.class).register();
-        this.injector.getInstance(ForgeNetworking.class).register();
         this.injector.getInstance(ForgePlayerManager.class).setupCapabilities();
     }
 

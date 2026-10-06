@@ -29,7 +29,6 @@ import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.fabric.data.FabricMapWorld;
 import xyz.jpenilla.squaremap.fabric.inject.module.FabricModule;
 import xyz.jpenilla.squaremap.fabric.listener.FabricMapUpdates;
-import xyz.jpenilla.squaremap.fabric.network.FabricNetworking;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapFabric implements SquaremapPlatform {
@@ -58,7 +57,6 @@ public final class SquaremapFabric implements SquaremapPlatform {
         this.serverAccess = this.injector.getInstance(FabricServerAccess.class);
         this.registerLifecycleListeners();
         this.injector.getInstance(FabricMapUpdates.class).register();
-        this.injector.getInstance(FabricNetworking.class).register();
         this.injector.getInstance(FabricPlayerManager.class).setupAttachments();
     }
 

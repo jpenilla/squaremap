@@ -27,7 +27,6 @@ import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
 import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
 import xyz.jpenilla.squaremap.sponge.listener.MapUpdateListener;
 import xyz.jpenilla.squaremap.sponge.listener.WorldLoadListener;
-import xyz.jpenilla.squaremap.sponge.network.SpongeNetworking;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapSponge implements SquaremapPlatform {
@@ -51,7 +50,6 @@ public final class SquaremapSponge implements SquaremapPlatform {
         this.game = game;
         this.injector = injector;
         this.common = injector.getInstance(SquaremapCommon.class);
-        this.game.eventManager().registerListeners(this.pluginContainer, injector.getInstance(SpongeNetworking.class), MethodHandles.lookup());
     }
 
     void init() {

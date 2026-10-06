@@ -8,7 +8,6 @@
     "ChunkMapAccess",
     "CommandSourceStackAccess",
     "SleepBlockingMinecraftServerMixin",
-    "PlayerListMixin",
     "ServerPlayerMixin"
   ],
   "client": [

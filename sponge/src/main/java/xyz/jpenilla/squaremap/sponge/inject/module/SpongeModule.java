@@ -10,7 +10,6 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.adventure.SpongeComponents;
 import org.spongepowered.api.config.ConfigDir;
-import org.spongepowered.api.network.channel.ChannelManager;
 import org.spongepowered.plugin.PluginContainer;
 import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.ServerAccess;
@@ -25,20 +24,17 @@ public final class SpongeModule extends AbstractModule {
     private final Path dataDirectory;
     private final PluginContainer pluginContainer;
     private final Game game;
-    private final ChannelManager channelManager;
 
     // See comment in SquaremapSpongeBootstrap for why we use javax.inject here
     @Inject
     private SpongeModule(
         @ConfigDir(sharedRoot = false) final Path dataDirectory,
         final PluginContainer pluginContainer,
-        final Game game,
-        final ChannelManager channelManager
+        final Game game
     ) {
         this.dataDirectory = dataDirectory;
         this.pluginContainer = pluginContainer;
         this.game = game;
-        this.channelManager = channelManager;
     }
 
     @Override
@@ -61,9 +57,6 @@ public final class SpongeModule extends AbstractModule {
 
         this.bind(Game.class)
             .toInstance(this.game);
-
-        this.bind(ChannelManager.class)
-            .toInstance(this.channelManager);
     }
 
     @Provides
