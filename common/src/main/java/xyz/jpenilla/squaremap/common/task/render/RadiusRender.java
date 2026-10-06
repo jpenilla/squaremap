@@ -14,16 +14,16 @@ import net.minecraft.core.BlockPos;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.data.Image;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.Numbers;
-import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.config.Messages;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
+import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.SpiralIterator;
+import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
 public final class RadiusRender extends AbstractRender {
@@ -42,9 +42,9 @@ public final class RadiusRender extends AbstractRender {
         final ServerAccess serverAccess
     ) {
         super(world, chunkSnapshotProviderFactory);
-        this.radius = Numbers.blockToChunk(radius);
-        this.centerX = Numbers.blockToChunk(center.getX());
-        this.centerZ = Numbers.blockToChunk(center.getZ());
+        this.radius = CoordinateConversions.blockToChunk(radius);
+        this.centerX = CoordinateConversions.blockToChunk(center.getX());
+        this.centerZ = CoordinateConversions.blockToChunk(center.getZ());
         this.totalChunks = this.countTotalChunks();
         this.serverAccess = serverAccess;
     }

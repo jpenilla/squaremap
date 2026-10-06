@@ -24,14 +24,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.WorldManagerImpl;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
-import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
-import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.forge.data.ForgeMapWorld;
+import xyz.jpenilla.squaremap.common.web.PlayerDataPublisher;
+import xyz.jpenilla.squaremap.common.web.WebSettingsPublisher;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.world.WorldManagerImpl;
+import xyz.jpenilla.squaremap.forge.client.ForgeFluidColorExporter;
 import xyz.jpenilla.squaremap.forge.event.ForgeMapUpdates;
 import xyz.jpenilla.squaremap.forge.inject.module.ForgeModule;
+import xyz.jpenilla.squaremap.forge.player.ForgePlayerManager;
+import xyz.jpenilla.squaremap.forge.server.ForgeServerAccess;
+import xyz.jpenilla.squaremap.forge.world.ForgeMapWorld;
 
 @DefaultQualifier(NonNull.class)
 @Mod("squaremap")
@@ -41,8 +44,8 @@ public final class SquaremapForge implements SquaremapPlatform {
     private final ForgeServerAccess serverAccess;
     private final WorldManagerImpl worldManager;
     private final ModContainer container;
-    private @Nullable UpdatePlayers updatePlayers;
-    private @Nullable UpdateWorldData updateWorldData;
+    private @Nullable PlayerDataPublisher updatePlayers;
+    private @Nullable WebSettingsPublisher updateWorldData;
 
     public SquaremapForge(final IEventBus modEventBus, final ModContainer modContainer) {
         this.injector = Guice.createInjector(
@@ -100,8 +103,8 @@ public final class SquaremapForge implements SquaremapPlatform {
 
     @Override
     public void startCallback() {
-        this.updatePlayers = this.injector.getInstance(UpdatePlayers.class);
-        this.updateWorldData = this.injector.getInstance(UpdateWorldData.class);
+        this.updatePlayers = this.injector.getInstance(PlayerDataPublisher.class);
+        this.updateWorldData = this.injector.getInstance(WebSettingsPublisher.class);
     }
 
     @Override

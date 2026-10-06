@@ -42,10 +42,10 @@ import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.util.Numbers;
-import xyz.jpenilla.squaremap.paper.PaperWorldManager;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
 import xyz.jpenilla.squaremap.paper.config.PaperAdvanced;
+import xyz.jpenilla.squaremap.paper.world.PaperWorldManager;
 
 public final class MapUpdateListeners {
     private final JavaPlugin plugin;
@@ -134,8 +134,8 @@ public final class MapUpdateListeners {
             if (skipVisibilityCheck || locationVisible(loc)) {
                 mapWorld.chunkModified(
                     new ChunkCoordinate(
-                        Numbers.blockToChunk(loc.getBlockX()),
-                        Numbers.blockToChunk(loc.getBlockZ())
+                        CoordinateConversions.blockToChunk(loc.getBlockX()),
+                        CoordinateConversions.blockToChunk(loc.getBlockZ())
                     )
                 );
             }
@@ -146,8 +146,8 @@ public final class MapUpdateListeners {
         this.worldManager.getWorldIfEnabled(world).ifPresent(mapWorld -> locations.stream()
             .filter(MapUpdateListeners::locationVisible)
             .map(loc -> new ChunkCoordinate(
-                Numbers.blockToChunk(loc.getBlockX()),
-                Numbers.blockToChunk(loc.getBlockZ())
+                CoordinateConversions.blockToChunk(loc.getBlockX()),
+                CoordinateConversions.blockToChunk(loc.getBlockZ())
             ))
             .distinct()
             .forEach(mapWorld::chunkModified));
@@ -159,8 +159,8 @@ public final class MapUpdateListeners {
                 .map(BlockState::getLocation)
                 .filter(MapUpdateListeners::locationVisible)
                 .map(loc -> new ChunkCoordinate(
-                    Numbers.blockToChunk(loc.getBlockX()),
-                    Numbers.blockToChunk(loc.getBlockZ())
+                    CoordinateConversions.blockToChunk(loc.getBlockX()),
+                    CoordinateConversions.blockToChunk(loc.getBlockZ())
                 ))
                 .distinct()
                 .forEach(mapWorld::chunkModified));
@@ -219,16 +219,16 @@ public final class MapUpdateListeners {
 
     private void handleChunkPopulateEvent(final @NonNull ChunkPopulateEvent event) {
         final Chunk chunk = event.getChunk();
-        this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())), true);
+        this.markChunk(new Location(chunk.getWorld(), CoordinateConversions.chunkToBlock(chunk.getX()), 0, CoordinateConversions.chunkToBlock(chunk.getZ())), true);
     }
 
     private void handleChunkLoadEvent(final @NonNull ChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
-        this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())), true);
+        this.markChunk(new Location(chunk.getWorld(), CoordinateConversions.chunkToBlock(chunk.getX()), 0, CoordinateConversions.chunkToBlock(chunk.getZ())), true);
     }
 
     private void handlePlayerChunkLoadEvent(final @NonNull PlayerChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
-        this.markChunk(new Location(chunk.getWorld(), Numbers.chunkToBlock(chunk.getX()), 0, Numbers.chunkToBlock(chunk.getZ())), true);
+        this.markChunk(new Location(chunk.getWorld(), CoordinateConversions.chunkToBlock(chunk.getX()), 0, CoordinateConversions.chunkToBlock(chunk.getZ())), true);
     }
 }

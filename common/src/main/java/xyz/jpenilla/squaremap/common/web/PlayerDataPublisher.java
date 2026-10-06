@@ -1,0 +1,138 @@
+package xyz.jpenilla.squaremap.common.web;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.Vec3;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.HtmlComponentSerializer;
+import xyz.jpenilla.squaremap.common.config.ConfigManager;
+import xyz.jpenilla.squaremap.common.config.WorldConfig;
+import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
+import xyz.jpenilla.squaremap.common.util.Json;
+import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
+
+@DefaultQualifier(NonNull.class)
+public final class PlayerDataPublisher implements Runnable {
+    private static final String JSON_PATH = "/tiles/players.json";
+
+    private final Provider<ComponentFlattener> flattener;
+    private final AbstractPlayerManager playerManager;
+    private final ServerAccess serverAccess;
+    private final ConfigManager configManager;
+    private final WebJsonStore jsonStore;
+    private @Nullable Map<String, Object> lastData = null;
+
+    @Inject
+    private PlayerDataPublisher(
+        final Provider<ComponentFlattener> flattener,
+        final AbstractPlayerManager playerManager,
+        final ServerAccess serverAccess,
+        final ConfigManager configManager,
+        final WebJsonStore jsonStore
+    ) {
+        this.flattener = flattener;
+        this.playerManager = playerManager;
+        this.serverAccess = serverAccess;
+        this.configManager = configManager;
+        this.jsonStore = jsonStore;
+    }
+
+    @Override
+    public void run() {
+        final @Nullable Map<String, Object> prev = this.lastData;
+        final Map<String, Object> data = this.collectData();
+        this.lastData = data;
+
+        ForkJoinPool.commonPool().execute(() -> {
+            if (prev == null || !prev.equals(data)) {
+                final String json = Json.gson().toJson(data);
+                this.jsonStore.put(JSON_PATH, json);
+            }
+        });
+    }
+
+    private Map<String, Object> collectData() {
+        final List<Object> players = new ArrayList<>();
+
+        final HtmlComponentSerializer htmlComponentSerializer = HtmlComponentSerializer.withFlattener(this.flattener.get());
+
+        this.serverAccess.levels().forEach(world -> {
+            final WorldConfig worldConfig = this.configManager.worldConfig(world);
+
+            world.players().forEach(player -> {
+                if (worldConfig.PLAYER_TRACKER_HIDE_SPECTATORS && player.gameMode.getGameModeForPlayer() == GameType.SPECTATOR) {
+                    return;
+                }
+                if (worldConfig.PLAYER_TRACKER_HIDE_INVISIBLE && player.isInvisible()) {
+                    return;
+                }
+                if (worldConfig.PLAYER_TRACKER_HIDE_MAP_INVISIBILITY_EQUIPMENT && hasMapInvisibilityItemEquipped(player)) {
+                    return;
+                }
+                if (this.playerManager.hidden(player) || this.playerManager.otherwiseHidden(player)) {
+                    return;
+                }
+                final Map<String, Object> playerEntry = new HashMap<>();
+                final Vec3 playerLoc = player.position();
+                playerEntry.put("name", player.getGameProfile().name());
+                if (worldConfig.PLAYER_TRACKER_USE_DISPLAY_NAME) {
+                    playerEntry.put("display_name", htmlComponentSerializer.serialize(this.playerManager.displayName(player)));
+                }
+                playerEntry.put("uuid", player.getUUID().toString().replace("-", ""));
+                playerEntry.put("world", WorldIdentifiers.webName(world));
+                if (worldConfig.PLAYER_TRACKER_ENABLED) {
+                    playerEntry.put("x", Mth.floor(playerLoc.x()));
+                    playerEntry.put("y", Mth.floor(playerLoc.y()));
+                    playerEntry.put("z", Mth.floor(playerLoc.z()));
+                    playerEntry.put("yaw", Math.round(player.getYHeadRot()));
+                    if (worldConfig.PLAYER_TRACKER_NAMEPLATE_SHOW_ARMOR) {
+                        playerEntry.put("armor", armorPoints(player));
+                    }
+                    if (worldConfig.PLAYER_TRACKER_NAMEPLATE_SHOW_HEALTH) {
+                        playerEntry.put("health", (int) player.getHealth());
+                    }
+                }
+                players.add(playerEntry);
+            });
+        });
+
+        final Map<String, Object> map = new HashMap<>();
+
+        map.put("players", players);
+        map.put("max", this.serverAccess.maxPlayers());
+
+        return map;
+    }
+
+    private static int armorPoints(final ServerPlayer player) {
+        final @Nullable AttributeInstance attribute = player.getAttribute(Attributes.ARMOR);
+        return attribute == null ? 0 : (int) attribute.getValue();
+    }
+
+    // Copied from MapItemSavedData#hasMapInvisibilityItemEquipped(Player)
+    private static boolean hasMapInvisibilityItemEquipped(final Player player) {
+        for (final EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot != EquipmentSlot.MAINHAND && slot != EquipmentSlot.OFFHAND && player.getItemBySlot(slot).is(ItemTags.MAP_INVISIBILITY_EQUIPMENT)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

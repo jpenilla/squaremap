@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xyz.jpenilla.squaremap.fabric.FabricPlayerManager;
+import xyz.jpenilla.squaremap.fabric.player.FabricPlayerManager;
 
 @Mixin(ServerPlayer.class)
 abstract class ServerPlayerMixin {

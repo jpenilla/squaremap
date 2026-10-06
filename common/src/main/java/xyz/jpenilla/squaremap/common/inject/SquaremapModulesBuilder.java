@@ -9,16 +9,16 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.WorldManagerImpl;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.module.ApiModule;
 import xyz.jpenilla.squaremap.common.inject.module.PlatformModule;
 import xyz.jpenilla.squaremap.common.inject.module.VanillaChunkSnapshotProviderFactoryModule;
 import xyz.jpenilla.squaremap.common.inject.module.VanillaRegionFileDirectoryResolverModule;
-import xyz.jpenilla.squaremap.common.task.TaskFactory;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
-import xyz.jpenilla.squaremap.common.util.EntityScheduler;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
+import xyz.jpenilla.squaremap.common.util.concurrent.EntityScheduler;
+import xyz.jpenilla.squaremap.common.web.MarkerDataPublisher;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.world.WorldManagerImpl;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,7 +31,7 @@ public final class SquaremapModulesBuilder {
     private boolean vanillaChunkSnapshotProviderFactory;
     private @Nullable Class<? extends MapWorldInternal> mapWorldClass;
     private Class<? extends SquaremapJarAccess> squaremapJarAccess = SquaremapJarAccess.JarFromCodeSource.class;
-    private Class<? extends EntityScheduler> entitySchedulerClass = EntityScheduler.NoneEntityScheduler.class;
+    private Class<? extends EntityScheduler> entitySchedulerClass = EntityScheduler.ImmediateEntityScheduler.class;
     private Class<? extends WorldManagerImpl> worldManagerClass = WorldManagerImpl.class;
 
     private SquaremapModulesBuilder(final SquaremapPlatform platform) {
@@ -92,7 +92,7 @@ public final class SquaremapModulesBuilder {
             new PlatformModule(this.platform, this.platformClass, this.squaremapJarAccess, this.entitySchedulerClass, this.worldManagerClass),
             new FactoryModuleBuilder().build(RenderFactory.class),
             new FactoryModuleBuilder().implement(MapWorldInternal.class, this.mapWorldClass).build(MapWorldInternal.Factory.class),
-            new FactoryModuleBuilder().build(TaskFactory.class)
+            new FactoryModuleBuilder().build(MarkerDataPublisher.Factory.class)
         );
 
         final List<Module> modules = new ArrayList<>(baseModules);

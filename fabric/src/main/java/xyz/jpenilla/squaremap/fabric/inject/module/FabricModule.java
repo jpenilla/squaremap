@@ -9,14 +9,14 @@ import net.kyori.adventure.platform.modcommon.MinecraftServerAudiences;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
-import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
-import xyz.jpenilla.squaremap.fabric.FabricPlayerManager;
-import xyz.jpenilla.squaremap.fabric.FabricServerAccess;
+import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.fabric.SquaremapFabric;
 import xyz.jpenilla.squaremap.fabric.command.FabricCommands;
+import xyz.jpenilla.squaremap.fabric.player.FabricPlayerManager;
+import xyz.jpenilla.squaremap.fabric.server.FabricServerAccess;
 
 @DefaultQualifier(NonNull.class)
 public final class FabricModule extends AbstractModule {

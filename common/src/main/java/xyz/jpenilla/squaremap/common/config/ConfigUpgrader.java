@@ -6,7 +6,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.Exceptions;
 
 @DefaultQualifier(NonNull.class)
 public final class ConfigUpgrader {
@@ -23,7 +23,7 @@ public final class ConfigUpgrader {
         try {
             this.upgrader.apply(node);
         } catch (final ConfigurateException e) {
-            Util.rethrow(e);
+            Exceptions.rethrow(e);
         }
         final int newVer = this.upgrader.version(node);
         return new UpgradeResult<>(original, newVer, node, original != newVer);

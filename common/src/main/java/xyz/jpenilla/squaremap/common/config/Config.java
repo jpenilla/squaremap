@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
-import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
+import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 
 @SuppressWarnings("unused")
 public final class Config extends AbstractConfig {
     private static final int LATEST_VERSION = 2;
 
-    Config(final DirectoryProvider directoryProvider) {
-        super(directoryProvider.dataDirectory(), Config.class, "config.yml", LATEST_VERSION);
+    Config(final SquaremapDirectories directories) {
+        super(directories.dataDirectory(), Config.class, "config.yml", LATEST_VERSION);
     }
 
     @Override
@@ -31,8 +31,8 @@ public final class Config extends AbstractConfig {
 
     static Config config;
 
-    public static void reload(final DirectoryProvider directoryProvider) {
-        config = new Config(directoryProvider);
+    public static void reload(final SquaremapDirectories directories) {
+        config = new Config(directories);
         config.readConfig(Config.class, null);
     }
 

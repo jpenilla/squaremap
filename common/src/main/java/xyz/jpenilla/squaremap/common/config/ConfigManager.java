@@ -10,26 +10,26 @@ import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
-import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
+import xyz.jpenilla.squaremap.common.SquaremapDirectories;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class ConfigManager {
-    private final DirectoryProvider directoryProvider;
+    private final SquaremapDirectories directories;
     private final SquaremapJarAccess squaremapJar;
     private final WorldConfigContainer<WorldConfig, Config> worldConfigContainer;
     private final WorldConfigContainer<WorldAdvanced, Advanced> worldAdvancedContainer;
 
     @Inject
     private ConfigManager(
-        final DirectoryProvider directoryProvider,
+        final SquaremapDirectories directories,
         final SquaremapJarAccess squaremapJar,
         final ServerAccess serverAccess
     ) {
-        this.directoryProvider = directoryProvider;
+        this.directories = directories;
         this.squaremapJar = squaremapJar;
         this.worldConfigContainer = new WorldConfigContainer<>(WorldConfig::new, Config::config, serverAccess);
         this.worldAdvancedContainer = new WorldConfigContainer<>(WorldAdvanced::new, Advanced::config, serverAccess);
@@ -40,13 +40,13 @@ public final class ConfigManager {
     }
 
     public void reload() {
-        Config.reload(this.directoryProvider);
+        Config.reload(this.directories);
         this.worldConfigContainer.reload();
 
-        Advanced.reload(this.directoryProvider);
+        Advanced.reload(this.directories);
         this.worldAdvancedContainer.reload();
 
-        Messages.reload(this.squaremapJar, this.directoryProvider);
+        Messages.reload(this.squaremapJar, this.directories);
     }
 
     public WorldConfig worldConfig(final ServerLevel level) {
@@ -76,12 +76,12 @@ public final class ConfigManager {
         void reload() {
             this.configs.clear();
             for (final ServerLevel level : this.serverAccess.levels()) {
-                this.configs.put(Util.worldIdentifier(level), this.create(level));
+                this.configs.put(WorldIdentifiers.identifier(level), this.create(level));
             }
         }
 
         W config(final ServerLevel level) {
-            return this.configs.computeIfAbsent(Util.worldIdentifier(level), $ -> this.create(level));
+            return this.configs.computeIfAbsent(WorldIdentifiers.identifier(level), $ -> this.create(level));
         }
 
         W create(final ServerLevel level) {

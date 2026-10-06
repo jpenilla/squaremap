@@ -10,8 +10,10 @@ import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.biome.Biome;
+import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.util.Colors;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.MinecraftRegistries;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 public record LevelBiomeColorData(
     Reference2IntMap<Biome> grassColors,
@@ -21,8 +23,8 @@ public record LevelBiomeColorData(
     private static int[] MAP_GRASS;
     private static int[] MAP_FOLIAGE;
 
-    public static void loadImages(final DirectoryProvider directoryProvider) {
-        final Path imagesDir = directoryProvider.webDirectory().resolve("images");
+    public static void loadImages(final SquaremapDirectories directories) {
+        final Path imagesDir = directories.webDirectory().resolve("images");
         final BufferedImage imgGrass;
         final BufferedImage imgFoliage;
 
@@ -42,7 +44,7 @@ public record LevelBiomeColorData(
         final Reference2IntMap<Biome> foliageColors = new Reference2IntOpenHashMap<>();
         final Reference2IntMap<Biome> waterColors = new Reference2IntOpenHashMap<>();
 
-        for (final Biome biome : Util.biomeRegistry(world.serverLevel())) {
+        for (final Biome biome : MinecraftRegistries.biomeRegistry(world.serverLevel())) {
             float temperature = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
             float humidity = Mth.clamp(downfall(biome), 0.0F, 1.0F);
             grassColors.put(

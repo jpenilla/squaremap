@@ -3,16 +3,16 @@ package xyz.jpenilla.squaremap.common.visibilitylimit;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.MapWorld;
-import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
 
 /**
  * Limits map drawing to a circular region.
  */
 @DefaultQualifier(NonNull.class)
 final class CircleShape implements VisibilityShape {
-    private static final int REGION_SIZE_BLOCKS = Numbers.regionToBlock(1);
-    private static final int CHUNK_SIZE_BLOCKS = Numbers.chunkToBlock(1);
-    private static final int REGION_SIZE_CHUNKS = Numbers.regionToChunk(1);
+    private static final int REGION_SIZE_BLOCKS = CoordinateConversions.regionToBlock(1);
+    private static final int CHUNK_SIZE_BLOCKS = CoordinateConversions.chunkToBlock(1);
+    private static final int REGION_SIZE_CHUNKS = CoordinateConversions.regionToChunk(1);
 
     private final int centerX;
     private final int centerZ;
@@ -35,8 +35,8 @@ final class CircleShape implements VisibilityShape {
             return false;
         }
 
-        long blockX = Numbers.chunkToBlock(chunkX);
-        long blockZ = Numbers.chunkToBlock(chunkZ);
+        long blockX = CoordinateConversions.chunkToBlock(chunkX);
+        long blockZ = CoordinateConversions.chunkToBlock(chunkZ);
 
         // make sure we look at the corner of the chunk that is the closest to the
         // center of our visibility limit
@@ -58,8 +58,8 @@ final class CircleShape implements VisibilityShape {
             return false;
         }
 
-        long blockX = Numbers.regionToBlock(regionX);
-        long blockZ = Numbers.regionToBlock(regionZ);
+        long blockX = CoordinateConversions.regionToBlock(regionX);
+        long blockZ = CoordinateConversions.regionToBlock(regionZ);
 
         // make sure we look at the corner of the region that is the closest to the
         // center of our visibility limit
@@ -86,8 +86,8 @@ final class CircleShape implements VisibilityShape {
 
     @Override
     public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
-        int chunkXStart = Numbers.regionToChunk(regionX);
-        int chunkZStart = Numbers.regionToChunk(regionZ);
+        int chunkXStart = CoordinateConversions.regionToChunk(regionX);
+        int chunkZStart = CoordinateConversions.regionToChunk(regionZ);
         if (this.shouldRenderChunk(world, chunkXStart, chunkZStart)
             && this.shouldRenderChunk(world, chunkXStart + REGION_SIZE_CHUNKS - 1, chunkZStart)
             && this.shouldRenderChunk(world, chunkXStart, chunkZStart + REGION_SIZE_CHUNKS - 1)

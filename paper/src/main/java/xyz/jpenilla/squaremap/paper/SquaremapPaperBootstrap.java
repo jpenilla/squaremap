@@ -11,10 +11,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
-import xyz.jpenilla.squaremap.common.util.Util;
-import xyz.jpenilla.squaremap.paper.data.PaperMapWorld;
+import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
 import xyz.jpenilla.squaremap.paper.inject.module.PaperModule;
-import xyz.jpenilla.squaremap.paper.util.PaperEntityScheduler;
+import xyz.jpenilla.squaremap.paper.util.concurrent.PaperEntityScheduler;
+import xyz.jpenilla.squaremap.paper.world.PaperMapWorld;
+import xyz.jpenilla.squaremap.paper.world.PaperWorldManager;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapPaperBootstrap extends JavaPlugin {
@@ -22,7 +23,7 @@ public final class SquaremapPaperBootstrap extends JavaPlugin {
     private static final String SQUAREMAP_RELEASES_URL = "https://github.com/jpenilla/squaremap/releases";
     private static final String TARGET_MINECRAFT_VERSION = Objects.requireNonNull(
         Objects.requireNonNull(
-            Util.manifest(SquaremapPaperBootstrap.class),
+            SquaremapJarAccess.manifest(SquaremapPaperBootstrap.class),
             "Missing squaremap manifest"
         ).getMainAttributes().getValue("squaremap-target-minecraft-version"),
         "squaremap manifest missing 'squaremap-target-minecraft-version' attribute"

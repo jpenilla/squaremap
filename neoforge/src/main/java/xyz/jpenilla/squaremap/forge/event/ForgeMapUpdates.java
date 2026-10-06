@@ -22,8 +22,8 @@ import net.neoforged.neoforge.event.level.block.CreateFluidSourceEvent;
 import net.neoforged.neoforge.event.level.block.CropGrowEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.WorldManagerImpl;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.world.WorldManagerImpl;
 
 @DefaultQualifier(NonNull.class)
 public final class ForgeMapUpdates {

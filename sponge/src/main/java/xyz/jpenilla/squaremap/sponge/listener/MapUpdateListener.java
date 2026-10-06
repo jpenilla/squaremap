@@ -26,8 +26,8 @@ import org.spongepowered.api.event.world.chunk.ChunkEvent;
 import org.spongepowered.api.world.server.ServerWorld;
 import org.spongepowered.math.vector.Vector3i;
 import org.spongepowered.plugin.PluginContainer;
-import xyz.jpenilla.squaremap.common.WorldManager;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.world.WorldManager;
 import xyz.jpenilla.squaremap.sponge.config.SpongeAdvanced;
 import xyz.jpenilla.squaremap.sponge.util.SpongeVectors;
 

@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.texture.SpriteContents;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import xyz.jpenilla.squaremap.fabric.FabricFluidColorExporter;
+import xyz.jpenilla.squaremap.fabric.client.FabricFluidColorExporter;
 
 @Mixin(SpriteContents.class)
 abstract class SpriteContentsMixin implements FabricFluidColorExporter.SpriteContentsExtension {

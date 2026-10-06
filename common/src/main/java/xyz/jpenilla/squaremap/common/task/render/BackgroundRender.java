@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.data.Image;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
 public final class BackgroundRender extends AbstractRender {
@@ -104,9 +104,9 @@ public final class BackgroundRender extends AbstractRender {
     }
 
     private static ExecutorService createBackgroundRenderWorkerPool(final MapWorldInternal world) {
-        return Util.newFixedThreadPool(
+        return Threads.newFixedThreadPool(
             getThreads(world.config().BACKGROUND_RENDER_MAX_THREADS, 3),
-            Util.squaremapThreadFactory("bg-render-worker", world.serverLevel()),
+            Threads.squaremapThreadFactory("bg-render-worker", world.serverLevel()),
             new ThreadPoolExecutor.DiscardPolicy()
         );
     }
