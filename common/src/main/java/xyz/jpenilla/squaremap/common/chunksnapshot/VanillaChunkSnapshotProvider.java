@@ -24,7 +24,6 @@ import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.util.ChunkMapAccess;
 
 @DefaultQualifier(NonNull.class)
 record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) implements ChunkSnapshotProvider {

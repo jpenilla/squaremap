@@ -13,9 +13,6 @@ import org.incendo.cloud.CommandManager;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.description.Description;
 import org.incendo.cloud.key.CloudKey;
-import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
-import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.WorldManager;
 import xyz.jpenilla.squaremap.common.command.commands.CancelRenderCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ConfirmCommand;
 import xyz.jpenilla.squaremap.common.command.commands.FullRenderCommand;
@@ -29,7 +26,10 @@ import xyz.jpenilla.squaremap.common.command.commands.ReloadCommand;
 import xyz.jpenilla.squaremap.common.command.commands.ResetMapCommand;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
+import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
+import xyz.jpenilla.squaremap.common.world.WorldManager;
 
 @DefaultQualifier(NonNull.class)
 @Singleton

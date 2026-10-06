@@ -46,8 +46,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.GRAY;
 import static net.kyori.adventure.text.format.NamedTextColor.WHITE;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 import static org.incendo.cloud.exception.handling.ExceptionHandler.unwrappingHandler;
-import static xyz.jpenilla.squaremap.common.util.Components.highlightSpecialCharacters;
-import static xyz.jpenilla.squaremap.common.util.Components.placeholder;
+import static xyz.jpenilla.squaremap.common.util.text.Components.highlightSpecialCharacters;
+import static xyz.jpenilla.squaremap.common.util.text.Components.placeholder;
 
 @DefaultQualifier(NonNull.class)
 final class ExceptionHandler {

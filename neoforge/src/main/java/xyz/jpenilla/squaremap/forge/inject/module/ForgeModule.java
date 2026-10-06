@@ -10,14 +10,14 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
-import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
-import xyz.jpenilla.squaremap.forge.ForgePlayerManager;
-import xyz.jpenilla.squaremap.forge.ForgeServerAccess;
+import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.forge.SquaremapForge;
 import xyz.jpenilla.squaremap.forge.command.ForgeCommands;
+import xyz.jpenilla.squaremap.forge.player.ForgePlayerManager;
+import xyz.jpenilla.squaremap.forge.server.ForgeServerAccess;
 
 @DefaultQualifier(NonNull.class)
 public final class ForgeModule extends AbstractModule {

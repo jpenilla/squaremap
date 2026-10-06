@@ -21,12 +21,12 @@ import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityShape;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityShapeSerializer;
+import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 
 import static java.util.Objects.requireNonNull;
-import static xyz.jpenilla.squaremap.common.util.Util.rethrow;
+import static xyz.jpenilla.squaremap.common.util.Exceptions.rethrow;
 
 @SuppressWarnings({"unused", "SameParameterValue"})
 public abstract class AbstractConfig {
@@ -210,7 +210,7 @@ public abstract class AbstractConfig {
         if (oldNode.virtual()) {
             return;
         }
-        final String configName = Util.levelConfigName(level);
+        final String configName = WorldIdentifiers.configName(level);
         final ConfigurationNode newNode = this.config.node("world-settings", configName);
         try {
             newNode.set(oldNode);

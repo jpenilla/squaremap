@@ -78,7 +78,7 @@ fabricModJson {
   }
   environment = Environment.ANY
   mainEntrypoint("xyz.jpenilla.squaremap.fabric.SquaremapFabricInitializer")
-  entrypoint("cardinal-components", "xyz.jpenilla.squaremap.fabric.SquaremapComponentInitializer")
+  entrypoint("cardinal-components", "xyz.jpenilla.squaremap.fabric.player.SquaremapComponentInitializer")
   custom.put("cardinal-components", simpleCustomValueList(listOf("squaremap:player_component")))
   mitLicense()
   mixin("squaremap-fabric.mixins.json")

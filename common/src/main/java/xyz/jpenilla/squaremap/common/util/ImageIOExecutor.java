@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 
 @DefaultQualifier(NonNull.class)
 public final class ImageIOExecutor {
@@ -20,7 +21,7 @@ public final class ImageIOExecutor {
 
     private ImageIOExecutor(final ServerLevel level) {
         this.executor = Executors.newSingleThreadExecutor(
-            Util.squaremapThreadFactory("imageio", level)
+            Threads.squaremapThreadFactory("imageio", level)
         );
     }
 
@@ -57,7 +58,7 @@ public final class ImageIOExecutor {
     }
 
     public void shutdown() {
-        Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 5L);
+        Threads.shutdownExecutor(this.executor, TimeUnit.SECONDS, 5L);
     }
 
     public static ImageIOExecutor create(final ServerLevel level) {

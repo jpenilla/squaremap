@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.MapWorld;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
+import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
 
 public final class VisibilityLimitImpl implements VisibilityLimit {
-    private static final int REGION_SIZE_CHUNKS = Numbers.regionToChunk(1);
+    private static final int REGION_SIZE_CHUNKS = CoordinateConversions.regionToChunk(1);
     private final List<VisibilityShape> shapes = new CopyOnWriteArrayList<>();
     private final MapWorld world;
 

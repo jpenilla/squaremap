@@ -16,8 +16,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Squaremap;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
-import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
+import xyz.jpenilla.squaremap.common.web.PlayerDataPublisher;
+import xyz.jpenilla.squaremap.common.web.WebSettingsPublisher;
 import xyz.jpenilla.squaremap.paper.folia.FoliaInitListener;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
@@ -76,14 +76,14 @@ public final class SquaremapPaper implements SquaremapPlatform {
         this.mapUpdateListeners = this.injector.getInstance(MapUpdateListeners.class);
         this.mapUpdateListeners.register();
 
-        final Runnable updatePlayersTask = this.injector.getInstance(UpdatePlayers.class);
+        final Runnable updatePlayersTask = this.injector.getInstance(PlayerDataPublisher.class);
         this.updatePlayers = this.server.getGlobalRegionScheduler().runAtFixedRate(
             this.plugin,
             $ -> updatePlayersTask.run(),
             20,
             20
         );
-        final Runnable updateWorldDataTask = this.injector.getInstance(UpdateWorldData.class);
+        final Runnable updateWorldDataTask = this.injector.getInstance(WebSettingsPublisher.class);
         this.updateWorldData = this.server.getGlobalRegionScheduler().runAtFixedRate(
             this.plugin,
             $ -> updateWorldDataTask.run(),

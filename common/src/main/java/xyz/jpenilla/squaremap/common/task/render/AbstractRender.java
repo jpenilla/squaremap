@@ -35,20 +35,20 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.data.BiomeColors;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.data.Image;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.ChunkHashMapKey;
-import xyz.jpenilla.squaremap.common.util.Colors;
-import xyz.jpenilla.squaremap.common.util.ConcurrentFIFOLoadingCache;
-import xyz.jpenilla.squaremap.common.util.Numbers;
-import xyz.jpenilla.squaremap.common.util.Util;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshot;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.config.Messages;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
+import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.data.BiomeColors;
+import xyz.jpenilla.squaremap.common.data.Image;
+import xyz.jpenilla.squaremap.common.util.ChunkHashMapKey;
+import xyz.jpenilla.squaremap.common.util.Colors;
+import xyz.jpenilla.squaremap.common.util.ConcurrentFIFOLoadingCache;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
 public abstract class AbstractRender implements Runnable {
@@ -231,7 +231,7 @@ public abstract class AbstractRender implements Runnable {
         // https://github.com/pl3xgaming/Pl3xMap/issues/15
         final CompletableFuture<@Nullable ChunkSnapshot> southChunk;
         final int down = chunkZ + 1;
-        if (Numbers.chunkToRegion(chunkZ) == Numbers.chunkToRegion(down)) {
+        if (CoordinateConversions.chunkToRegion(chunkZ) == CoordinateConversions.chunkToRegion(down)) {
             // Prime left and right (don't need bottom 3 neighbors primed by #snapshot)
             this.chunks.snapshotDirect(new ChunkPos(chunkX + 1, down));
             this.chunks.snapshotDirect(new ChunkPos(chunkX - 1, down));
@@ -542,9 +542,9 @@ public abstract class AbstractRender implements Runnable {
     }
 
     private static ExecutorService createRenderWorkerPool(final MapWorldInternal world) {
-        return Util.newFixedThreadPool(
+        return Threads.newFixedThreadPool(
             getThreads(world.config().MAX_RENDER_THREADS),
-            Util.squaremapThreadFactory("render-worker", world.serverLevel()),
+            Threads.squaremapThreadFactory("render-worker", world.serverLevel()),
             new ThreadPoolExecutor.DiscardPolicy()
         );
     }

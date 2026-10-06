@@ -11,8 +11,8 @@ import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.command.exception.CommandCompleted;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.util.Components;
-import xyz.jpenilla.squaremap.common.util.EntityScheduler;
+import xyz.jpenilla.squaremap.common.util.concurrent.EntityScheduler;
+import xyz.jpenilla.squaremap.common.util.text.Components;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 

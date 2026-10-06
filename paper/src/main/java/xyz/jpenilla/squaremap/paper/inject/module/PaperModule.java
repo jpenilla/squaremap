@@ -8,17 +8,17 @@ import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
-import xyz.jpenilla.squaremap.common.ServerAccess;
+import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
-import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
-import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
-import xyz.jpenilla.squaremap.paper.PaperPlayerManager;
-import xyz.jpenilla.squaremap.paper.PaperServerAccess;
-import xyz.jpenilla.squaremap.paper.command.PaperCommands;
-import xyz.jpenilla.squaremap.paper.util.PaperRegionFileDirectoryResolver;
+import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
+import xyz.jpenilla.squaremap.common.render.RegionFileDirectoryResolver;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.paper.chunksnapshot.PaperChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.paper.command.PaperCommands;
+import xyz.jpenilla.squaremap.paper.player.PaperPlayerManager;
+import xyz.jpenilla.squaremap.paper.render.PaperRegionFileDirectoryResolver;
+import xyz.jpenilla.squaremap.paper.server.PaperServerAccess;
 
 @DefaultQualifier(NonNull.class)
 public final class PaperModule extends AbstractModule {

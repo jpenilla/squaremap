@@ -1,8 +1,8 @@
 package xyz.jpenilla.squaremap.sponge.util;
 
 import org.spongepowered.math.vector.Vector3i;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
-import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
 
 public final class SpongeVectors {
     private SpongeVectors() {
@@ -14,8 +14,8 @@ public final class SpongeVectors {
 
     public static ChunkCoordinate fromBlockPos(final Vector3i blockPos) {
         return new ChunkCoordinate(
-            Numbers.blockToChunk(blockPos.x()),
-            Numbers.blockToChunk(blockPos.z())
+            CoordinateConversions.blockToChunk(blockPos.x()),
+            CoordinateConversions.blockToChunk(blockPos.z())
         );
     }
 }

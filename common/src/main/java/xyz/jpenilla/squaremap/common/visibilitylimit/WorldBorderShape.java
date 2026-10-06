@@ -5,8 +5,8 @@ import net.minecraft.world.level.border.WorldBorder;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.MapWorld;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 /**
  * A visibility limit that follows the world border.
@@ -19,12 +19,12 @@ public final class WorldBorderShape implements VisibilityShape {
         final WorldBorder border = ((MapWorldInternal) world).serverLevel().getWorldBorder();
         final BlockPos center = new BlockPos((int) border.getCenterX(), 0, (int) border.getCenterZ());
         int radius = (int) Math.ceil(border.getSize() / 2);
-        if (chunkX < Numbers.blockToChunk(center.getX() - radius)
-            || chunkX > Numbers.blockToChunk(center.getX() + radius)) {
+        if (chunkX < CoordinateConversions.blockToChunk(center.getX() - radius)
+            || chunkX > CoordinateConversions.blockToChunk(center.getX() + radius)) {
             return false;
         }
-        if (chunkZ < Numbers.blockToChunk(center.getZ() - radius)
-            || chunkZ > Numbers.blockToChunk(center.getZ() + radius)) {
+        if (chunkZ < CoordinateConversions.blockToChunk(center.getZ() - radius)
+            || chunkZ > CoordinateConversions.blockToChunk(center.getZ() + radius)) {
             return false;
         }
         return true;
@@ -35,12 +35,12 @@ public final class WorldBorderShape implements VisibilityShape {
         final WorldBorder border = ((MapWorldInternal) world).serverLevel().getWorldBorder();
         final BlockPos center = new BlockPos((int) border.getCenterX(), 0, (int) border.getCenterZ());
         int radius = (int) Math.ceil(border.getSize() / 2);
-        if (regionX < Numbers.blockToRegion(center.getX() - radius)
-            || regionX > Numbers.blockToRegion(center.getX() + radius)) {
+        if (regionX < CoordinateConversions.blockToRegion(center.getX() - radius)
+            || regionX > CoordinateConversions.blockToRegion(center.getX() + radius)) {
             return false;
         }
-        if (regionZ < Numbers.blockToRegion(center.getZ() - radius)
-            || regionZ > Numbers.blockToRegion(center.getZ() + radius)) {
+        if (regionZ < CoordinateConversions.blockToRegion(center.getZ() - radius)
+            || regionZ > CoordinateConversions.blockToRegion(center.getZ() + radius)) {
             return false;
         }
         return true;
@@ -63,17 +63,17 @@ public final class WorldBorderShape implements VisibilityShape {
     @Override
     public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
         final WorldBorder border = ((MapWorldInternal) world).serverLevel().getWorldBorder();
-        int regionMinChunkX = Numbers.regionToChunk(regionX);
-        int regionMaxChunkX = Numbers.regionToChunk(regionX + 1) - 1;
-        int regionMinChunkZ = Numbers.regionToChunk(regionZ);
-        int regionMaxChunkZ = Numbers.regionToChunk(regionZ + 1) - 1;
+        int regionMinChunkX = CoordinateConversions.regionToChunk(regionX);
+        int regionMaxChunkX = CoordinateConversions.regionToChunk(regionX + 1) - 1;
+        int regionMinChunkZ = CoordinateConversions.regionToChunk(regionZ);
+        int regionMaxChunkZ = CoordinateConversions.regionToChunk(regionZ + 1) - 1;
 
         final BlockPos center = new BlockPos((int) border.getCenterX(), 0, (int) border.getCenterZ());
         int radius = (int) Math.ceil(border.getSize() / 2);
-        int borderMinChunkX = Numbers.blockToChunk(center.getX() - radius);
-        int borderMaxChunkX = Numbers.blockToChunk(center.getX() + radius);
-        int borderMinChunkZ = Numbers.blockToChunk(center.getZ() - radius);
-        int borderMaxChunkZ = Numbers.blockToChunk(center.getZ() + radius);
+        int borderMinChunkX = CoordinateConversions.blockToChunk(center.getX() - radius);
+        int borderMaxChunkX = CoordinateConversions.blockToChunk(center.getX() + radius);
+        int borderMinChunkZ = CoordinateConversions.blockToChunk(center.getZ() - radius);
+        int borderMaxChunkZ = CoordinateConversions.blockToChunk(center.getZ() + radius);
 
         int chunkWidth = Math.min(regionMaxChunkX, borderMaxChunkX) - Math.max(regionMinChunkX, borderMinChunkX) + 1;
         int chunkHeight = Math.min(regionMaxChunkZ, borderMaxChunkZ) - Math.max(regionMinChunkZ, borderMinChunkZ) + 1;
