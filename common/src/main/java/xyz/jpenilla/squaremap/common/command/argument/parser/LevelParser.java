@@ -14,7 +14,7 @@ import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 import xyz.jpenilla.squaremap.common.command.Commands;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 
 import static org.incendo.cloud.parser.ArgumentParseResult.failure;
 import static org.incendo.cloud.parser.ArgumentParseResult.success;
@@ -35,7 +35,7 @@ public final class LevelParser<C> implements ArgumentParser<C, ServerLevel>, Blo
             return failure(new MapWorldParser.MapWorldParseException(input, MapWorldParser.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
         }
 
-        final @Nullable ServerLevel world = commandContext.get(Commands.SERVER_ACCESS).level(Util.worldIdentifier(key));
+        final @Nullable ServerLevel world = commandContext.get(Commands.SERVER_ACCESS).level(WorldIdentifiers.identifier(key));
         if (world == null) {
             return failure(new MapWorldParser.MapWorldParseException(input, MapWorldParser.MapWorldParseException.FailureReason.NO_SUCH_WORLD));
         }

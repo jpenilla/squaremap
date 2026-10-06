@@ -20,16 +20,19 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.Pair;
 import xyz.jpenilla.squaremap.common.Logging;
+import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
 import xyz.jpenilla.squaremap.common.task.render.AbstractRender;
 import xyz.jpenilla.squaremap.common.task.render.BackgroundRender;
 import xyz.jpenilla.squaremap.common.task.render.RenderFactory;
-import xyz.jpenilla.squaremap.common.util.ExceptionLoggingScheduledThreadPoolExecutor;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.Json;
+import xyz.jpenilla.squaremap.common.util.concurrent.ExceptionLoggingScheduledThreadPoolExecutor;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
 public final class RenderManager {
-    private static final Gson GSON = Util.gson()
+    private static final Gson GSON = Json.gson()
         .newBuilder()
         .enableComplexMapKeySerialization()
         .create();
@@ -48,7 +51,7 @@ public final class RenderManager {
         this.renderFactory = renderFactory;
         this.executor = new ExceptionLoggingScheduledThreadPoolExecutor(
             1,
-            Util.squaremapThreadFactory("render", mapWorld.serverLevel())
+            Threads.squaremapThreadFactory("render", mapWorld.serverLevel())
         );
     }
 
@@ -184,7 +187,7 @@ public final class RenderManager {
         if (this.backgroundRendering()) {
             this.stopBackgroundRender();
         }
-        Util.shutdownExecutor(this.executor, TimeUnit.SECONDS, 1L);
+        Threads.shutdownExecutor(this.executor, TimeUnit.SECONDS, 1L);
     }
 
     private static void waitFor(final Future<?> future) {

@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.util;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -28,7 +27,7 @@ public final class FileUtil {
             return;
         }
         try (final Stream<Path> files = Files.list(directory)) {
-            files.forEach(Util.sneaky(FileUtil::deleteRecursively));
+            files.forEach(CheckedConsumer.unchecked(FileUtil::deleteRecursively));
         }
     }
 
@@ -38,7 +37,7 @@ public final class FileUtil {
         }
         try (final Stream<Path> stream = Files.walk(path)) {
             // Reverse order: visit files before directories
-            stream.sorted(Comparator.reverseOrder()).forEach(Util.sneaky(Files::delete));
+            stream.sorted(Comparator.reverseOrder()).forEach(CheckedConsumer.unchecked(Files::delete));
         }
     }
 
@@ -75,7 +74,7 @@ public final class FileUtil {
             Files.createDirectories(to);
         }
         try (final Stream<Path> stream = Files.walk(from)) {
-            stream.forEach(Util.sneaky(path -> {
+            stream.forEach(CheckedConsumer.unchecked(path -> {
                 final Path target = to.resolve(invariantSeparatorsPathString(from.relativize(path)));
                 if (Files.isDirectory(path)) {
                     if (Files.isDirectory(target)) {
@@ -108,14 +107,6 @@ public final class FileUtil {
         return separator.equals("/")
             ? pathString
             : pathString.replace(separator, "/");
-    }
-
-    public static void atomicWriteJsonAsync(final Path file, final Object object) {
-        atomicWriteAsync(file, tmp -> {
-            try (final BufferedWriter writer = Files.newBufferedWriter(tmp)) {
-                Util.gson().toJson(object, writer);
-            }
-        });
     }
 
     public static void atomicWriteAsync(final Path file, final CheckedConsumer<Path, IOException> op) {

@@ -5,10 +5,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.WorldManager;
-import xyz.jpenilla.squaremap.common.WorldManagerImpl;
-import xyz.jpenilla.squaremap.common.util.EntityScheduler;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
+import xyz.jpenilla.squaremap.common.util.concurrent.EntityScheduler;
+import xyz.jpenilla.squaremap.common.world.WorldManager;
+import xyz.jpenilla.squaremap.common.world.WorldManagerImpl;
 
 @DefaultQualifier(NonNull.class)
 public final class PlatformModule extends AbstractModule {

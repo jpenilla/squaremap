@@ -9,8 +9,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -21,14 +21,17 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
-import xyz.jpenilla.squaremap.common.WorldManagerImpl;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.inject.SquaremapModulesBuilder;
-import xyz.jpenilla.squaremap.common.task.UpdatePlayers;
-import xyz.jpenilla.squaremap.common.task.UpdateWorldData;
-import xyz.jpenilla.squaremap.fabric.data.FabricMapWorld;
+import xyz.jpenilla.squaremap.common.web.PlayerDataPublisher;
+import xyz.jpenilla.squaremap.common.web.WebSettingsPublisher;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
+import xyz.jpenilla.squaremap.common.world.WorldManagerImpl;
+import xyz.jpenilla.squaremap.fabric.client.FabricFluidColorExporter;
 import xyz.jpenilla.squaremap.fabric.inject.module.FabricModule;
 import xyz.jpenilla.squaremap.fabric.listener.FabricMapUpdates;
+import xyz.jpenilla.squaremap.fabric.player.FabricPlayerManager;
+import xyz.jpenilla.squaremap.fabric.server.FabricServerAccess;
+import xyz.jpenilla.squaremap.fabric.world.FabricMapWorld;
 
 @DefaultQualifier(NonNull.class)
 public final class SquaremapFabric implements SquaremapPlatform {
@@ -37,8 +40,8 @@ public final class SquaremapFabric implements SquaremapPlatform {
     private final FabricServerAccess serverAccess;
     private final WorldManagerImpl worldManager;
     private final ModContainer modContainer;
-    private @Nullable UpdatePlayers updatePlayers;
-    private @Nullable UpdateWorldData updateWorldData;
+    private @Nullable PlayerDataPublisher updatePlayers;
+    private @Nullable WebSettingsPublisher updateWorldData;
 
     SquaremapFabric() {
         this.injector = Guice.createInjector(
@@ -85,8 +88,8 @@ public final class SquaremapFabric implements SquaremapPlatform {
 
     @Override
     public void startCallback() {
-        this.updatePlayers = this.injector.getInstance(UpdatePlayers.class);
-        this.updateWorldData = this.injector.getInstance(UpdateWorldData.class);
+        this.updatePlayers = this.injector.getInstance(PlayerDataPublisher.class);
+        this.updateWorldData = this.injector.getInstance(WebSettingsPublisher.class);
     }
 
     @Override

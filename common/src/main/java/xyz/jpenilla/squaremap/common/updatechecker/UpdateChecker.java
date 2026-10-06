@@ -9,7 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
 
 @DefaultQualifier(NonNull.class)
 public record UpdateChecker(Logger logger) {
@@ -25,7 +25,7 @@ public record UpdateChecker(Logger logger) {
     public void checkVersion() {
         this.logger.info(Messages.UPDATE_CHECKER_FETCHING_VERSION_INFORMATION);
 
-        final @Nullable Manifest manifest = Util.manifest(UpdateChecker.class); // we expect to be shaded into platform jars
+        final @Nullable Manifest manifest = SquaremapJarAccess.manifest(UpdateChecker.class); // we expect to be shaded into platform jars
         if (manifest == null) {
             this.logger.warn("Failed to locate manifest, cannot check for updates.");
             return;

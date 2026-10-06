@@ -11,13 +11,13 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.adventure.SpongeComponents;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.plugin.PluginContainer;
-import xyz.jpenilla.squaremap.common.AbstractPlayerManager;
-import xyz.jpenilla.squaremap.common.ServerAccess;
 import xyz.jpenilla.squaremap.common.command.PlatformCommands;
 import xyz.jpenilla.squaremap.common.inject.annotation.DataDirectory;
-import xyz.jpenilla.squaremap.sponge.SpongePlayerManager;
-import xyz.jpenilla.squaremap.sponge.SpongeServerAccess;
+import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.sponge.command.SpongeCommands;
+import xyz.jpenilla.squaremap.sponge.player.SpongePlayerManager;
+import xyz.jpenilla.squaremap.sponge.server.SpongeServerAccess;
 
 @DefaultQualifier(NonNull.class)
 public final class SpongeModule extends AbstractModule {

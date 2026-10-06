@@ -4,15 +4,15 @@ import java.util.List;
 import java.util.Map;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
-import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
+import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
     private static final int LATEST_VERSION = 4;
 
-    Advanced(final DirectoryProvider directoryProvider) {
-        super(directoryProvider.dataDirectory(), Advanced.class, "advanced.yml", LATEST_VERSION);
+    Advanced(final SquaremapDirectories directories) {
+        super(directories.dataDirectory(), Advanced.class, "advanced.yml", LATEST_VERSION);
     }
 
     @Override
@@ -62,8 +62,8 @@ public final class Advanced extends AbstractConfig {
 
     static Advanced config;
 
-    public static void reload(final DirectoryProvider directoryProvider) {
-        config = new Advanced(directoryProvider);
+    public static void reload(final SquaremapDirectories directories) {
+        config = new Advanced(directories);
         config.readConfig(Advanced.class, null);
 
         // todo - replace hack

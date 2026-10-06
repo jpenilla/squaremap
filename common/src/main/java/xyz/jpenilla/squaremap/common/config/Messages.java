@@ -26,10 +26,10 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
-import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
+import xyz.jpenilla.squaremap.common.util.text.Components;
 
 @DefaultQualifier(NonNull.class)
 @SuppressWarnings("unused") // Some messages are retrieved from the map instead of the field
@@ -274,11 +274,11 @@ public final class Messages {
 
     public static void reload(
         final SquaremapJarAccess squaremapJar,
-        final DirectoryProvider directoryProvider
+        final SquaremapDirectories directories
     ) {
-        squaremapJar.extract("locale", directoryProvider.localeDirectory(), false);
+        squaremapJar.extract("locale", directories.localeDirectory(), false);
 
-        final Path configFile = directoryProvider.localeDirectory().resolve(Config.LANGUAGE_FILE);
+        final Path configFile = directories.localeDirectory().resolve(Config.LANGUAGE_FILE);
         final YamlConfigurationLoader loader = YamlConfigurationLoader.builder()
             .path(configFile)
             .nodeStyle(NodeStyle.BLOCK)

@@ -16,14 +16,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
-import xyz.jpenilla.squaremap.common.ServerAccess;
-import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.data.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.data.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.RegionFileDirectoryResolver;
-import xyz.jpenilla.squaremap.common.util.SpiralIterator;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.config.Messages;
+import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.SpiralIterator;
+import xyz.jpenilla.squaremap.common.render.RegionFileDirectoryResolver;
+import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
+import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
 public final class FullRender extends AbstractRender {

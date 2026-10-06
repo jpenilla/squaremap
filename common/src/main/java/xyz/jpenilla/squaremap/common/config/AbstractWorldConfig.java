@@ -7,12 +7,12 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 
 @SuppressWarnings("unused")
 public abstract class AbstractWorldConfig<P extends AbstractConfig> {
     public static final String DOT = "____dot____";
-    private static final @Nullable Class<?> PAPER_MIGRATION_CLASS = ReflectionUtil.findClass("xyz.jpenilla.squaremap.paper.util.WorldNameToKeyMigration");
+    private static final @Nullable Class<?> PAPER_MIGRATION_CLASS = ReflectionUtil.findClass("xyz.jpenilla.squaremap.paper.config.WorldNameToKeyMigration");
     private static final @Nullable Method PAPER_MIGRATE_METHOD = PAPER_MIGRATION_CLASS == null ? null : ReflectionUtil.needMethod(PAPER_MIGRATION_CLASS, List.of("migrate"), AbstractConfig.class, ServerLevel.class);
 
     final String worldName;
@@ -27,7 +27,7 @@ public abstract class AbstractWorldConfig<P extends AbstractConfig> {
     ) {
         this.configClass = worldConfigClass;
         this.registries = level.registryAccess();
-        this.worldName = Util.levelConfigName(level)
+        this.worldName = WorldIdentifiers.configName(level)
             .replace(".", DOT); // replace '.' as we later split on it (see AbstractConfig.splitPath)
         this.parent = parent;
 

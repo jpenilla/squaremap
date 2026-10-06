@@ -15,7 +15,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import xyz.jpenilla.squaremap.common.util.Colors;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.MinecraftRegistries;
 
 @SuppressWarnings("unused")
 public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
@@ -36,7 +36,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 "minecraft:short_grass",
                 "minecraft:large_fern"
             )
-        ).forEach(block -> this.invisibleBlocks.add(Util.requireEntry(BuiltInRegistries.BLOCK, Identifier.parse(block))));
+        ).forEach(block -> this.invisibleBlocks.add(MinecraftRegistries.requireEntry(BuiltInRegistries.BLOCK, Identifier.parse(block))));
     }
 
     public final Set<Block> iterateUpBaseBlocks = new HashSet<>();
@@ -59,13 +59,13 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 "minecraft:magma_block",
                 "minecraft:basalt"
             )
-        ).forEach(block -> this.iterateUpBaseBlocks.add(Util.requireEntry(BuiltInRegistries.BLOCK, Identifier.parse(block))));
+        ).forEach(block -> this.iterateUpBaseBlocks.add(MinecraftRegistries.requireEntry(BuiltInRegistries.BLOCK, Identifier.parse(block))));
     }
 
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_FOLIAGE = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeFoliageSettings() {
-        final Registry<Biome> registry = Util.biomeRegistry(this.registries);
+        final Registry<Biome> registry = MinecraftRegistries.biomeRegistry(this.registries);
         this.COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
         this.get(
             new TypeToken<>() {
@@ -79,7 +79,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 Map.entry("minecraft:mangrove_swamp", "#6f9623")
             )
         ).forEach((key, color) -> {
-            final Biome biome = Util.requireEntry(registry, Identifier.parse(key));
+            final Biome biome = MinecraftRegistries.requireEntry(registry, Identifier.parse(key));
             this.COLOR_OVERRIDES_BIOME_FOLIAGE.put(biome, Colors.parseHex(color));
         });
     }
@@ -87,7 +87,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_GRASS = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeGrassSettings() {
-        final Registry<Biome> registry = Util.biomeRegistry(this.registries);
+        final Registry<Biome> registry = MinecraftRegistries.biomeRegistry(this.registries);
         this.COLOR_OVERRIDES_BIOME_GRASS.clear();
         this.get(
             new TypeToken<Map<String, String>>() {
@@ -95,7 +95,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
             "color-overrides.biomes.grass",
             Map.of()
         ).forEach((key, color) -> {
-            final Biome biome = Util.requireEntry(registry, Identifier.parse(key));
+            final Biome biome = MinecraftRegistries.requireEntry(registry, Identifier.parse(key));
             this.COLOR_OVERRIDES_BIOME_GRASS.put(biome, Colors.parseHex(color));
         });
     }
@@ -103,7 +103,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_WATER = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeWaterSettings() {
-        final Registry<Biome> registry = Util.biomeRegistry(this.registries);
+        final Registry<Biome> registry = MinecraftRegistries.biomeRegistry(this.registries);
         this.COLOR_OVERRIDES_BIOME_WATER.clear();
         this.get(
             new TypeToken<Map<String, String>>() {
@@ -111,7 +111,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
             "color-overrides.biomes.water",
             Map.of()
         ).forEach((key, color) -> {
-            final Biome biome = Util.requireEntry(registry, Identifier.parse(key));
+            final Biome biome = MinecraftRegistries.requireEntry(registry, Identifier.parse(key));
             this.COLOR_OVERRIDES_BIOME_WATER.put(biome, Colors.parseHex(color));
         });
     }
@@ -155,7 +155,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 Map.entry("minecraft:glass", "#FFFFFF")
             )
         ).forEach((key, color) -> {
-            final Block block = Util.requireEntry(BuiltInRegistries.BLOCK, Identifier.parse(key));
+            final Block block = MinecraftRegistries.requireEntry(BuiltInRegistries.BLOCK, Identifier.parse(key));
             if (block != Blocks.AIR) {
                 this.COLOR_OVERRIDES_BLOCKS.put(block, Colors.parseHex(color));
             }

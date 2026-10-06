@@ -18,67 +18,68 @@ import xyz.jpenilla.squaremap.common.command.Commands;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.data.DirectoryProvider;
 import xyz.jpenilla.squaremap.common.data.LevelBiomeColorData;
-import xyz.jpenilla.squaremap.common.httpd.IntegratedServer;
-import xyz.jpenilla.squaremap.common.httpd.JsonCache;
-import xyz.jpenilla.squaremap.common.layer.SpawnIconLayer;
-import xyz.jpenilla.squaremap.common.util.Components;
+import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
+import xyz.jpenilla.squaremap.common.updatechecker.UpdateChecker;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
-import xyz.jpenilla.squaremap.common.updatechecker.UpdateChecker;
+import xyz.jpenilla.squaremap.common.util.text.Components;
+import xyz.jpenilla.squaremap.common.web.WebJsonStore;
+import xyz.jpenilla.squaremap.common.web.httpd.EmbeddedWebServer;
+import xyz.jpenilla.squaremap.common.world.WorldManagerImpl;
+import xyz.jpenilla.squaremap.common.world.layer.SpawnIconLayer;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
 public final class SquaremapCommon {
     private final Injector injector;
     private final SquaremapPlatform platform;
-    private final DirectoryProvider directoryProvider;
+    private final SquaremapDirectories directories;
     private final ConfigManager configManager;
     private final AbstractPlayerManager playerManager;
     private final WorldManagerImpl worldManager;
     private final Commands commands;
     private final SquaremapJarAccess squaremapJar;
-    private final JsonCache jsonCache;
+    private final WebJsonStore jsonStore;
 
     @Inject
     private SquaremapCommon(
         final Injector injector,
         final SquaremapPlatform platform,
-        final DirectoryProvider directoryProvider,
+        final SquaremapDirectories directories,
         final ConfigManager configManager,
         final AbstractPlayerManager playerManager,
         final WorldManagerImpl worldManager,
         final Commands commands,
         final SquaremapJarAccess squaremapJar,
-        final JsonCache jsonCache
+        final WebJsonStore jsonStore
     ) {
         this.injector = injector;
         this.platform = platform;
-        this.directoryProvider = directoryProvider;
+        this.directories = directories;
         this.configManager = configManager;
         this.playerManager = playerManager;
         this.worldManager = worldManager;
         this.commands = commands;
         this.squaremapJar = squaremapJar;
-        this.jsonCache = jsonCache;
+        this.jsonStore = jsonStore;
     }
 
     public void init() {
         this.configManager.init();
-        this.directoryProvider.init();
+        this.directories.init();
         this.start();
         this.setupApi();
         this.commands.registerCommands();
     }
 
     private void start() {
-        this.squaremapJar.extract("web", this.directoryProvider.webDirectory(), Config.UPDATE_WEB_DIR);
-        LevelBiomeColorData.loadImages(this.directoryProvider);
+        this.squaremapJar.extract("web", this.directories.webDirectory(), Config.UPDATE_WEB_DIR);
+        LevelBiomeColorData.loadImages(this.directories);
         this.worldManager.start();
         this.platform.startCallback();
         if (Config.HTTPD_ENABLED) {
-            IntegratedServer.startServer(this.directoryProvider, this.jsonCache);
+            EmbeddedWebServer.startServer(this.directories, this.jsonStore);
         } else {
             Logging.logger().info(Messages.LOG_INTERNAL_WEB_DISABLED);
         }
@@ -86,14 +87,14 @@ public final class SquaremapCommon {
 
     private void stop() {
         if (Config.HTTPD_ENABLED) {
-            IntegratedServer.stopServer();
+            EmbeddedWebServer.stopServer();
         }
         this.platform.stopCallback();
         this.worldManager.shutdown();
         if (Config.HTTPD_ENABLED && !Config.FLUSH_JSON_IMMEDIATELY) {
-            this.jsonCache.flush();
+            this.jsonStore.flush();
         }
-        this.jsonCache.clear();
+        this.jsonStore.clear();
     }
 
     public void reload(final Audience audience) {
@@ -122,7 +123,7 @@ public final class SquaremapCommon {
         final Squaremap api = this.injector.getInstance(Squaremap.class);
 
         try {
-            api.iconRegistry().register(SpawnIconLayer.KEY, ImageIO.read(this.directoryProvider.webDirectory().resolve("images/icon/spawn.png").toFile()));
+            api.iconRegistry().register(SpawnIconLayer.KEY, ImageIO.read(this.directories.webDirectory().resolve("images/icon/spawn.png").toFile()));
         } catch (final IOException ex) {
             Logging.logger().warn("Failed to register spawn icon", ex);
         }

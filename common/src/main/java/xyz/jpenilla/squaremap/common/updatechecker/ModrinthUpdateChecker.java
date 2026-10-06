@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.Json;
 
 @DefaultQualifier(NonNull.class)
 record ModrinthUpdateChecker(Logger logger, String project, String currentVersion, String minecraftVersion) {
@@ -61,7 +61,7 @@ record ModrinthUpdateChecker(Logger logger, String project, String currentVersio
     }
 
     private List<Release> fetchReleases() throws IOException {
-        final String gameVersions = URLEncoder.encode(Util.gson().toJson(List.of(this.minecraftVersion)), StandardCharsets.UTF_8);
+        final String gameVersions = URLEncoder.encode(Json.gson().toJson(List.of(this.minecraftVersion)), StandardCharsets.UTF_8);
         final URI uri = URI.create(
             "https://api.modrinth.com/v2/project/%s/version?game_versions=%s&include_changelog=false"
                 .formatted(this.project, gameVersions)
@@ -94,7 +94,7 @@ record ModrinthUpdateChecker(Logger logger, String project, String currentVersio
 
         final JsonArray result;
         try {
-            result = Util.gson().fromJson(new String(responseBytes, StandardCharsets.UTF_8), JsonArray.class);
+            result = Json.gson().fromJson(new String(responseBytes, StandardCharsets.UTF_8), JsonArray.class);
         } catch (final JsonSyntaxException e) {
             throw new IOException("Invalid response from Modrinth", e);
         }

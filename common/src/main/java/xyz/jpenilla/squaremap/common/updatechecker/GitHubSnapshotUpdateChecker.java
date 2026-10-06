@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.config.Messages;
-import xyz.jpenilla.squaremap.common.util.Util;
+import xyz.jpenilla.squaremap.common.util.Json;
 
 @DefaultQualifier(NonNull.class)
 record GitHubSnapshotUpdateChecker(Logger logger, String githubRepo, String currentVersion, String gitHash, String branch) {
@@ -73,7 +73,7 @@ record GitHubSnapshotUpdateChecker(Logger logger, String githubRepo, String curr
         }
 
         try {
-            final JsonObject responseJson = Util.gson().fromJson(new String(responseBytes, StandardCharsets.UTF_8), JsonObject.class);
+            final JsonObject responseJson = Json.gson().fromJson(new String(responseBytes, StandardCharsets.UTF_8), JsonObject.class);
             final String status = responseJson.get("status").getAsString();
             return switch (status) {
                 case "identical" -> new Distance.UpToDate();

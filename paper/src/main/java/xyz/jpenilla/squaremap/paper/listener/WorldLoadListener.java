@@ -8,8 +8,8 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.paper.PaperWorldManager;
 import xyz.jpenilla.squaremap.paper.util.CraftBukkitHelper;
+import xyz.jpenilla.squaremap.paper.world.PaperWorldManager;
 
 @DefaultQualifier(NonNull.class)
 public final class WorldLoadListener implements Listener {

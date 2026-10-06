@@ -14,8 +14,8 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.WorldManager;
-import xyz.jpenilla.squaremap.common.data.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.ChunkCoordinate;
+import xyz.jpenilla.squaremap.common.world.WorldManager;
 import xyz.jpenilla.squaremap.fabric.event.MapUpdateEvents;
 
 @DefaultQualifier(NonNull.class)

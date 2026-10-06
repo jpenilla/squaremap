@@ -5,7 +5,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.Point;
-import xyz.jpenilla.squaremap.common.util.Numbers;
+import xyz.jpenilla.squaremap.common.coordinate.CoordinateConversions;
 
 @DefaultQualifier(NonNull.class)
 final class PolygonShape implements VisibilityShape {
@@ -19,8 +19,8 @@ final class PolygonShape implements VisibilityShape {
 
     @Override
     public boolean shouldRenderChunk(final MapWorld world, final int chunkX, final int chunkZ) {
-        final int minX = Numbers.chunkToBlock(chunkX);
-        final int minZ = Numbers.chunkToBlock(chunkZ);
+        final int minX = CoordinateConversions.chunkToBlock(chunkX);
+        final int minZ = CoordinateConversions.chunkToBlock(chunkZ);
         final int maxX = minX + 16;
         final int maxZ = minZ + 16;
         for (int x = minX; x < maxX; x++) {
@@ -35,8 +35,8 @@ final class PolygonShape implements VisibilityShape {
 
     @Override
     public boolean shouldRenderRegion(final MapWorld world, final int regionX, final int regionZ) {
-        final int minX = Numbers.regionToChunk(regionX);
-        final int minZ = Numbers.regionToChunk(regionZ);
+        final int minX = CoordinateConversions.regionToChunk(regionX);
+        final int minZ = CoordinateConversions.regionToChunk(regionZ);
         final int maxX = minX + 32;
         final int maxZ = minZ + 32;
         for (int x = minX; x < maxX; x++) {
@@ -56,8 +56,8 @@ final class PolygonShape implements VisibilityShape {
 
     @Override
     public int countChunksInRegion(final MapWorld world, final int regionX, final int regionZ) {
-        final int minX = Numbers.regionToChunk(regionX);
-        final int minZ = Numbers.regionToChunk(regionZ);
+        final int minX = CoordinateConversions.regionToChunk(regionX);
+        final int minZ = CoordinateConversions.regionToChunk(regionZ);
         final int maxX = minX + 32;
         final int maxZ = minZ + 32;
         int count = 0;
