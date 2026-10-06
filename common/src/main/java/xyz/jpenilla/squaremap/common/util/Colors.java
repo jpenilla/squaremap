@@ -30,14 +30,6 @@ public final class Colors {
         return (0xFF << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public static int abgrToArgb(final int abgr) {
-        final int a = abgr >> 24 & 0xFF;
-        final int r = abgr & 0xFF;
-        final int g = abgr >> 8 & 0xFF;
-        final int b = abgr >> 16 & 0xFF;
-        return a << 24 | r << 16 | g << 8 | b;
-    }
-
     public static int argbToRgba(final int color) {
         final int a = color >> 24 & 0xFF;
         final int r = color >> 16 & 0xFF;
