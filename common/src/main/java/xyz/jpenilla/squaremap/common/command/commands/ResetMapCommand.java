@@ -2,7 +2,7 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import com.google.inject.Inject;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -16,7 +16,7 @@ import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.text.Components;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
-import xyz.jpenilla.squaremap.common.world.WorldManager;
+import xyz.jpenilla.squaremap.common.world.WorldManagerImpl;
 
 import static org.incendo.cloud.minecraft.extras.RichDescription.richDescription;
 import static xyz.jpenilla.squaremap.common.command.argument.parser.LevelParser.levelParser;
@@ -24,13 +24,13 @@ import static xyz.jpenilla.squaremap.common.command.argument.parser.LevelParser.
 @DefaultQualifier(NonNull.class)
 public final class ResetMapCommand extends SquaremapCommand {
     private final SquaremapDirectories directories;
-    private final WorldManager worldManager;
+    private final WorldManagerImpl worldManager;
 
     @Inject
     private ResetMapCommand(
         final Commands commands,
         final SquaremapDirectories directories,
-        final WorldManager worldManager
+        final WorldManagerImpl worldManager
     ) {
         super(commands);
         this.directories = directories;
@@ -51,11 +51,21 @@ public final class ResetMapCommand extends SquaremapCommand {
     private void executeResetMap(final CommandContext<Commander> context) {
         final Commander sender = context.sender();
         final ServerLevel world = context.get("world");
-        final Path worldTilesDir = this.directories.getAndCreateTilesDirectory(world);
+        final Optional<MapWorldInternal> mapWorld = this.worldManager.getWorldIfEnabled(world);
+        if (mapWorld.isPresent() && mapWorld.get().renderScheduler().isRendering()) {
+            sender.sendMessage(Messages.RENDER_IN_PROGRESS.withPlaceholders(Components.worldPlaceholder(world)));
+            return;
+        }
+        // Shut the map world down like an unload, so no render or queued save writes into the cleared tiles.
+        this.worldManager.worldUnloaded(world);
         try {
-            FileUtil.deleteContentsRecursively(worldTilesDir);
+            FileUtil.deleteContentsRecursively(this.directories.getAndCreateTilesDirectory(world));
         } catch (final IOException ex) {
             throw new RuntimeException("Could not reset map for level '" + world.dimension().identifier() + "'", ex);
+        } finally {
+            if (mapWorld.isPresent()) {
+                this.worldManager.initWorld(world);
+            }
         }
         this.worldManager.getWorldIfEnabled(world).ifPresent(MapWorldInternal::didReset);
         sender.sendMessage(Messages.SUCCESSFULLY_RESET_MAP.withPlaceholders(Components.worldPlaceholder(world)));
