@@ -3,6 +3,7 @@ package xyz.jpenilla.squaremap.common.config;
 import io.leangen.geantyref.TypeToken;
 import java.lang.reflect.Method;
 import java.util.List;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
@@ -15,7 +16,7 @@ public abstract class AbstractWorldConfig<P extends AbstractConfig> {
     private static final @Nullable Method PAPER_MIGRATE_METHOD = PAPER_MIGRATION_CLASS == null ? null : ReflectionUtil.needMethod(PAPER_MIGRATION_CLASS, List.of("migrate"), AbstractConfig.class, ServerLevel.class);
 
     final String worldName;
-    protected final ServerLevel world;
+    protected final RegistryAccess registries;
     protected final P parent;
     private final Class<? extends AbstractWorldConfig<P>> configClass;
 
@@ -25,7 +26,7 @@ public abstract class AbstractWorldConfig<P extends AbstractConfig> {
         final ServerLevel level
     ) {
         this.configClass = worldConfigClass;
-        this.world = level;
+        this.registries = level.registryAccess();
         this.worldName = Util.levelConfigName(level)
             .replace(".", DOT); // replace '.' as we later split on it (see AbstractConfig.splitPath)
         this.parent = parent;
