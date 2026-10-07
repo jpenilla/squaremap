@@ -79,5 +79,6 @@ class BiomeSnapshotLookupTest {
         @Override public int getHeight() { throw new UnsupportedOperationException(); }
         @Override public int getMinY() { throw new UnsupportedOperationException(); }
         @Override public Holder<Biome> getNoiseBiome(final int quartX, final int quartY, final int quartZ) { throw new UnsupportedOperationException(); }
+        @Override public Holder<Biome> uniformBiome(final int y) { throw new UnsupportedOperationException(); }
     }
 }

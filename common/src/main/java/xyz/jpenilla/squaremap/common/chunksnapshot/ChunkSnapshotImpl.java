@@ -18,6 +18,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
@@ -25,6 +26,7 @@ record ChunkSnapshotImpl(
     LevelHeightAccessor heightAccessor,
     PalettedContainer<BlockState>[] states,
     PalettedContainerRO<Holder<Biome>>[] biomes,
+    @Nullable Holder<Biome>[] uniformBiomes,
     Map<Heightmap.Types, HeightmapSnapshot> heightmaps,
     boolean[] emptySections,
     DimensionType dimensionType,
@@ -89,6 +91,15 @@ record ChunkSnapshotImpl(
         final int maxQuartY = minQuartY + QuartPos.fromBlock(this.getHeight()) - 1;
         final int clampedQuartY = Mth.clamp(quartY, minQuartY, maxQuartY);
         final int sectionIndex = this.getSectionIndex(QuartPos.toBlock(clampedQuartY));
+        final @Nullable Holder<Biome> uniform = this.uniformBiomes[sectionIndex];
+        if (uniform != null) {
+            return uniform;
+        }
         return this.biomes[sectionIndex].get(quartX & 3, clampedQuartY & 3, quartZ & 3);
+    }
+
+    @Override
+    public @Nullable Holder<Biome> uniformBiome(final int y) {
+        return this.uniformBiomes[this.getSectionIndex(Mth.clamp(y, this.getMinY(), this.getMaxY()))];
     }
 }
