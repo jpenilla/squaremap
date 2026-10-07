@@ -7,6 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -86,6 +87,11 @@ final class BiomeColorSampler {
 
     private int grass(final BlockPos pos) {
         if (this.blend > 0) {
+            final @Nullable Biome uniform = this.uniformBlendBiome(pos);
+            // Swamp grass color varies by position, so its samples must still be blended.
+            if (uniform != null && uniform.getSpecialEffects().grassColorModifier() != BiomeSpecialEffects.GrassColorModifier.SWAMP) {
+                return this.grassColorSampler(uniform, pos);
+            }
             return this.sampleNeighbors(pos, this.blend, this::grassColorSampler);
         }
         return this.grassColorSampler(this.biome(pos), pos);
@@ -97,6 +103,10 @@ final class BiomeColorSampler {
 
     private int foliage(final BlockPos pos) {
         if (this.blend > 0) {
+            final @Nullable Biome uniform = this.uniformBlendBiome(pos);
+            if (uniform != null) {
+                return this.colorData.foliageColors().getInt(uniform);
+            }
             return this.sampleNeighbors(pos, this.blend, (biome, b) -> this.colorData.foliageColors().getInt(biome));
         }
         return this.colorData.foliageColors().getInt(this.biome(pos));
@@ -104,6 +114,10 @@ final class BiomeColorSampler {
 
     private int water(final BlockPos pos) {
         if (this.blend > 0) {
+            final @Nullable Biome uniform = this.uniformBlendBiome(pos);
+            if (uniform != null) {
+                return this.colorData.waterColors().getInt(uniform);
+            }
             return this.sampleNeighbors(pos, this.blend, (biome, b) -> this.colorData.waterColors().getInt(biome));
         }
         return this.colorData.waterColors().getInt(this.biome(pos));
@@ -132,6 +146,33 @@ final class BiomeColorSampler {
         }
 
         return this.colorBlender.result();
+    }
+
+    /**
+     * Returns the biome every blend sample around a position resolves to, without per-sample lookups.
+     *
+     * @param pos the blended position
+     * @return the biome, or {@code null} if samples may resolve to different biomes
+     */
+    private @Nullable Biome uniformBlendBiome(final BlockPos pos) {
+        // Samples cover [pos - blend, pos + blend) at pos's Y, and each zoomed lookup reads
+        // cells up to ZOOM_MARGIN blocks further on every axis.
+        final int reach = this.blend + ZOOM_MARGIN;
+        @Nullable Holder<Biome> uniform = null;
+        for (int chunkX = (pos.getX() - reach) >> 4; chunkX <= (pos.getX() + reach - 1) >> 4; chunkX++) {
+            for (int chunkZ = (pos.getZ() - reach) >> 4; chunkZ <= (pos.getZ() + reach - 1) >> 4; chunkZ++) {
+                final @Nullable ChunkSnapshot chunk = this.snapshots.get(chunkX, chunkZ);
+                if (chunk == null) {
+                    return null;
+                }
+                final @Nullable Holder<Biome> below = chunk.uniformBiome(pos.getY() - ZOOM_MARGIN);
+                if (below == null || below != chunk.uniformBiome(pos.getY() + ZOOM_MARGIN) || uniform != null && uniform != below) {
+                    return null;
+                }
+                uniform = below;
+            }
+        }
+        return uniform == null ? null : uniform.value();
     }
 
     private Biome biome(final BlockPos pos) {
