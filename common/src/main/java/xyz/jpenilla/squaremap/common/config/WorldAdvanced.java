@@ -65,7 +65,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_FOLIAGE = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeFoliageSettings() {
-        final Registry<Biome> registry = Util.biomeRegistry(this.world);
+        final Registry<Biome> registry = Util.biomeRegistry(this.registries);
         this.COLOR_OVERRIDES_BIOME_FOLIAGE.clear();
         this.get(
             new TypeToken<>() {
@@ -87,7 +87,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_GRASS = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeGrassSettings() {
-        final Registry<Biome> registry = Util.biomeRegistry(this.world);
+        final Registry<Biome> registry = Util.biomeRegistry(this.registries);
         this.COLOR_OVERRIDES_BIOME_GRASS.clear();
         this.get(
             new TypeToken<Map<String, String>>() {
@@ -103,7 +103,7 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_WATER = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeWaterSettings() {
-        final Registry<Biome> registry = Util.biomeRegistry(this.world);
+        final Registry<Biome> registry = Util.biomeRegistry(this.registries);
         this.COLOR_OVERRIDES_BIOME_WATER.clear();
         this.get(
             new TypeToken<Map<String, String>>() {
