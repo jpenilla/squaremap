@@ -3,24 +3,19 @@ import L from "leaflet";
 import { SquaremapTileLayer } from "./SquaremapTileLayer.js";
 
 class LayerControl {
-    /** @type {number} */
-    currentLayer;
-    /** @type {number} */
-    updateInterval;
     /** @type {L.LayerGroup} */
     playersLayer;
     /** @type {L.Control.Layers} */
     controls;
-    /** @type {L.TileLayer} */
-    tileLayer1;
-    /** @type {L.TileLayer} */
-    tileLayer2;
+    /** @type {SquaremapTileLayer} */
+    tileLayer;
+    /** @type {number | null} */
+    lastTileUpdate;
     /** @type {L.Layer} */
     ignoreLayer;
 
     init() {
-        this.currentLayer = 0;
-        this.updateInterval = 60;
+        this.lastTileUpdate = null;
 
         this.playersLayer = new L.LayerGroup();
         this.playersLayer.id = "players_layer";
@@ -87,17 +82,13 @@ class LayerControl {
     /**
      * @param world {World}
      */
-    setupTileLayers(world) {
-        // setup the map tile layers
-        // we need 2 layers to swap between for seamless refreshing
-        if (this.tileLayer1 != null) {
-            S.map.removeLayer(this.tileLayer1);
+    setupTileLayer(world) {
+        // setup the map tile layer
+        if (this.tileLayer != null) {
+            S.map.removeLayer(this.tileLayer);
         }
-        if (this.tileLayer2 != null) {
-            S.map.removeLayer(this.tileLayer2);
-        }
-        this.tileLayer1 = this.createTileLayer(world);
-        this.tileLayer2 = this.createTileLayer(world);
+        this.tileLayer = this.createTileLayer(world);
+        this.lastTileUpdate = null;
 
         // refresh player's control
         this.removeOverlay(this.playersLayer);
@@ -109,7 +100,7 @@ class LayerControl {
     }
     /**
      * @param world {World}
-     * @returns {L.TileLayer}
+     * @returns {SquaremapTileLayer}
      */
     createTileLayer(world) {
         return new SquaremapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
@@ -117,31 +108,40 @@ class LayerControl {
             minNativeZoom: 0,
             maxNativeZoom: world.zoom.max,
             errorTileUrl: "images/clear.png",
-        })
-            .addTo(S.map)
-            .addEventListener("load", () => {
-                // when all tiles are loaded, switch to this layer
-                this.switchTileLayer();
-            });
+        }).addTo(S.map);
     }
-    updateTileLayer() {
-        // redraw background tile layer
-        if (this.currentLayer === 1) {
-            this.tileLayer2.redraw();
-        } else {
-            this.tileLayer1.redraw();
+    /**
+     * Reload the tiles the server has rewritten since the last manifest we read.
+     *
+     * @param json {TileUpdates}
+     */
+    updateTileLayer(json) {
+        if (this.tileLayer == null || json == null) {
+            return;
         }
-    }
-    switchTileLayer() {
-        // swap current tile layer
-        if (this.currentLayer === 1) {
-            this.tileLayer1.setZIndex(0);
-            this.tileLayer2.setZIndex(1);
-            this.currentLayer = 2;
-        } else {
-            this.tileLayer1.setZIndex(1);
-            this.tileLayer2.setZIndex(0);
-            this.currentLayer = 1;
+
+        const previous = this.lastTileUpdate;
+        this.lastTileUpdate = json.timestamp;
+
+        if (previous == null) {
+            // first manifest of this session, the tiles we already loaded are current
+            return;
+        }
+
+        if (json.dropped > previous) {
+            // the server discarded updates before we read them, so we can't tell what changed
+            this.tileLayer.reloadDisplayedTiles(json.timestamp);
+            return;
+        }
+
+        const changed = new Map();
+        for (const key in json.tiles) {
+            if (json.tiles[key] > previous) {
+                changed.set(key, json.tiles[key]);
+            }
+        }
+        if (changed.size > 0) {
+            this.tileLayer.updateTiles(changed);
         }
     }
 }
