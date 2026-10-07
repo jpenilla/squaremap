@@ -26,6 +26,7 @@ import net.minecraft.world.level.chunk.storage.SerializableChunkData;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 
@@ -77,6 +78,7 @@ public final class ChunkSnapshotFactory {
             heightAccessor,
             states,
             biomes,
+            uniformBiomes(biomes),
             heightmaps,
             empty,
             level.dimensionType(),
@@ -147,6 +149,7 @@ public final class ChunkSnapshotFactory {
             levelHeight,
             states,
             biomes,
+            uniformBiomes(biomes),
             heightmaps,
             empty,
             dimensionType,
@@ -202,5 +205,18 @@ public final class ChunkSnapshotFactory {
         final Map<Heightmap.Types, HeightmapSnapshot> heightmaps = new EnumMap<>(Heightmap.Types.class);
         heightmaps.put(Heightmap.Types.WORLD_SURFACE, worldSurface);
         return heightmaps;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static @Nullable Holder<Biome>[] uniformBiomes(final PalettedContainerRO<Holder<Biome>>[] biomes) {
+        final @Nullable Holder<Biome>[] uniform = new Holder[biomes.length];
+        for (int i = 0; i < biomes.length; i++) {
+            final Holder<Biome> first = biomes[i].get(0, 0, 0);
+            // Checks palette entries only, so a palette with unused entries reads as mixed.
+            if (!biomes[i].maybeHas(biome -> biome != first)) {
+                uniform[i] = first;
+            }
+        }
+        return uniform;
     }
 }
