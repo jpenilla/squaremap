@@ -3,7 +3,7 @@ package xyz.jpenilla.squaremap.fabric;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
+import java.nio.file.NoSuchFileException;
 import net.fabricmc.loader.api.ModContainer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -20,11 +20,8 @@ final class FabricSquaremapJarAccess implements SquaremapJarAccess {
     }
 
     @Override
-    public void useJar(final CheckedConsumer<Path, IOException> consumer) throws IOException {
-        final List<Path> roots = this.modContainer.getRootPaths();
-        if (roots.size() != 1) {
-            throw new IllegalStateException("Expected one root, got " + roots.size() + "!");
-        }
-        consumer.accept(roots.get(0));
+    public void usePath(final String path, final CheckedConsumer<Path, IOException> consumer) throws IOException {
+        // Searches every root: in development, common's output is a separate root of the mod.
+        consumer.accept(this.modContainer.findPath(path).orElseThrow(() -> new NoSuchFileException(path)));
     }
 }
