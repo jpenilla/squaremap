@@ -6,7 +6,13 @@ plugins {
   alias(libs.plugins.resource.factory.fabric)
 }
 
-loom.accessWidenerPath = layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener")
+loom {
+  accessWidenerPath = layout.projectDirectory.file("src/main/resources/squaremap-fabric.accesswidener")
+  mods.register("squaremap") {
+    sourceSet("main")
+    dependency((dependencies.create(projects.squaremapCommon) as ModuleDependency).apply { isTransitive = false })
+  }
+}
 
 dependencies {
   minecraft(libs.minecraft)

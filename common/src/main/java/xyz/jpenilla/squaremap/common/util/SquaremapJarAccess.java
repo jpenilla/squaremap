@@ -13,11 +13,17 @@ import xyz.jpenilla.squaremap.common.Logging;
 
 @DefaultQualifier(NonNull.class)
 public interface SquaremapJarAccess {
-    void useJar(CheckedConsumer<Path, IOException> consumer) throws IOException, URISyntaxException;
+    /**
+     * Provides a path within squaremap's packaged files.
+     *
+     * @param path the path, relative to the root of the packaged files
+     * @param consumer receives the path
+     */
+    void usePath(String path, CheckedConsumer<Path, IOException> consumer) throws IOException, URISyntaxException;
 
     default void extract(final String inDir, final Path outDir, final boolean replaceExisting) {
         try {
-            this.useJar(root -> FileUtil.specialCopyRecursively(root.resolve(inDir), outDir, replaceExisting));
+            this.usePath(inDir, source -> FileUtil.specialCopyRecursively(source, outDir, replaceExisting));
         } catch (final IOException | URISyntaxException ex) {
             Logging.logger().error("Failed to extract directory '{}' from jar to '{}'", inDir, outDir, ex);
         }
@@ -29,8 +35,8 @@ public interface SquaremapJarAccess {
         }
 
         @Override
-        public void useJar(final CheckedConsumer<Path, IOException> consumer) throws IOException, URISyntaxException {
-            FileUtil.openJar(jar(), fileSystem -> consumer.accept(fileSystem.getPath("/")));
+        public void usePath(final String path, final CheckedConsumer<Path, IOException> consumer) throws IOException, URISyntaxException {
+            FileUtil.openJar(jar(), fileSystem -> consumer.accept(fileSystem.getPath("/", path)));
         }
 
         private static Path jar() throws URISyntaxException, IOException {

@@ -20,7 +20,7 @@ final class ForgeSquaremapJarAccess implements SquaremapJarAccess {
     }
 
     @Override
-    public void useJar(final CheckedConsumer<Path, IOException> consumer) throws IOException {
-        FileUtil.openJar(this.modContainer.getModInfo().getOwningFile().getFile().getFilePath(), fs -> consumer.accept(fs.getPath("/")));
+    public void usePath(final String path, final CheckedConsumer<Path, IOException> consumer) throws IOException {
+        FileUtil.openJar(this.modContainer.getModInfo().getOwningFile().getFile().getFilePath(), fs -> consumer.accept(fs.getPath("/", path)));
     }
 }
