@@ -112,6 +112,10 @@ public final class RenderFactory {
         final Set<RegionCoordinate> remaining = new LinkedHashSet<>();
         int maxRadius = 0;
         final Path directory = this.directories.resolveRegionFileDirectory(world.serverLevel());
+        if (!Files.isDirectory(directory)) {
+            // Nothing has been saved in this dimension yet
+            return List.of();
+        }
         try (final var paths = Files.list(directory)) {
             for (final Path path : paths.toList()) {
                 throwIfInterrupted();
