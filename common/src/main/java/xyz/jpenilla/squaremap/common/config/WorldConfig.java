@@ -3,8 +3,9 @@ package xyz.jpenilla.squaremap.common.config;
 import java.util.List;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityShape;
-import xyz.jpenilla.squaremap.common.visibilitylimit.WorldBorderShape;
 
 @SuppressWarnings("unused")
 public final class WorldConfig extends AbstractWorldConfig<Config> {
@@ -147,9 +148,16 @@ public final class WorldConfig extends AbstractWorldConfig<Config> {
         this.WORLDBORDER_MARKER_Z_INDEX = this.getInt("map.markers.world-border.z-index", this.WORLDBORDER_MARKER_Z_INDEX);
     }
 
-    public List<VisibilityShape> VISIBILITY_LIMITS = List.of(new WorldBorderShape());
+    public List<VisibilityShape> VISIBILITY_LIMITS = List.of();
 
-    private void visibilityLimitSettings() {
+    private void visibilityLimitSettings() throws SerializationException {
+        final ConfigurationNode defaults = this.defaultNode("map.visibility-limits");
+        if (defaults.virtual()) {
+            // Written as config rather than as a default value, so the disabled example is read like any user entry
+            final ConfigurationNode example = defaults.appendListNode();
+            example.node("type").set("world-border");
+            example.node("enabled").set("false");
+        }
         this.VISIBILITY_LIMITS = this.getList(VisibilityShape.class, "map.visibility-limits", this.VISIBILITY_LIMITS);
     }
 }
