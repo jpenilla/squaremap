@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.spongepowered.configurate.ConfigurationNode;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 
@@ -100,6 +101,10 @@ public abstract class AbstractWorldConfig<P extends AbstractConfig> {
             return this.parent.get(type, wrapDefaultPath(path), def);
         }
         return this.parent.get(type, this.wrapPath(path), this.parent.get(type, wrapDefaultPath(path), def));
+    }
+
+    protected final ConfigurationNode defaultNode(final String path) {
+        return this.parent.config.node(Config.splitPath(wrapDefaultPath(path)));
     }
 
     private boolean virtual(String path) {
