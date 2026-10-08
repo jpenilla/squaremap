@@ -2,6 +2,7 @@ package xyz.jpenilla.squaremap.common.command.commands;
 
 import com.google.inject.Inject;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Optional;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -15,6 +16,7 @@ import xyz.jpenilla.squaremap.common.command.SquaremapCommand;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.text.Components;
+import xyz.jpenilla.squaremap.common.web.WebJsonStore;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.world.WorldManagerImpl;
 
@@ -25,16 +27,19 @@ import static xyz.jpenilla.squaremap.common.command.argument.parser.LevelParser.
 public final class ResetMapCommand extends SquaremapCommand {
     private final SquaremapDirectories directories;
     private final WorldManagerImpl worldManager;
+    private final WebJsonStore jsonStore;
 
     @Inject
     private ResetMapCommand(
         final Commands commands,
         final SquaremapDirectories directories,
-        final WorldManagerImpl worldManager
+        final WorldManagerImpl worldManager,
+        final WebJsonStore jsonStore
     ) {
         super(commands);
         this.directories = directories;
         this.worldManager = worldManager;
+        this.jsonStore = jsonStore;
     }
 
     @Override
@@ -56,13 +61,16 @@ public final class ResetMapCommand extends SquaremapCommand {
             sender.sendMessage(Messages.RENDER_IN_PROGRESS.withPlaceholders(Components.worldPlaceholder(world)));
             return;
         }
+        final Path tilesDirectory = this.directories.getAndCreateTilesDirectory(world);
         // Shut the map world down like an unload, so no render or queued save writes into the cleared tiles.
         this.worldManager.worldUnloaded(world);
         try {
-            FileUtil.deleteContentsRecursively(this.directories.getAndCreateTilesDirectory(world));
+            FileUtil.deleteContentsRecursively(tilesDirectory);
         } catch (final IOException ex) {
             throw new RuntimeException("Could not reset map for level '" + world.dimension().identifier() + "'", ex);
         } finally {
+            // Cached documents may describe deleted files, so drop them to have the next update rewrite them.
+            this.jsonStore.clear(tilesDirectory);
             if (mapWorld.isPresent()) {
                 this.worldManager.initWorld(world);
             }
