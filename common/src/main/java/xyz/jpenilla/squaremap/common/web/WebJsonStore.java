@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -60,6 +61,16 @@ public final class WebJsonStore {
 
     public void clear() {
         this.cache.clear();
+    }
+
+    /**
+     * Forgets documents under a directory whose files were deleted, so the next put writes them again.
+     *
+     * @param directory a directory inside the web directory
+     */
+    public void clear(final Path directory) {
+        final String prefix = "/" + this.directories.webDirectory().relativize(directory).toString().replace("\\", "/") + "/";
+        this.cache.keySet().removeIf(path -> path.startsWith(prefix));
     }
 
     private void write(final String path, final String data) {
