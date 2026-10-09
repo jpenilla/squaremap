@@ -51,11 +51,11 @@ public final class SpongeCommands implements PlatformCommands {
         mgr.parserMapper().cloudNumberSuggestions(true);
         mgr.parserMapper().registerMapping(new TypeToken<LevelParser<Commander>>() {}, builder -> {
             builder.cloudSuggestions(true);
-            builder.to(doubleParser -> CommandTreeNodeTypes.DIMENSION.get().createNode());
+            builder.to((parser, holder) -> CommandTreeNodeTypes.DIMENSION.get(holder).createNode());
         });
         mgr.parserMapper().registerMapping(new TypeToken<MapWorldParser<Commander>>() {}, builder -> {
             builder.cloudSuggestions(true);
-            builder.to(doubleParser -> CommandTreeNodeTypes.DIMENSION.get().createNode());
+            builder.to((parser, holder) -> CommandTreeNodeTypes.DIMENSION.get(holder).createNode());
         });
 
         return mgr;
