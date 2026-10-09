@@ -93,7 +93,7 @@ neoForgeModsToml {
       required("adventure_platform_neoforge", "*") {
         after()
       }
-      optional("moonrise", "*")
+      optional("moonrise", "[1.0.1,)") // NoCopyNBTData
     }
   }
 }

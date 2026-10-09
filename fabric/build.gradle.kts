@@ -89,6 +89,7 @@ fabricModJson {
   depends("cloud", "*")
   depends("adventure-platform-fabric", "*")
   recommends("moonrise", "*")
+  breaks("moonrise", "<1.0.1") // NoCopyNBTData
 }
 
 publishMods.modrinth {
