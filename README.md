@@ -32,7 +32,7 @@ squaremap hooks into your Minecraft server as a plugin or mod on a [supported pl
 
 ## Downloads
 
-Downloads can be obtained from the [releases](https://github.com/jpenilla/squaremap/releases) section.
+Downloads can be obtained from [Modrinth](https://modrinth.com/mod/squaremap).
 
 <details>
 <summary>Development builds</summary>
@@ -61,7 +61,7 @@ Releases are published to Maven Central
 <details>
 <summary>Using snapshot builds</summary>
 
-> Snapshot builds are available on the Sonatype snapshots maven repository: `https://s01.oss.sonatype.org/content/repositories/snapshots/`
+> Snapshot builds are available on the Sonatype snapshots maven repository: `https://central.sonatype.com/repository/maven-snapshots/`
 >
 > Consult your build tool's documentation for details on adding maven repositories to your project.
 </details>
