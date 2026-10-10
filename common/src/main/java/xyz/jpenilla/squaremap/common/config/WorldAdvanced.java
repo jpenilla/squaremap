@@ -87,6 +87,22 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
         });
     }
 
+    public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_DRY_FOLIAGE = new Reference2IntOpenHashMap<>();
+
+    private void colorOverrideBiomeDryFoliageSettings() {
+        final Registry<Biome> registry = MinecraftRegistries.biomeRegistry(this.registries);
+        this.COLOR_OVERRIDES_BIOME_DRY_FOLIAGE.clear();
+        this.get(
+            new TypeToken<Map<String, String>>() {
+            },
+            "color-overrides.biomes.dry-foliage",
+            Map.of()
+        ).forEach((key, color) -> {
+            final Biome biome = MinecraftRegistries.requireEntry(registry, Identifier.parse(key));
+            this.COLOR_OVERRIDES_BIOME_DRY_FOLIAGE.put(biome, Colors.parseHex(color));
+        });
+    }
+
     public final Reference2IntMap<Biome> COLOR_OVERRIDES_BIOME_GRASS = new Reference2IntOpenHashMap<>();
 
     private void colorOverrideBiomeGrassSettings() {

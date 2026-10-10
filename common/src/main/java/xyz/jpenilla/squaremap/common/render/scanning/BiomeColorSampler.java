@@ -48,6 +48,10 @@ final class BiomeColorSampler {
         Blocks.MANGROVE_LEAVES
     );
 
+    private static final Set<Block> DRY_FOLIAGE_COLOR_BLOCKS = Set.of(
+        Blocks.LEAF_LITTER
+    );
+
     private final ColorBlender colorBlender = new ColorBlender();
     private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
     private final Long2ReferenceLinkedOpenHashMap<Biome> biomeCache = new Long2ReferenceLinkedOpenHashMap<>(BLOCKPOS_BIOME_CACHE_SIZE);
@@ -79,6 +83,8 @@ final class BiomeColorSampler {
             color = this.grass(pos);
         } else if (FOLIAGE_COLOR_BLOCKS.contains(block)) {
             color = this.foliage(pos);
+        } else if (DRY_FOLIAGE_COLOR_BLOCKS.contains(block)) {
+            color = this.dryFoliage(pos);
         } else if (block.defaultMapColor() == MapColor.WATER) {
             int modColor = this.water(pos);
             color = Colors.mix(color, modColor, 0.8F);
@@ -112,6 +118,17 @@ final class BiomeColorSampler {
             return this.sampleNeighbors(pos, this.blend, (biome, b) -> this.colorData.foliageColors().getInt(biome));
         }
         return this.colorData.foliageColors().getInt(this.biome(pos));
+    }
+
+    private int dryFoliage(final BlockPos pos) {
+        if (this.blend > 0) {
+            final @Nullable Biome uniform = this.uniformBlendBiome(pos);
+            if (uniform != null) {
+                return this.colorData.dryFoliageColors().getInt(uniform);
+            }
+            return this.sampleNeighbors(pos, this.blend, (biome, b) -> this.colorData.dryFoliageColors().getInt(biome));
+        }
+        return this.colorData.dryFoliageColors().getInt(this.biome(pos));
     }
 
     private int water(final BlockPos pos) {
