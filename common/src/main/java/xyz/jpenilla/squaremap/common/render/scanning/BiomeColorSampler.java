@@ -35,7 +35,8 @@ final class BiomeColorSampler {
         Blocks.FERN,
         Blocks.LARGE_FERN,
         Blocks.POTTED_FERN,
-        Blocks.SUGAR_CANE
+        Blocks.SUGAR_CANE,
+        Blocks.BUSH
     );
 
     private static final Set<Block> FOLIAGE_COLOR_BLOCKS = Set.of(
