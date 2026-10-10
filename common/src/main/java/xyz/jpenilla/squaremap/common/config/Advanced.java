@@ -1,7 +1,9 @@
 package xyz.jpenilla.squaremap.common.config;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.NodePath;
 import org.spongepowered.configurate.transformation.ConfigurationTransformation;
 import xyz.jpenilla.squaremap.common.SquaremapDirectories;
@@ -9,7 +11,7 @@ import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
-    private static final int LATEST_VERSION = 5;
+    private static final int LATEST_VERSION = 6;
 
     Advanced(final SquaremapDirectories directories) {
         super(directories.dataDirectory(), Advanced.class, "advanced.yml", LATEST_VERSION);
@@ -64,11 +66,24 @@ public final class Advanced extends AbstractConfig {
                     map.putIfAbsent("minecraft:pitcher_plant", "#6F6CCC");
                 }))
             .build();
+        final ConfigurationTransformation fiveToSix = ConfigurationTransformation.builder()
+            .addAction(NodePath.path("world-settings"), Transformations.eachMapChild(worldSection -> {
+                // Bush is grass-like ground cover, so hide it wherever short grass is still hidden.
+                final ConfigurationNode invisibleBlocks = worldSection.node("invisible-blocks");
+                final List<String> blocks = new ArrayList<>(invisibleBlocks.getList(String.class, List.of()));
+                if (blocks.stream().anyMatch(Transformations.maybeMinecraft("short_grass")::contains)
+                    && blocks.stream().noneMatch(Transformations.maybeMinecraft("bush")::contains)) {
+                    blocks.add("minecraft:bush");
+                    invisibleBlocks.setList(String.class, blocks);
+                }
+            }))
+            .build();
 
         versionedBuilder.addVersion(2, oneToTwo);
         versionedBuilder.addVersion(3, twoToThree);
         versionedBuilder.addVersion(4, threeToFour);
-        versionedBuilder.addVersion(LATEST_VERSION, fourToFive);
+        versionedBuilder.addVersion(5, fourToFive);
+        versionedBuilder.addVersion(LATEST_VERSION, fiveToSix);
     }
 
     static Advanced config;
