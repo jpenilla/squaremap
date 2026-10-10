@@ -64,16 +64,26 @@ public final class Advanced extends AbstractConfig {
                     map.putIfAbsent("minecraft:golden_dandelion", "#DBA213");
                     map.putIfAbsent("minecraft:torchflower", "#F6B927");
                     map.putIfAbsent("minecraft:pitcher_plant", "#6F6CCC");
+                    map.putIfAbsent("minecraft:short_dry_grass", "#BA9C68");
+                    map.putIfAbsent("minecraft:tall_dry_grass", "#BA9C68");
                 }))
             .build();
         final ConfigurationTransformation fiveToSix = ConfigurationTransformation.builder()
             .addAction(NodePath.path("world-settings"), Transformations.eachMapChild(worldSection -> {
-                // Bush is grass-like ground cover, so hide it wherever short grass is still hidden.
+                // Newer grass-like ground cover, hidden wherever short grass is still hidden.
                 final ConfigurationNode invisibleBlocks = worldSection.node("invisible-blocks");
                 final List<String> blocks = new ArrayList<>(invisibleBlocks.getList(String.class, List.of()));
-                if (blocks.stream().anyMatch(Transformations.maybeMinecraft("short_grass")::contains)
-                    && blocks.stream().noneMatch(Transformations.maybeMinecraft("bush")::contains)) {
-                    blocks.add("minecraft:bush");
+                if (blocks.stream().noneMatch(Transformations.maybeMinecraft("short_grass")::contains)) {
+                    return;
+                }
+                boolean changed = false;
+                for (final String block : List.of("bush", "short_dry_grass", "tall_dry_grass")) {
+                    if (blocks.stream().noneMatch(Transformations.maybeMinecraft(block)::contains)) {
+                        blocks.add("minecraft:" + block);
+                        changed = true;
+                    }
+                }
+                if (changed) {
                     invisibleBlocks.setList(String.class, blocks);
                 }
             }))
