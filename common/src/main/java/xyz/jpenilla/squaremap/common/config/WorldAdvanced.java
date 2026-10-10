@@ -35,7 +35,9 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 "minecraft:fern",
                 "minecraft:short_grass",
                 "minecraft:large_fern",
-                "minecraft:bush"
+                "minecraft:bush",
+                "minecraft:short_dry_grass",
+                "minecraft:tall_dry_grass"
             )
         ).forEach(block -> this.invisibleBlocks.add(MinecraftRegistries.requireEntry(BuiltInRegistries.BLOCK, Identifier.parse(block))));
     }
@@ -156,6 +158,8 @@ public final class WorldAdvanced extends AbstractWorldConfig<Advanced> {
                 Map.entry("minecraft:spruce_leaves", "#619961"),
                 Map.entry("minecraft:birch_leaves", "#80A755"),
                 Map.entry("minecraft:pale_oak_leaves", "#626760"),
+                Map.entry("minecraft:short_dry_grass", "#BA9C68"),
+                Map.entry("minecraft:tall_dry_grass", "#BA9C68"),
                 Map.entry("minecraft:lava", "#EA5C0F"),
                 Map.entry("minecraft:glass", "#FFFFFF")
             )
