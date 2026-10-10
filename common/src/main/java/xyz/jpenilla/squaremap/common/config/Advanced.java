@@ -9,7 +9,7 @@ import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 
 @SuppressWarnings("unused")
 public final class Advanced extends AbstractConfig {
-    private static final int LATEST_VERSION = 4;
+    private static final int LATEST_VERSION = 5;
 
     Advanced(final SquaremapDirectories directories) {
         super(directories.dataDirectory(), Advanced.class, "advanced.yml", LATEST_VERSION);
@@ -54,10 +54,21 @@ public final class Advanced extends AbstractConfig {
                     map.put("minecraft:pale_oak_leaves", "#626760");
                 }))
             .build();
+        final ConfigurationTransformation fourToFive = ConfigurationTransformation.builder()
+            .addAction(
+                defaultColorOverridesPath.withAppendedChild("blocks"),
+                Transformations.modifyStringMap(map -> {
+                    map.putIfAbsent("minecraft:wildflowers", "#EDD575");
+                    map.putIfAbsent("minecraft:golden_dandelion", "#DBA213");
+                    map.putIfAbsent("minecraft:torchflower", "#F6B927");
+                    map.putIfAbsent("minecraft:pitcher_plant", "#6F6CCC");
+                }))
+            .build();
 
         versionedBuilder.addVersion(2, oneToTwo);
         versionedBuilder.addVersion(3, twoToThree);
-        versionedBuilder.addVersion(LATEST_VERSION, threeToFour);
+        versionedBuilder.addVersion(4, threeToFour);
+        versionedBuilder.addVersion(LATEST_VERSION, fourToFive);
     }
 
     static Advanced config;
