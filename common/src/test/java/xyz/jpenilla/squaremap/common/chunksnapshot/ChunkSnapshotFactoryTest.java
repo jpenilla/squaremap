@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ChunkSnapshotFactoryTest {
     private static PalettedContainerFactory factory;
+    private static SectionDecoder decoder;
     private static DimensionType dimensionType;
 
     @BeforeAll
@@ -51,6 +52,7 @@ class ChunkSnapshotFactoryTest {
         biomes.register(Biomes.PLAINS, registries.lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS).value(), RegistrationInfo.BUILT_IN);
         biomes.freeze();
         factory = PalettedContainerFactory.create(new RegistryAccess.ImmutableRegistryAccess(List.of(biomes)));
+        decoder = new SectionDecoder(factory, biomes);
         dimensionType = registries.lookupOrThrow(Registries.DIMENSION_TYPE).getOrThrow(BuiltinDimensionTypes.OVERWORLD).value();
         EmptySectionHolder.init(factory);
     }
@@ -69,7 +71,7 @@ class ChunkSnapshotFactoryTest {
             saved.remove(SerializableChunkData.HEIGHTMAPS_TAG);
         }
 
-        final ChunkSnapshot snapshot = ChunkSnapshotFactory.snapshotFromChunkData(chunk, dimensionType, factory, saved);
+        final ChunkSnapshot snapshot = ChunkSnapshotFactory.snapshotFromChunkData(chunk, dimensionType, decoder, saved);
         final int[] expected = new int[256];
         final int[] actual = new int[256];
         for (int z = 0; z < 16; z++) {
@@ -84,7 +86,7 @@ class ChunkSnapshotFactoryTest {
     @Test
     void identifiesEmptyDecodedSections() {
         final ProtoChunk chunk = terrainFixture(-64, 384);
-        final ChunkSnapshot snapshot = ChunkSnapshotFactory.snapshotFromChunkData(chunk, dimensionType, factory, serialize(chunk));
+        final ChunkSnapshot snapshot = ChunkSnapshotFactory.snapshotFromChunkData(chunk, dimensionType, decoder, serialize(chunk));
         for (int i = 0; i < chunk.getSectionsCount(); i++) {
             assertEquals(chunk.getSection(i).hasOnlyAir(), snapshot.sectionEmpty(i), "Section " + i);
         }

@@ -11,8 +11,6 @@ import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.PalettedContainer;
-import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
@@ -24,8 +22,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 @DefaultQualifier(NonNull.class)
 record ChunkSnapshotImpl(
     LevelHeightAccessor heightAccessor,
-    PalettedContainer<BlockState>[] states,
-    PalettedContainerRO<Holder<Biome>>[] biomes,
+    SectionData<BlockState>[] states,
+    SectionData<Holder<Biome>>[] biomes,
     @Nullable Holder<Biome>[] uniformBiomes,
     Map<Heightmap.Types, HeightmapSnapshot> heightmaps,
     boolean[] emptySections,
@@ -95,7 +93,7 @@ record ChunkSnapshotImpl(
         if (uniform != null) {
             return uniform;
         }
-        return this.biomes[sectionIndex].get(quartX & 3, clampedQuartY & 3, quartZ & 3);
+        return this.biomes[sectionIndex].get((clampedQuartY & 3) << 4 | (quartZ & 3) << 2 | quartX & 3);
     }
 
     @Override
