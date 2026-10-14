@@ -1,0 +1,202 @@
+name: Sync from upstream
+
+# Pulls the latest jpenilla/squaremap into a fresh branch, then re-applies
+# the fork's own commits (anything on BASE_BRANCH that upstream doesn't have:
+# colour codes, extra zoom-out, right-click menu) on top via format-patch / am.
+#
+# Optionally builds the result, and optionally promotes it to BASE_BRANCH.
+#
+# Secret (recommended): SYNC_TOKEN = a PAT with "repo" + "workflow" scope.
+#   Upstream regularly touches .github/workflows/*, and the default
+#   GITHUB_TOKEN is not allowed to push commits that modify workflow files.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"          # Mondays 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Re-create the sync branch even if it already exists"
+        type: boolean
+        default: false
+      skip_build:
+        description: "Skip the verification build"
+        type: boolean
+        default: false
+      promote:
+        description: "After a good build, force-reset BASE_BRANCH to the sync branch"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_REPO: jpenilla/squaremap
+  UPSTREAM_BRANCH: master
+  BASE_BRANCH: master             # your fork's main branch
+  BRANCH_PREFIX: sync/upstream-   # branch = prefix + short upstream sha
+  AUTO_PROMOTE: "false"           # "true" = scheduled runs also reset BASE_BRANCH
+  JAVA_VERSION: "21"
+  BUILD_CMD: "./gradlew :squaremap-paper:shadowJar -x javadoc -x javadocJar"
+  GIT_NAME: "dpembo"
+  GIT_EMAIL: "dpembo@users.noreply.github.com"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SYNC_TOKEN || github.token }}
+
+      - name: Prepare sync branch
+        id: prepare
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+          git config user.name  "$GIT_NAME"
+          git config user.email "$GIT_EMAIL"
+
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          git fetch --no-tags upstream "$UPSTREAM_BRANCH"
+          git fetch --no-tags origin   "$BASE_BRANCH"
+
+          UP_REF="upstream/${UPSTREAM_BRANCH}"
+          BASE_REF="origin/${BASE_BRANCH}"
+          UP_SHA="$(git rev-parse --short=10 "$UP_REF")"
+          BRANCH="${BRANCH_PREFIX}${UP_SHA}"
+
+          {
+            echo "branch=$BRANCH"
+            echo "up_sha=$UP_SHA"
+            echo "base_sha=$(git rev-parse "$BASE_REF")"
+            echo "skip=false"
+            echo "conflict=false"
+          } >> "$GITHUB_OUTPUT"
+
+          # Already contains everything upstream has -> nothing to do
+          if git merge-base --is-ancestor "$UP_REF" "$BASE_REF"; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "reason=$BASE_BRANCH already contains upstream $UP_SHA" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Branch for this upstream commit already exists
+          if [[ "${FORCE:-}" != "true" ]] && git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "reason=$BRANCH already exists (run with force to recreate)" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Fork-only commits = everything on BASE not reachable from upstream
+          PATCH_DIR="$RUNNER_TEMP/patches"
+          mkdir -p "$PATCH_DIR"
+          git format-patch --no-merges --output-directory "$PATCH_DIR" "$UP_REF..$BASE_REF"
+          COUNT="$(find "$PATCH_DIR" -name '*.patch' | wc -l)"
+          echo "patch_dir=$PATCH_DIR" >> "$GITHUB_OUTPUT"
+          echo "patch_count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Fork commits to re-apply: $COUNT"
+
+          git checkout -B "$BRANCH" "$UP_REF"
+
+          if [[ "$COUNT" -gt 0 ]]; then
+            if ! git am --3way "$PATCH_DIR"/*.patch; then
+              git am --abort || true
+              echo "conflict=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
+      - name: Upload patches on conflict
+        if: steps.prepare.outputs.conflict == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fork-patches
+          path: ${{ steps.prepare.outputs.patch_dir }}
+
+      - name: Report conflict
+        if: steps.prepare.outputs.conflict == 'true'
+        run: |
+          {
+            echo "### Sync failed: patch conflict"
+            echo "Upstream \`${{ steps.prepare.outputs.up_sha }}\` no longer applies cleanly with your commits."
+            echo "Download the \`fork-patches\` artifact, then locally:"
+            echo '```'
+            echo "git checkout -B ${{ steps.prepare.outputs.branch }} upstream/${UPSTREAM_BRANCH}"
+            echo "git am --3way *.patch   # fix conflicts, git am --continue"
+            echo "git push origin ${{ steps.prepare.outputs.branch }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+
+      - name: Nothing to do
+        if: steps.prepare.outputs.skip == 'true'
+        run: echo "### Up to date - ${{ steps.prepare.outputs.reason }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Push sync branch
+        if: steps.prepare.outputs.skip != 'true' && steps.prepare.outputs.conflict != 'true'
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+          FLAG=""
+          [[ "${FORCE:-}" == "true" ]] && FLAG="--force"
+          git push $FLAG origin "${{ steps.prepare.outputs.branch }}"
+
+      - name: Set up Java
+        if: steps.prepare.outputs.skip != 'true' && steps.prepare.outputs.conflict != 'true' && !inputs.skip_build
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Bun
+        if: steps.prepare.outputs.skip != 'true' && steps.prepare.outputs.conflict != 'true' && !inputs.skip_build
+        uses: oven-sh/setup-bun@v2
+
+      - name: Set up Gradle
+        if: steps.prepare.outputs.skip != 'true' && steps.prepare.outputs.conflict != 'true' && !inputs.skip_build
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Verify build
+        if: steps.prepare.outputs.skip != 'true' && steps.prepare.outputs.conflict != 'true' && !inputs.skip_build
+        run: |
+          chmod +x ./gradlew
+          ${{ env.BUILD_CMD }}
+
+      - name: Upload jar
+        if: steps.prepare.outputs.skip != 'true' && steps.prepare.outputs.conflict != 'true' && !inputs.skip_build
+        uses: actions/upload-artifact@v4
+        with:
+          name: squaremap-paper-${{ steps.prepare.outputs.up_sha }}
+          path: |
+            paper/build/libs/squaremap-paper-*.jar
+            !paper/build/libs/*-sources.jar
+            !paper/build/libs/*-javadoc.jar
+          if-no-files-found: warn
+
+      - name: Promote to base branch
+        if: steps.prepare.outputs.skip != 'true' && steps.prepare.outputs.conflict != 'true' && (inputs.promote || env.AUTO_PROMOTE == 'true')
+        run: |
+          set -euo pipefail
+          git push \
+            --force-with-lease="${BASE_BRANCH}:${{ steps.prepare.outputs.base_sha }}" \
+            origin "HEAD:refs/heads/${BASE_BRANCH}"
+
+      - name: Summary
+        if: steps.prepare.outputs.skip != 'true' && steps.prepare.outputs.conflict != 'true'
+        run: |
+          {
+            echo "### Synced to upstream \`${{ steps.prepare.outputs.up_sha }}\`"
+            echo "- Branch: \`${{ steps.prepare.outputs.branch }}\`"
+            echo "- Fork commits re-applied: ${{ steps.prepare.outputs.patch_count }}"
+            echo "- Promoted to \`${BASE_BRANCH}\`: ${{ (inputs.promote || env.AUTO_PROMOTE == 'true') && 'yes' || 'no' }}"
+          } >> "$GITHUB_STEP_SUMMARY"
