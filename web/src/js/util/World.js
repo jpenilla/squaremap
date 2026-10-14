@@ -92,7 +92,7 @@ class World {
 
                 // set center and zoom
                 S.centerOn(this.spawn.x, this.spawn.z, this.zoom.def)
-                    .setMinZoom(0) // extra zoom out doesn't work :(
+                    .setMinZoom(0 - (this.zoom.extra_out ?? 0))
                     .setMaxZoom(this.zoom.max + this.zoom.extra);
 
                 // update page title

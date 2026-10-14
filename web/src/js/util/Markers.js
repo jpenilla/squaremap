@@ -1,5 +1,6 @@
 import { S } from "../Squaremap.js";
 import L from "leaflet";
+import { applyMinecraftColors } from "./MinecraftColors.js";
 
 class Marker {
     /** @type {L.Marker} */
@@ -16,9 +17,9 @@ class Marker {
     constructor(opts) {
         this.opts = opts;
         this.id = this.opts.pop("id");
-        this.popup = this.opts.pop("popup");
+        this.popup = applyMinecraftColors(this.opts.pop("popup"));
         this.popup_sticky = true;
-        this.tooltip = this.opts.pop("tooltip");
+        this.tooltip = applyMinecraftColors(this.opts.pop("tooltip"));
         this.tooltip_sticky = true;
     }
     init() {
