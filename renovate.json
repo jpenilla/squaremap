@@ -4,9 +4,7 @@
         "config:recommended"
     ],
     "ignoreDeps": [
-        "com.mojang:minecraft",
-        "dev.architectury:architectury-loom",
-        "xyz.jpenilla.quiet-fabric-loom:xyz.jpenilla.quiet-fabric-loom.gradle.plugin"
+        "com.mojang:minecraft"
     ],
     "labels": [
         "dependencies"
@@ -36,26 +34,6 @@
                 "io.papermc.paper:dev-bundle"
             ],
             "versioning": "regex:^(?<compatibility>.+)\\.build\\.(?<minor>\\d+)(?:-[a-z]+)?$"
-        },
-        {
-            "matchManagers": [
-                "github-actions",
-                "gradle-wrapper"
-            ],
-            "groupName": "gradle and github actions"
-        },
-        {
-            "matchDepTypes": [
-                "plugin"
-            ],
-            "groupName": "gradle and github actions"
-        },
-        {
-            "matchFileNames": [
-                "build-logic/*",
-                "buildSrc/*"
-            ],
-            "groupName": "gradle and github actions"
         }
     ],
     "semanticCommitType": "build",
