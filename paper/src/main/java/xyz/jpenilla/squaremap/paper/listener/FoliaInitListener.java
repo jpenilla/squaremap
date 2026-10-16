@@ -1,4 +1,4 @@
-package xyz.jpenilla.squaremap.paper.folia;
+package xyz.jpenilla.squaremap.paper.listener;
 
 import io.papermc.paper.threadedregions.RegionizedServerInitEvent;
 import org.bukkit.event.EventHandler;
