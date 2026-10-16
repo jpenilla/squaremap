@@ -1,6 +1,5 @@
 package xyz.jpenilla.squaremap.common.chunksnapshot;
 
-import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
@@ -9,7 +8,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
@@ -19,9 +17,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.chunk.PalettedContainer;
-import net.minecraft.world.level.chunk.PalettedContainerFactory;
-import net.minecraft.world.level.chunk.PalettedContainerRO;
 import net.minecraft.world.level.chunk.storage.SerializableChunkData;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -51,8 +46,8 @@ public final class ChunkSnapshotFactory {
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(chunk.getMinY(), chunk.getHeight());
         final int sectionCount = heightAccessor.getSectionsCount();
         final LevelChunkSection[] sections = chunk.getSections();
-        final PalettedContainer<BlockState>[] states = new PalettedContainer[sectionCount];
-        final PalettedContainerRO<Holder<Biome>>[] biomes = new PalettedContainerRO[sectionCount];
+        final SectionData<BlockState>[] states = new SectionData[sectionCount];
+        final SectionData<Holder<Biome>>[] biomes = new SectionData[sectionCount];
 
         final boolean[] empty = new boolean[sectionCount];
         if (!chunk.hasPrimedHeightmap(Heightmap.Types.WORLD_SURFACE)) {
@@ -68,10 +63,10 @@ public final class ChunkSnapshotFactory {
             if (sectionEmpty) {
                 states[i] = EmptySectionHolder.getEmptySectionBlockStates();
             } else {
-                states[i] = sections[i].getStates().copy();
+                states[i] = SectionData.of(sections[i].getStates().copy());
             }
 
-            biomes[i] = sections[i].getBiomes().copy();
+            biomes[i] = SectionData.of(sections[i].getBiomes().copy());
         }
 
         return new ChunkSnapshotImpl(
@@ -91,12 +86,12 @@ public final class ChunkSnapshotFactory {
      *
      * <p>The caller must supply NBT already upgraded to the current data version and classified
      * as {@link ChunkSnapshotEligibility#ELIGIBLE}. The data is only read, so it may be shared
-     * with other readers, but must not be mutated while this runs. This method does not check
-     * generation status or complete retrogen and may run off-thread.</p>
+     * with other readers, but must not be mutated afterward; the snapshot keeps its data arrays.
+     * This method does not check generation status or complete retrogen and may run off-thread.</p>
      *
      * @param levelHeight the level's vertical bounds
      * @param dimensionType the level's dimension type
-     * @param containerFactory the level's palette container factory
+     * @param sectionDecoder the level's section decoder
      * @param chunkData the upgraded, snapshot-ready chunk data
      * @return the decoded snapshot
      * @throws SerializableChunkData.ChunkReadException if a section palette cannot be decoded
@@ -105,22 +100,19 @@ public final class ChunkSnapshotFactory {
     public static ChunkSnapshot snapshotFromChunkData(
         final LevelHeightAccessor levelHeight,
         final DimensionType dimensionType,
-        final PalettedContainerFactory containerFactory,
+        final SectionDecoder sectionDecoder,
         final CompoundTag chunkData
     ) {
         final ChunkPos chunkPos = readChunkPos(chunkData);
         final ListTag sectionTags = chunkData.getListOrEmpty(SerializableChunkData.SECTIONS_TAG);
         final int sectionCount = levelHeight.getSectionsCount();
 
-        final PalettedContainer<BlockState>[] states = new PalettedContainer[sectionCount];
-        final PalettedContainerRO<Holder<Biome>>[] biomes = new PalettedContainerRO[sectionCount];
+        final SectionData<BlockState>[] states = new SectionData[sectionCount];
+        final SectionData<Holder<Biome>>[] biomes = new SectionData[sectionCount];
         final boolean[] empty = new boolean[sectionCount];
         Arrays.fill(states, EmptySectionHolder.getEmptySectionBlockStates());
         Arrays.fill(biomes, EmptySectionHolder.getEmptySectionBiomes());
         Arrays.fill(empty, true);
-
-        final Codec<PalettedContainerRO<Holder<Biome>>> biomesCodec = containerFactory.biomeContainerCodec();
-        final Codec<PalettedContainer<BlockState>> blockStatesCodec = containerFactory.blockStatesContainerCodec();
 
         for (int i = 0; i < sectionTags.size(); ++i) {
             final Optional<CompoundTag> maybeSectionTag = sectionTags.getCompound(i);
@@ -129,12 +121,16 @@ public final class ChunkSnapshotFactory {
                 final int y = sectionTag.getByteOr(ChunkDataKeys.SECTION_Y, (byte) 0);
                 final int index = y - levelHeight.getMinSectionY();
                 if (index >= 0 && index < sectionCount) {
-                    final Optional<PalettedContainer<BlockState>> maybeBlocks = sectionTag.getCompound(ChunkDataKeys.BLOCK_STATES)
-                        .map((container) -> blockStatesCodec.parse(NbtOps.INSTANCE, container).promotePartial((msg) -> Logging.logger().warn("Failed to decode chunk {} section {}: {}", chunkPos, y, msg)).getOrThrow(SerializableChunkData.ChunkReadException::new));
-                    final PalettedContainer<BlockState> blocks = maybeBlocks.orElse(EmptySectionHolder.getEmptySectionBlockStates());
-                    final Optional<PalettedContainerRO<Holder<Biome>>> maybeBiomes = sectionTag.getCompound(ChunkDataKeys.BIOMES)
-                        .map((container) -> biomesCodec.parse(NbtOps.INSTANCE, container).promotePartial((msg) -> Logging.logger().warn("Failed to decode chunk {} section {}: {}", chunkPos, y, msg)).getOrThrow(SerializableChunkData.ChunkReadException::new));
-                    final PalettedContainerRO<Holder<Biome>> sectionBiomes = maybeBiomes.orElse(EmptySectionHolder.getEmptySectionBiomes());
+                    final SectionData<BlockState> blocks = sectionTag.getCompound(ChunkDataKeys.BLOCK_STATES)
+                        .map(container -> sectionDecoder.blockStates(container)
+                            .promotePartial(msg -> logSectionDecodeErrors(chunkPos, y, msg))
+                            .getOrThrow(SerializableChunkData.ChunkReadException::new))
+                        .orElseGet(EmptySectionHolder::getEmptySectionBlockStates);
+                    final SectionData<Holder<Biome>> sectionBiomes = sectionTag.getCompound(ChunkDataKeys.BIOMES)
+                        .map(container -> sectionDecoder.biomes(container)
+                            .promotePartial(msg -> logSectionDecodeErrors(chunkPos, y, msg))
+                            .getOrThrow(SerializableChunkData.ChunkReadException::new))
+                        .orElseGet(EmptySectionHolder::getEmptySectionBiomes);
                     states[index] = blocks;
                     empty[index] = !blocks.maybeHas(state -> !state.isAir());
                     biomes[index] = sectionBiomes;
@@ -188,10 +184,15 @@ public final class ChunkSnapshotFactory {
         );
     }
 
+    private static void logSectionDecodeErrors(final ChunkPos chunkPos, final int sectionY, final String message) {
+        // Same message as vanilla's SerializableChunkData.logErrors.
+        Logging.logger().error("Recoverable errors when loading section [{}, {}, {}]: {}", chunkPos.x(), sectionY, chunkPos.z(), message);
+    }
+
     private static Map<Heightmap.Types, HeightmapSnapshot> readOrComputeHeightmaps(
         final LevelHeightAccessor levelHeight,
         final CompoundTag chunkData,
-        final PalettedContainer<BlockState>[] states,
+        final SectionData<BlockState>[] states,
         final boolean[] empty
     ) {
         final int bits = Mth.ceillog2(levelHeight.getHeight() + 1);
@@ -208,10 +209,10 @@ public final class ChunkSnapshotFactory {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static @Nullable Holder<Biome>[] uniformBiomes(final PalettedContainerRO<Holder<Biome>>[] biomes) {
+    private static @Nullable Holder<Biome>[] uniformBiomes(final SectionData<Holder<Biome>>[] biomes) {
         final @Nullable Holder<Biome>[] uniform = new Holder[biomes.length];
         for (int i = 0; i < biomes.length; i++) {
-            final Holder<Biome> first = biomes[i].get(0, 0, 0);
+            final Holder<Biome> first = biomes[i].get(0);
             // Checks palette entries only, so a palette with unused entries reads as mixed.
             if (!biomes[i].maybeHas(biome -> biome != first)) {
                 uniform[i] = first;

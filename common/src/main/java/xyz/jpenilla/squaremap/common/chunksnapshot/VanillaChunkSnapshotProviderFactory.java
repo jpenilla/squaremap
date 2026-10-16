@@ -19,6 +19,6 @@ public final class VanillaChunkSnapshotProviderFactory implements ChunkSnapshotP
 
     @Override
     public ChunkSnapshotProvider createChunkSnapshotProvider(final ServerLevel level) {
-        return new VanillaChunkSnapshotProvider(level, this.platform.hasMod("moonrise"));
+        return new VanillaChunkSnapshotProvider(level, this.platform.hasMod("moonrise"), SectionDecoder.create(level));
     }
 }

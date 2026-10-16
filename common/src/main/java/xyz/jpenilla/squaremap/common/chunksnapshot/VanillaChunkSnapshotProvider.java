@@ -25,7 +25,6 @@ import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.TicketStorage;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
-import net.minecraft.world.level.chunk.PalettedContainerFactory;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
@@ -35,7 +34,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.util.concurrent.CompletableFutures;
 
 @DefaultQualifier(NonNull.class)
-record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) implements ChunkSnapshotProvider {
+record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise, SectionDecoder sectionDecoder) implements ChunkSnapshotProvider {
     private Executor mainThreadExecutor() {
         return task -> {
             if (this.level.getServer().isSameThread()) {
@@ -71,7 +70,6 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         // Read in the same main thread task as the holder checks: unload saves are queued to the
         // IO worker on main, so this read is ordered after any save of a chunk we didn't see.
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(this.level.getMinY(), this.level.getHeight());
-        final PalettedContainerFactory palettedContainerFactory = this.level.palettedContainerFactory();
         final DimensionType dimensionType = this.level.dimensionType();
         return chunkMap.squaremap$readChunk(chunkPos).thenComposeAsync(
             maybeTag -> {
@@ -85,7 +83,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
                     case INELIGIBLE -> CompletableFuture.completedFuture(null);
                     case ELIGIBLE -> {
                         if (ChunkSnapshotFactory.chunkPosMatches(tag, x, z)) {
-                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, palettedContainerFactory, tag));
+                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, this.sectionDecoder, tag));
                         } else {
                             yield this.vanillaChunkSystemSnapshot(x, z);
                         }
@@ -200,7 +198,6 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         final ChunkTaskScheduler scheduler = ((ChunkSystemServerLevel) this.level).moonrise$getChunkTaskScheduler();
         final Executor executor = task -> scheduler.loadExecutor.createTask(task, Priority.NORMAL).queue();
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(this.level.getMinY(), this.level.getHeight());
-        final PalettedContainerFactory palettedContainerFactory = this.level.palettedContainerFactory();
         final DimensionType dimensionType = this.level.dimensionType();
         return data.thenComposeAsync(
             rawTag -> {
@@ -214,7 +211,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
                     case INELIGIBLE -> CompletableFuture.completedFuture(null);
                     case ELIGIBLE -> {
                         if (ChunkSnapshotFactory.chunkPosMatches(tag, x, z)) {
-                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, palettedContainerFactory, tag));
+                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, this.sectionDecoder, tag));
                         } else {
                             yield this.moonriseChunkSystemSnapshot(x, z);
                         }
