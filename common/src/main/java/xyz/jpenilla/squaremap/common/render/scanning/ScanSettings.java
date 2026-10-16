@@ -7,9 +7,7 @@ import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
-/**
- * Map appearance settings and visibility limits, captured when a render job is created.
- */
+// Map appearance settings and visibility limits, captured when a render job is created.
 public record ScanSettings(
     boolean iterateUp,
     int maxHeight,

@@ -42,6 +42,8 @@ public final class Threads {
 
     /**
      * Waits for the latch, restoring the interrupt status afterward if interrupted while waiting.
+     *
+     * @param latch the latch
      */
     public static void awaitUninterruptibly(final CountDownLatch latch) {
         boolean interrupted = false;
@@ -61,6 +63,8 @@ public final class Threads {
     /**
      * Waits for a shut-down executor to terminate, restoring the interrupt status afterward if
      * interrupted while waiting.
+     *
+     * @param executor the executor
      */
     public static void awaitTerminationUninterruptibly(final ExecutorService executor) {
         boolean interrupted = false;

@@ -142,10 +142,8 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
     private static final ThreadFactory VANILLA_LOAD_DISPATCHER_FACTORY = Thread.ofVirtual().name("squaremap-chunk-load-dispatch").factory();
     private static final Executor VANILLA_LOAD_DISPATCH_EXECUTOR = task -> VANILLA_LOAD_DISPATCHER_FACTORY.newThread(task).start();
 
-    /**
-     * Loads a chunk through the chunk system and applies {@code onMain} to it on the main thread.
-     * The chunk stays ticketed until the future returned by {@code onMain} completes.
-     */
+    // Loads a chunk through the chunk system and applies onMain to it on the main thread.
+    // The chunk stays ticketed until the future returned by onMain completes.
     private <T> CompletableFuture<T> vanillaLoadChunkAsync(
         final int x,
         final int z,
