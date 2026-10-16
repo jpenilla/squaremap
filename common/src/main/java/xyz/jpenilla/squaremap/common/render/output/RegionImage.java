@@ -32,7 +32,7 @@ public final class RegionImage {
     private final RegionCoordinate region;
     private final Path directory;
     private final int maxZoom;
-    private int @Nullable [][] pixels = null;
+    private volatile int @Nullable [][] pixels = null;
 
     public RegionImage(final RegionCoordinate region, final Path directory, final int maxZoom) {
         this.region = region;
@@ -40,14 +40,25 @@ public final class RegionImage {
         this.maxZoom = maxZoom;
     }
 
-    public synchronized void setPixel(final int x, final int z, final int color) {
-        if (this.pixels == null) {
-            this.pixels = new int[SIZE][SIZE];
-            for (final int[] arr : this.pixels) {
+    // Callers write distinct pixels, so only the allocation needs the lock.
+    public void setPixel(final int x, final int z, final int color) {
+        int @Nullable [][] pixels = this.pixels;
+        if (pixels == null) {
+            pixels = this.allocatePixels();
+        }
+        pixels[x & (SIZE - 1)][z & (SIZE - 1)] = color;
+    }
+
+    private synchronized int[][] allocatePixels() {
+        int @Nullable [][] pixels = this.pixels;
+        if (pixels == null) {
+            pixels = new int[SIZE][SIZE];
+            for (final int[] arr : pixels) {
                 Arrays.fill(arr, Integer.MIN_VALUE);
             }
+            this.pixels = pixels;
         }
-        this.pixels[x & (SIZE - 1)][z & (SIZE - 1)] = color;
+        return pixels;
     }
 
     /**
