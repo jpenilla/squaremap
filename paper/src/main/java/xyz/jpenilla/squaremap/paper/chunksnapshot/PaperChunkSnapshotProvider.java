@@ -14,7 +14,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
-import net.minecraft.world.level.chunk.PalettedContainerFactory;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
@@ -29,13 +28,15 @@ import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotEligibility;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotFactory;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.util.concurrent.CompletableFutures;
+import xyz.jpenilla.squaremap.common.chunksnapshot.SectionDecoder;
 import xyz.jpenilla.squaremap.paper.util.Folia;
 
 @DefaultQualifier(NonNull.class)
 record PaperChunkSnapshotProvider(
     ServerLevel level,
     Server server,
-    JavaPlugin plugin
+    JavaPlugin plugin,
+    SectionDecoder sectionDecoder
 ) implements ChunkSnapshotProvider {
     @Override
     public CompletableFuture<@Nullable ChunkSnapshot> asyncSnapshot(final int x, final int z) {
@@ -72,7 +73,6 @@ record PaperChunkSnapshotProvider(
         final ChunkTaskScheduler scheduler = this.level.moonrise$getChunkTaskScheduler();
         final Executor executor = task -> scheduler.loadExecutor.createTask(task, Priority.NORMAL).queue();
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(this.level.getMinY(), this.level.getHeight());
-        final PalettedContainerFactory palettedContainerFactory = this.level.palettedContainerFactory();
         final DimensionType dimensionType = this.level.dimensionType();
         return data.thenComposeAsync(
             rawTag -> {
@@ -87,7 +87,7 @@ record PaperChunkSnapshotProvider(
                     case INELIGIBLE -> CompletableFuture.completedFuture(null);
                     case ELIGIBLE -> {
                         if (ChunkSnapshotFactory.chunkPosMatches(tag, x, z)) {
-                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, palettedContainerFactory, tag));
+                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, this.sectionDecoder, tag));
                         } else {
                             yield this.chunkSystemSnapshot(x, z);
                         }

@@ -7,7 +7,6 @@ import net.minecraft.util.SimpleBitStorage;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 final class HeightmapSnapshot {
@@ -36,7 +35,7 @@ final class HeightmapSnapshot {
 
     static HeightmapSnapshot computeWorldSurface(
         final LevelHeightAccessor heightAccessor,
-        final PalettedContainer<BlockState>[] sections,
+        final SectionData<BlockState>[] sections,
         final boolean[] empty
     ) {
         final SimpleBitStorage data = new SimpleBitStorage(Mth.ceillog2(heightAccessor.getHeight() + 1), 256);
@@ -44,7 +43,7 @@ final class HeightmapSnapshot {
         // Rebuild directly from palette data using the heightmap type's predicate,
         // avoiding live section construction and block counting.
         for (int sectionIndex = sections.length - 1; sectionIndex >= 0; sectionIndex--) {
-            final PalettedContainer<BlockState> section = sections[sectionIndex];
+            final SectionData<BlockState> section = sections[sectionIndex];
             if (empty[sectionIndex]) {
                 continue;
             }
@@ -56,7 +55,7 @@ final class HeightmapSnapshot {
                         continue;
                     }
                     for (int y = 15; y >= 0; y--) {
-                        if (isOpaque.test(section.get(x, y, z))) {
+                        if (isOpaque.test(section.get(y << 8 | z << 4 | x))) {
                             data.set(index, sectionIndex * 16 + y + 1);
                             break;
                         }

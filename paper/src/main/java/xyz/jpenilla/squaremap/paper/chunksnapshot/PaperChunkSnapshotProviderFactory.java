@@ -9,6 +9,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProvider;
 import xyz.jpenilla.squaremap.common.chunksnapshot.ChunkSnapshotProviderFactory;
+import xyz.jpenilla.squaremap.common.chunksnapshot.SectionDecoder;
 
 @DefaultQualifier(NonNull.class)
 @Singleton
@@ -24,6 +25,6 @@ public final class PaperChunkSnapshotProviderFactory implements ChunkSnapshotPro
 
     @Override
     public ChunkSnapshotProvider createChunkSnapshotProvider(final ServerLevel level) {
-        return new PaperChunkSnapshotProvider(level, this.server, this.plugin);
+        return new PaperChunkSnapshotProvider(level, this.server, this.plugin, SectionDecoder.create(level));
     }
 }
