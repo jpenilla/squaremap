@@ -31,6 +31,13 @@
             "versioning": "regex:^(?<compatibility>(?:\\d+\\.){3})(?<minor>\\d+)(?:-beta)?$"
         },
         {
+            "description": "Correct version handling for Paper",
+            "matchPackageNames": [
+                "io.papermc.paper:dev-bundle"
+            ],
+            "versioning": "regex:^(?<compatibility>.+)\\.build\\.(?<minor>\\d+)(?:-[a-z]+)?$"
+        },
+        {
             "matchManagers": [
                 "github-actions",
                 "gradle-wrapper"
