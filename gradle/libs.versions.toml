@@ -81,8 +81,7 @@ checkerQual = { group = "org.checkerframework", name = "checker-qual", version.r
 junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junitJupiter = { module = "org.junit.jupiter:junit-jupiter" }
 junitLauncher = { module = "org.junit.platform:junit-platform-launcher" }
-paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi" }
-foliaApi = "dev.folia:folia-api:1.21.4-R0.1-SNAPSHOT"
+paperApi = { module = "io.papermc.paper:paper-api", version.ref = "paperApi" }
 
 undertow = { group = "io.undertow", name = "undertow-core", version = "2.4.4.Final" }
 

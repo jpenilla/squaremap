@@ -20,7 +20,6 @@ dependencies {
   paperweight.paperDevBundle("${minecraftVersion.get()}.build.+")
 
   implementation(projects.squaremapCommon)
-  implementation(projects.squaremapPaper.folia)
 
   implementation(libs.cloudPaper)
   implementation(libs.bStatsBukkit)
