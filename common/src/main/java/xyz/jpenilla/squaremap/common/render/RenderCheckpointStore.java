@@ -18,6 +18,8 @@ import xyz.jpenilla.squaremap.common.util.Json;
 
 /**
  * Persists foreground render progress so it can be resumed after a restart.
+ *
+ * @param file the checkpoint file
  */
 record RenderCheckpointStore(Path file) {
     private static final int VERSION = 1;
@@ -54,9 +56,7 @@ record RenderCheckpointStore(Path file) {
         }
     }
 
-    /**
-     * Converts full render progress saved by older versions, which recorded whether each region was done.
-     */
+    // Converts full render progress saved by older versions, which recorded whether each region was done.
     private static Checkpoint readLegacy(final JsonArray entries) {
         final long[] allChunks = new long[16];
         Arrays.fill(allChunks, -1L);

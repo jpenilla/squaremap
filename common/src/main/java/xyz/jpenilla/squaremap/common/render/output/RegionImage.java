@@ -54,6 +54,8 @@ public final class RegionImage {
      * Creates independent file updates, listed from finest to coarsest zoom.
      * Pixels must be finished before submission and remain unchanged until all tasks complete.
      * The caller must serialize tasks targeting the same destination file.
+     *
+     * @return the tasks by destination file
      */
     Map<Path, CheckedRunnable<IOException>> saveTasks() {
         final Map<Path, CheckedRunnable<IOException>> tasks = new LinkedHashMap<>();
