@@ -1,0 +1,184 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: # Allow manual runs
+
+permissions:
+  contents: write # Needed to create releases and upload assets
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed so we can look at previous tags/releases
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install web dependencies
+        run: cd web && bun install
+
+      - name: Cache project-local Gradle caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            paper/.gradle/caches/paperweight
+            common/build/moddev
+          key: ${{ runner.os }}-squaremap-local-caches-${{ hashFiles('**/libs.versions.toml', '**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-squaremap-local-caches-
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Extract version and target Minecraft version
+        id: version
+        run: |
+          VERSION=$(grep -Po '^version=\K.+' gradle.properties)
+          MC_VERSION=$(grep -Po '^minecraft = "\K[^"]+' gradle/libs.versions.toml)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "mc_version=$MC_VERSION" >> $GITHUB_OUTPUT
+          echo "Detected version: $VERSION (targets Minecraft $MC_VERSION)"
+
+      - name: Get latest release version
+        id: latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the most recent release tag (if any exist)
+          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+
+          if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+            echo "No previous releases found"
+            echo "latest_version=" >> $GITHUB_OUTPUT
+            echo "is_new_version=true" >> $GITHUB_OUTPUT
+          else
+            # Strip leading 'v' if present
+            LATEST_VERSION=${LATEST_TAG#v}
+            echo "Latest release version: $LATEST_VERSION"
+            echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+
+            CURRENT="${{ steps.version.outputs.version }}"
+            if [ "$CURRENT" = "$LATEST_VERSION" ]; then
+              echo "Version has NOT changed → will create snapshot"
+              echo "is_new_version=false" >> $GITHUB_OUTPUT
+            else
+              echo "Version HAS changed → will create clean release"
+              echo "is_new_version=true" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Determine JAR name and tag
+        id: naming
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          MC_VERSION="${{ steps.version.outputs.mc_version }}"
+          IS_NEW="${{ steps.latest.outputs.is_new_version }}"
+
+          if [ "$IS_NEW" = "true" ]; then
+            # Clean release for a new version
+            JAR_NAME="squaremap-paper-mc${MC_VERSION}-${VERSION}.jar"
+            TAG="v${VERSION}"
+            RELEASE_NAME="squaremap ${VERSION} (Paper ${MC_VERSION})"
+            PRERELEASE=false
+
+            # Mark as prerelease if version contains -pre, -SNAPSHOT, etc.
+            if [[ "$VERSION" == *"-pre"* ]] || [[ "$VERSION" == *"SNAPSHOT"* ]] || [[ "$VERSION" == *"RC"* ]]; then
+              PRERELEASE=true
+            fi
+          else
+            # Snapshot of an existing version
+            TIMESTAMP=$(date -u +%Y%m%d%H%M)
+            JAR_NAME="squaremap-paper-mc${MC_VERSION}-${VERSION}-snapshot-${TIMESTAMP}.jar"
+            TAG="v${VERSION}-snapshot-${TIMESTAMP}"
+            RELEASE_NAME="squaremap ${VERSION} Snapshot (${TIMESTAMP}, Paper ${MC_VERSION})"
+            PRERELEASE=true
+          fi
+
+          echo "jar_name=$JAR_NAME" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+          echo "prerelease=$PRERELEASE" >> $GITHUB_OUTPUT
+
+          echo "JAR name     : $JAR_NAME"
+          echo "Tag          : $TAG"
+          echo "Release name : $RELEASE_NAME"
+          echo "Prerelease   : $PRERELEASE"
+
+      # Same command the sync-upstream workflow uses. Paper-only: skips the
+      # Fabric/NeoForge/Sponge modules (slow loom/moddev setup) and javadoc,
+      # which is often broken on forks. The web frontend is built by the
+      # common module's buildFrontend task (needs bun, set up above).
+      - name: Build Paper plugin with Gradle
+        run: ./gradlew :squaremap-paper:shadowJar -x javadoc -x javadocJar
+
+      - name: Locate and rename the built JAR
+        id: artifact
+        run: |
+          BUILT_JAR=$(find paper/build/libs -maxdepth 1 -name "squaremap-paper-*.jar" ! -name "*-sources.jar" ! -name "*-javadoc.jar" | head -n 1)
+
+          if [ -z "$BUILT_JAR" ]; then
+            echo "ERROR: No squaremap-paper jar found in paper/build/libs/"
+            ls -la paper/build/libs/
+            exit 1
+          fi
+
+          echo "Found built JAR: $BUILT_JAR"
+          # Gradle's own name for SNAPSHOT builds contains a '+<commit>' suffix,
+          # which GitHub mangles in asset names - rename to a clean filename.
+          FINAL_NAME="${{ steps.naming.outputs.jar_name }}"
+          cp "$BUILT_JAR" "$FINAL_NAME"
+          echo "final_jar=$FINAL_NAME" >> $GITHUB_OUTPUT
+          ls -lh "$FINAL_NAME"
+
+      - name: Create GitHub Release and upload JAR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.naming.outputs.tag }}"
+          NAME="${{ steps.naming.outputs.release_name }}"
+          JAR="${{ steps.artifact.outputs.final_jar }}"
+          PRERELEASE="${{ steps.naming.outputs.prerelease }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          MC_VERSION="${{ steps.version.outputs.mc_version }}"
+          SHA="${{ github.sha }}"
+
+          NOTES=$(cat <<EOF
+          Automated build of **squaremap** (dpembo fork of jpenilla/squaremap) — Paper plugin only.
+
+          - **Version:** \`${VERSION}\`
+          - **Targets Minecraft/Paper:** \`${MC_VERSION}\`
+          - **Artifact:** \`${JAR}\`
+          - **Commit:** ${SHA}
+          - **Date:** $(date -u +"%Y-%m-%d %H:%M UTC")
+          EOF
+          )
+
+          if [ "$PRERELEASE" = "true" ]; then
+            gh release create "$TAG" \
+              --title "$NAME" \
+              --notes "$NOTES" \
+              --prerelease \
+              "$JAR"
+          else
+            gh release create "$TAG" \
+              --title "$NAME" \
+              --notes "$NOTES" \
+              "$JAR"
+          fi
+
+          echo "Release created successfully: $TAG"
