@@ -191,3 +191,34 @@ div.leaflet-control-layers.coordinates {
     background: rgba(128, 0, 0, 0.5);
     border: 1px solid rgba(128, 0, 0, 0.75);
 }
+#context-menu {
+    display: none;
+    position: absolute;
+    z-index: 10001;
+    min-width: 200px;
+    padding: 4px 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    font:
+        12px/1.5 "Helvetica Neue",
+        Arial,
+        Helvetica,
+        sans-serif;
+    color: #ffffff;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.context-menu-item {
+    display: block;
+    padding: 6px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.context-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+.context-menu-separator {
+    margin: 4px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}

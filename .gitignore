@@ -122,3 +122,8 @@ run/
 build
 .gradle
 .kotlin/
+
+
+# VScode
+.vscode
+*.code-workspace
