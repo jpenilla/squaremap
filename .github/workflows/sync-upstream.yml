@@ -41,7 +41,7 @@ env:
   BASE_BRANCH: master             # your fork's main branch
   BRANCH_PREFIX: sync/upstream-   # branch = prefix + short upstream sha
   AUTO_PROMOTE: "false"           # "true" = scheduled runs also reset BASE_BRANCH
-  JAVA_VERSION: "21"
+  JAVA_VERSION: "25"
   BUILD_CMD: "./gradlew :squaremap-paper:shadowJar -x javadoc -x javadocJar"
   GIT_NAME: "dpembo"
   GIT_EMAIL: "dpembo@users.noreply.github.com"
