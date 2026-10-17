@@ -4,9 +4,7 @@
         "config:recommended"
     ],
     "ignoreDeps": [
-        "com.mojang:minecraft",
-        "dev.architectury:architectury-loom",
-        "xyz.jpenilla.quiet-fabric-loom:xyz.jpenilla.quiet-fabric-loom.gradle.plugin"
+        "com.mojang:minecraft"
     ],
     "labels": [
         "dependencies"
@@ -31,24 +29,11 @@
             "versioning": "regex:^(?<compatibility>(?:\\d+\\.){3})(?<minor>\\d+)(?:-beta)?$"
         },
         {
-            "matchManagers": [
-                "github-actions",
-                "gradle-wrapper"
+            "description": "Correct version handling for Paper",
+            "matchPackageNames": [
+                "io.papermc.paper:dev-bundle"
             ],
-            "groupName": "gradle and github actions"
-        },
-        {
-            "matchDepTypes": [
-                "plugin"
-            ],
-            "groupName": "gradle and github actions"
-        },
-        {
-            "matchFileNames": [
-                "build-logic/*",
-                "buildSrc/*"
-            ],
-            "groupName": "gradle and github actions"
+            "versioning": "regex:^(?<compatibility>.+)\\.build\\.(?<minor>\\d+)(?:-[a-z]+)?$"
         }
     ],
     "semanticCommitType": "build",

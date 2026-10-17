@@ -9,24 +9,32 @@ import ca.spottedleaf.moonrise.patches.chunk_system.scheduling.ChunkTaskSchedule
 import ca.spottedleaf.moonrise.patches.chunk_system.scheduling.NewChunkHolder;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ChunkLevel;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.Ticket;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelHeightAccessor;
+import net.minecraft.world.level.TicketStorage;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
-import net.minecraft.world.level.chunk.PalettedContainerFactory;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.BelowZeroRetrogen;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.common.util.concurrent.CompletableFutures;
 
 @DefaultQualifier(NonNull.class)
-record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) implements ChunkSnapshotProvider {
+record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise, SectionDecoder sectionDecoder) implements ChunkSnapshotProvider {
     private Executor mainThreadExecutor() {
         return task -> {
             if (this.level.getServer().isSameThread()) {
@@ -42,12 +50,117 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         if (this.moonrise) {
             return this.moonriseAsyncSnapshot(x, z);
         }
-        return CompletableFuture.supplyAsync(() -> {
-            final @Nullable ChunkAccess chunk = chunkIfGenerated(this.level, x, z);
+        return CompletableFutures.composeAsync(() -> this.vanillaSnapshot(x, z), this.mainThreadExecutor());
+    }
+
+    private CompletableFuture<@Nullable ChunkSnapshot> vanillaSnapshot(final int x, final int z) {
+        final ChunkPos chunkPos = new ChunkPos(x, z);
+        final ChunkMapAccess chunkMap = (ChunkMapAccess) this.level.getChunkSource().chunkMap;
+
+        // Check visible map first
+        @Nullable CompletableFuture<@Nullable ChunkSnapshot> live = this.vanillaLiveSnapshot(x, z, chunkMap.squaremap$getVisibleChunkIfPresent(chunkPos.pack()));
+        if (live == null) {
+            // Then check pending unloads
+            live = this.vanillaLiveSnapshot(x, z, chunkMap.squaremap$pendingUnloads().get(chunkPos.pack()));
+        }
+        if (live != null) {
+            return live;
+        }
+
+        // Read in the same main thread task as the holder checks: unload saves are queued to the
+        // IO worker on main, so this read is ordered after any save of a chunk we didn't see.
+        final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(this.level.getMinY(), this.level.getHeight());
+        final DimensionType dimensionType = this.level.dimensionType();
+        return chunkMap.squaremap$readChunk(chunkPos).thenComposeAsync(
+            maybeTag -> {
+                final @Nullable CompoundTag tag = maybeTag.orElse(null);
+                if (tag == null) {
+                    return CompletableFuture.completedFuture(null);
+                }
+                final ChunkStatus status = tag.read(ChunkDataKeys.STATUS, ChunkStatus.CODEC).orElse(ChunkStatus.EMPTY);
+                final @Nullable BelowZeroRetrogen retroGen = tag.read(ChunkDataKeys.RETROGEN, BelowZeroRetrogen.CODEC).orElse(null);
+                return switch (ChunkSnapshotEligibility.get(status, retroGen)) {
+                    case INELIGIBLE -> CompletableFuture.completedFuture(null);
+                    case ELIGIBLE -> {
+                        if (ChunkSnapshotFactory.chunkPosMatches(tag, x, z)) {
+                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, this.sectionDecoder, tag));
+                        } else {
+                            yield this.vanillaChunkSystemSnapshot(x, z);
+                        }
+                    }
+                    case NEEDS_RETROGEN -> this.vanillaChunkSystemSnapshot(x, z);
+                };
+            },
+            Util.backgroundExecutor().forName("squaremapChunkSnapshot")
+        );
+    }
+
+    private @Nullable CompletableFuture<@Nullable ChunkSnapshot> vanillaLiveSnapshot(final int x, final int z, final @Nullable ChunkHolder holder) {
+        if (holder == null) {
+            return null;
+        }
+        final @Nullable ChunkAccess chunk = unwrap(holder.getLatestChunk());
+        if (chunk == null) {
+            return null;
+        }
+        return switch (ChunkSnapshotEligibility.get(chunk.getPersistedStatus(), chunk.getBelowZeroRetrogen())) {
+            case ELIGIBLE -> CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotLiveChunk(this.level, chunk));
+            case NEEDS_RETROGEN -> this.vanillaFinishRetrogen(x, z);
+            case INELIGIBLE -> null;
+        };
+    }
+
+    private CompletableFuture<@Nullable ChunkSnapshot> vanillaChunkSystemSnapshot(final int x, final int z) {
+        return this.vanillaLoadChunkAsync(x, z, ChunkStatus.EMPTY, chunk -> {
             if (chunk == null) {
-                return null;
+                return CompletableFuture.completedFuture(null);
             }
-            return ChunkSnapshotFactory.snapshotLiveChunk(this.level, chunk);
+            return switch (ChunkSnapshotEligibility.get(chunk.getPersistedStatus(), chunk.getBelowZeroRetrogen())) {
+                case INELIGIBLE -> CompletableFuture.completedFuture(null);
+                case ELIGIBLE -> CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotLiveChunk(this.level, chunk));
+                // EMPTY only reads the chunk. Finish eligible upgrades before snapshotting;
+                // ordinary incomplete chunks never request FULL.
+                case NEEDS_RETROGEN -> this.vanillaFinishRetrogen(x, z);
+            };
+        });
+    }
+
+    private CompletableFuture<@Nullable ChunkSnapshot> vanillaFinishRetrogen(final int x, final int z) {
+        return this.vanillaLoadChunkAsync(x, z, ChunkStatus.FULL, completed -> {
+            if (completed == null) {
+                return CompletableFuture.completedFuture(null);
+            }
+            if (ChunkSnapshotEligibility.get(completed.getPersistedStatus(), completed.getBelowZeroRetrogen()) != ChunkSnapshotEligibility.ELIGIBLE) {
+                throw new IllegalStateException("Chunk upgrade did not finish: " + completed.getPos());
+            }
+            return CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotLiveChunk(this.level, completed));
+        });
+    }
+
+    private static final ThreadFactory VANILLA_LOAD_DISPATCHER_FACTORY = Thread.ofVirtual().name("squaremap-chunk-load-dispatch").factory();
+    private static final Executor VANILLA_LOAD_DISPATCH_EXECUTOR = task -> VANILLA_LOAD_DISPATCHER_FACTORY.newThread(task).start();
+
+    // Loads a chunk through the chunk system and applies onMain to it on the main thread.
+    // The chunk stays ticketed until the future returned by onMain completes.
+    private <T> CompletableFuture<T> vanillaLoadChunkAsync(
+        final int x,
+        final int z,
+        final ChunkStatus status,
+        final Function<@Nullable ChunkAccess, CompletableFuture<T>> onMain
+    ) {
+        return CompletableFutures.composeAsync(() -> {
+            final ChunkPos pos = new ChunkPos(x, z);
+            final TicketStorage tickets = this.level.getDataStorage().computeIfAbsent(TicketStorage.TYPE);
+            // getChunkFuture's own UNKNOWN ticket expires after a tick, long before an async load finishes.
+            // Tickets match by type identity and level, so a fresh (unregistered, non-persistent) type per
+            // request keeps concurrent requests for the same chunk from removing each other's ticket.
+            final Ticket ticket = new Ticket(new TicketType(TicketType.NO_TIMEOUT, TicketType.FLAG_LOADING), ChunkLevel.byStatus(status));
+            tickets.addTicket(ticket, pos);
+            final ServerChunkCache chunkSource = this.level.getChunkSource();
+            // getChunkFuture blocks the main thread until the chunk loads when called from it.
+            return CompletableFutures.composeAsync(() -> chunkSource.getChunkFuture(x, z, status, true), VANILLA_LOAD_DISPATCH_EXECUTOR)
+                .thenComposeAsync(result -> onMain.apply(unwrap(result.orElse(null))), this.mainThreadExecutor())
+                .whenCompleteAsync((_, _) -> tickets.removeTicket(ticket, pos), this.mainThreadExecutor());
         }, this.mainThreadExecutor());
     }
 
@@ -65,19 +178,19 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
             return this.moonriseReadSnapshot(x, z, data);
         }
 
-        return CompletableFuture.supplyAsync(() -> {
+        return CompletableFutures.composeAsync(() -> {
             // Recheck on main; never carry live chunk state across the executor hop.
             final NewChunkHolder chunkHolder = scheduler.chunkHolderManager.getChunkHolder(x, z);
 
             if (chunkHolder != null) {
-                final @Nullable ChunkAccess chunk = chunkHolder.getChunkIfPresent(ChunkStatus.FULL);
+                final @Nullable ChunkAccess chunk = unwrap(chunkHolder.getChunkIfPresentUnchecked(ChunkStatus.EMPTY));
                 if (chunk != null && ChunkSnapshotEligibility.get(chunk.getPersistedStatus(), chunk.getBelowZeroRetrogen()) == ChunkSnapshotEligibility.ELIGIBLE) {
                     return CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotLiveChunk(this.level, chunk));
                 }
             }
 
             return this.moonriseChunkSystemSnapshot(x, z);
-        }, this.mainThreadExecutor()).thenCompose(future -> future);
+        }, this.mainThreadExecutor());
     }
 
     private CompletableFuture<@Nullable ChunkSnapshot> moonriseReadSnapshot(int x, int z, final CompletableFuture<@Nullable CompoundTag> data) {
@@ -85,7 +198,6 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         final ChunkTaskScheduler scheduler = ((ChunkSystemServerLevel) this.level).moonrise$getChunkTaskScheduler();
         final Executor executor = task -> scheduler.loadExecutor.createTask(task, Priority.NORMAL).queue();
         final LevelHeightAccessor heightAccessor = LevelHeightAccessor.create(this.level.getMinY(), this.level.getHeight());
-        final PalettedContainerFactory palettedContainerFactory = this.level.palettedContainerFactory();
         final DimensionType dimensionType = this.level.dimensionType();
         return data.thenComposeAsync(
             rawTag -> {
@@ -99,7 +211,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
                     case INELIGIBLE -> CompletableFuture.completedFuture(null);
                     case ELIGIBLE -> {
                         if (ChunkSnapshotFactory.chunkPosMatches(tag, x, z)) {
-                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, palettedContainerFactory, tag));
+                            yield CompletableFuture.completedFuture(ChunkSnapshotFactory.snapshotFromChunkData(heightAccessor, dimensionType, this.sectionDecoder, tag));
                         } else {
                             yield this.moonriseChunkSystemSnapshot(x, z);
                         }
@@ -112,7 +224,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
     }
 
     private CompletableFuture<@Nullable ChunkSnapshot> moonriseChunkSystemSnapshot(final int x, final int z) {
-        return CompletableFuture.supplyAsync(() -> {
+        return CompletableFutures.composeAsync(() -> {
             final CompletableFuture<@Nullable ChunkSnapshot> load = new CompletableFuture<>();
             PlatformHooks.get().scheduleChunkLoad(
                 this.level,
@@ -130,14 +242,12 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
                             switch (ChunkSnapshotEligibility.get(unwrapped.getPersistedStatus(), unwrapped.getBelowZeroRetrogen())) {
                                 case INELIGIBLE -> load.complete(null);
                                 case ELIGIBLE -> load.complete(ChunkSnapshotFactory.snapshotLiveChunk(this.level, unwrapped));
-                                case NEEDS_RETROGEN -> {
-                                    // EMPTY only reads the chunk. Finish eligible upgrades before snapshotting;
-                                    // ordinary incomplete chunks never request FULL.
-                                    PlatformHooks.get().scheduleChunkLoad(
-                                        this.level, x, z, ChunkStatus.FULL, true, Priority.NORMAL,
-                                        completed -> this.completeSnapshot(load, completed)
-                                    );
-                                }
+                                // EMPTY only reads the chunk. Finish eligible upgrades before snapshotting;
+                                // ordinary incomplete chunks never request FULL.
+                                case NEEDS_RETROGEN -> PlatformHooks.get().scheduleChunkLoad(
+                                    this.level, x, z, ChunkStatus.FULL, true, Priority.NORMAL,
+                                    completed -> this.completeSnapshot(load, completed)
+                                );
                             }
                         }
                     } catch (final Throwable error) {
@@ -146,7 +256,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
                 }
             );
             return load;
-        }, this.mainThreadExecutor()).thenCompose(future -> future);
+        }, this.mainThreadExecutor());
     }
 
     private void completeSnapshot(final CompletableFuture<@Nullable ChunkSnapshot> result, final @Nullable ChunkAccess chunk) {
@@ -185,78 +295,6 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise) impleme
         );
 
         return data;
-    }
-
-    private static @Nullable ChunkAccess chunkIfGenerated(final ServerLevel level, final int x, final int z) {
-        final ChunkPos chunkPos = new ChunkPos(x, z);
-        final ChunkMapAccess chunkMap = (ChunkMapAccess) level.getChunkSource().chunkMap;
-
-        final ChunkHolder visibleChunk = chunkMap.squaremap$getVisibleChunkIfPresent(chunkPos.pack());
-        if (visibleChunk != null) {
-            final @Nullable ChunkAccess chunk = unwrap(visibleChunk.getLatestChunk());
-            if (chunk != null) {
-                switch (ChunkSnapshotEligibility.get(chunk.getPersistedStatus(), chunk.getBelowZeroRetrogen())) {
-                    case ELIGIBLE -> {
-                        return chunk;
-                    }
-                    case NEEDS_RETROGEN -> {
-                        return vanillaFinishRetrogen(level, x, z);
-                    }
-                    case INELIGIBLE -> {
-                        // Continue lookup
-                    }
-                }
-            }
-        }
-
-        final ChunkHolder unloadingChunk = chunkMap.squaremap$pendingUnloads().get(chunkPos.pack());
-        if (unloadingChunk != null) {
-            final @Nullable ChunkAccess chunk = unwrap(unloadingChunk.getLatestChunk());
-            if (chunk != null) {
-                switch (ChunkSnapshotEligibility.get(chunk.getPersistedStatus(), chunk.getBelowZeroRetrogen())) {
-                    case ELIGIBLE -> {
-                        return chunk;
-                    }
-                    case NEEDS_RETROGEN -> {
-                        return vanillaFinishRetrogen(level, x, z);
-                    }
-                    case INELIGIBLE -> {
-                        // Continue lookup
-                    }
-                }
-            }
-        }
-
-        final @Nullable CompoundTag chunkTag = chunkMap.squaremap$readChunk(chunkPos).join().orElse(null);
-        if (chunkTag != null) {
-            final ChunkStatus status = chunkTag.read(ChunkDataKeys.STATUS, ChunkStatus.CODEC).orElse(ChunkStatus.EMPTY);
-            final @Nullable BelowZeroRetrogen retroGen = chunkTag.read(ChunkDataKeys.RETROGEN, BelowZeroRetrogen.CODEC).orElse(null);
-            if (ChunkSnapshotEligibility.get(status, retroGen) != ChunkSnapshotEligibility.INELIGIBLE) {
-                final @Nullable ChunkAccess chunk = level.getChunkSource()
-                    .getChunkFuture(x, z, ChunkStatus.EMPTY, true)
-                    .join()
-                    .orElse(null);
-                final @Nullable ChunkAccess unwrapped = unwrap(chunk);
-                if (unwrapped != null) {
-                    return switch (ChunkSnapshotEligibility.get(unwrapped.getPersistedStatus(), unwrapped.getBelowZeroRetrogen())) {
-                        case INELIGIBLE -> null;
-                        case ELIGIBLE -> unwrapped;
-                        case NEEDS_RETROGEN -> vanillaFinishRetrogen(level, x, z);
-                    };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static @Nullable ChunkAccess vanillaFinishRetrogen(final ServerLevel level, final int x, final int z) {
-        final @Nullable ChunkAccess completed = unwrap(level.getChunkSource()
-            .getChunkFuture(x, z, ChunkStatus.FULL, true).join().orElse(null));
-        if (completed != null && ChunkSnapshotEligibility.get(completed.getPersistedStatus(), completed.getBelowZeroRetrogen()) != ChunkSnapshotEligibility.ELIGIBLE) {
-            throw new IllegalStateException("Chunk upgrade did not finish: " + completed.getPos());
-        }
-        return completed;
     }
 
     private static @Nullable ChunkAccess unwrap(@Nullable ChunkAccess chunk) {

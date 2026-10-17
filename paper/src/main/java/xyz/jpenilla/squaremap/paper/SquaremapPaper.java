@@ -18,7 +18,7 @@ import xyz.jpenilla.squaremap.common.SquaremapCommon;
 import xyz.jpenilla.squaremap.common.SquaremapPlatform;
 import xyz.jpenilla.squaremap.common.web.PlayerDataPublisher;
 import xyz.jpenilla.squaremap.common.web.WebSettingsPublisher;
-import xyz.jpenilla.squaremap.paper.folia.FoliaInitListener;
+import xyz.jpenilla.squaremap.paper.listener.FoliaInitListener;
 import xyz.jpenilla.squaremap.paper.listener.MapUpdateListeners;
 import xyz.jpenilla.squaremap.paper.listener.WorldLoadListener;
 import xyz.jpenilla.squaremap.paper.util.Folia;

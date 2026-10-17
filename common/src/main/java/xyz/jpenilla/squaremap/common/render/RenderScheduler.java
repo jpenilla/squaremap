@@ -272,9 +272,7 @@ public final class RenderScheduler {
             this.create = create;
         }
 
-        /**
-         * Requests the task stop. Must be called while holding the scheduler monitor.
-         */
+        // Requests the task stop. Must be called while holding the scheduler monitor.
         private void stop(final RenderOutcome outcome) {
             if (this.requested != null) {
                 return;

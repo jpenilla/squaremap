@@ -17,10 +17,9 @@ val plainMinecraftVersion = minecraftVersion.get()
   .joinToString(".")
 
 dependencies {
-  paperweight.paperDevBundle("${minecraftVersion.get()}.build.+")
+  paperweight.paperDevBundle(libs.versions.paper)
 
   implementation(projects.squaremapCommon)
-  implementation(projects.squaremapPaper.folia)
 
   implementation(libs.cloudPaper)
   implementation(libs.bStatsBukkit)
