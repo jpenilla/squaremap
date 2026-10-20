@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +13,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.coordinate.TileCoordinate;
+import xyz.jpenilla.squaremap.common.util.concurrent.BackgroundExecutor;
 
 /**
  * Tracks recently written tiles so web clients can reload only the tiles that changed.
@@ -122,7 +122,11 @@ public final class TileChangeLog {
         return json.append("]}").toString();
     }
 
-    public static TileChangeLog create(final WebJsonStore store, final Path file) {
-        return new TileChangeLog(json -> store.put(file, json), MAX_ENTRIES, delay -> CompletableFuture.delayedExecutor(delay, TimeUnit.NANOSECONDS));
+    public static TileChangeLog create(final WebJsonStore store, final Path file, final BackgroundExecutor executor) {
+        return new TileChangeLog(
+            json -> store.put(file, json),
+            MAX_ENTRIES,
+            delay -> task -> executor.schedule(task, delay, TimeUnit.NANOSECONDS)
+        );
     }
 }

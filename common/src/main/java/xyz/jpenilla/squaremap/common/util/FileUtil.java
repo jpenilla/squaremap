@@ -10,12 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import xyz.jpenilla.squaremap.common.Logging;
 
 @DefaultQualifier(NonNull.class)
 public final class FileUtil {
@@ -107,16 +105,6 @@ public final class FileUtil {
         return separator.equals("/")
             ? pathString
             : pathString.replace(separator, "/");
-    }
-
-    public static void atomicWriteAsync(final Path file, final CheckedConsumer<Path, IOException> op) {
-        ForkJoinPool.commonPool().execute(() -> {
-            try {
-                atomicWrite(file, op);
-            } catch (final IOException ex) {
-                Logging.logger().warn("Failed to write file '{}'", file, ex);
-            }
-        });
     }
 
     public static void atomicWrite(final Path path, final CheckedConsumer<Path, IOException> op) throws IOException {

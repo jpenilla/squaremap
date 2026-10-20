@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
 import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
@@ -27,6 +26,7 @@ import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
 import xyz.jpenilla.squaremap.common.server.ServerAccess;
 import xyz.jpenilla.squaremap.common.util.Json;
+import xyz.jpenilla.squaremap.common.util.concurrent.GlobalBackgroundExecutor;
 import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 
 @DefaultQualifier(NonNull.class)
@@ -37,6 +37,7 @@ public final class PlayerDataPublisher implements Runnable {
     private final ConfigManager configManager;
     private final SquaremapDirectories directories;
     private final WebJsonStore jsonStore;
+    private final GlobalBackgroundExecutor executor;
     private @Nullable Map<String, Object> lastData = null;
 
     @Inject
@@ -46,7 +47,8 @@ public final class PlayerDataPublisher implements Runnable {
         final ServerAccess serverAccess,
         final ConfigManager configManager,
         final SquaremapDirectories directories,
-        final WebJsonStore jsonStore
+        final WebJsonStore jsonStore,
+        final GlobalBackgroundExecutor executor
     ) {
         this.flattener = flattener;
         this.playerManager = playerManager;
@@ -54,6 +56,7 @@ public final class PlayerDataPublisher implements Runnable {
         this.configManager = configManager;
         this.directories = directories;
         this.jsonStore = jsonStore;
+        this.executor = executor;
     }
 
     @Override
@@ -62,7 +65,7 @@ public final class PlayerDataPublisher implements Runnable {
         final Map<String, Object> data = this.collectData();
         this.lastData = data;
 
-        ForkJoinPool.commonPool().execute(() -> {
+        this.executor.execute(() -> {
             if (prev == null || !prev.equals(data)) {
                 final String json = Json.gson().toJson(data);
                 this.jsonStore.put(this.directories.tilesDirectory().resolve("players.json"), json);

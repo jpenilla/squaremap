@@ -4,9 +4,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import xyz.jpenilla.squaremap.api.WorldIdentifier;
 
 @DefaultQualifier(NonNull.class)
 public final class Threads {
@@ -19,25 +19,55 @@ public final class Threads {
         }
     }
 
-    public static ThreadFactory squaremapThreadFactory(final String name) {
-        return new NamedThreadFactory("squaremap-" + name);
+    /**
+     * Builds a thread name.
+     *
+     * @param role what the thread does
+     * @return {@code squaremap-<role>}
+     */
+    public static String name(final String role) {
+        return "squaremap-" + role;
     }
 
-    public static ThreadFactory squaremapThreadFactory(final String name, final ServerLevel level) {
-        return squaremapThreadFactory(name + "-[" + level.dimension().identifier() + "]");
+    /**
+     * Builds a thread name for a thread working on one world.
+     *
+     * @param role  what the thread does
+     * @param world the world
+     * @return {@code squaremap-<role>-[<world>]}
+     */
+    public static String name(final String role, final WorldIdentifier world) {
+        return name(role) + "-[" + world.asString() + "]";
     }
 
-    public static void shutdownExecutor(final ExecutorService service, final TimeUnit timeoutUnit, final long timeoutLength) {
-        service.shutdown();
-        boolean didShutdown;
-        try {
-            didShutdown = service.awaitTermination(timeoutLength, timeoutUnit);
-        } catch (final InterruptedException ignore) {
-            didShutdown = false;
-        }
-        if (!didShutdown) {
-            service.shutdownNow();
-        }
+    /**
+     * Creates a factory for non-daemon platform threads of normal priority, numbered from 1.
+     *
+     * @param name the thread name, before the number
+     * @return the factory
+     */
+    public static ThreadFactory platformThreads(final String name) {
+        return Thread.ofPlatform().name(name + "-", 1).daemon(false).priority(Thread.NORM_PRIORITY).factory();
+    }
+
+    /**
+     * Creates a factory for virtual threads that all share one name, for executors with a single thread.
+     *
+     * @param name the thread name
+     * @return the factory
+     */
+    public static ThreadFactory virtualThread(final String name) {
+        return Thread.ofVirtual().name(name).factory();
+    }
+
+    /**
+     * Creates a factory for virtual threads, numbered from 1.
+     *
+     * @param name the thread name, before the number
+     * @return the factory
+     */
+    public static ThreadFactory virtualThreads(final String name) {
+        return Thread.ofVirtual().name(name + "-", 1).factory();
     }
 
     /**

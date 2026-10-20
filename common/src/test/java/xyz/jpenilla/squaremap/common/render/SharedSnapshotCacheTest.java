@@ -26,7 +26,7 @@ class SharedSnapshotCacheTest {
         final Semaphore requests = new Semaphore(1);
         final CountDownLatch started = new CountDownLatch(1);
         control.pause(true);
-        try (final var cache = new SharedSnapshotCache<Integer, Integer>(requests, 0, control, key -> {
+        try (final var cache = new SharedSnapshotCache<Integer, Integer>(Thread.ofVirtual().factory(), requests, 0, control, key -> {
             started.countDown();
             return CompletableFuture.completedFuture(42);
         }); final var lease = cache.acquire(List.of(1))) {
@@ -40,7 +40,7 @@ class SharedSnapshotCacheTest {
     @Test
     void failedAdmissionReturnsCapacity() throws Exception {
         final Semaphore requests = new Semaphore(1);
-        try (final var cache = new SharedSnapshotCache<Integer, String>(requests, 0, new RenderControl(), key -> {
+        try (final var cache = new SharedSnapshotCache<Integer, String>(Thread.ofVirtual().factory(), requests, 0, new RenderControl(), key -> {
             throw new IllegalStateException("submission failed");
         }); final var lease = cache.acquire(List.of(1))) {
             final ExecutionException failure = assertThrows(ExecutionException.class, () -> lease.await(List.of(1)));
@@ -56,7 +56,7 @@ class SharedSnapshotCacheTest {
         final Semaphore requests = new Semaphore(1);
         final CountDownLatch entered = new CountDownLatch(1);
         final CountDownLatch release = new CountDownLatch(1);
-        try (final var cache = new SharedSnapshotCache<Integer, Integer>(requests, 0, control, key -> {
+        try (final var cache = new SharedSnapshotCache<Integer, Integer>(Thread.ofVirtual().factory(), requests, 0, control, key -> {
             entered.countDown();
             try {
                 release.await();
@@ -79,7 +79,7 @@ class SharedSnapshotCacheTest {
 
     @Test
     void failedDependencyDoesNotHideOtherResults() throws Exception {
-        try (final var cache = new SharedSnapshotCache<Integer, String>(new Semaphore(2), 0, new RenderControl(), key ->
+        try (final var cache = new SharedSnapshotCache<Integer, String>(Thread.ofVirtual().factory(), new Semaphore(2), 0, new RenderControl(), key ->
             key == 1 ? CompletableFuture.failedFuture(new IllegalStateException("read failed")) : CompletableFuture.completedFuture("snapshot")
         ); final var lease = cache.acquire(List.of(1, 2))) {
             final ExecutionException failure = assertThrows(ExecutionException.class, () -> lease.await(List.of(1)));
@@ -93,7 +93,7 @@ class SharedSnapshotCacheTest {
         final AtomicInteger calls = new AtomicInteger();
         final CompletableFuture<String> platform = new CompletableFuture<>();
         final CountDownLatch started = new CountDownLatch(1);
-        try (final var cache = new SharedSnapshotCache<Integer, String>(new Semaphore(1), 0, new RenderControl(), key -> {
+        try (final var cache = new SharedSnapshotCache<Integer, String>(Thread.ofVirtual().factory(), new Semaphore(1), 0, new RenderControl(), key -> {
             calls.incrementAndGet();
             started.countDown();
             return platform;
@@ -123,7 +123,7 @@ class SharedSnapshotCacheTest {
         final CompletableFuture<String> oldLoad = new CompletableFuture<>();
         final CountDownLatch oldStarted = new CountDownLatch(1);
         final CountDownLatch newStarted = new CountDownLatch(1);
-        final var old = new SharedSnapshotCache<Integer, String>(requests, 0, new RenderControl(), key -> {
+        final var old = new SharedSnapshotCache<Integer, String>(Thread.ofVirtual().factory(), requests, 0, new RenderControl(), key -> {
             oldStarted.countDown();
             return oldLoad;
         });
@@ -131,7 +131,7 @@ class SharedSnapshotCacheTest {
             assertTrue(oldStarted.await(5, TimeUnit.SECONDS));
             old.close();
             assertFalse(oldLoad.isDone());
-            try (final var next = new SharedSnapshotCache<Integer, String>(requests, 0, new RenderControl(), key -> {
+            try (final var next = new SharedSnapshotCache<Integer, String>(Thread.ofVirtual().factory(), requests, 0, new RenderControl(), key -> {
                 newStarted.countDown();
                 return CompletableFuture.completedFuture("new");
             }); final var nextLease = next.acquire(List.of(2))) {

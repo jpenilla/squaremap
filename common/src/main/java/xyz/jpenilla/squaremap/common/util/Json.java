@@ -3,6 +3,7 @@ package xyz.jpenilla.squaremap.common.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -19,8 +20,8 @@ public final class Json {
         return GSON;
     }
 
-    public static void writeAsync(final Path file, final Object object) {
-        FileUtil.atomicWriteAsync(file, tmp -> {
+    public static void write(final Path file, final Object object) throws IOException {
+        FileUtil.atomicWrite(file, tmp -> {
             try (final BufferedWriter writer = Files.newBufferedWriter(tmp)) {
                 GSON.toJson(object, writer);
             }

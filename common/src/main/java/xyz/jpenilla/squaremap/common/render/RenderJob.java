@@ -40,7 +40,7 @@ public final class RenderJob {
     private final ScanSettings settings;
     private final int maxZoom;
     private final RenderControl control = new RenderControl();
-    private final ExecutorService tasks = Executors.newVirtualThreadPerTaskExecutor();
+    private final ExecutorService tasks;
     private final ExecutorService cpu;
     private final SharedSnapshotCache<ChunkCoordinate, ChunkSnapshot> snapshots;
     private final Semaphore chunkSlots;
@@ -74,7 +74,11 @@ public final class RenderJob {
         this.processedChunks.set(plan.regions().stream().filter(RenderPlan.RegionWork::completed).mapToInt(RenderPlan.RegionWork::chunkCount).sum());
         this.processedRegions.set((int) plan.regions().stream().filter(RenderPlan.RegionWork::completed).count());
         this.chunkSlots = new Semaphore(limits.maxActiveChunks);
-        this.cpu = Executors.newFixedThreadPool(limits.workers, Threads.squaremapThreadFactory("render-worker", world.serverLevel()));
+        this.tasks = Executors.newThreadPerTaskExecutor(Threads.virtualThreads(Threads.name("render-task", world.identifier())));
+        this.cpu = Executors.newFixedThreadPool(
+            limits.workers,
+            Threads.platformThreads(Threads.name("render-worker", world.identifier()))
+        );
         this.scanners = ThreadLocal.withInitial(() -> new ChunkScanner(
             world.blockColors(),
             world.biomeColorTables(),
@@ -84,8 +88,13 @@ public final class RenderJob {
             this.control
         ));
         final var provider = snapshots.createChunkSnapshotProvider(world.serverLevel());
-        this.snapshots = new SharedSnapshotCache<>(world.snapshotRequests(), limits.idleChunkCacheSize, this.control,
-            coordinate -> provider.asyncSnapshot(coordinate.x(), coordinate.z()));
+        this.snapshots = new SharedSnapshotCache<>(
+            Threads.virtualThreads(Threads.name("snapshot-load", world.identifier())),
+            world.snapshotRequests(),
+            limits.idleChunkCacheSize,
+            this.control,
+            coordinate -> provider.asyncSnapshot(coordinate.x(), coordinate.z())
+        );
     }
 
     /**

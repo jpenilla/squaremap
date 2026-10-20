@@ -21,6 +21,7 @@ import xyz.jpenilla.squaremap.common.config.ImageSavingConfig;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.coordinate.TileCoordinate;
 import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
+import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 
 @DefaultQualifier(NonNull.class)
 public final class RegionImageSaveQueue {
@@ -120,6 +121,11 @@ public final class RegionImageSaveQueue {
     }
 
     public static RegionImageSaveQueue create(final ServerLevel level, final ImageSavingConfig config, final Consumer<TileCoordinate> written) {
-        return new RegionImageSaveQueue(config.workers, config.maxPendingImages, Threads.squaremapThreadFactory("imageio", level), written);
+        return new RegionImageSaveQueue(
+            config.workers,
+            config.maxPendingImages,
+            Threads.platformThreads(Threads.name("imageio", WorldIdentifiers.identifier(level))),
+            written
+        );
     }
 }

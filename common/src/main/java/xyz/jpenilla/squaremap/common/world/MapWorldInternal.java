@@ -38,6 +38,8 @@ import xyz.jpenilla.squaremap.common.render.scanning.BiomeColorTables;
 import xyz.jpenilla.squaremap.common.render.scanning.BlockColors;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.Json;
+import xyz.jpenilla.squaremap.common.util.concurrent.BackgroundExecutor;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
 import xyz.jpenilla.squaremap.common.web.TileChangeLog;
 import xyz.jpenilla.squaremap.common.web.WebJsonStore;
@@ -54,6 +56,7 @@ public abstract class MapWorldInternal implements MapWorld {
     private final WorldAdvanced advancedWorldConfig;
     private final Path dataPath;
     private final Path tilesPath;
+    private final BackgroundExecutor backgroundExecutor;
     private final TileChangeLog tileChangeLog;
     private final RegionImageSaveQueue regionImageSaveQueue;
     private final SnapshotRequests snapshotRequests = new SnapshotRequests(1);
@@ -82,7 +85,8 @@ public abstract class MapWorldInternal implements MapWorld {
         this.dataPath = directories.getAndCreateDataDirectory(level);
         this.tilesPath = directories.getAndCreateTilesDirectory(level);
 
-        this.tileChangeLog = TileChangeLog.create(jsonStore, this.tilesPath.resolve(TileChangeLog.FILE_NAME));
+        this.backgroundExecutor = new BackgroundExecutor(Threads.name("background", WorldIdentifiers.identifier(level)));
+        this.tileChangeLog = TileChangeLog.create(jsonStore, this.tilesPath.resolve(TileChangeLog.FILE_NAME), this.backgroundExecutor);
         this.regionImageSaveQueue = RegionImageSaveQueue.create(level, this.worldConfig.IMAGE_SAVING, this.tileChangeLog::record);
 
         this.layerRegistry(); // init the layer registry
@@ -158,6 +162,16 @@ public abstract class MapWorldInternal implements MapWorld {
         return this.tilesPath;
     }
 
+    /**
+     * Gets the executor for this world's background work, such as writing its web data. It is
+     * shut down with the world, so the work is finished before the world's files can be reset.
+     *
+     * @return the executor
+     */
+    public BackgroundExecutor backgroundExecutor() {
+        return this.backgroundExecutor;
+    }
+
     public @Nullable BlockPos getSpawnPos() {
         final LevelData.RespawnData respawnData = this.level.getServer().getRespawnData();
         if (respawnData.dimension().equals(this.level.dimension())) {
@@ -209,6 +223,7 @@ public abstract class MapWorldInternal implements MapWorld {
         this.renderScheduler.shutdown();
         this.regionImageSaveQueue.shutdown();
         this.tileChangeLog.close();
+        this.backgroundExecutor.shutdown();
         this.serializeDirtyChunks();
     }
 
