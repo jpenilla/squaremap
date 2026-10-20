@@ -21,6 +21,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.HtmlComponentSerializer;
+import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.player.AbstractPlayerManager;
@@ -30,12 +31,11 @@ import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 
 @DefaultQualifier(NonNull.class)
 public final class PlayerDataPublisher implements Runnable {
-    private static final String JSON_PATH = "/tiles/players.json";
-
     private final Provider<ComponentFlattener> flattener;
     private final AbstractPlayerManager playerManager;
     private final ServerAccess serverAccess;
     private final ConfigManager configManager;
+    private final SquaremapDirectories directories;
     private final WebJsonStore jsonStore;
     private @Nullable Map<String, Object> lastData = null;
 
@@ -45,12 +45,14 @@ public final class PlayerDataPublisher implements Runnable {
         final AbstractPlayerManager playerManager,
         final ServerAccess serverAccess,
         final ConfigManager configManager,
+        final SquaremapDirectories directories,
         final WebJsonStore jsonStore
     ) {
         this.flattener = flattener;
         this.playerManager = playerManager;
         this.serverAccess = serverAccess;
         this.configManager = configManager;
+        this.directories = directories;
         this.jsonStore = jsonStore;
     }
 
@@ -63,7 +65,7 @@ public final class PlayerDataPublisher implements Runnable {
         ForkJoinPool.commonPool().execute(() -> {
             if (prev == null || !prev.equals(data)) {
                 final String json = Json.gson().toJson(data);
-                this.jsonStore.put(JSON_PATH, json);
+                this.jsonStore.put(this.directories.tilesDirectory().resolve("players.json"), json);
             }
         });
     }

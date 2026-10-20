@@ -4,11 +4,13 @@ import { WorldList } from "./WorldList.js";
 import { UICoordinates } from "./UICoordinates.js";
 import { UILink } from "./UILink.js";
 import { LayerControl } from "./LayerControl.js";
+import { fetchJSON } from "./util/fetch.ts";
 import L from "leaflet";
 import "./addons/Ellipse.js";
 import "./addons/RotateMarker.js";
 import "leaflet/dist/leaflet.css";
 import "../css/styles.css";
+/** @import { Settings } from "./types.ts" */
 
 class SquaremapMap {
     /** @type {L.Map} */
@@ -33,6 +35,8 @@ class SquaremapMap {
     tick_count;
     /** @type {boolean} */
     showControls;
+    /** @type {boolean} */
+    looping;
 
     constructor() {
         this.map = L.map("map", {
@@ -56,10 +60,18 @@ class SquaremapMap {
             });
 
         this.tick_count = 1;
+        this.looping = false;
 
         this.layerControl = new LayerControl();
 
         this.init();
+    }
+    startLoop() {
+        if (this.looping) {
+            return;
+        }
+        this.looping = true;
+        this.loop();
     }
     loop() {
         if (document.visibilityState === "visible") {
@@ -75,10 +87,12 @@ class SquaremapMap {
         this.worldList.curWorld.tick();
     }
     init() {
-        this.getJSON(
-            "tiles/settings.json",
-            /** @param {Settings} json */
+        void fetchJSON("tiles/settings.json").then(
+            /** @param {Settings | null} json */
             (json) => {
+                if (json === null) {
+                    return;
+                }
                 this.layerControl.init();
 
                 this.staticMode = json.static || false;
@@ -99,7 +113,6 @@ class SquaremapMap {
                 }
 
                 this.worldList.loadInitialWorld(json, (world) => {
-                    this.loop();
                     this.centerOn(
                         this.getUrlParam("x", world.spawn.x),
                         this.getUrlParam("z", world.spawn.z),
@@ -142,23 +155,6 @@ class SquaremapMap {
         const element = document.createElement(tag);
         element.appendChild(document.createTextNode(text));
         return element;
-    }
-    /**
-     * @param {string} url
-     * @param {(json: any) => void} fn
-     * @param {boolean} cache
-     */
-    getJSON(url, fn, cache = false) {
-        /** @type {RequestInit} */
-        let options = {};
-        if (!cache) {
-            options.cache = "no-store";
-        }
-        fetch(url, options).then(async (res) => {
-            if (res.ok) {
-                fn(await res.json());
-            }
-        });
     }
     getUrlParam(query, def) {
         const url = window.location.search.substring(1);

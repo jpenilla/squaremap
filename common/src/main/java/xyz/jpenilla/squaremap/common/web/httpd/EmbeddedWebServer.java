@@ -95,6 +95,12 @@ public final class EmbeddedWebServer {
         final ProxyHandler finalProxyHandler = devProxyHandler;
 
         return exchange -> {
+            // Undertow answers 304 when If-Modified-Since passes even if the ETag changed, and it only has
+            // second precision. Like the HTTP spec requires, ignore it when the client sent an ETag.
+            if (exchange.getRequestHeaders().contains(Headers.IF_NONE_MATCH)) {
+                exchange.getRequestHeaders().remove(Headers.IF_MODIFIED_SINCE);
+            }
+
             if (JSON_RESPONSES.handle(exchange)) {
                 return;
             }
@@ -127,8 +133,8 @@ public final class EmbeddedWebServer {
                     Logging.logger().warn("Failed to read file attributes for {}", path, e);
                     return null;
                 }
-                long time = attr.lastModifiedTime().toMillis();
-                return new ETag(false, Long.toString(time));
+                // Nanoseconds and size, so a tile rewritten within one millisecond still gets a new tag.
+                return new ETag(false, attr.lastModifiedTime().to(TimeUnit.NANOSECONDS) + "-" + attr.size());
             })
             .build();
 

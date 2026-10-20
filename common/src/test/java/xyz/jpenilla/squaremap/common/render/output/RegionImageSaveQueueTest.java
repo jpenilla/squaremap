@@ -2,7 +2,10 @@ package xyz.jpenilla.squaremap.common.render.output;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -14,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.io.TempDir;
 import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.TileCoordinate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -29,7 +33,7 @@ class RegionImageSaveQueueTest {
     void drainWaitsForQueuedWritesDespiteInterruption() throws Exception {
         final CountDownLatch entered = new CountDownLatch(1);
         final CountDownLatch release = new CountDownLatch(1);
-        final RegionImageSaveQueue queue = new RegionImageSaveQueue(1, 100, blockFirstWorker(entered, release));
+        final RegionImageSaveQueue queue = new RegionImageSaveQueue(1, 100, blockFirstWorker(entered, release), tile -> { });
         try {
             final RegionImage image = new RegionImage(new RegionCoordinate(0, 0), this.tiles, 0);
             image.setPixel(0, 0, 0xFF00FF00);
@@ -56,7 +60,7 @@ class RegionImageSaveQueueTest {
     void shutdownWaitsForQueuedWrites() throws Exception {
         final CountDownLatch entered = new CountDownLatch(1);
         final CountDownLatch release = new CountDownLatch(1);
-        final RegionImageSaveQueue queue = new RegionImageSaveQueue(1, 100, blockFirstWorker(entered, release));
+        final RegionImageSaveQueue queue = new RegionImageSaveQueue(1, 100, blockFirstWorker(entered, release), tile -> { });
         try {
             final RegionImage image = new RegionImage(new RegionCoordinate(0, 0), this.tiles, 0);
             image.setPixel(0, 0, 0xFFFF0000);
@@ -75,7 +79,7 @@ class RegionImageSaveQueueTest {
 
     @Test
     void parallelSavesPreserveSharedFilesAndCorrectionOrder() throws Exception {
-        final RegionImageSaveQueue queue = new RegionImageSaveQueue(2, 100, Executors.defaultThreadFactory());
+        final RegionImageSaveQueue queue = new RegionImageSaveQueue(2, 100, Executors.defaultThreadFactory(), tile -> { });
         try {
             for (int update = 0; update < 8; update++) {
                 final int color = 0xFF000000 | update;
@@ -105,7 +109,7 @@ class RegionImageSaveQueueTest {
     @Test
     void failedFileDoesNotPreventOtherFilesOrLaterSaves() throws Exception {
         Files.writeString(this.tiles.resolve("1"), "not a directory");
-        final RegionImageSaveQueue queue = new RegionImageSaveQueue(2, 100, Executors.defaultThreadFactory());
+        final RegionImageSaveQueue queue = new RegionImageSaveQueue(2, 100, Executors.defaultThreadFactory(), tile -> { });
         try {
             for (final int color : new int[] {0xFFFF0000, 0xFF0000FF}) {
                 final RegionImage image = new RegionImage(new RegionCoordinate(0, 0), this.tiles, 1);
@@ -114,6 +118,25 @@ class RegionImageSaveQueueTest {
             }
             queue.drain();
             assertEquals(0xFF0000FF, ImageIO.read(this.tiles.resolve("0/0_0.png").toFile()).getRGB(0, 0));
+        } finally {
+            queue.shutdown();
+        }
+    }
+
+    @Test
+    void reportsEachTileAfterItsFileIsWritten() throws Exception {
+        final List<TileCoordinate> written = new CopyOnWriteArrayList<>();
+        final RegionImageSaveQueue queue = new RegionImageSaveQueue(2, 100, Executors.defaultThreadFactory(), tile -> {
+            if (Files.isRegularFile(this.tiles.resolve(tile.zoom() + "/" + tile.x() + "_" + tile.z() + ".png"))) {
+                written.add(tile);
+            }
+        });
+        try {
+            final RegionImage image = new RegionImage(new RegionCoordinate(0, 0), this.tiles, 1);
+            image.setPixel(0, 0, 0xFFFF0000);
+            queue.saveImage(image);
+            queue.drain();
+            assertEquals(Set.of(new TileCoordinate(1, 0, 0), new TileCoordinate(0, 0, 0)), Set.copyOf(written));
         } finally {
             queue.shutdown();
         }

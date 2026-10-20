@@ -7,7 +7,6 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
-import xyz.jpenilla.squaremap.common.util.CheckedRunnable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -47,8 +46,8 @@ class RegionImageTest {
     }
 
     private static void save(final RegionImage image) throws IOException {
-        for (final CheckedRunnable<IOException> task : image.saveTasks().values()) {
-            task.run();
+        for (final RegionImage.SaveTask task : image.saveTasks()) {
+            task.write().run();
         }
     }
 }

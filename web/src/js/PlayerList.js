@@ -1,5 +1,6 @@
 import { Player } from "./util/Player.js";
 import { S } from "./Squaremap.js";
+import { fetchJSON } from "./util/fetch.ts";
 
 /** @typedef {import("./types.ts").PlayersData} PlayersData */
 
@@ -40,14 +41,15 @@ class PlayerList {
             }
         };
         const fetchPlayers = (callback) => {
-            S.getJSON(
-                "tiles/players.json",
-                /** @param {PlayersData} json */
+            void fetchJSON("tiles/players.json").then(
+                /** @param {PlayersData | null} json */
                 (json) => {
+                    if (json === null) {
+                        return;
+                    }
                     this.jsonCache = json;
                     callback();
                 },
-                true,
             );
         };
 
