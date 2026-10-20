@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.util.Exceptions;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 
 public final class ViteRunner extends Thread {
     private static final AtomicInteger COUNT = new AtomicInteger(0);
@@ -21,10 +22,8 @@ public final class ViteRunner extends Thread {
 
     public ViteRunner(final String frontendPath) {
         this.dir = Path.of(frontendPath);
-        this.setName("squaremap-vite-runner-" + COUNT.getAndIncrement());
-        this.threadFactory = Thread.ofVirtual()
-            .name(this.getName() + "-", 0)
-            .factory();
+        this.setName(Threads.name("vite-runner-" + COUNT.getAndIncrement()));
+        this.threadFactory = Threads.virtualThreads(this.getName() + "-reader");
     }
 
     @Override

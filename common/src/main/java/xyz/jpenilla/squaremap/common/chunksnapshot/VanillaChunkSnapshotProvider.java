@@ -32,6 +32,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.util.concurrent.CompletableFutures;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 
 @DefaultQualifier(NonNull.class)
 record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise, SectionDecoder sectionDecoder) implements ChunkSnapshotProvider {
@@ -137,7 +138,7 @@ record VanillaChunkSnapshotProvider(ServerLevel level, boolean moonrise, Section
         });
     }
 
-    private static final ThreadFactory VANILLA_LOAD_DISPATCHER_FACTORY = Thread.ofVirtual().name("squaremap-chunk-load-dispatch").factory();
+    private static final ThreadFactory VANILLA_LOAD_DISPATCHER_FACTORY = Threads.virtualThreads(Threads.name("chunk-load-dispatch"));
     private static final Executor VANILLA_LOAD_DISPATCH_EXECUTOR = task -> VANILLA_LOAD_DISPATCHER_FACTORY.newThread(task).start();
 
     // Loads a chunk through the chunk system and applies onMain to it on the main thread.

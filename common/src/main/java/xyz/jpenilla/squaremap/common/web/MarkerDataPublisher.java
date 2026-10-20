@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ForkJoinPool;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
@@ -91,7 +90,7 @@ public final class MarkerDataPublisher implements Runnable {
 
         if (changed[0] || this.mapWorld.lastReset() != this.lastResetTime) {
             this.lastResetTime = this.mapWorld.lastReset();
-            ForkJoinPool.commonPool().execute(() -> this.jsonStore.put(this.jsonPath, Json.gson().toJson(layers)));
+            this.mapWorld.backgroundExecutor().execute(() -> this.jsonStore.put(this.jsonPath, Json.gson().toJson(layers)));
         }
     }
 

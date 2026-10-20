@@ -1,6 +1,8 @@
 package xyz.jpenilla.squaremap.common.web;
 
 import com.google.inject.Inject;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +17,13 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.api.MapWorld;
 import xyz.jpenilla.squaremap.api.WorldIdentifier;
+import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.config.WorldConfig;
 import xyz.jpenilla.squaremap.common.util.Json;
+import xyz.jpenilla.squaremap.common.util.concurrent.GlobalBackgroundExecutor;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 import xyz.jpenilla.squaremap.common.world.WorldIdentifiers;
 import xyz.jpenilla.squaremap.common.world.WorldManager;
@@ -28,15 +32,18 @@ import xyz.jpenilla.squaremap.common.world.WorldManager;
 public final class WebSettingsPublisher implements Runnable {
     private final WorldManager worldManager;
     private final SquaremapDirectories directories;
+    private final GlobalBackgroundExecutor executor;
     private @MonotonicNonNull Map<WorldIdentifier, ChangingData> lastUpdate = null;
 
     @Inject
     private WebSettingsPublisher(
         final WorldManager worldManager,
-        final SquaremapDirectories directories
+        final SquaremapDirectories directories,
+        final GlobalBackgroundExecutor executor
     ) {
         this.worldManager = worldManager;
         this.directories = directories;
+        this.executor = executor;
     }
 
     @Override
@@ -97,7 +104,8 @@ public final class WebSettingsPublisher implements Runnable {
         map.put("worlds", worlds);
         map.put("ui", ui);
 
-        Json.writeAsync(this.directories.tilesDirectory().resolve("settings.json"), map);
+        final Path file = this.directories.tilesDirectory().resolve("settings.json");
+        this.executor.execute(() -> write(file, map));
     }
 
     private void writeWorldSettings(
@@ -138,7 +146,16 @@ public final class WebSettingsPublisher implements Runnable {
         settings.put("zoom", zoom);
         settings.put("marker_update_interval", worldConfig.MARKER_API_UPDATE_INTERVAL_SECONDS);
 
-        Json.writeAsync(mapWorld.tilesPath().resolve("settings.json"), settings);
+        final Path file = mapWorld.tilesPath().resolve("settings.json");
+        mapWorld.backgroundExecutor().execute(() -> write(file, settings));
+    }
+
+    private static void write(final Path file, final Object data) {
+        try {
+            Json.write(file, data);
+        } catch (final IOException ex) {
+            Logging.logger().warn("Failed to write file '{}'", file, ex);
+        }
     }
 
     // replicate bukkit "environment"

@@ -38,7 +38,8 @@ public final class RenderScheduler {
         this.factory = factory;
         this.checkpoints = new RenderCheckpointStore(world.dataPath().resolve("resume_render.json"));
         this.executor = Executors.newSingleThreadScheduledExecutor(
-            Thread.ofVirtual().name("squaremap-render-[" + world.identifier().asString() + "]").factory());
+            Threads.virtualThread(Threads.name("render", world.identifier()))
+        );
     }
 
     public void init() {

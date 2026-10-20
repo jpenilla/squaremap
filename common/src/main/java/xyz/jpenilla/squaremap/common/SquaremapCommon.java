@@ -6,7 +6,6 @@ import com.google.inject.Singleton;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import javax.imageio.ImageIO;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -23,6 +22,8 @@ import xyz.jpenilla.squaremap.common.render.scanning.BiomeColorTables;
 import xyz.jpenilla.squaremap.common.updatechecker.UpdateChecker;
 import xyz.jpenilla.squaremap.common.util.ReflectionUtil;
 import xyz.jpenilla.squaremap.common.util.SquaremapJarAccess;
+import xyz.jpenilla.squaremap.common.util.concurrent.GlobalBackgroundExecutor;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 import xyz.jpenilla.squaremap.common.util.text.Components;
 import xyz.jpenilla.squaremap.common.web.WebJsonStore;
 import xyz.jpenilla.squaremap.common.web.httpd.EmbeddedWebServer;
@@ -41,6 +42,7 @@ public final class SquaremapCommon {
     private final Commands commands;
     private final SquaremapJarAccess squaremapJar;
     private final WebJsonStore jsonStore;
+    private final GlobalBackgroundExecutor backgroundExecutor;
 
     @Inject
     private SquaremapCommon(
@@ -52,7 +54,8 @@ public final class SquaremapCommon {
         final WorldManagerImpl worldManager,
         final Commands commands,
         final SquaremapJarAccess squaremapJar,
-        final WebJsonStore jsonStore
+        final WebJsonStore jsonStore,
+        final GlobalBackgroundExecutor backgroundExecutor
     ) {
         this.injector = injector;
         this.platform = platform;
@@ -63,6 +66,7 @@ public final class SquaremapCommon {
         this.commands = commands;
         this.squaremapJar = squaremapJar;
         this.jsonStore = jsonStore;
+        this.backgroundExecutor = backgroundExecutor;
     }
 
     public void init() {
@@ -76,6 +80,7 @@ public final class SquaremapCommon {
     private void start() {
         this.squaremapJar.extract("web", this.directories.webDirectory(), Config.UPDATE_WEB_DIR);
         BiomeColorTables.loadImages(this.directories);
+        this.backgroundExecutor.start();
         this.worldManager.start();
         this.platform.startCallback();
         if (Config.HTTPD_ENABLED) {
@@ -91,6 +96,7 @@ public final class SquaremapCommon {
         }
         this.platform.stopCallback();
         this.worldManager.shutdown();
+        this.backgroundExecutor.shutdown();
         if (Config.HTTPD_ENABLED && !Config.FLUSH_JSON_IMMEDIATELY) {
             this.jsonStore.flush();
         }
@@ -116,7 +122,7 @@ public final class SquaremapCommon {
         if (!Config.UPDATE_CHECKER) {
             return;
         }
-        ForkJoinPool.commonPool().execute(() -> new UpdateChecker(Logging.logger()).checkVersion());
+        Thread.ofVirtual().name(Threads.name("update-checker")).start(() -> new UpdateChecker(Logging.logger()).checkVersion());
     }
 
     private void setupApi() {
