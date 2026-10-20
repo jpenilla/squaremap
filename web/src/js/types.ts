@@ -1,3 +1,5 @@
+import type L from "leaflet";
+
 export interface Settings {
     static: boolean;
     worlds: Settings_World[];
@@ -77,6 +79,16 @@ export interface TileChanges {
     dropped: number;
     /** `[seq, zoom, x, z]` */
     changes: [number, number, number, number][];
+}
+
+export interface SquaremapTileLayerOptions {
+    /** the tile URL template */
+    url: string;
+    /** the change log from before any tiles were loaded, if it could be fetched */
+    changes: TileChanges | null;
+    /** whether tile loads revalidate, false in static mode, where tiles don't change while the page is open */
+    revalidate: boolean;
+    leafletOptions: L.TileLayerOptions;
 }
 
 export interface PlayerData {

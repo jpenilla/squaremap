@@ -103,11 +103,16 @@ class LayerControl {
      * @returns {L.TileLayer}
      */
     createTileLayer(world, changes) {
-        return new SquaremapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, changes, {
-            tileSize: 512,
-            minNativeZoom: 0,
-            maxNativeZoom: world.zoom.max,
-            errorTileUrl: "images/clear.png",
+        return new SquaremapTileLayer({
+            url: `tiles/${world.name}/{z}/{x}_{y}.png`,
+            changes,
+            revalidate: !S.staticMode,
+            leafletOptions: {
+                tileSize: 512,
+                minNativeZoom: 0,
+                maxNativeZoom: world.zoom.max,
+                errorTileUrl: "images/clear.png",
+            },
         }).addTo(S.map);
     }
 }

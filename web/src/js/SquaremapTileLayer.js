@@ -1,5 +1,5 @@
 import L from "leaflet";
-/** @import { TileChanges } from "./types.ts" */
+/** @import { SquaremapTileLayerOptions, TileChanges } from "./types.ts" */
 
 /**
  * @typedef {{el: HTMLImageElement, coords: L.Coords, loaded?: number, failures?: number, retry?: ReturnType<typeof setTimeout>, stale?: boolean, reloading?: boolean, reloadPending?: boolean}} Tile
@@ -8,15 +8,14 @@ import L from "leaflet";
 // relies on Leaflet internals: _tiles, _tileCoordsToKey, and _tileReady reading _tiles[key].el
 export const SquaremapTileLayer = L.TileLayer.extend({
     /**
-     * @param url {string}
-     * @param changes {TileChanges | null} the change log from before any tiles were loaded, if it could be fetched
-     * @param options {L.TileLayerOptions}
+     * @param options {SquaremapTileLayerOptions}
      */
-    initialize: function (url, changes, options) {
-        L.TileLayer.prototype.initialize.call(this, url, options);
+    initialize: function (options) {
+        L.TileLayer.prototype.initialize.call(this, options.url, options.leafletOptions);
+        this._revalidate = options.revalidate;
         /** @type {string | null} */
-        this._epoch = changes?.epoch ?? null;
-        this._cursor = changes?.seq ?? 0;
+        this._epoch = options.changes?.epoch ?? null;
+        this._cursor = options.changes?.seq ?? 0;
     },
 
     // use the tile's zoom rather than the map's, tiles from the previous zoom can still be on screen
@@ -77,7 +76,7 @@ export const SquaremapTileLayer = L.TileLayer.extend({
      * @param cache {RequestCache}
      * @returns {Promise<string | null>}
      */
-    _fetchTile: function (coords, cache = "no-cache") {
+    _fetchTile: function (coords, cache = this._revalidate ? "no-cache" : "default") {
         // fetch rather than img src, so the browser revalidates instead of reusing an image already loaded in this page
         return fetch(this.getTileUrl(coords), { cache })
             .then((res) => {
