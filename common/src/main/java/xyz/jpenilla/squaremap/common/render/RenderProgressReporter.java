@@ -9,6 +9,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
+import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 
 @DefaultQualifier(NonNull.class)
 final class RenderProgressReporter implements AutoCloseable {
@@ -33,8 +34,9 @@ final class RenderProgressReporter implements AutoCloseable {
     RenderProgressReporter(final RenderJob render) {
         this.render = render;
         this.prevChunks = this.render.processedChunks();
-        this.timer = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual()
-            .name("squaremap-render-progresslogger-[" + render.world().identifier().asString() + "]").factory());
+        this.timer = Executors.newSingleThreadScheduledExecutor(
+            Threads.virtualThread(Threads.name("render-progress", render.world().identifier()))
+        );
         this.timer.scheduleAtFixedRate(this::tick, 1, 1, TimeUnit.SECONDS);
     }
 

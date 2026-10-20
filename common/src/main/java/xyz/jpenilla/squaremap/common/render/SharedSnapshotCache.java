@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -28,7 +29,7 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 final class SharedSnapshotCache<K, V> implements AutoCloseable {
     private final Map<K, Entry<V>> entries = new HashMap<>();
     private final LinkedHashMap<K, Entry<V>> idle = new LinkedHashMap<>();
-    private final ExecutorService loaders = Executors.newVirtualThreadPerTaskExecutor();
+    private final ExecutorService loaders;
     private final Semaphore requests;
     private final int idleCapacity;
     private final RenderControl control;
@@ -36,11 +37,13 @@ final class SharedSnapshotCache<K, V> implements AutoCloseable {
     private boolean closed;
 
     SharedSnapshotCache(
+        final ThreadFactory loaderThreads,
         final Semaphore requests,
         final int idleCapacity,
         final RenderControl control,
         final Function<K, CompletableFuture<@Nullable V>> load
     ) {
+        this.loaders = Executors.newThreadPerTaskExecutor(loaderThreads);
         this.requests = requests;
         this.idleCapacity = idleCapacity;
         this.control = control;
