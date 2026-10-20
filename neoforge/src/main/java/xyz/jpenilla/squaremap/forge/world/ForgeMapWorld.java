@@ -9,6 +9,7 @@ import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.render.RenderFactory;
 import xyz.jpenilla.squaremap.common.web.MarkerDataPublisher;
+import xyz.jpenilla.squaremap.common.web.WebJsonStore;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
 @DefaultQualifier(NonNull.class)
@@ -21,9 +22,10 @@ public final class ForgeMapWorld extends MapWorldInternal {
         final RenderFactory renderFactory,
         final SquaremapDirectories directories,
         final ConfigManager configManager,
-        final MarkerDataPublisher.Factory taskFactory
+        final MarkerDataPublisher.Factory taskFactory,
+        final WebJsonStore jsonStore
     ) {
-        super(level, renderFactory, directories, configManager);
+        super(level, renderFactory, directories, configManager, jsonStore);
 
         this.updateMarkers = taskFactory.create(this);
     }

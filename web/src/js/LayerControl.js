@@ -1,27 +1,19 @@
 import { S } from "./Squaremap.js";
 import L from "leaflet";
 import { SquaremapTileLayer } from "./SquaremapTileLayer.js";
+/** @import { TileChanges } from "./types.ts" */
 
 class LayerControl {
-    /** @type {number} */
-    currentLayer;
-    /** @type {number} */
-    updateInterval;
     /** @type {L.LayerGroup} */
     playersLayer;
     /** @type {L.Control.Layers} */
     controls;
     /** @type {L.TileLayer} */
-    tileLayer1;
-    /** @type {L.TileLayer} */
-    tileLayer2;
+    tileLayer;
     /** @type {L.Layer} */
     ignoreLayer;
 
     init() {
-        this.currentLayer = 0;
-        this.updateInterval = 60;
-
         this.playersLayer = new L.LayerGroup();
         this.playersLayer.id = "players_layer";
 
@@ -86,18 +78,15 @@ class LayerControl {
     }
     /**
      * @param world {World}
+     * @param changes {TileChanges | null}
+     * @returns {L.TileLayer}
      */
-    setupTileLayers(world) {
-        // setup the map tile layers
-        // we need 2 layers to swap between for seamless refreshing
-        if (this.tileLayer1 != null) {
-            S.map.removeLayer(this.tileLayer1);
+    setupTileLayer(world, changes) {
+        // setup the map tile layer
+        if (this.tileLayer != null) {
+            S.map.removeLayer(this.tileLayer);
         }
-        if (this.tileLayer2 != null) {
-            S.map.removeLayer(this.tileLayer2);
-        }
-        this.tileLayer1 = this.createTileLayer(world);
-        this.tileLayer2 = this.createTileLayer(world);
+        this.tileLayer = this.createTileLayer(world, changes);
 
         // refresh player's control
         this.removeOverlay(this.playersLayer);
@@ -106,43 +95,25 @@ class LayerControl {
         }
         this.playersLayer.order = world.player_tracker.priority;
         this.playersLayer.setZIndex(world.player_tracker.z_index);
+        return this.tileLayer;
     }
     /**
      * @param world {World}
+     * @param changes {TileChanges | null}
      * @returns {L.TileLayer}
      */
-    createTileLayer(world) {
-        return new SquaremapTileLayer(`tiles/${world.name}/{z}/{x}_{y}.png`, {
-            tileSize: 512,
-            minNativeZoom: 0,
-            maxNativeZoom: world.zoom.max,
-            errorTileUrl: "images/clear.png",
-        })
-            .addTo(S.map)
-            .addEventListener("load", () => {
-                // when all tiles are loaded, switch to this layer
-                this.switchTileLayer();
-            });
-    }
-    updateTileLayer() {
-        // redraw background tile layer
-        if (this.currentLayer === 1) {
-            this.tileLayer2.redraw();
-        } else {
-            this.tileLayer1.redraw();
-        }
-    }
-    switchTileLayer() {
-        // swap current tile layer
-        if (this.currentLayer === 1) {
-            this.tileLayer1.setZIndex(0);
-            this.tileLayer2.setZIndex(1);
-            this.currentLayer = 2;
-        } else {
-            this.tileLayer1.setZIndex(1);
-            this.tileLayer2.setZIndex(0);
-            this.currentLayer = 1;
-        }
+    createTileLayer(world, changes) {
+        return new SquaremapTileLayer({
+            url: `tiles/${world.name}/{z}/{x}_{y}.png`,
+            changes,
+            revalidate: !S.staticMode,
+            leafletOptions: {
+                tileSize: 512,
+                minNativeZoom: 0,
+                maxNativeZoom: world.zoom.max,
+                errorTileUrl: "images/clear.png",
+            },
+        }).addTo(S.map);
     }
 }
 
