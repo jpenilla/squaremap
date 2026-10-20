@@ -12,12 +12,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Consumer;
 import net.minecraft.server.level.ServerLevel;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.ImageSavingConfig;
 import xyz.jpenilla.squaremap.common.config.Messages;
+import xyz.jpenilla.squaremap.common.coordinate.TileCoordinate;
 import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 
 @DefaultQualifier(NonNull.class)
@@ -25,10 +27,12 @@ public final class RegionImageSaveQueue {
     private final ExecutorService executor;
     private final Semaphore capacity;
     private final Map<Path, CompletableFuture<Void>> fileTails = new HashMap<>();
+    private final Consumer<TileCoordinate> written;
 
-    RegionImageSaveQueue(final int workers, final int maxPendingImages, final ThreadFactory factory) {
+    RegionImageSaveQueue(final int workers, final int maxPendingImages, final ThreadFactory factory, final Consumer<TileCoordinate> written) {
         this.executor = Executors.newFixedThreadPool(workers, factory);
         this.capacity = new Semaphore(maxPendingImages);
+        this.written = written;
     }
 
     /**
@@ -50,16 +54,24 @@ public final class RegionImageSaveQueue {
 
     private synchronized void savePerFile(final RegionImage image) {
         final List<CompletableFuture<Void>> writes = new ArrayList<>();
-        for (final var task : image.saveTasks().entrySet()) {
-            final Path file = task.getKey();
+        for (final RegionImage.SaveTask task : image.saveTasks()) {
+            final Path file = task.file();
             final CompletableFuture<Void> fileTail = this.fileTails.getOrDefault(file, CompletableFuture.completedFuture(null));
-            final CompletableFuture<Void> next = fileTail.thenRunAsync(() -> {
+            // Must not throw, or else future saves in the chain will never run
+            final Runnable saveAndReport = () -> {
                 try {
-                    task.getValue().run();
+                    task.write().run();
                 } catch (final Throwable ex) {
                     Logging.error(Messages.LOG_COULD_NOT_SAVE_IMAGE, ex, "path", file);
+                    return;
                 }
-            }, this.executor);
+                try {
+                    this.written.accept(task.tile());
+                } catch (final Throwable ex) {
+                    Logging.logger().warn("Failed to report written tile {}", task.tile(), ex);
+                }
+            };
+            final CompletableFuture<Void> next = fileTail.thenRunAsync(saveAndReport, this.executor);
             this.fileTails.put(file, next);
             next.whenComplete((result, error) -> {
                 synchronized (this) {
@@ -107,7 +119,7 @@ public final class RegionImageSaveQueue {
         this.executor.close();
     }
 
-    public static RegionImageSaveQueue create(final ServerLevel level, final ImageSavingConfig config) {
-        return new RegionImageSaveQueue(config.workers, config.maxPendingImages, Threads.squaremapThreadFactory("imageio", level));
+    public static RegionImageSaveQueue create(final ServerLevel level, final ImageSavingConfig config, final Consumer<TileCoordinate> written) {
+        return new RegionImageSaveQueue(config.workers, config.maxPendingImages, Threads.squaremapThreadFactory("imageio", level), written);
     }
 }

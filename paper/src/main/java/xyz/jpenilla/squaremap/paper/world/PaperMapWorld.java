@@ -2,8 +2,7 @@ package xyz.jpenilla.squaremap.paper.world;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -15,9 +14,8 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.config.ConfigManager;
 import xyz.jpenilla.squaremap.common.render.RenderFactory;
-import xyz.jpenilla.squaremap.common.util.concurrent.ExceptionLoggingScheduledThreadPoolExecutor;
-import xyz.jpenilla.squaremap.common.util.concurrent.Threads;
 import xyz.jpenilla.squaremap.common.web.MarkerDataPublisher;
+import xyz.jpenilla.squaremap.common.web.WebJsonStore;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 import xyz.jpenilla.squaremap.paper.util.Folia;
 
@@ -33,12 +31,13 @@ public final class PaperMapWorld extends MapWorldInternal {
         final SquaremapDirectories directories,
         final Server server,
         final ConfigManager configManager,
-        final MarkerDataPublisher.Factory taskFactory
+        final MarkerDataPublisher.Factory taskFactory,
+        final WebJsonStore jsonStore
     ) {
-        super(level, renderFactory, directories, configManager);
+        super(level, renderFactory, directories, configManager, jsonStore);
 
         if (Folia.FOLIA) {
-            this.markerTaskHandler = new FoliaMarkerTaskHandler(level, taskFactory);
+            this.markerTaskHandler = new FoliaMarkerTaskHandler(plugin, server, taskFactory);
         } else {
             this.markerTaskHandler = new PaperMarkerTaskHandler(plugin, server, taskFactory);
         }
@@ -78,13 +77,17 @@ public final class PaperMapWorld extends MapWorldInternal {
     }
 
     private final class FoliaMarkerTaskHandler implements MarkerTaskHandler {
-        private final ScheduledExecutorService markerThread;
-        private final ScheduledFuture<?> updateMarkersTask;
+        private final ScheduledTask updateMarkersTask;
 
-        private FoliaMarkerTaskHandler(final ServerLevel level, final MarkerDataPublisher.Factory taskFactory) {
-            this.markerThread = new ExceptionLoggingScheduledThreadPoolExecutor(1, Threads.squaremapThreadFactory("markers", level));
-            this.updateMarkersTask = this.markerThread.scheduleAtFixedRate(
-                taskFactory.create(PaperMapWorld.this),
+        private FoliaMarkerTaskHandler(
+            final JavaPlugin plugin,
+            final Server server,
+            final MarkerDataPublisher.Factory taskFactory
+        ) {
+            final MarkerDataPublisher publisher = taskFactory.create(PaperMapWorld.this);
+            this.updateMarkersTask = server.getAsyncScheduler().runAtFixedRate(
+                plugin,
+                task -> publisher.run(),
                 5,
                 PaperMapWorld.this.config().MARKER_API_UPDATE_INTERVAL_SECONDS,
                 TimeUnit.SECONDS
@@ -93,8 +96,7 @@ public final class PaperMapWorld extends MapWorldInternal {
 
         @Override
         public void shutdown() {
-            this.updateMarkersTask.cancel(false);
-            Threads.shutdownExecutor(this.markerThread, TimeUnit.MILLISECONDS, 100);
+            this.updateMarkersTask.cancel();
         }
     }
 }

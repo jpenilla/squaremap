@@ -1,6 +1,8 @@
 import { Options, Rectangle, PolyLine, Polygon, Circle, Ellipse, Icon } from "./Markers.js";
 import { S } from "../Squaremap.js";
+import { fetchJSON } from "./fetch.ts";
 import L from "leaflet";
+/** @import { TileChanges, WorldSettings } from "../types.ts" */
 
 class World {
     /** @type {string} */
@@ -13,10 +15,14 @@ class World {
     player_tracker;
     /** @type {number} */
     marker_update_interval;
-    /** @type {number} */
-    tiles_update_interval;
     /** @type {boolean} */
     staticNeedsMarkerTick;
+    /** @type {boolean} */
+    tilesPolling;
+    /** @type {number} */
+    loadCount;
+    /** @type {L.TileLayer} */
+    tileLayer;
     /** @type {WorldSettings_Zoom} */
     zoom;
     /** @type {WorldSettings_Spawn} */
@@ -34,13 +40,14 @@ class World {
         this.markerLayers = new Map();
         this.player_tracker = {};
         this.marker_update_interval = 5;
-        this.tiles_update_interval = 15;
         this.staticNeedsMarkerTick = false;
+        this.tilesPolling = false;
+        this.loadCount = 0;
     }
     tick() {
         // refresh map tile layer
-        if (!S.staticMode && S.tick_count % this.tiles_update_interval === 0) {
-            S.layerControl.updateTileLayer();
+        if (!S.staticMode) {
+            this.tickTiles();
         }
         // load and draw markers
         if (!S.staticMode && S.tick_count % this.marker_update_interval === 0) {
@@ -51,16 +58,36 @@ class World {
             this.staticNeedsMarkerTick = false;
         }
     }
-    tickMarkers() {
-        S.getJSON(
-            `tiles/${this.name}/markers.json`,
-            (json) => {
-                if (this === S.worldList.curWorld) {
-                    this.markers(json);
+    tickTiles() {
+        // one poll at a time, so responses can't apply out of order
+        if (this.tilesPolling || !this.ownsTileLayer()) {
+            return;
+        }
+        this.tilesPolling = true;
+        void this.fetchChanges()
+            .then((json) => {
+                if (json != null && this.ownsTileLayer()) {
+                    this.tileLayer.applyChanges(json);
                 }
-            },
-            true,
-        );
+            })
+            .finally(() => (this.tilesPolling = false));
+    }
+    // false while this world's layer isn't the one on the map, such as while it loads
+    ownsTileLayer() {
+        return this.tileLayer != null && this.tileLayer === S.layerControl.tileLayer;
+    }
+    /**
+     * @returns {Promise<TileChanges | null>}
+     */
+    fetchChanges() {
+        return fetchJSON(`tiles/${this.name}/changes.json`);
+    }
+    tickMarkers() {
+        void fetchJSON(`tiles/${this.name}/markers.json`).then((json) => {
+            if (json !== null && this === S.worldList.curWorld) {
+                this.markers(json);
+            }
+        });
     }
     unload() {
         S.playerList.clearPlayerMarkers();
@@ -76,15 +103,25 @@ class World {
      * @param callback {(world: World) => void}
      */
     load(callback) {
-        S.getJSON(
-            `tiles/${this.name}/settings.json`,
-            /** @param {WorldSettings} json */
-            (json) => {
+        const load = ++this.loadCount;
+        // the tile layer starts from the change log as of before its tiles load
+        const changes = S.staticMode ? Promise.resolve(null) : this.fetchChanges();
+        void fetchJSON(`tiles/${this.name}/settings.json`).then(
+            /** @param {WorldSettings | null} json */
+            async (json) => {
+                if (json === null) {
+                    return;
+                }
+                const initialChanges = await changes;
+                // another world or a newer load of this one took over while waiting
+                if (this !== S.worldList.curWorld || this.loadCount !== load) {
+                    return;
+                }
+
                 this.player_tracker = json.player_tracker;
                 this.zoom = json.zoom;
                 this.spawn = json.spawn;
                 this.marker_update_interval = json.marker_update_interval;
-                this.tiles_update_interval = json.tiles_update_interval;
                 this.staticNeedsMarkerTick = true;
 
                 // set the scale for our projection calculations
@@ -102,7 +139,7 @@ class World {
                 document.getElementById("map").style.background = this.getBackground();
 
                 // setup tile layers
-                S.layerControl.setupTileLayers(this);
+                this.tileLayer = S.layerControl.setupTileLayer(this, initialChanges);
 
                 // force clear player markers
                 S.playerList.clearPlayerMarkers();
@@ -114,6 +151,7 @@ class World {
                 // force clear player markers
                 S.playerList.clearPlayerMarkers();
 
+                S.startLoop();
                 if (callback != null) {
                     callback(this);
                 }

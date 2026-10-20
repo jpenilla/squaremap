@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
@@ -22,6 +22,7 @@ import xyz.jpenilla.squaremap.common.Logging;
 import xyz.jpenilla.squaremap.common.config.Config;
 import xyz.jpenilla.squaremap.common.config.Messages;
 import xyz.jpenilla.squaremap.common.coordinate.RegionCoordinate;
+import xyz.jpenilla.squaremap.common.coordinate.TileCoordinate;
 import xyz.jpenilla.squaremap.common.util.CheckedRunnable;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 
@@ -66,22 +67,25 @@ public final class RegionImage {
      * Pixels must be finished before submission and remain unchanged until all tasks complete.
      * The caller must serialize tasks targeting the same destination file.
      *
-     * @return the tasks by destination file
+     * @return the tasks, empty if nothing was drawn
      */
-    Map<Path, CheckedRunnable<IOException>> saveTasks() {
-        final Map<Path, CheckedRunnable<IOException>> tasks = new LinkedHashMap<>();
+    List<SaveTask> saveTasks() {
+        if (this.pixels == null) {
+            return List.of();
+        }
+        final List<SaveTask> tasks = new ArrayList<>(this.maxZoom + 1);
         for (int zoom = 0; zoom <= this.maxZoom; zoom++) {
             final int step = 1 << zoom;
-            final Path file = this.directory.resolve(Integer.toString(this.maxZoom - zoom))
-                .resolve(Math.floorDiv(this.region.x(), step) + "_" + Math.floorDiv(this.region.z(), step) + ".png")
+            final TileCoordinate tile = new TileCoordinate(this.maxZoom - zoom, Math.floorDiv(this.region.x(), step), Math.floorDiv(this.region.z(), step));
+            final Path file = this.directory.resolve(Integer.toString(tile.zoom()))
+                .resolve(tile.x() + "_" + tile.z() + ".png")
                 .toAbsolutePath().normalize();
-            tasks.put(file, () -> {
-                if (this.pixels != null) {
-                    this.saveZoom(file, step);
-                }
-            });
+            tasks.add(new SaveTask(file, tile, () -> this.saveZoom(file, step)));
         }
         return tasks;
+    }
+
+    record SaveTask(Path file, TileCoordinate tile, CheckedRunnable<IOException> write) {
     }
 
     private void saveZoom(final Path file, final int step) throws IOException {

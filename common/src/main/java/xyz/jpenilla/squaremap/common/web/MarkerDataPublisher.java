@@ -17,7 +17,6 @@ import xyz.jpenilla.squaremap.api.Key;
 import xyz.jpenilla.squaremap.api.LayerProvider;
 import xyz.jpenilla.squaremap.api.Registry;
 import xyz.jpenilla.squaremap.api.marker.Marker;
-import xyz.jpenilla.squaremap.common.SquaremapDirectories;
 import xyz.jpenilla.squaremap.common.util.Json;
 import xyz.jpenilla.squaremap.common.world.MapWorldInternal;
 
@@ -27,7 +26,7 @@ public final class MarkerDataPublisher implements Runnable {
     }
 
     private final MapWorldInternal mapWorld;
-    private final String jsonPathString;
+    private final Path jsonPath;
     private final WebJsonStore jsonStore;
     private final Object2LongMap<Key> lastUpdatedTime = new Object2LongOpenHashMap<>();
     private final Map<Key, Map<String, Object>> layerCache = new HashMap<>();
@@ -37,12 +36,10 @@ public final class MarkerDataPublisher implements Runnable {
     @AssistedInject
     private MarkerDataPublisher(
         @Assisted final @NonNull MapWorldInternal mapWorld,
-        final @NonNull SquaremapDirectories directories,
         final @NonNull WebJsonStore jsonStore
     ) {
         this.mapWorld = mapWorld;
-        final Path jsonPath = this.mapWorld.tilesPath().resolve("markers.json");
-        this.jsonPathString = "/" + directories.webDirectory().relativize(jsonPath).toString().replace("\\", "/");
+        this.jsonPath = this.mapWorld.tilesPath().resolve("markers.json");
         this.jsonStore = jsonStore;
     }
 
@@ -94,7 +91,7 @@ public final class MarkerDataPublisher implements Runnable {
 
         if (changed[0] || this.mapWorld.lastReset() != this.lastResetTime) {
             this.lastResetTime = this.mapWorld.lastReset();
-            ForkJoinPool.commonPool().execute(() -> this.jsonStore.put(this.jsonPathString, Json.gson().toJson(layers)));
+            ForkJoinPool.commonPool().execute(() -> this.jsonStore.put(this.jsonPath, Json.gson().toJson(layers)));
         }
     }
 

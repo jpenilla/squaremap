@@ -69,7 +69,14 @@ export interface WorldSettings {
     player_tracker: WorldSettings_PlayerTracker;
     zoom: WorldSettings_Zoom;
     marker_update_interval: number;
-    tiles_update_interval: number;
+}
+
+export interface TileChanges {
+    epoch: string;
+    seq: number;
+    dropped: number;
+    /** `[seq, zoom, x, z]` */
+    changes: [number, number, number, number][];
 }
 
 export interface PlayerData {

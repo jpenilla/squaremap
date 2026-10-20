@@ -39,6 +39,8 @@ import xyz.jpenilla.squaremap.common.render.scanning.BlockColors;
 import xyz.jpenilla.squaremap.common.util.FileUtil;
 import xyz.jpenilla.squaremap.common.util.Json;
 import xyz.jpenilla.squaremap.common.visibilitylimit.VisibilityLimitImpl;
+import xyz.jpenilla.squaremap.common.web.TileChangeLog;
+import xyz.jpenilla.squaremap.common.web.WebJsonStore;
 import xyz.jpenilla.squaremap.common.world.layer.SpawnIconLayer;
 import xyz.jpenilla.squaremap.common.world.layer.WorldBorderLayer;
 
@@ -52,6 +54,7 @@ public abstract class MapWorldInternal implements MapWorld {
     private final WorldAdvanced advancedWorldConfig;
     private final Path dataPath;
     private final Path tilesPath;
+    private final TileChangeLog tileChangeLog;
     private final RegionImageSaveQueue regionImageSaveQueue;
     private final SnapshotRequests snapshotRequests = new SnapshotRequests(1);
     private final RenderScheduler renderScheduler;
@@ -65,19 +68,22 @@ public abstract class MapWorldInternal implements MapWorld {
         final ServerLevel level,
         final RenderFactory renderFactory,
         final SquaremapDirectories directories,
-        final ConfigManager configManager
+        final ConfigManager configManager,
+        final WebJsonStore jsonStore
     ) {
         this.level = level;
 
         this.worldConfig = configManager.worldConfig(level);
         this.advancedWorldConfig = configManager.worldAdvanced(level);
-        this.regionImageSaveQueue = RegionImageSaveQueue.create(level, this.worldConfig.IMAGE_SAVING);
 
         this.blockColors = new BlockColors(this.advancedWorldConfig);
         this.biomeColorTables = BiomeColorTables.create(level, this.advancedWorldConfig);
 
         this.dataPath = directories.getAndCreateDataDirectory(level);
         this.tilesPath = directories.getAndCreateTilesDirectory(level);
+
+        this.tileChangeLog = TileChangeLog.create(jsonStore, this.tilesPath.resolve(TileChangeLog.FILE_NAME));
+        this.regionImageSaveQueue = RegionImageSaveQueue.create(level, this.worldConfig.IMAGE_SAVING, this.tileChangeLog::record);
 
         this.layerRegistry(); // init the layer registry
         if (this.config().SPAWN_MARKER_ICON_ENABLED) {
@@ -202,6 +208,7 @@ public abstract class MapWorldInternal implements MapWorld {
         }
         this.renderScheduler.shutdown();
         this.regionImageSaveQueue.shutdown();
+        this.tileChangeLog.close();
         this.serializeDirtyChunks();
     }
 
