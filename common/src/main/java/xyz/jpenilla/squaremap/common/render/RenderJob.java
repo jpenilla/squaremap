@@ -235,7 +235,7 @@ public final class RenderJob {
     }
 
     private void renderRegion(final RenderPlan.RegionWork work) throws InterruptedException, ExecutionException {
-        final RegionImage image = new RegionImage(work.coordinate(), this.world.tilesPath(), this.maxZoom);
+        final RegionImage image = new RegionImage(work.coordinate(), this.maxZoom);
         final ExecutorCompletionService<Integer> results = new ExecutorCompletionService<>(this.tasks);
         final int columnChunks = Math.min(this.limits.maxActiveChunks, this.limits.maxColumnChunks);
         int active = 0;
