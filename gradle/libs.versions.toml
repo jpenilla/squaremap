@@ -92,7 +92,7 @@ undertow = { group = "io.undertow", name = "undertow-core", version = "2.4.4.Fin
 chunkyApi = { group = "org.popcraft", name = "chunky-common", version.ref = "chunky" }
 # Demo datapacks, pinned by Modrinth version ID
 demoTerralith = { group = "maven.modrinth", name = "terralith", version = "fqnsIp6d" } # 2.6.5+26.3
-demoTerratonic = { group = "maven.modrinth", name = "terratonic", version = "RUBbKGx8" } # 3.0.31
+demoTerratonic = { group = "maven.modrinth", name = "terratonic", version = "3.0.31" } # 3.0.31
 demoIncendium = { group = "maven.modrinth", name = "incendium", version = "1phtTdhj" } # 5.5.4+26.3
 demoNullscape = { group = "maven.modrinth", name = "nullscape", version = "BJjbILcf" } # 2.0.1+26.3
 
