@@ -1,0 +1,14 @@
+{
+  "max": 20,
+  "players": [
+    { "name": "Notch", "uuid": "069a79f444e94726a5befca90e38aaf5", "world": "minecraft_overworld", "x": -1018, "z": 2374, "yaw": 27.35, "health": 17, "armor": 10 },
+    { "name": "pewdiepie_epic", "uuid": "7f184d639f9c47a7be038382145fb2c2", "world": "minecraft_overworld", "x": 466, "z": -806, "yaw": 91.35, "health": 20, "armor": 0 },
+    { "name": "Grian", "uuid": "5f8eb73b25be4c5aa50fd27d65e30ca0", "world": "minecraft_overworld", "x": 3858, "z": 2268, "yaw": 210, "health": 14, "armor": 8 },
+    { "name": "MumboJumbo", "uuid": "c7da90d56a054217b94a7d427cbbcad8", "world": "minecraft_overworld", "x": 3918, "z": 2338, "yaw": 300, "health": 20, "armor": 12 },
+    { "name": "jeb_", "uuid": "853c80ef3c3749fdaa49938b674adae6", "world": "minecraft_the_nether", "x": 3210, "z": 1016, "yaw": 135, "health": 11, "armor": 15 },
+    { "name": "Dinnerbone", "uuid": "61699b2ed3274a019f1e0ea8c3f06bc6", "world": "minecraft_the_end", "x": 10, "z": 5, "yaw": 315, "health": 18, "armor": 20 },
+    { "name": "direwolf20", "uuid": "bbb87dbe690f4205bdc572ffb8ebc29d", "world": "terralith_overworld", "x": 546, "z": 4573, "yaw": 60, "health": 20, "armor": 14 },
+    { "name": "Pahimar", "uuid": "0192723fb3dc495a959f52c53fa63bff", "world": "incendium_nether", "x": -1700, "z": -520, "yaw": 250, "health": 9, "armor": 6 },
+    { "name": "Gegy", "uuid": "c3ed4d52fb4f4964ba1b9cda2453741e", "world": "nullscape_end", "x": -2400, "z": -3700, "yaw": 160, "health": 16, "armor": 18 }
+  ]
+}

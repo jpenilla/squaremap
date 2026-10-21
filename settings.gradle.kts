@@ -24,6 +24,7 @@ setupSubproject("paper")
 setupSubproject("fabric")
 setupSubproject("neoforge")
 setupSubproject("sponge")
+setupSubproject("demo")
 
 fun setupSubproject(moduleName: String) {
   val name = "squaremap-$moduleName"

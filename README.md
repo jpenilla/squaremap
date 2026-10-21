@@ -42,7 +42,7 @@ Downloads can be obtained from [Modrinth](https://modrinth.com/mod/squaremap).
 
 ## Demo
 
-Official squaremap demo: https://squaremap-demo.jpenilla.xyz/
+Official squaremap demo: https://squaremap-demo.jpenilla.com/
 
 ## License
 

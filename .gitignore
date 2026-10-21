@@ -122,3 +122,4 @@ run/
 build
 .gradle
 .kotlin/
+.wrangler/

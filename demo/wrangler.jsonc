@@ -1,0 +1,10 @@
+{
+  "name": "squaremap-demo",
+  "compatibility_date": "2026-10-20",
+  // Built by ./gradlew :squaremap-demo:assembleDemoSite
+  "assets": { "directory": "build/site" },
+  "routes": [
+    { "pattern": "squaremap-demo.jpenilla.xyz", "custom_domain": true },
+    { "pattern": "squaremap-demo.jpenilla.com", "custom_domain": true }
+  ]
+}
