@@ -87,7 +87,7 @@ public abstract class MapWorldInternal implements MapWorld {
 
         this.backgroundExecutor = new BackgroundExecutor(Threads.name("background", WorldIdentifiers.identifier(level)));
         this.tileChangeLog = TileChangeLog.create(jsonStore, this.tilesPath.resolve(TileChangeLog.FILE_NAME), this.backgroundExecutor);
-        this.regionImageSaveQueue = RegionImageSaveQueue.create(level, this.worldConfig.IMAGE_SAVING, this.tileChangeLog::record);
+        this.regionImageSaveQueue = RegionImageSaveQueue.create(level, this.worldConfig.IMAGE_SAVING, this.tilesPath, this.tileChangeLog::record);
 
         this.layerRegistry(); // init the layer registry
         if (this.config().SPAWN_MARKER_ICON_ENABLED) {
