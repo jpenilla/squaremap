@@ -14,6 +14,9 @@
       },
     },
   },
+  "patchedDependencies": {
+    "leaflet@1.9.4": "patches/leaflet@1.9.4.patch",
+  },
   "packages": {
     "@oxc-project/types": ["@oxc-project/types@0.154.0", "", {}, "sha512-KYOUGQFlLWR+s4QMV2Q9ko38TZm7EdO87Qm7rvZLqk/webse/cDjtyxKhg/47l0byCbs/k46LT8qc4PKjAikzA=="],
 

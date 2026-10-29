@@ -16,5 +16,8 @@
         "oxlint": "^1.75.0",
         "oxlint-tsgolint": "^7.0.2001",
         "vite": "^8.1.5"
+    },
+    "patchedDependencies": {
+        "leaflet@1.9.4": "patches/leaflet@1.9.4.patch"
     }
 }
