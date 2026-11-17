@@ -37,7 +37,7 @@ chunkyPlugin = "MdY6JATr"
 
 # buildSrc
 indra = "4.1.0"
-sponge-gradle = "2.3.0"
+sponge-gradle = "2.5.1"
 shadow = "9.6.1"
 mod-publish-plugin = "2.2.1"
 loom = "1.19.346"
