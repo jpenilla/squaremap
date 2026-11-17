@@ -14,6 +14,20 @@
     },
     "packageRules": [
         {
+            "description": "Demo datapacks are pinned by Modrinth version ID, which Renovate can't compare with version numbers",
+            "matchPackageNames": [
+                "maven.modrinth:*"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "Chunky has to match the chunkyPlugin Modrinth version ID, so it is updated by hand",
+            "matchPackageNames": [
+                "org.popcraft:chunky-common"
+            ],
+            "enabled": false
+        },
+        {
             "description": "Correct version handling for dependencies with format major.minor.patch+mcver",
             "matchPackageNames": [
                 "net.fabricmc.fabric-api:fabric-api",
