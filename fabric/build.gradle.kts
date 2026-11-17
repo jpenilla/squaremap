@@ -69,7 +69,7 @@ fabricModJson {
   mixin("squaremap-fabric.mixins.json")
   accessWidener = "squaremap-fabric.accesswidener"
   depends("fabric-api", "*")
-  depends("fabricloader", ">=0.16.7")
+  depends("fabricloader", ">=${libs.versions.fabricLoader.get()}")
   depends("minecraft", libs.versions.minecraft.get())
   depends("cloud", "*")
   depends("adventure-platform-fabric", "*")
