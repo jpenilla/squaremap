@@ -1,0 +1,82 @@
+diff --git a/dist/leaflet-src.esm.js b/dist/leaflet-src.esm.js
+index 8f91d5ddfc78ef05576efd425aac920040a28c94..fb3707421854172d680c32e9a8b4465c956468fc 100644
+--- a/dist/leaflet-src.esm.js
++++ b/dist/leaflet-src.esm.js
+@@ -8329,7 +8329,11 @@ var CircleMarker = Path.extend({
+ 
+ 	// Needed by the `Canvas` renderer for interactivity
+ 	_containsPoint: function (p) {
+-		return p.distanceTo(this._point) <= this._radius + this._clickTolerance();
++		var tolerance = this._clickTolerance(),
++		    distance = p.distanceTo(this._point);
++
++		return distance <= this._radius + tolerance &&
++			(this.options.fill || distance >= this._radius - tolerance);
+ 	}
+ });
+ 
+@@ -8888,7 +8892,7 @@ var Polygon = Polyline.extend({
+ 		}
+ 
+ 		// also check if it's on polygon stroke
+-		return inside || Polyline.prototype._containsPoint.call(this, p, true);
++		return (this.options.fill && inside) || Polyline.prototype._containsPoint.call(this, p, true);
+ 	}
+ 
+ });
+diff --git a/dist/leaflet-src.js b/dist/leaflet-src.js
+index 90f6db30412aa1219cba21fccd00644b994a51c8..4a20b97f506f1125d20b9f7278ffa3f065f86991 100644
+--- a/dist/leaflet-src.js
++++ b/dist/leaflet-src.js
+@@ -8335,7 +8335,11 @@
+ 
+   	// Needed by the `Canvas` renderer for interactivity
+   	_containsPoint: function (p) {
+-  		return p.distanceTo(this._point) <= this._radius + this._clickTolerance();
++  		var tolerance = this._clickTolerance(),
++  		    distance = p.distanceTo(this._point);
++
++  		return distance <= this._radius + tolerance &&
++  			(this.options.fill || distance >= this._radius - tolerance);
+   	}
+   });
+ 
+@@ -8894,7 +8898,7 @@
+   		}
+ 
+   		// also check if it's on polygon stroke
+-  		return inside || Polyline.prototype._containsPoint.call(this, p, true);
++  		return (this.options.fill && inside) || Polyline.prototype._containsPoint.call(this, p, true);
+   	}
+ 
+   });
+diff --git a/src/layer/vector/CircleMarker.js b/src/layer/vector/CircleMarker.js
+index e08b2afd4ec42f7f6b4c589d942bee8bd8ea3594..906f488002bdf5e7409877d8d84aefbae654fb9e 100644
+--- a/src/layer/vector/CircleMarker.js
++++ b/src/layer/vector/CircleMarker.js
+@@ -97,7 +97,11 @@ export var CircleMarker = Path.extend({
+ 
+ 	// Needed by the `Canvas` renderer for interactivity
+ 	_containsPoint: function (p) {
+-		return p.distanceTo(this._point) <= this._radius + this._clickTolerance();
++		var tolerance = this._clickTolerance(),
++		    distance = p.distanceTo(this._point);
++
++		return distance <= this._radius + tolerance &&
++			(this.options.fill || distance >= this._radius - tolerance);
+ 	}
+ });
+ 
+diff --git a/src/layer/vector/Polygon.js b/src/layer/vector/Polygon.js
+index 3c4bf04ace32f9eb6caf47980e83f15f6ad318b7..81a88fa7ec4a4f59c582518893a92feb25b0fabb 100644
+--- a/src/layer/vector/Polygon.js
++++ b/src/layer/vector/Polygon.js
+@@ -147,7 +147,7 @@ export var Polygon = Polyline.extend({
+ 		}
+ 
+ 		// also check if it's on polygon stroke
+-		return inside || Polyline.prototype._containsPoint.call(this, p, true);
++		return (this.options.fill && inside) || Polyline.prototype._containsPoint.call(this, p, true);
+ 	}
+ 
+ });
